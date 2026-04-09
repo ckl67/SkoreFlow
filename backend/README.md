@@ -4,7 +4,7 @@
 
 SkoreFlow is a backend service designed to manage, process, and serve musical scores through a clean, scalable, and layered architecture.
 SkoreFlow let you store all your personnal scores, and annotate them.
-SkoreFlow is based on an original idea proposed with [SheetAble](hhttps://github.com/SheetAble/SheetAble).
+SkoreFlow Backend is based on an original idea proposed with [SheetAble](hhttps://github.com/SheetAble/SheetAble).
 However SkoreFlow is completely different, and has been designed with a full new modern REST architecture with much more features, and possibility of cool enhancements.
 
 ---

@@ -4,6 +4,7 @@
 
 SkoreFlow is a backend and frontend application designed to manage, process, and serve musical scores through a clean, scalable, and layered architecture.
 
+
 ---
 
 ## 🚀 Overview
@@ -24,8 +25,11 @@ SkoreFlow provides a structured pipeline to:
 ├── backend/
 ├── frontend/
 ├── testauto/
+├── wiki/
 
 ```
+
+PS: Wiki has its own repository : [SkoreFlow Wiki](https://github.com/ckl67/SkoreFlow/wiki) 
 
 ---
 
@@ -36,28 +40,28 @@ SkoreFlow provides a structured pipeline to:
 ### 1. Clone repository
 
 ```bash
-git clone https://github.com/your-username/skoreflow.git
+git clone https://github.com/ckl67/skoreflow.git
 cd skoreflow
 ```
 
 ### 2. Setup backend
 
-- See backend directory
+- See : [Backend Readme](backend/README.md)
 
 ### 3. Setup frontend
 
-- See frontend directory
+- See [frontend directory](frontend/README.md)
 
-## 📌 Future Improvements
+## 📌 Future Improvements or Bug detection
 
-- Proposals under github
+- Create an issue for Improvements or to highlight a BUG via [Github Issue](https://github.com/ckl67/SkoreFlow/issues)
 
 ---
 
 ## 🌿 Contributions
 
-Contribution : see CONTRIBUTING.md
+Contribution : see [CONTRIBUTING](./CONTRIBUTING.md)
 
 ## 📄 License
 
-License : see LICENCE.md
+License : see [LICENCE](./LICENSE.md)

@@ -2,22 +2,33 @@
 
 # Contributing to SkoreFlow
 
-Thank you for contributing to **SkoreFlow**! 🚀
+Thank you by willing to contribute to **SkoreFlow**! 🚀
 This guide provides a complete Git workflow using **fork + pull request**.
+
+There is a lot of stuff, and ou can contriubute to 
+
+```bash
+.
+├── backend/
+├── frontend/
+├── testauto/
+├── wiki/
+
+```
 
 ---
 
 ## 🍴 1. Fork the repository
 
 ```bash
-git clone https://github.com/your-username/SkoreFlow.git
+git clone https://github.com/ckl67/SkoreFlow.git
 cd SkoreFlow
 ```
 
 Add upstream:
 
 ```bash
-git remote add upstream https://github.com/original-owner/SkoreFlow.git
+git remote add upstream https://github.com/ckl67/SkoreFlow.git
 git remote -v
 ```
 
@@ -26,7 +37,7 @@ git remote -v
 ## 🌿 2. Create a branch
 
 ```bash
-git checkout -b <github-login>/feature/feature-name
+git checkout -b <github-login>/dev
 ```
 
 Examples:
