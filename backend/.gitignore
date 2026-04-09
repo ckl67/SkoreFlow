@@ -1,0 +1,32 @@
+# Racine du Repo = /backend
+
+# Ignorer les variables d'environnement .env
+.env
+!.env.sample
+
+# Ignorer Répertoire où sont stockées les partitions et la base de données
+# Le / au début signifie “à partir de la racine du dépôt Git”, donc à éviter
+# Lorsqu’un dossier est ignoré / Git ne descend plus dedans
+#   --> /* ignore le contenu
+#   --> permet les exceptions avec !
+
+# 1) Ignorer tout storage
+storage/*
+
+# 2) Réautoriser le dossier composer
+!storage/composers/
+!storage/assets/
+
+# 3) Ignorer tout dans composer
+storage/composers/*
+
+# 4) Réautoriser assets
+!storage/composers/assets/
+
+# Exceptions pour certains fichiers
+# !api/config/config.go
+
+# Fichier Build
+build/
+
+

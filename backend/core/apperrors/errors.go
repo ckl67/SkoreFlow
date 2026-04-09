@@ -1,0 +1,66 @@
+package apperrors
+
+import (
+	"errors"
+)
+
+// ===============================================================================================
+// Layer               | Component      | Responsibility
+// --------------------|----------------|----------------------------------------------------------
+// APPLICATION ERRORS  | apperrors/     | Define application-specific error variables.
+//                     |                | These errors can be used across the application for consistent error handling and messaging.
+// ===============================================================================================
+
+//
+// ERROR STRATEGY:
+//
+// - Define common application errors as package-level variables.
+// - Use these errors in service and handler layers to provide consistent error responses.
+// - Avoid defining business logic errors here; these should be defined in the service layer if needed.
+//
+// RULE:
+// → Do not include HTTP status codes or response formatting here; this layer is only for error definitions.
+
+var (
+	// Auth
+	ErrAuthInvalidCredentials  = errors.New("Invalid Credential")
+	ErrMissingToken            = errors.New("Missing Token")
+	ErrAuthInvalideToken       = errors.New("Invalid Token")
+	ErrAuthTokenExpired        = errors.New("Token Expired")
+	ErrAuthTokenInvalidExpired = errors.New("Token Invalid or Expired")
+
+	// User Login
+	ErrUserEmailAlreadyUsed = errors.New("email already in use")
+	ErrUserNotVerified      = errors.New("User Not verified!")
+	ErrUserNotFound         = errors.New("User Not Found")
+	ErrUsernameTaken        = errors.New("username already taken")
+
+	// User Access
+	ErrAccessForbidden = errors.New("access forbidden")
+
+	// SMTP
+	ErrSmtpNotConfigured = errors.New("smtp not configured")
+	ErrSmtpFailed        = errors.New("smtp failed")
+
+	// Sheet
+	ErrSheetAlreadyExists = errors.New("sheet already exists for this user and composer")
+	ErrSheetInvalidID     = errors.New("invalid sheet ID")
+	ErrSheetNotFound      = errors.New("sheet not found")
+
+	// Other
+	ErrInvalidDate = errors.New("invalid date format")
+
+	// Composer
+	ErrComposerMandatory     = errors.New("composer is mandatory !")
+	ErrComposerInvalidID     = errors.New("invalid compoer ID")
+	ErrComposerNotFound      = errors.New("composer not found")
+	ErrComposerAlreadyExists = errors.New("Composer already exists")
+
+	// Image
+	ErrImageFormatInvalid = errors.New("Image Format not allowed !")
+
+	// File
+	ErrFileDeletion = errors.New("failed to delete file(s)")
+	ErrFileNotFound = errors.New("file not found")
+	ErrFileTooLarge = errors.New("file too large")
+)
