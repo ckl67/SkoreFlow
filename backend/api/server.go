@@ -1,17 +1,19 @@
 package api
 
 import (
-	"backend/core/models"
-	"backend/core/services"
-	"backend/infrastructure/config"
-	"backend/infrastructure/logger"
 	"fmt"
 	"net/http"
 	"os"
 	"os/exec"
 	"os/signal"
+	"path/filepath"
 	"syscall"
 	"time"
+
+	"backend/core/models"
+	"backend/core/services"
+	"backend/infrastructure/config"
+	"backend/infrastructure/logger"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -81,9 +83,46 @@ func (server *Server) Setup(version string, db *gorm.DB) {
 // - Prevents orphan/zombie processes by binding lifecycle to the server
 func (server *Server) StartMicroService() {
 	msConfig := config.Config().MicroService
-	pythonExe := "../../micro-service/venv/bin/python3"
-	scriptPath := "../../micro-service/thumbnail-service/app.py"
 
+	// ----------------------------------------------------------------
+	// Validate configuration
+	// ----------------------------------------------------------------
+	if msConfig.MsRoot == "" {
+		logger.Server.Error("(StartMicroService) MICROSERVICE_ROOT not set")
+		return
+	}
+
+	if msConfig.MsName == "" {
+		logger.Server.Error("(StartMicroService) MICROSERVICE_NAME not set")
+		return
+	}
+
+	// ----------------------------------------------------------------
+	// Resolve absolute path
+	// ----------------------------------------------------------------
+	root, err := filepath.Abs(msConfig.MsRoot)
+	if err != nil {
+		logger.Server.Error("(StartMicroService) failed to resolve root: %v", err)
+		return
+	}
+
+	// ----------------------------------------------------------------
+	// Build paths dynamically
+	// ----------------------------------------------------------------
+	// Example:
+	// root = /backend/micro-service
+	// msName = thumbnail-service
+
+	pythonExe := filepath.Join(root, "venv", "bin", "python3")
+	scriptPath := filepath.Join(root, msConfig.MsName, "app.py")
+
+	// Optional: debug (can be removed later)
+	logger.Server.Info("(StartMicroService) python: %s", pythonExe)
+	logger.Server.Info("(StartMicroService) script: %s", scriptPath)
+
+	// ----------------------------------------------------------------
+	// Create command
+	// ----------------------------------------------------------------
 	cmd := exec.Command(pythonExe, scriptPath)
 
 	// Inject environment variables into the process
@@ -96,6 +135,9 @@ func (server *Server) StartMicroService() {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
+	// ----------------------------------------------------------------
+	// Start process
+	// ----------------------------------------------------------------
 	if err := cmd.Start(); err != nil {
 		logger.Server.Error("(StartMicroService) Flask startup error: %v", err)
 		return
@@ -103,7 +145,12 @@ func (server *Server) StartMicroService() {
 
 	// Store process reference for shutdown handling
 	server.MSProcess = cmd.Process
-	logger.Server.Info("(StartMicroService) micro-service [%s] running (PID: %d)", msConfig.MsName, server.MSProcess.Pid)
+
+	logger.Server.Info(
+		"(StartMicroService) micro-service [%s] running (PID: %d)",
+		msConfig.MsName,
+		server.MSProcess.Pid,
+	)
 }
 
 // ListenAndServe starts the HTTP server and manages graceful shutdown.

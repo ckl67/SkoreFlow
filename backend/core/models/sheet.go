@@ -49,13 +49,11 @@ type Sheet struct {
 	Annotations     string    `gorm:"type:TEXT;default:'[]'" json:"annotations"` // JSON string
 }
 
-
 // Create inserts a new sheet record into the database.
 // GORM automatically sets CreatedAt and UpdatedAt.
 func (s *Sheet) Create(db *gorm.DB) error {
 	return db.Create(s).Error
 }
-
 
 // Update performs a full update using db.Save().
 //
@@ -66,7 +64,6 @@ func (s *Sheet) Update(db *gorm.DB) error {
 	return db.Save(s).Error
 }
 
-
 // UpdateFields updates specific fields for a given sheet ID.
 //
 // Notes:
@@ -75,7 +72,6 @@ func (s *Sheet) Update(db *gorm.DB) error {
 func (s *Sheet) UpdateFields(db *gorm.DB, id uint, data interface{}) error {
 	return db.Model(&Sheet{}).Where("id = ?", id).Updates(data).Error
 }
-
 
 // SheetExists checks if a sheet already exists for a given user and composer.
 func SheetExists(db *gorm.DB, safeName string, composerID uint, userID uint32) (bool, error) {
@@ -89,14 +85,12 @@ func SheetExists(db *gorm.DB, safeName string, composerID uint, userID uint32) (
 	return count > 0, err
 }
 
-
 // Delete permanently removes the sheet from the database.
 // Uses Unscoped() to bypass soft delete if enabled.
 func (s *Sheet) Delete(db *gorm.DB) (int64, error) {
 	result := db.Unscoped().Delete(s)
 	return result.RowsAffected, result.Error
 }
-
 
 // List retrieves sheets with pagination, filtering, and search capabilities.
 //
@@ -151,7 +145,6 @@ func (s *Sheet) List(
 	pagination.Rows = sheets
 	return pagination, nil
 }
-
 
 // FindSheetByID retrieves a sheet by its unique identifier.
 func FindSheetByID(db *gorm.DB, id uint) (*Sheet, error) {

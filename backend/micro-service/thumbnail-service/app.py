@@ -9,10 +9,10 @@
 #                    |                      | 4. Provide structured logging (externally controlled)
 #
 # ROLE:
-# - This service acts as a stateless worker
-# - It is triggered by the backend (Go service)
-# - It does NOT contain business logic
-# - It operates only on filesystem + transformation
+# - Stateless worker
+# - Triggered by backend (Go service)
+# - No business logic
+# - Filesystem + transformation only
 #
 # INPUT:
 # - pdf_path     → absolute path of source PDF
@@ -31,35 +31,40 @@ import sys
 
 app = Flask(__name__)
 
+# ----------------------------------------------------------------
+# ENV CONFIG
+# ----------------------------------------------------------------
+MS_NAME = os.getenv('MS_NAME', 'ThumbnailWorker')
+MS_PORT = int(os.getenv('MS_PORT', 5001))
+
+# ----------------------------------------------------------------
 # LOGGER CONFIGURATION
-# - Default level: DEBUG (to capture startup and early issues)
-# - Output: stdout (container-friendly)
-# - Format: timestamp + level + service name + message
+# ----------------------------------------------------------------
 logging.basicConfig(
     format='%(asctime)s [%(levelname)s] [%(name)s] %(message)s',
     stream=sys.stdout
 )
 
-logger = logging.getLogger("ThumbnailWorker")
+logger = logging.getLogger(MS_NAME)
 logger.setLevel(logging.DEBUG)
 
-MS_NAME = os.getenv('MS_NAME', 'ThumbnailWorker')
-MS_PORT = int(os.getenv('MS_PORT', 5001))
+# ----------------------------------------------------------------
+# BANNER
+# ----------------------------------------------------------------
+def print_banner():
+    logger.info(
+        f"""
+[BOOT] ------------------------------------------
+[BOOT] Service : {MS_NAME}
+[BOOT] Port    : {MS_PORT}
+[BOOT] PID     : {os.getpid()}
+[BOOT] ------------------------------------------
+"""
+    )
 
+# ----------------------------------------------------------------
 # ROUTE: /createthumbnail
-# Handles PDF → PNG conversion requests.
-# FLOW:
-# 1. Parse JSON payload
-# 2. Dynamically adjust log level (controlled by caller)
-# 3. Validate file existence
-# 4. Convert first page of PDF to PNG
-# 5. Save result to disk
-# 6. Return structured JSON response
-#
-# ERROR HANDLING:
-# - 400 → invalid/missing payload
-# - 404 → source file not found
-# - 500 → processing failure
+# ----------------------------------------------------------------
 @app.route('/createthumbnail', methods=['POST'])
 def create_thumbnail():
     data = request.get_json()
@@ -69,11 +74,8 @@ def create_thumbnail():
         logger.error("Request received without JSON payload")
         return jsonify({"error": "No JSON data provided"}), 400
 
-    # 2. Dynamic log level control (driven by Go backend)
-    # Example values: DEBUG, INFO, WARNING, ERROR
+    # 2. Dynamic log level
     log_level_str = data.get('log_level', 'INFO').upper()
-
-    # Convert string → logging constant (fallback to INFO)
     numeric_level = getattr(logging, log_level_str, logging.INFO)
     logger.setLevel(numeric_level)
 
@@ -81,8 +83,9 @@ def create_thumbnail():
     pdf_path = data.get('pdf_path')
     output_path = data.get('output_path')
 
-    logger.debug(f"Log level set dynamically: {log_level_str}")
-    logger.debug(f"Conversion request: {pdf_path} -> {output_path}")
+    if not pdf_path or not output_path:
+        logger.error("Missing required parameters: pdf_path or output_path")
+        return jsonify({"error": "Missing pdf_path or output_path"}), 400
 
     # 4. File existence check
     if not os.path.exists(pdf_path):
@@ -90,39 +93,41 @@ def create_thumbnail():
         return jsonify({"error": f"Source file not found: {pdf_path}"}), 404
 
     try:
-        # 5. PDF → Image conversion (first page only)
-        logger.info(f"Starting pdf2image conversion for {os.path.basename(pdf_path)}")
+        # 5. Conversion
+        logger.info(f"Starting conversion: {os.path.basename(pdf_path)}")
 
         images = convert_from_path(pdf_path, first_page=1, last_page=1)
 
-        if images:
-            # Ensure destination directory exists
-            os.makedirs(os.path.dirname(output_path), exist_ok=True)
+        if not images:
+            logger.error("Conversion failed: no image generated")
+            return jsonify({"error": "Failed to convert"}), 500
 
-            # Save first page as PNG
-            images[0].save(output_path, 'PNG')
+        # Ensure destination directory exists
+        output_dir = os.path.dirname(output_path)
+        if output_dir:
+            os.makedirs(output_dir, exist_ok=True)
 
-            logger.info(f"Thumbnail successfully generated: {output_path}")
+        # Save image
+        images[0].save(output_path, 'PNG')
 
-            return jsonify({
-                "status": "success",
-                "message": f"Saved to {output_path}"
-            }), 200
+        logger.info(f"Thumbnail generated: {output_path}")
 
-        # No image generated (unexpected case)
-        logger.error("Conversion failed: no image generated")
-        return jsonify({"error": "Failed to convert"}), 500
+        return jsonify({
+            "status": "success",
+            "message": f"Saved to {output_path}"
+        }), 200
 
     except Exception as e:
-        # 6. Critical error handling (full stacktrace)
-        logger.error(f"Critical error during conversion: {str(e)}", exc_info=True)
-
+        logger.error("Critical error during conversion", exc_info=True)
         return jsonify({"error": str(e)}), 500
 
 
-# APPLICATION ENTRYPOINT
-# Starts the Flask worker service.
-# Designed to run inside a container or as a side-service.
-if __name__ == '__main__':
-    logger.info(f"Starting service {MS_NAME} on port {MS_PORT}...")
-    app.run(host='0.0.0.0', port=MS_PORT)
+# ----------------------------------------------------------------
+# ENTRYPOINT
+# ----------------------------------------------------------------
+if __name__ == "__main__":
+    # Avoid double execution with Flask reloader
+    if os.environ.get("WERKZEUG_RUN_MAIN") == "true" or not app.debug:
+        print_banner()
+
+    app.run(host="0.0.0.0", port=MS_PORT, debug=False)

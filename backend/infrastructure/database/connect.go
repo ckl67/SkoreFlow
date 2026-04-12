@@ -1,11 +1,12 @@
 package database
 
 import (
-	"backend/infrastructure/config"
-	"backend/infrastructure/logger"
 	"fmt"
 	"os"
 	"path"
+
+	"backend/infrastructure/config"
+	"backend/infrastructure/logger"
 
 	"github.com/glebarez/sqlite"
 	"gorm.io/driver/mysql"

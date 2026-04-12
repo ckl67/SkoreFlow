@@ -1,32 +1,35 @@
-# Racine du Repo = /backend
+# Repo Root = /backend
 
-# Ignorer les variables d'environnement .env
+# Ignore environment variables
 .env
 !.env.sample
 
-# Ignorer Répertoire où sont stockées les partitions et la base de données
-# Le / au début signifie “à partir de la racine du dépôt Git”, donc à éviter
-# Lorsqu’un dossier est ignoré / Git ne descend plus dedans
-#   --> /* ignore le contenu
-#   --> permet les exceptions avec !
+# Ignore directory where scores/sheets and database are stored
+# Note: A leading '/' targets the git root.
+# Once a directory is ignored, Git stops tracking its subdirectories.
+#   --> /* ignores the content
+#   --> allows for exceptions using '!'
 
-# 1) Ignorer tout storage
+# 1) Ignore everything inside storage
 storage/*
 
-# 2) Réautoriser le dossier composer
+# 2) Allow 'composers' and 'assets' directories
 !storage/composers/
 !storage/assets/
 
-# 3) Ignorer tout dans composer
+# 3) Ignore all contents inside composers
 storage/composers/*
 
-# 4) Réautoriser assets
+# 4) Re-allow assets within composers
 !storage/composers/assets/
 
-# Exceptions pour certains fichiers
-# !api/config/config.go
-
-# Fichier Build
+# Build output directory
 build/
 
-
+# Go binary (if not in build/)
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.db

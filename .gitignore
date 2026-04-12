@@ -1,9 +1,7 @@
-# gitignore racine
+# gitignore project root
 
 # Editor / OS
 .vscode/*
-!.vscode/settings.json
-!.vscode/extensions.json
 .idea
 .DS_Store
 *.suo
@@ -11,4 +9,4 @@
 *.njsproj
 *.sln
 *.sw?
-trash.txt
+

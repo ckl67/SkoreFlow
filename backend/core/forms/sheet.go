@@ -40,7 +40,6 @@ type GetSheetsPageRequest struct {
 	Composer string `form:"composer" json:"composer"`
 }
 
-
 // CreateSheetRequest defines the payload for creating a new sheet.
 type CreateSheetRequest struct {
 	File            *multipart.FileHeader `form:"uploadFile"`
@@ -52,7 +51,6 @@ type CreateSheetRequest struct {
 	InformationText string                `form:"informationText"`
 }
 
-
 // UpdateSheetRequest defines the payload for updating an existing sheet.
 type UpdateSheetRequest struct {
 	File            *multipart.FileHeader `form:"uploadFile"`
@@ -63,18 +61,15 @@ type UpdateSheetRequest struct {
 	InformationText string                `form:"informationText"`
 }
 
-
 // TagRequest defines a payload for tag-related operations.
 type TagRequest struct {
 	TagValue string `form:"tagValue"`
 }
 
-
 // InformationTextRequest defines a payload for updating sheet information text.
 type InformationTextRequest struct {
 	InformationText string `form:"informationText"`
 }
-
 
 // ValidateForm performs custom validation for CreateSheetRequest.
 // Validations:
@@ -84,7 +79,6 @@ type InformationTextRequest struct {
 // - File must be a PDF
 // - Max file size: 10MB
 func (req *CreateSheetRequest) ValidateForm() error {
-
 	if req.File == nil {
 		return errors.New("file is required")
 	}
@@ -109,7 +103,6 @@ func (req *CreateSheetRequest) ValidateForm() error {
 	return nil
 }
 
-
 // ValidateForm performs custom validation for UpdateSheetRequest.
 // Validations:
 // - File is optional
@@ -117,7 +110,6 @@ func (req *CreateSheetRequest) ValidateForm() error {
 //   - Must be a PDF
 //   - Max file size: 10MB
 func (req *UpdateSheetRequest) ValidateForm() error {
-
 	if req.File != nil {
 
 		if req.File.Size > 10<<20 {

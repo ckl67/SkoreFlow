@@ -11,9 +11,9 @@ import (
 func Start(version string) {
 	// Log configuration details (redacted/safe version)
 	cfg := config.Config()
-	if cfg.Backend_Dev_Mode == "true" {
-		cfg.LogSafe()
-	}
+	// if cfg.Backend_Dev_Mode == "true" {
+	cfg.LogSafe()
+	//	}
 
 	// 1. Infrastructure Setup -- Database Connection
 	db := database.ConnectDB(cfg)

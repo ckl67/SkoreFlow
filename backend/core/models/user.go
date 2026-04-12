@@ -7,9 +7,10 @@ package models
 // ===============================================================================================
 
 import (
-	"backend/auth"
 	"strings"
 	"time"
+
+	"backend/auth"
 
 	"gorm.io/gorm"
 )

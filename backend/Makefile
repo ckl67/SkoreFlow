@@ -1,65 +1,71 @@
 # Variables
 BINARY_NAME=sf-backend
 GO=go
+MAIN_FILE=./cmd/server/main.go
 
-# Récupération de la version via Git
-# --tags: cherche les tags
-# --always: si pas de tag, utilise le hash du commit
-# --dirty: ajoute "-dirty" si tu as des modifs non committées
-# Assure-toi d'avoir des tags dans ton repo pour que ça fonctionne bien, sinon tu auras juste le hash du commit.
-# La version affiché se base toujours sur le dernier Tag réalisé à travers
-# Exemple
-#		git tag v0.1.0 -m "Première version stable avec affichage de version"
+# Versioning via Git
+# --tags: Look for tags
+# --always: Fallback to commit hash if no tag is found
+# --dirty: Append "-dirty" if there are uncommitted changes
+# Note: Ensure your repo has tags for this to work properly, otherwise only the hash will be shown.
+# The displayed version is always based on the latest Tag created.
+# Example:
+#       git tag v0.1.0 -m "First stable version with version display"
 VERSION=$(shell git describe --tags --always --dirty)
 
-# Le chemin vers ta variable dans le main.go
-# Si ton fichier main.go est à la racine, c'est main.Version
+# Path to the version variable in main.go
+# If your main.go is at the root, use main.Version
 LDFLAGS=-ldflags="-X main.Version=$(VERSION)"
 
-# Règles de Makefile
-.PHONY: all build run clean tidy reset help version
+# Makefile Rules
+.PHONY: all build run air clean tidy reset help version
 
-## all: Nettoie, organise les modules et compile
+## all: Clean, organize modules, and compile
 all: tidy build
 
-## version: Affiche la version que le Makefile détecte (pratique pour débugger)
+## version: Display the version detected by the Makefile (useful for debugging)
 version:
-	@echo "Version détectée : $(VERSION)"
+	@echo "Detected Version: $(VERSION)"
 
-## build: Compile le projet avec injection de la version
+## build: Compile the project with version injection
 build:
-	@echo "==> Compilation du binaire (Version: $(VERSION))..."
-	CGO_ENABLED=0 $(GO) build $(LDFLAGS) -o build/$(BINARY_NAME) main.go
+	@echo "==> Compiling binary (Version: $(VERSION))..."
+	CGO_ENABLED=0 $(GO) build $(LDFLAGS) -o build/$(BINARY_NAME) $(MAIN_FILE)
 
-## Run : Lance le programme
+## run: Launch the program
 run:
-	@echo "==> Lance go.main (Version: $(VERSION))..."
-	$(GO) run $(LDFLAGS) main.go
+	@echo "==> Running main.go (Version: $(VERSION))..."
+	$(GO) run $(LDFLAGS) $(MAIN_FILE)
 
-## tidy: Organise et nettoie le fichier go.mod
+## runHR: Automate the Hot Reload process thanks to the standard Air tool
+air:
+	@echo "==> Running Hot Reload (air) main.go (Version: $(VERSION))..."
+	air
+
+## tidy: Organize and clean the go.mod file
 tidy:
-	@echo "==> Nettoyage des modules (tidy)..."
+	@echo "==> Tidying modules..."
 	$(GO) mod tidy
 
-## clean: Supprime le binaire local
+## clean: Remove the local binary
 clean:
-	@echo "==> Suppression du binaire..."
+	@echo "==> Removing binary..."
 	rm -f build/$(BINARY_NAME)
 
-## reset: Nettoie le cache des modules et retélécharge tout
+## reset: Clear module cache and re-download everything
 reset:
-	@echo "==> Nettoyage complet du cache des modules..."
+	@echo "==> Complete module cache cleanup..."
 	$(GO) clean -cache -modcache -testcache
-go mod tidy
 	$(GO) mod tidy
 
-## help: Affiche les commandes disponibles
+## help: Show available commands
 help:
-	@echo "Commandes disponibles :"
-	@echo "  make build   : Compile le projet avec injection de version"
-	@echo "  make run     : Lance le run avec injection de version"
-	@echo "  make version : Affiche la version qui sera injectée"
-	@echo "  make tidy    : Nettoie les dépendances"
-	@echo "  make reset   : Vide le cache et réinstalle tout"
-	@echo "  make clean   : Supprime le binaire"
-	@echo "  make help    : Affiche cette aide"
+	@echo "Available commands:"
+	@echo "  make build       : Compile the project with version injection"
+	@echo "  make run         : Run the project with version injection"
+	@echo "  make air         : Run with air allowing hot reload"
+	@echo "  make version     : Show the version to be injected"
+	@echo "  make tidy        : Clean up dependencies"
+	@echo "  make reset       : Clear cache and reinstall everything"
+	@echo "  make clean       : Remove the binary"
+	@echo "  make help        : Show this help message"

@@ -1,4 +1,7 @@
-# git ingnore  micro-service
 
 # Python
-venv
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/

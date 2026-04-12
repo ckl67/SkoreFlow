@@ -132,10 +132,14 @@ fi
 echo "Starting Backend Server..."
 
 # Switch to backend directory to handle relative paths in Go (microservices, etc.)
-cd "$BACKEND_DIR/cmd/server" || exit
+# Main MUST BE RUN FROM THE ROOT PROJECT !!!
+cd "$BACKEND_DIR" || exit
+echo "Must be RUN FROM THE Project Root Directory !!! (Check it below !!!)"
 pwd
-go run main.go &
+go run ./cmd/server/main.go &
 BACKEND_PID=$!
+echo " "
+echo " "
 
 # Health check loop
 echo "Waiting for server to be ready..."

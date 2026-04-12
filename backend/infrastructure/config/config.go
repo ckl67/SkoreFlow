@@ -1,11 +1,12 @@
 package config
 
 import (
-	"backend/infrastructure/logger"
 	"fmt"
 	"log"
 	"strings"
 	"sync"
+
+	"backend/infrastructure/logger"
 
 	"github.com/golobby/config/v3"
 	"github.com/golobby/config/v3/pkg/feeder"
@@ -27,12 +28,12 @@ import (
 // SMTP Configuration
 // Used for sending emails (password reset, notifications, etc.)
 type SmtpConfig struct {
-	Enabled        string `env:"SMTP_ENABLED"` // Even bool must be considered as string
+	Enabled        bool   `env:"SMTP_ENABLED"` // Even bool must be considered as string
 	From           string `env:"SMTP_FROM"`
 	HostServerAddr string `env:"SMTP_HOST"`
 	HostServerPort int    `env:"SMTP_PORT"`
 	Username       string `env:"SMTP_USERNAME"`
-	Password       string `env:"SMTP_PASSWORD"`
+	PasswordBase64 string `env:"SMTP_PASSWORD_BASE64"` // store it base64 encoded for safety in config parsing
 }
 
 // Database Configuration
@@ -51,12 +52,13 @@ type DatabaseConfig struct {
 type microServiceConfig struct {
 	MsName string `env:"MS_NAME"`
 	MsPort int    `env:"MS_PORT"`
+	MsRoot string `env:"MS_ROOT"`
 }
 
 // Global Server Configuration
 // Central struct holding ALL configuration used across the app
 type ServerConfig struct {
-	Backend_Dev_Mode string `env:"BACKEND_DEV_MODE"`
+	Backend_Dev_Mode bool `env:"BACKEND_DEV_MODE"`
 
 	AdminEmail    string `env:"ADMIN_EMAIL"`
 	AdminPassword string `env:"ADMIN_PASSWORD"`
@@ -103,7 +105,7 @@ var (
 func (c ServerConfig) LogSafe() {
 	logger.Main.Debug("------ SERVER CONFIG ------")
 
-	logger.Main.Debug("BACKEND_DEV_MODE :%s", c.Backend_Dev_Mode)
+	logger.Main.Debug("BACKEND_DEV_MODE :%t", c.Backend_Dev_Mode)
 
 	logger.Main.Debug("AdminEmail: %s", c.AdminEmail)
 	logger.Main.Debug("AdminPassword: %s", c.AdminPassword) // ❌ sensitive
@@ -122,16 +124,17 @@ func (c ServerConfig) LogSafe() {
 	logger.Main.Debug("  Port: %d", c.Database.Port)
 
 	logger.Main.Debug("SMTP:")
-	logger.Main.Debug("  Enabled: %s", c.Smtp.Enabled)
+	logger.Main.Debug("  Enabled: %t", c.Smtp.Enabled)
 	logger.Main.Debug("  From: %s", c.Smtp.From)
 	logger.Main.Debug("  Host: %s", c.Smtp.HostServerAddr)
 	logger.Main.Debug("  Port: %d", c.Smtp.HostServerPort)
 	logger.Main.Debug("  Username: %s", c.Smtp.Username)
-	logger.Main.Debug("  Password: %s", c.Smtp.Password) // ❌ sensitive
+	logger.Main.Debug("  Password: %s", c.Smtp.PasswordBase64) // ❌ sensitive
 
 	logger.Main.Debug("MicroService:")
 	logger.Main.Debug("  Name: %s", c.MicroService.MsName)
 	logger.Main.Debug("  Port: %d", c.MicroService.MsPort)
+	logger.Main.Debug("  Root %s:", c.MicroService.MsRoot)
 
 	logger.Main.Debug("Frontend:")
 	logger.Main.Debug("FrontendOrigin: %s", c.FrontendOrigin)
@@ -188,6 +191,8 @@ func (b configBuilder) Build() ServerConfig {
 	dotenvFeeder := feeder.DotEnv{Path: dotenvFile}
 	envFeeder := feeder.Env{}
 
+	logger.Main.Debug("Looking for .env in: %s", dotenvFile)
+
 	err := config.New().
 		AddStruct(&conf).
 		AddFeeder(dotenvFeeder).
@@ -200,10 +205,13 @@ func (b configBuilder) Build() ServerConfig {
 			}
 
 			// fallback to environment variables only
-			config.New().
+			cfg := config.New().
 				AddStruct(&conf).
-				AddFeeder(envFeeder).
-				Feed()
+				AddFeeder(envFeeder)
+
+			if err := cfg.Feed(); err != nil {
+				logger.Server.Error("failed to load config: %v", err)
+			}
 
 		} else {
 			logger.Main.Error("Warning during config feed: %v\n", err)
@@ -218,7 +226,7 @@ func (b configBuilder) Build() ServerConfig {
 // Provides fallback values when nothing is defined
 func NewConfig() ServerConfig {
 	return ServerConfig{
-		Backend_Dev_Mode: "false",
+		Backend_Dev_Mode: false,
 
 		AdminEmail:    "admin@admin.com",
 		AdminPassword: "",
@@ -242,6 +250,7 @@ func NewConfig() ServerConfig {
 		MicroService: microServiceConfig{
 			MsName: "thumbnail-service",
 			MsPort: 5010,
+			MsRoot: "",
 		},
 	}
 }

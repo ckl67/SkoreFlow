@@ -28,12 +28,10 @@ type Pagination struct {
 	Rows       interface{} `json:"rows"`
 }
 
-
 // GetOffset calculates the SQL offset based on the current page and limit.
 func (p *Pagination) GetOffset() int {
 	return (p.GetPage() - 1) * p.GetLimit()
 }
-
 
 // GetLimit returns the pagination limit.
 // Defaults to 10 if not specified.
@@ -44,7 +42,6 @@ func (p *Pagination) GetLimit() int {
 	return p.Limit
 }
 
-
 // GetPage returns the current page.
 // Defaults to 1 if not specified.
 func (p *Pagination) GetPage() int {
@@ -53,7 +50,6 @@ func (p *Pagination) GetPage() int {
 	}
 	return p.Page
 }
-
 
 // GetSort validates and returns a safe SQL ORDER BY clause.
 //
@@ -95,7 +91,6 @@ func (p *Pagination) GetSort() string {
 
 	return "updated_at desc"
 }
-
 
 // paginate applies pagination, sorting, and total count calculation to a GORM query.
 //

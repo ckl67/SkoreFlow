@@ -11,6 +11,9 @@ package services
 // ===============================================================================================
 
 import (
+	"fmt"
+	"time"
+
 	"backend/auth"
 	"backend/core/apperrors"
 	"backend/core/forms"
@@ -20,8 +23,6 @@ import (
 	"backend/pkg/format"
 	"backend/pkg/mail"
 	"backend/pkg/security"
-	"fmt"
-	"time"
 
 	"gorm.io/gorm"
 )
@@ -167,7 +168,7 @@ func (s *AuthService) RequestRegistrationConfirmation(email string) error {
 	}
 
 	cfg := config.Config()
-	if cfg.Smtp.Enabled != "true" {
+	if !cfg.Smtp.Enabled {
 		return apperrors.ErrSmtpNotConfigured
 	}
 
@@ -209,7 +210,7 @@ func (s *AuthService) ForgotPassword(email string) error {
 	}
 
 	cfg := config.Config()
-	if cfg.Smtp.Enabled != "true" {
+	if !cfg.Smtp.Enabled {
 		return apperrors.ErrSmtpNotConfigured
 	}
 

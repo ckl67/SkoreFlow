@@ -1,10 +1,10 @@
-# Code of Conduct – SheetFlow
+# Code of Conduct – SkoreFlow
 
 ## Our Commitment
 
-As contributors, maintainers, and community members of **SheetFlow**, we are committed to fostering an open, respectful, and inclusive environment.
+As contributors, maintainers, and community members of **SkoreFlow**, we are committed to fostering an open, respectful, and inclusive environment.
 
-We pledge to make participation in the SheetFlow community a harassment-free experience for everyone, regardless of:
+We pledge to make participation in the SkoreFlow community a harassment-free experience for everyone, regardless of:
 
 - Age
 - Body size
@@ -55,7 +55,7 @@ Examples of unacceptable behavior include:
 
 ## Responsibilities of Maintainers
 
-SheetFlow maintainers are responsible for:
+SkoreFlow maintainers are responsible for:
 
 - Enforcing this Code of Conduct
 - Clarifying acceptable behavior
@@ -74,14 +74,14 @@ if they do not comply with this Code of Conduct.
 
 ## Scope
 
-This Code of Conduct applies to all SheetFlow community spaces, including:
+This Code of Conduct applies to all SkoreFlow community spaces, including:
 
 - GitHub repositories
 - Issues and Pull Requests
 - Discussions
 - Any official communication channels
 
-It also applies when representing SheetFlow in public spaces, such as:
+It also applies when representing SkoreFlow in public spaces, such as:
 
 - Using an official email address
 - Posting from official accounts

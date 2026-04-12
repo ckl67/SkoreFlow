@@ -15,15 +15,16 @@ package controllers
 // ===============================================================================================
 
 import (
+	"errors"
+	"fmt"
+	"net/http"
+	"strconv"
+
 	"backend/core/apperrors"
 	"backend/core/forms"
 	"backend/core/services"
 	"backend/infrastructure/logger"
 	"backend/pkg/responses"
-	"errors"
-	"fmt"
-	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -32,10 +33,10 @@ import (
 type ComposerController struct {
 	service *services.ComposerService
 }
+
 func NewComposerController(s *services.ComposerService) *ComposerController {
 	return &ComposerController{service: s}
 }
-
 
 // CreateComposer handles creating a new music composer
 func (ctrl *ComposerController) CreateComposer(c *gin.Context) {
@@ -81,7 +82,6 @@ func (ctrl *ComposerController) CreateComposer(c *gin.Context) {
 	})
 }
 
-
 // GetComposersPage fetches a paginated list of composers with optional search filters
 func (ctrl *ComposerController) GetComposersPage(c *gin.Context) {
 	uid := c.GetUint32("user_id")
@@ -103,7 +103,6 @@ func (ctrl *ComposerController) GetComposersPage(c *gin.Context) {
 
 	responses.JSON(c, http.StatusOK, pageData)
 }
-
 
 // GetComposer retrieves detailed information for a single composer
 func (ctrl *ComposerController) GetComposer(c *gin.Context) {
@@ -127,7 +126,6 @@ func (ctrl *ComposerController) GetComposer(c *gin.Context) {
 
 	responses.JSON(c, http.StatusOK, composer)
 }
-
 
 // UpdateComposer updates an existing composer (metadata and optional file)
 func (ctrl *ComposerController) UpdateComposer(c *gin.Context) {
@@ -172,7 +170,6 @@ func (ctrl *ComposerController) UpdateComposer(c *gin.Context) {
 		"id":      composerID,
 	})
 }
-
 
 // DeleteComposer handles the removal of a composer (database and file system)
 // Access is restricted by ownership or admin privileges

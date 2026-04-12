@@ -26,7 +26,7 @@ func main() {
 	// -------------------------------------------------------------------------------------------
 
 	// Initialization: Defining specific log levels per module
-	logger.SetModuleLevel("main", "info")
+	logger.SetModuleLevel("main", "debug") // In debug, will also display the configuration used
 	logger.SetModuleLevel("server", "info")
 	logger.SetModuleLevel("login", "info")
 	logger.SetModuleLevel("user", "info")
@@ -34,7 +34,6 @@ func main() {
 	logger.SetModuleLevel("composer", "info")
 
 	// Print the ASCII banner with the current version
-
 	misc.PrintAsciiVersion(Version)
 
 	// Start the main application bootstrap

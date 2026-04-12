@@ -1,10 +1,11 @@
 package middlewares
 
 import (
+	"net/http"
+
 	"backend/auth"
 	"backend/infrastructure/config"
 	"backend/infrastructure/logger"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 )

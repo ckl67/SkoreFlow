@@ -11,6 +11,13 @@ package services
 // ===============================================================================================
 
 import (
+	"errors"
+	"fmt"
+	"mime/multipart"
+	"os"
+	"path/filepath"
+	"strings"
+
 	"backend/core/apperrors"
 	"backend/core/forms"
 	"backend/core/models"
@@ -18,12 +25,6 @@ import (
 	"backend/infrastructure/logger"
 	"backend/pkg/filedir"
 	"backend/pkg/format"
-	"errors"
-	"fmt"
-	"mime/multipart"
-	"os"
-	"path/filepath"
-	"strings"
 
 	"gorm.io/gorm"
 )

@@ -5,7 +5,7 @@
 Thank you by willing to contribute to **SkoreFlow**! 🚀
 This guide provides a complete Git workflow using **fork + pull request**.
 
-There is a lot of stuff, and ou can contriubute to 
+There is a lot of stuff, and you can contriubute to 
 
 ```bash
 .
@@ -16,111 +16,13 @@ There is a lot of stuff, and ou can contriubute to
 
 ```
 
----
+# Guide Line
 
-## 🍴 1. Fork the repository
+You will find in the Wiki section all the necessary information to simplify the installation process and the contribution process.
+You can contribute to the backend, the frontend, the test automation, or the documentation.
 
-```bash
-git clone https://github.com/ckl67/SkoreFlow.git
-cd SkoreFlow
-```
+As the architecture is layered, you can contribute to the backend without touching the frontend, and vice versa.
 
-Add upstream:
-
-```bash
-git remote add upstream https://github.com/ckl67/SkoreFlow.git
-git remote -v
-```
+* [SkoreFlow Wiki](https://github.com/ckl67/SkoreFlow/wiki)
 
 ---
-
-## 🌿 2. Create a branch
-
-```bash
-git checkout -b <github-login>/dev
-```
-
-Examples:
-
-```bash
-git checkout -b christian/dev
-git checkout -b loic/fix/login-error
-```
-
----
-
-## 🔄 3. Workflow
-
-```mermaid
-flowchart LR
-    A[Fork] --> B[Clone]
-    B --> C[Branch]
-    C --> D[Commit]
-    D --> E[Push]
-    E --> F[Pull Request]
-    F --> G[Merge]
-```
-
----
-
-## 💻 4. Development
-
-```bash
-git status
-git add .
-git commit -m "feat: add PDF export"
-```
-
----
-
-## 🔁 5. Sync with upstream
-
-```bash
-git fetch upstream
-git checkout main
-git merge upstream/main
-```
-
-Rebase:
-
-```bash
-git checkout <github-login>/feature/feature-name
-git rebase main
-```
-
----
-
-## 🚀 6. Push
-
-```bash
-git push origin <github-login>/feature/feature-name
-```
-
----
-
-## 🔀 7. Pull Request
-
-- Open PR on GitHub
-- Explain what, why, how
-
----
-
-## 🧪 8. Testing
-
-See directory : /autotest
-
-```bash
-./auto-test.sh
-```
-
-All tests must pass.
-
----
-
-## ✅ Checklist
-
-- [ ] Builds
-- [ ] Tests pass
-- [ ] Up to date
-- [ ] Clean commits
-- [ ] PR documented

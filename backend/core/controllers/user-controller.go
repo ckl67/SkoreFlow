@@ -15,16 +15,17 @@ package controllers
 // ===============================================================================================
 
 import (
-	"backend/core/apperrors"
-	"backend/core/forms"
-	"backend/core/services"
-	"backend/infrastructure/logger"
-	"backend/pkg/responses"
 	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
+
+	"backend/core/apperrors"
+	"backend/core/forms"
+	"backend/core/services"
+	"backend/infrastructure/logger"
+	"backend/pkg/responses"
 
 	"github.com/gin-gonic/gin"
 )

@@ -6,14 +6,16 @@ package mail
 // ======================================================================================
 
 import (
-	"backend/infrastructure/config"
-	"backend/infrastructure/logger"
+	"encoding/base64"
 	"fmt"
 	"net"
 	"net/smtp"
 	"strconv"
 	"strings"
 	"time"
+
+	"backend/infrastructure/config"
+	"backend/infrastructure/logger"
 )
 
 // SendTextMail sends a plain-text email to the specified recipient.
@@ -32,17 +34,24 @@ func sendMail(to, subject, body, contentType string) error {
 	cfg := config.Config().Smtp
 
 	// Skip sending if SMTP is disabled
-	if cfg.Enabled != "true" {
+	if !cfg.Enabled {
 		logger.Login.Debug("SMTP disabled - email skipped")
 		return nil
 	}
 
 	addr := net.JoinHostPort(cfg.HostServerAddr, strconv.Itoa(cfg.HostServerPort))
 
+	// return : []byte{108, 122, 104, 116}
+	// string() --> lzht
+	decodedPassword, err := base64.StdEncoding.DecodeString(cfg.PasswordBase64)
+	if err != nil {
+		logger.Login.Error("invalid SMTP password encoding")
+	}
+
 	auth := smtp.PlainAuth(
 		"",
 		cfg.Username,
-		cfg.Password,
+		string(decodedPassword),
 		cfg.HostServerAddr,
 	)
 
@@ -76,7 +85,7 @@ func sendMail(to, subject, body, contentType string) error {
 
 	logger.Login.Debug("Sending email via smtp.SendMail to %s", to)
 
-	err := smtp.SendMail(
+	err = smtp.SendMail(
 		addr,
 		auth,
 		cfg.From,

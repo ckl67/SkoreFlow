@@ -4,6 +4,14 @@
 
 SkoreFlow is a backend and frontend application designed to manage, process, and serve musical scores through a clean, scalable, and layered architecture.
 
+After several months of work, [SheetFlow](https://github.com/ckl67/SheetFlow) has been abandoned in favor of the new SkoreFlow project.
+Most reason was a major refactoring effort of the initiale project, which was not really maintainable and scalable. 
+There was no point in keeping all the historical data. 
+
+Second reason was that the name SheetFlow was not really catchy, and I wanted to give a more fun name to the project.
+SkoreFlow is a play on words between "score" and "flow", which represents the flow of data and processing in the application.
+
+So wellcome to SkoreFlow 🎉
 
 ---
 
@@ -29,7 +37,7 @@ SkoreFlow provides a structured pipeline to:
 
 ```
 
-PS: Wiki has its own repository : [SkoreFlow Wiki](https://github.com/ckl67/SkoreFlow/wiki) 
+SkoreFlow Wiki has its own repository : [SkoreFlow Wiki](https://github.com/ckl67/SkoreFlow/wiki) 
 
 ---
 
@@ -54,14 +62,18 @@ cd skoreflow
 
 ## 📌 Future Improvements or Bug detection
 
-- Create an issue for Improvements or to highlight a BUG via [Github Issue](https://github.com/ckl67/SkoreFlow/issues)
+- Improvements or highlighting a BUG can be done via [Github Issue](https://github.com/ckl67/SkoreFlow/issues)
 
 ---
 
 ## 🌿 Contributions
 
-Contribution : see [CONTRIBUTING](./CONTRIBUTING.md)
+- See [CONTRIBUTING](./CONTRIBUTING.md)
 
 ## 📄 License
 
-License : see [LICENCE](./LICENSE.md)
+- See [LICENCE](./LICENSE.md)
+
+## ✅ Code of Conduct 
+
+- See [CODE_OF_CONDUCT](./CODE_OF_CONDUCT.md)

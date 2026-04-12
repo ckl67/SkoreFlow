@@ -1,11 +1,3 @@
-# backend
-
-Lancement de l'auto test
-
-```shell
-bash auto-test.sh --help
-```
-
 # Test Manuel - Mise en garde
 
 En Bash, les variables à l'intérieur de '...' ne sont pas interprétées
