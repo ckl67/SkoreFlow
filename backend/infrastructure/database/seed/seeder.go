@@ -38,13 +38,15 @@ func Load(db *gorm.DB, email string, password string) {
 
 	// 3. Build admin user model
 	admin := models.User{
-		Email:    format.SanitizeUserEmail(email),
-		Password: hashedPassword,
-		Role:     config.RoleAdmin,
+		Email:      format.SanitizeUserEmail(email),
+		Password:   hashedPassword,
+		Role:       config.RoleAdmin,
+		IsVerified: true,
 	}
 
 	// 4. Persist admin user
-	if err := db.Create(&admin).Error; err != nil {
+	err = admin.Create(db)
+	if err != nil {
 		logger.DB.Error("cannot create admin user: %v", err)
 	}
 

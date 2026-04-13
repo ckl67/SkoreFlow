@@ -32,6 +32,9 @@ func main() {
 	logger.SetModuleLevel("user", "info")
 	logger.SetModuleLevel("sheet", "info")
 	logger.SetModuleLevel("composer", "info")
+	logger.SetModuleLevel("db", "info")
+	logger.SetModuleLevel("http", "info")
+	logger.SetModuleLevel("api", "info")
 
 	// Print the ASCII banner with the current version
 	misc.PrintAsciiVersion(Version)

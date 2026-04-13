@@ -50,8 +50,7 @@ cd skoreflow
 
 ### Documentation
 
-- See [docs directory](docs/Home.md) for detailed documentation on architecture, API, and development guidelines.
-- Documentation is organized into sections covering backend architecture, frontend architecture, API specifications, and development guidelines.
+- The [Detailed Documentation](https://ckl67.github.io/SkoreFlow/) will cover architecture, API, and development guidelines.
 
 ## 📌 Future Improvements or Bug detection
 

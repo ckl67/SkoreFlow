@@ -26,6 +26,9 @@ storage/composers/*
 # Build output directory
 build/
 
+# Ignore temporary air compilation directory
+tmp/
+
 # Go binary (if not in build/)
 *.exe
 *.exe~
@@ -33,3 +36,4 @@ build/
 *.so
 *.dylib
 *.db
+

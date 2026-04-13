@@ -12,17 +12,17 @@ Whether you're new to SkoreFlow or an experienced developer, this documentation 
 
 ### Development Environment
 
-- [Visual Studio Code settings] (./environment/vscode.md)
+- [Visual Studio Code settings](./environment/vscode.md)
 
 ### Backend Guides
 
-- [Architecure](./../backend/architecture.md)
-- [Installation](backend/install)
+- [Architecure](./backend/architecture.md)
+- [Installation](./backend/install.md)
 - [Automatic Code Reloading with Air](./backend/air.md)
 - [Running the Backend](./backend/run.md)
 - [Backend Testing](./backend/test.md)
 
 ### Frontend Guides
 
-- [Architecture](./../frontend/architecture.md)
+- [Architecture](./frontend/architecture.md)
 - [Installation](./frontend/install.md)
