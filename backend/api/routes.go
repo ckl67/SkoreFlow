@@ -91,17 +91,17 @@ func (server *Server) SetupRouter() {
 
 	// Health check (used by monitoring tools)
 	r.GET("/health", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"status": "OK"})
+		c.JSON(http.StatusOK, gin.H{"status": "OK"}) // MOK
 	})
 
 	// API version
 	r.GET("/version", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"version": server.Version})
+		c.JSON(http.StatusOK, gin.H{"version": server.Version}) // MOK
 	})
 
 	// Root endpoint
 	r.GET("/api", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"message": "API is running"})
+		c.JSON(http.StatusOK, gin.H{"message": "API is running"}) // MOK
 	})
 
 	// -------------------------------------------------------------------------------------------
@@ -143,14 +143,14 @@ func (server *Server) SetupRouter() {
 		//    → backend validates token and updates password
 		// ==============================================
 
-		api.POST("/register", authCtrl.Register)
-		api.POST("/register/confirm", authCtrl.ConfirmRegistration)
-		api.POST("/register/rqconfirm", authCtrl.RequestRegistrationConfirmation)
+		api.POST("/register", authCtrl.Register)                                  // MOK
+		api.POST("/register/confirm", authCtrl.ConfirmRegistration)               // MOK
+		api.POST("/register/rqconfirm", authCtrl.RequestRegistrationConfirmation) // MOK
 
-		api.POST("/login", authCtrl.Login)
+		api.POST("/login", authCtrl.Login) // MOK
 
-		api.POST("/password/forgot", authCtrl.ForgotPassword)
-		api.POST("/password/reset", authCtrl.ResetPassword)
+		api.POST("/password/forgot", authCtrl.ForgotPassword) // MOK
+		api.POST("/password/reset", authCtrl.ResetPassword)   // MOK
 
 		// ---------------------------------------------------------------------------------------
 		// Protected routes (authenticated users only)
@@ -161,9 +161,9 @@ func (server *Server) SetupRouter() {
 			// -----------------------------------------------------------------------------------
 			// User self-management (no ID needed)
 			// -----------------------------------------------------------------------------------
-			protected.GET("/me", userCtrl.GetProfile)
+			protected.GET("/me", userCtrl.GetProfile) // MOK
 			// protected.PUT("/me", userCtrl.UUpdateUser)
-			protected.POST("/me/avatar", userCtrl.UploadAvatar)
+			protected.POST("/me/avatar", userCtrl.UploadAvatar) // MOK
 			protected.DELETE("/me/avatar", userCtrl.DeleteAvatar)
 
 			// -----------------------------------------------------------------------------------
@@ -206,11 +206,11 @@ func (server *Server) SetupRouter() {
 			adminRoutes := protected.Group("/")
 			adminRoutes.Use(middlewares.AdminOnlyMiddleware())
 			{
-				adminRoutes.GET("/users", userCtrl.GetUsers)
-				adminRoutes.GET("/users/:id", userCtrl.GetUser)
-				adminRoutes.POST("/users", userCtrl.CreateUser)
-				adminRoutes.PUT("/users/:id", userCtrl.UpdateUser)
-				adminRoutes.DELETE("/users/:id", userCtrl.DeleteUser)
+				adminRoutes.GET("/admin/users", userCtrl.AdmGetUsers)
+				adminRoutes.GET("/admin/users/:id", userCtrl.AdmGetUser)
+				adminRoutes.POST("/admin/createuser", userCtrl.AdmCreateUser) // MOK
+				adminRoutes.PUT("/admin/users/:id", userCtrl.UpdateUser)
+				adminRoutes.DELETE("/admin/users/:id", userCtrl.DeleteUser)
 			}
 		}
 	}

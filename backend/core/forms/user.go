@@ -27,14 +27,22 @@ package forms
 
 import "mime/multipart"
 
+// -----------------------
+// RULE TO APPLY
+// -----------------------
+// Create → types simples
+// Update → pointers
+// -----------------------
+
 // CreateUserRequest defines the payload for user creation.
-type CreateUserRequest struct {
+type AdmCreateUserRequest struct {
+	Username string `json:"username" binding:"omitempty,min=3,max=100"`
 	Email    string `json:"email" form:"email" binding:"required,email"`
 	Password string `json:"password" binding:"required,min=8,max=100"`
 }
 
 // AdminUpdateUserRequest defines the payload for updating a user.
-type AdminUpdateUserRequest struct {
+type AdmUpdateUserRequest struct {
 	Username   *string `json:"username" binding:"omitempty,min=3,max=100"`
 	Email      *string `json:"email" binding:"omitempty,email"`
 	Password   *string `json:"password" binding:"omitempty,min=8,max=100"`

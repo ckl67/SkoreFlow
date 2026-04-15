@@ -16,12 +16,16 @@ storage/*
 # 2) Allow 'composers' and 'assets' directories
 !storage/composers/
 !storage/assets/
+!storage/avatars/
 
-# 3) Ignore all contents inside composers
+# 3) Ignore all contents inside
+storage/avatars/*
 storage/composers/*
 
-# 4) Re-allow assets within composers
-!storage/composers/assets/
+# 4) Re-allow assets within
+!storage/avatars/admin.png
+!storage/avatars/default.png
+!storage/composers/default.png
 
 # Build output directory
 build/

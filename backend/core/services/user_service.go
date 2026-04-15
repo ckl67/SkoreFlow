@@ -35,7 +35,6 @@ type UserService struct {
 }
 
 // NewUserService creates a new instance of UserService.
-
 func NewUserService(db *gorm.DB, paths *config.Paths) *UserService {
 	return &UserService{
 		db:    db,
@@ -65,16 +64,40 @@ func (s *UserService) GetAllUsers() ([]models.User, error) {
 }
 
 // CreateUser creates a new user with hashed password and default role.
-func (s *UserService) CreateUser(input forms.CreateUserRequest) (*models.User, error) {
+func (s *UserService) CreateUser(input forms.AdmCreateUserRequest) (*models.User, error) {
+	// 1. Normalize input
+	email := format.SanitizeUserEmail(input.Email)
+	username := format.SafeFileName(input.Username)
+
+	// 2. Check email uniqueness
+	exists, err := new(models.User).ExistsByEmail(s.db, email)
+	if err != nil {
+		return nil, err
+	}
+	if exists {
+		return nil, apperrors.ErrUserEmailAlreadyUsed
+	}
+
+	// 3. Check username uniqueness
+	exists, err = new(models.User).ExistsByUserName(s.db, username)
+	if err != nil {
+		return nil, err
+	}
+	if exists {
+		return nil, apperrors.ErrUsernameTaken
+	}
+
 	hashedPassword, err := security.HashPassword(input.Password)
 	if err != nil {
 		return nil, err
 	}
 
 	user := models.User{
-		Email:               format.SanitizeUserEmail(input.Email),
+		Username:            username,
+		Email:               email,
 		Password:            hashedPassword,
 		Role:                config.RoleUser,
+		Avatar:              "avatars/default.png",
 		PasswordReset:       "",
 		PasswordResetExpire: time.Time{},
 	}
@@ -106,7 +129,7 @@ func (s *UserService) GetUserByID(uid uint32) (*models.User, error) {
 // - Only provided fields are updated.
 // - Password is hashed if provided.
 // - Email is normalized before saving.
-func (s *UserService) UpdateUser(uid uint32, input forms.AdminUpdateUserRequest) (*models.User, error) {
+func (s *UserService) UpdateUser(uid uint32, input forms.AdmUpdateUserRequest) (*models.User, error) {
 	var user models.User
 
 	// 1. Retrieve existing user
@@ -163,7 +186,7 @@ func (s *UserService) UploadAvatar(uid uint32, file *multipart.FileHeader) (*mod
 		return nil, apperrors.ErrUserNotFound
 	}
 
-	// assets/avatars/user-1.png
+	// Relative Path (stored in DB)
 	filePath := s.paths.UserAvatarStorageRel(uid)
 
 	// Absolute Path

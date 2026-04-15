@@ -38,9 +38,11 @@ func Load(db *gorm.DB, email string, password string) {
 
 	// 3. Build admin user model
 	admin := models.User{
+		Username:   "admin",
 		Email:      format.SanitizeUserEmail(email),
 		Password:   hashedPassword,
 		Role:       config.RoleAdmin,
+		Avatar:     "avatars/admin.png",
 		IsVerified: true,
 	}
 

@@ -80,7 +80,7 @@ func (s *ComposerService) CreateComposer(uid uint32, userRole int, req forms.Cre
 		SafeName:    safeName,
 		Epoch:       req.Epoch,
 		ExternalURL: req.ExternalURL,
-		PicturePath: "assets/default-avatar.png",
+		PicturePath: "default.png",
 		IsVerified:  false,
 	}
 

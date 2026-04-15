@@ -30,9 +30,16 @@ package forms
 // RULE:
 // → Never duplicate binding validation inside ValidateForm()
 
+// -----------------------
+// RULE TO APPLY
+// -----------------------
+// Create → types simples
+// Update → pointers
+// -----------------------
+
 // RegisterRequest defines the payload for user registration.
 type RegisterRequest struct {
-	Username string `json:"username" binding:"required,min=3,max=100"`
+	Username string `json:"username" binding:"omitempty,min=3,max=100"`
 	Email    string `json:"email" binding:"required,email"`
 	Password string `json:"password" binding:"required,min=8,max=100"`
 }

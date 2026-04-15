@@ -1,62 +1,35 @@
-# Auto testing
+# Registration, Login, and Password Reset Tests
 
-This page provides instructions on how to run automated tests for the SkoreFlow backend.
-Automated testing is crucial for ensuring the reliability and stability of the application as it evolves.
+This document provides instructions for testing the registration, login, and password reset functionalities of the SkoreFlow backend. These tests are essential to ensure that the authentication system is working correctly and securely.
+2 approach to testing:
 
-This part will also address some manual tests
-
-In order to access the database, you can use sqlitebrowser, a graphical tool that allows you to interact with SQLite databases. It provides an intuitive interface for browsing, querying, and managing your SQLite databases without needing to use command-line tools.
-For more information on how to install and use sqlitebrowser, please refer to the [sqlitebrowser guide](./sqlite.md).
-
-## Running Tests
-
-To run the automated tests, you can use the following command from the root of the backend project:
-
-```bash
-cd auto-test
-bash auto-test.sh --help
-```
-
-This command will execute the test suite, which includes various test cases designed to validate the functionality of the backend.
-All the tests must pass successfully for the backend to be considered stable.
-
-## Manual Testing
-
-In addition to automated tests, you can also perform manual testing to verify specific functionalities or to debug issues.
-Manual testing involves executing specific API calls or actions and observing the results to ensure they meet the expected outcomes.
-
-```bash
-# In Bash, variables inside single quotes '...' are not interpolated (expanded).
-# Solution: Always use double quotes "... to include variables.
-```
-
-### Smoke Testing
-
-These checks the health of the backend service. A successful response indicates that the service is running and responsive.
-
-```shell
-curl "http://localhost:8080/health"
-curl "http://localhost:8080/version"
-curl "http://localhost:8080/api"
-```
-
-### Variables in API Calls
-
-For the authentification tests
-
-- regitration
-- login
-- password reset
-  we will use the following variables below
+- From the User perspective
+- From the Admin perspective
 
 ```shell
 # Variable setting
-DB_PATH="./backend/storage/database.db"
 EMAIL="christian.klugesherz@gmail.com"
+DB_PATH="./storage/database.db"
+AVATAR_FILE="/home/christian/SkoreFlow_Project/SkoreFlow/testauto/backend/avatars/avatar-ckl.png"
 ADMIN_EMAIL="admin@admin.com"
+ADMIN_PASSWORD="skoreflow"
 ```
 
-### registration
+⚠️ Be care, the commande below must be run in the backend directory, otherwise the DB_PATH variable will not be correct.
+
+# From the User perspective
+
+from the user perspective, we will test the following functionalities:
+
+- Registration
+- Login
+- Password Reset
+- Profile
+- Avatar
+
+## Variables in API Calls
+
+## Registration
 
 User POSTs /register {username, email, password}
 
@@ -76,6 +49,7 @@ curl -s -X POST "http://localhost:8080/api/register" \
     \"password\": \"password123\"
   }" | jq
 
+# After registration, the user will receive a confirmation email with a link to confirm their registration. The link will contain a token that is stored in the database. To simulate the user clicking the confirmation link, you can retrieve the token from the database and use it to confirm the registration.
 ```
 
 ```shell
@@ -99,7 +73,7 @@ curl -X POST http://localhost:8080/api/register/rqconfirm \
   }" | jq
 ```
 
-### login
+## Login
 
 To log in and obtain a JWT token for authenticated requests, you can use the following command:
 
@@ -118,6 +92,7 @@ TOKEN_USER=$(curl -s -X POST http://localhost:8080/api/login \
     \"email\":\"${EMAIL}\",
     \"password\":\"password123\"
   }" | jq -r '.token')
+
 echo "JWT Token: $TOKEN_USER"
 ```
 
@@ -139,6 +114,8 @@ curl -X POST http://localhost:8080/api/password/forgot \
  -d "{
   \"email\":\"${EMAIL}\"
   }" | jq
+
+# After requesting a password reset, the user will receive an email with a link to reset their password. The link will contain a token that is stored in the database. To simulate the user clicking the password reset link, you can retrieve the token from the database and use it to reset the password.
 ```
 
 ```shell
@@ -184,7 +161,58 @@ curl -H "Authorization: Bearer $TOKEN_USER" http://localhost:8080/api/me | jq
 To upload an avatar for the user, you can use the following command:
 
 ```shell
+
+ls -l "$AVATAR_FILE"
+
 curl -X POST http://localhost:8080/api/me/avatar \
  -H "Authorization: Bearer $TOKEN_USER" \
- -F "avatar=@/avatars/avatar-ckl.png" | jq
+ -F "avatar=@$AVATAR_FILE" | jq
+```
+
+# From the Admin perscpective
+
+from the admin perspective, you can log in with the following
+
+```shell
+curl -s -X POST http://localhost:8080/api/login \
+ -H "Content-Type: application/json" \
+ -d "{
+    \"email\":\"${ADMIN_EMAIL}\",
+    \"password\":\"${ADMIN_PASSWORD}\"
+  }" | jq
+
+TOKEN_ADMIN=$(curl -s -X POST http://localhost:8080/api/login \
+ -H "Content-Type: application/json" \
+ -d "{
+    \"email\":\"${ADMIN_EMAIL}\",
+    \"password\":\"${ADMIN_PASSWORD}\"
+  }" | jq -r '.token')
+
+echo "JWT Token: $TOKEN_ADMIN"
+
+```
+
+# User creation by admin
+
+To create a new user as an admin, you can use the following command:
+
+```shell
+curl -i -X POST http://localhost:8080/api/admin/createuser \
+ -H "Authorization: Bearer $TOKEN_ADMIN" \
+ -H "Content-Type: application/json" \
+ -d '{
+  "username":"NewUser1",
+  "email":"user1@test.com",
+  "password":"password123"
+}'
+
+curl -i -X POST http://localhost:8080/api/admin/createuser \
+ -H "Authorization: Bearer $TOKEN_ADMIN" \
+ -H "Content-Type: application/json" \
+ -d '{
+  "username":"NewUser2",
+  "email":"user2@test.com",
+  "password":"password123"
+}' | jq
+
 ```

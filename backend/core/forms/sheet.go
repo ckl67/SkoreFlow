@@ -31,6 +31,13 @@ import (
 	"strings"
 )
 
+// -----------------------
+// RULE TO APPLY
+// -----------------------
+// Create → types simples
+// Update → pointers
+// -----------------------
+
 // GetSheetsPageRequest defines pagination and filtering for sheet listing.
 type GetSheetsPageRequest struct {
 	PaginatedRequest

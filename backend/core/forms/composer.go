@@ -35,6 +35,13 @@ import (
 	"strings"
 )
 
+// -----------------------
+// RULE TO APPLY
+// -----------------------
+// Create → types simples
+// Update → pointers
+// -----------------------
+
 // GetComposersPageRequest defines pagination and filtering for composers listing.
 type GetComposersPageRequest struct {
 	PaginatedRequest

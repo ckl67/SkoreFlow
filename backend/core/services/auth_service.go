@@ -27,6 +27,13 @@ import (
 	"gorm.io/gorm"
 )
 
+// -----------------------
+// RULE TO APPLY
+// -----------------------
+// Create → types simples
+// Update → pointers
+// -----------------------
+
 // AuthService handles authentication and account lifecycle operations.
 type AuthService struct {
 	db    *gorm.DB
@@ -77,7 +84,7 @@ func (s *AuthService) Register(form forms.RegisterRequest) (*models.User, error)
 		Username:   username,
 		Email:      email,
 		Password:   hashedPassword,
-		Avatar:     "assets/default-avatar.png",
+		Avatar:     "avatars/default.png",
 		Role:       config.RoleUser,
 		IsVerified: false,
 	}

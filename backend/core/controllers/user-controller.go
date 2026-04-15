@@ -66,7 +66,7 @@ func (ctrl *UserController) GetProfile(c *gin.Context) {
 
 // Returns the full list of users.
 // Typically restricted or monitored (admin/audit usage).
-func (ctrl *UserController) GetUsers(c *gin.Context) {
+func (ctrl *UserController) AdmGetUsers(c *gin.Context) {
 	userID := c.GetUint32("user_id")
 	userRole := c.GetInt("user_role")
 
@@ -85,13 +85,13 @@ func (ctrl *UserController) GetUsers(c *gin.Context) {
 // - Validates JSON input via Gin binding
 // - Delegates creation logic to service
 // - Returns 201 with Location header
-func (ctrl *UserController) CreateUser(c *gin.Context) {
+func (ctrl *UserController) AdmCreateUser(c *gin.Context) {
 	userID := c.GetUint32("user_id")
 	userRole := c.GetInt("user_role")
 
 	logger.User.Info("User %d (role %d) attempts to create a new user", userID, userRole)
 
-	var input forms.CreateUserRequest
+	var input forms.AdmCreateUserRequest
 	if err := c.ShouldBindJSON(&input); err != nil {
 		responses.ERROR(c, http.StatusUnprocessableEntity, err)
 		return
@@ -111,7 +111,7 @@ func (ctrl *UserController) CreateUser(c *gin.Context) {
 
 // Retrieves a specific user by ID.
 // Includes validation of path parameter and error mapping.
-func (ctrl *UserController) GetUser(c *gin.Context) {
+func (ctrl *UserController) AdmGetUser(c *gin.Context) {
 	userID := c.GetUint32("user_id")
 	userRole := c.GetInt("user_role")
 
@@ -143,7 +143,6 @@ func (ctrl *UserController) GetUser(c *gin.Context) {
 	})
 }
 
-
 // Updates user data (PATCH-style).
 // Only provided fields are modified.
 func (ctrl *UserController) UpdateUser(c *gin.Context) {
@@ -159,7 +158,7 @@ func (ctrl *UserController) UpdateUser(c *gin.Context) {
 
 	logger.User.Info("User %d (role %d) attempts to update user %d", userID, userRole, uid)
 
-	var input forms.AdminUpdateUserRequest
+	var input forms.AdmUpdateUserRequest
 	if err := c.ShouldBindJSON(&input); err != nil {
 		responses.VALIDATION_ERROR(c, err)
 		return
