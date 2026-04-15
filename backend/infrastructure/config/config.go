@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"log"
+	"os"
 	"strings"
 	"sync"
 
@@ -60,10 +61,12 @@ type microServiceConfig struct {
 type ServerConfig struct {
 	Backend_Dev_Mode bool `env:"BACKEND_DEV_MODE"`
 
+	AppRoot     string `env:"APP_ROOT"`
+	StoragePath string `env:"STORAGE_PATH"`
+
 	AdminEmail    string `env:"ADMIN_EMAIL"`
 	AdminPassword string `env:"ADMIN_PASSWORD"`
 	ApiSecret     string `env:"API_SECRET"`
-	StoragePath   string `env:"STORAGE_PATH"`
 
 	BackendListenAddress string `env:"BACKEND_LISTEN_ADDRESS"` // e.g. : 0.0.0.0:8080
 
@@ -71,7 +74,7 @@ type ServerConfig struct {
 	FrontendResetPasswordPath   string `env:"FRONTEND_RESET_PASSWORD_PATH"`   // e.g. /reset-password
 	FrontendRegisterConfirmPath string `env:"FRONTEND_REGISTER_CONFIRM_PATH"` // e.g. /register/confirm
 
-	CorsAllowedOrigins string `env:"CORS_ALLOWED_ORIGINS"` // Allowed origins for CORS e.g. http://localhost:3000,https://app.sheetflow.com
+	CorsAllowedOrigins string `env:"CORS_ALLOWED_ORIGINS"` // Allowed origins for CORS e.g. http://localhost:3000,https://app.skoreflow.com
 
 	Database     DatabaseConfig
 	Smtp         SmtpConfig
@@ -105,6 +108,9 @@ var (
 func (c ServerConfig) LogSafe() {
 	logger.Main.Debug("------ SERVER CONFIG ------")
 
+	wd, _ := os.Getwd()
+	logger.Main.Debug("WORKDIR: %s", wd)
+
 	logger.Main.Debug("BACKEND_DEV_MODE :%t", c.Backend_Dev_Mode)
 
 	logger.Main.Debug("AdminEmail: %s", c.AdminEmail)
@@ -112,6 +118,8 @@ func (c ServerConfig) LogSafe() {
 	logger.Main.Debug("ApiSecret: %s", c.ApiSecret)         // ❌ sensitive
 
 	logger.Main.Debug("StoragePath: %s", c.StoragePath)
+	logger.Main.Debug("AppRoot: %s", c.AppRoot)
+	logger.Main.Debug("StoragePath (joined): %s", c.AppRoot+"/"+c.StoragePath)
 
 	logger.Main.Debug("BackendListenAddress: %s", c.BackendListenAddress)
 
@@ -135,6 +143,7 @@ func (c ServerConfig) LogSafe() {
 	logger.Main.Debug("  Name: %s", c.MicroService.MsName)
 	logger.Main.Debug("  Port: %d", c.MicroService.MsPort)
 	logger.Main.Debug("  Root %s:", c.MicroService.MsRoot)
+	logger.Main.Debug("  Full Path: %s", c.AppRoot+"/"+c.MicroService.MsRoot)
 
 	logger.Main.Debug("Frontend:")
 	logger.Main.Debug("FrontendOrigin: %s", c.FrontendOrigin)
@@ -181,23 +190,26 @@ func Config() ServerConfig {
 // - .env file
 // - environment variables (override priority)
 func (b configBuilder) Build() ServerConfig {
+	// Read Configuration via initialisation
 	conf := NewConfig()
 
+	// Read Configuration via .env file
 	dotenvFile := ".env"
 	if b.dotenvFile != "" {
 		dotenvFile = b.dotenvFile
 	}
-
 	dotenvFeeder := feeder.DotEnv{Path: dotenvFile}
-	envFeeder := feeder.Env{}
-
 	logger.Main.Debug("Looking for .env in: %s", dotenvFile)
 
+	// Read Configuration via environment linux variables
+	envFeeder := feeder.Env{}
+
+	// Order
 	err := config.New().
-		AddStruct(&conf).
-		AddFeeder(dotenvFeeder).
-		AddFeeder(envFeeder).
-		Feed()
+		AddStruct(&conf).        // Read Struct
+		AddFeeder(dotenvFeeder). // Read file .env
+		AddFeeder(envFeeder).    // Read Linux environment variables
+		Feed()                   // Feed tge structure !
 	if err != nil {
 		if strings.Contains(err.Error(), "no such file") {
 			if b.errorOnMissingDotenv {
@@ -222,24 +234,25 @@ func (b configBuilder) Build() ServerConfig {
 }
 
 // Default Configuration
-
 // Provides fallback values when nothing is defined
 func NewConfig() ServerConfig {
 	return ServerConfig{
 		Backend_Dev_Mode: false,
 
+		AppRoot:     "",
+		StoragePath: "",
+
 		AdminEmail:    "admin@admin.com",
 		AdminPassword: "",
 		ApiSecret:     "",
-		StoragePath:   "./storage/",
 
 		BackendListenAddress: "0.0.0.0:8080",
 
-		FrontendOrigin:              "http://localhost:3000", //(ex: Dev http://localhost:3000 ou Prod https://app.sheetflow.com)
+		FrontendOrigin:              "http://localhost:3000", //(ex: Dev http://localhost:3000 ou Prod https://app.skoreflow.com)
 		FrontendResetPasswordPath:   "/reset-password",
 		FrontendRegisterConfirmPath: "/register/confirm",
 
-		CorsAllowedOrigins: "http://localhost:3000", //(ex: http://localhost:3000,https://app.sheetflow.com)
+		CorsAllowedOrigins: "http://localhost:3000", //(ex: http://localhost:3000,https://app.skoreflow.com)
 
 		Database: DatabaseConfig{
 			Driver: "sqlite",

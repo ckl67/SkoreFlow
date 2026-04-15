@@ -12,7 +12,6 @@ package services
 
 import (
 	"errors"
-	"fmt"
 	"mime/multipart"
 	"os"
 	"path/filepath"
@@ -31,12 +30,23 @@ import (
 
 // ComposerService handles business logic related to composers.
 type ComposerService struct {
-	db *gorm.DB
+	db    *gorm.DB
+	paths *config.Paths
 }
 
 // NewComposerService creates a new ComposerService instance.
-func NewComposerService(db *gorm.DB) *ComposerService {
-	return &ComposerService{db: db}
+func NewComposerService(db *gorm.DB, paths *config.Paths) *ComposerService {
+	return &ComposerService{
+		db:    db,
+		paths: paths,
+	}
+}
+
+var allowedImageExt = map[string]struct{}{
+	".jpg":  {},
+	".jpeg": {},
+	".png":  {},
+	".webp": {},
 }
 
 // CreateComposer
@@ -70,7 +80,7 @@ func (s *ComposerService) CreateComposer(uid uint32, userRole int, req forms.Cre
 		SafeName:    safeName,
 		Epoch:       req.Epoch,
 		ExternalURL: req.ExternalURL,
-		PicturePath: filepath.Join("assets", "default-avatar.png"),
+		PicturePath: "assets/default-avatar.png",
 		IsVerified:  false,
 	}
 
@@ -200,30 +210,27 @@ func (s *ComposerService) ProcessComposerStorage(composer *models.Composer, file
 		return nil
 	}
 
-	storageRoot := config.Config().StoragePath
-	storageDir := filepath.Join(storageRoot, "composers")
-
 	ext := strings.ToLower(filepath.Ext(file.Filename))
+	if ext == "" {
+		return apperrors.ErrImageFormatInvalid
+	}
 	logger.Composer.Debug("(ProcessComposerStorage Service) extension: %s", ext)
 
-	allowed := map[string]bool{
-		".jpg":  true,
-		".jpeg": true,
-		".png":  true,
-		".webp": true,
-	}
-
-	if !allowed[ext] {
+	if _, ok := allowedImageExt[ext]; !ok {
 		logger.Composer.Debug("(ProcessComposerStorage Service) invalid format: %s", ext)
 		return apperrors.ErrImageFormatInvalid
 	}
 
-	filename := fmt.Sprintf("%s%s", composer.SafeName, ext)
-	composer.PicturePath = filepath.Join("composers", filename)
+	// Build storage paths - Relative
+	// filePath = composer/mozart.png
+	filePath := s.paths.ComposerPicturePath(composer.SafeName, ext)
+	composer.PicturePath = filePath
 
-	fullPath := filepath.Join(storageRoot, composer.PicturePath)
+	// Absolute path
+	fullPath := s.paths.StorageAbsPath(filePath)
 
-	if err := filedir.CreateDir(storageDir); err != nil {
+	if err := filedir.CreateDir(filepath.Dir(fullPath)); err != nil {
+		logger.Composer.Error("(ProcessComposerStorage Service) create dir failed: %v", err)
 		return err
 	}
 
@@ -278,8 +285,8 @@ func (s *ComposerService) deleteComposerOrchestrator(composer *models.Composer) 
 	var hasNotFound bool
 	var hasDeletionError bool
 
-	storageRoot := config.Config().StoragePath
-	fullFilePath := filepath.Join(storageRoot, composer.PicturePath)
+	// Absolute path
+	fullFilePath := s.paths.StorageAbsPath(composer.PicturePath)
 
 	paths := []string{fullFilePath}
 

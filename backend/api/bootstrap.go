@@ -11,16 +11,19 @@ import (
 func Start(version string) {
 	// Log configuration details (redacted/safe version)
 	cfg := config.Config()
-	// if cfg.Backend_Dev_Mode == "true" {
-	cfg.LogSafe()
-	//	}
+	if cfg.Backend_Dev_Mode {
+		cfg.LogSafe()
+	}
+
+	// Path management setup
+	paths := config.NewPaths(cfg)
 
 	// 1. Infrastructure Setup -- Database Connection
 	db := database.ConnectDB(cfg)
 
 	// 2. Application Core Setup - Server instance (local scope, not global)
 	appServer := Server{}
-	appServer.Setup(version, db)
+	appServer.Setup(version, db, paths)
 
 	// 3. Database Seeding
 	seed.Load(appServer.DB, cfg.AdminEmail, cfg.AdminPassword)

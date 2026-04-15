@@ -18,7 +18,7 @@ VERSION=$(shell git describe --tags --always --dirty)
 LDFLAGS=-ldflags="-X main.Version=$(VERSION)"
 
 # Makefile Rules
-.PHONY: all build run runclean air clean tidy reset help version
+.PHONY: all build run cleandb air clean tidy reset help version
 
 ## all: Clean, organize modules, and compile
 all: tidy build
@@ -37,10 +37,9 @@ run:
 	@echo "==> Running main.go (Version: $(VERSION))..."
 	$(GO) run $(LDFLAGS) $(MAIN_FILE)
 
-runclean:
-	@echo "Clean Database then ==> Running main.go (Version: $(VERSION))..."
+cleandb:
+	@echo "Clean Database ...."
 	rm storage/database.db
-	$(GO) run $(LDFLAGS) $(MAIN_FILE)
 
 
 ## runHR: Automate the Hot Reload process thanks to the standard Air tool
@@ -69,7 +68,7 @@ help:
 	@echo "Available commands:"
 	@echo "  make build       : Compile the project with version injection"
 	@echo "  make run         : Run the project with version injection"
-	@echo "  make runclean    : Clean Database + Run the project with version injection"
+	@echo "  make cleandb     : Clean Database"
 	@echo "  make air         : Run with air allowing hot reload"
 	@echo "  make version     : Show the version to be injected"
 	@echo "  make tidy        : Clean up dependencies"

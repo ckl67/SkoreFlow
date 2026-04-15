@@ -33,16 +33,19 @@ type CreateUserRequest struct {
 	Password string `json:"password" binding:"required,min=8,max=100"`
 }
 
-// UpdateUserRequest defines the payload for updating a user.
-// Notes:
-// - Pointer fields allow partial updates.
-// - Only provided fields will be updated.
-type UpdateUserRequest struct {
+// AdminUpdateUserRequest defines the payload for updating a user.
+type AdminUpdateUserRequest struct {
 	Username   *string `json:"username" binding:"omitempty,min=3,max=100"`
 	Email      *string `json:"email" binding:"omitempty,email"`
 	Password   *string `json:"password" binding:"omitempty,min=8,max=100"`
 	Role       *int    `json:"role"`
 	IsVerified *bool   `json:"isVerified"`
+}
+
+// UpdateUserRequest defines the payload for updating a user.
+type UpdateUserRequest struct {
+	Username *string `json:"username" binding:"omitempty,min=3,max=100"`
+	Role     *int    `json:"role"`
 }
 
 // UploadAvatarRequest defines the payload for uploading a user avatar.

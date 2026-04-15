@@ -20,8 +20,8 @@ import sys
 # Configuration
 # -----------------------
 SERVICE_URL = "http://localhost:5001/createthumbnail"
-PDF_PATH = "/home/christian/SheetFlow/backend/micro-service/thumbnail-service/test/storage/ballade.pdf"
-OUTPUT_PATH = "/home/christian/SheetFlow/backend/micro-service/thumbnail-service/test/storage/thumbnail_ballade.png"
+PDF_PATH = "/home/christian/skoreflow/backend/micro-service/thumbnail-service/test/storage/ballade.pdf"
+OUTPUT_PATH = "/home/christian/skoreflow/backend/micro-service/thumbnail-service/test/storage/thumbnail_ballade.png"
 
 # -----------------------
 # Pre-checks

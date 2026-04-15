@@ -11,11 +11,11 @@ import (
 
 // ===============================================================================================
 //	cd backend/cmd/cli
-// 	go build -o sheetflow-cli
+// 	go build -o skoreflow-cli
 //	Exemples d’utilisation :
-//		./sheetflow-cli -version
-//		./sheetflow-cli -list-users
-//		./sheetflow-cli -reset-password user@example.com
+//		./skoreflow-cli -version
+//		./skoreflow-cli -list-users
+//		./skoreflow-cli -reset-password user@example.com
 // ===============================================================================================
 
 // CLI Flags
@@ -31,7 +31,7 @@ func main() {
 	flag.Parse()
 
 	if *showVersionFlag {
-		fmt.Printf("SheetFlow CLI version %s\n", cliVersion)
+		fmt.Printf("skoreflow CLI version %s\n", cliVersion)
 		return
 	}
 

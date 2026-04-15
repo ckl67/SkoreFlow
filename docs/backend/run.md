@@ -44,7 +44,7 @@ example of the output:
 Available commands:
   make build       : Compile the project with version injection
   make run         : Run the project with version injection
-  make runclean    : Clean Database + Run the project with version injection
+  make cleandb     : Clean Database
   make air         : Run with air allowing hot reload
   make version     : Show the version to be injected
   make tidy        : Clean up dependencies

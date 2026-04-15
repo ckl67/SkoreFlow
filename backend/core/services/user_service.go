@@ -30,12 +30,17 @@ import (
 
 // UserService handles user-related business logic and orchestration.
 type UserService struct {
-	db *gorm.DB
+	db    *gorm.DB
+	paths *config.Paths
 }
 
 // NewUserService creates a new instance of UserService.
-func NewUserService(db *gorm.DB) *UserService {
-	return &UserService{db: db}
+
+func NewUserService(db *gorm.DB, paths *config.Paths) *UserService {
+	return &UserService{
+		db:    db,
+		paths: paths,
+	}
 }
 
 // GetProfileByID retrieves a user profile by ID.
@@ -101,7 +106,7 @@ func (s *UserService) GetUserByID(uid uint32) (*models.User, error) {
 // - Only provided fields are updated.
 // - Password is hashed if provided.
 // - Email is normalized before saving.
-func (s *UserService) UpdateUser(uid uint32, input forms.UpdateUserRequest) (*models.User, error) {
+func (s *UserService) UpdateUser(uid uint32, input forms.AdminUpdateUserRequest) (*models.User, error) {
 	var user models.User
 
 	// 1. Retrieve existing user
@@ -158,14 +163,17 @@ func (s *UserService) UploadAvatar(uid uint32, file *multipart.FileHeader) (*mod
 		return nil, apperrors.ErrUserNotFound
 	}
 
-	// Build storage path
-	path := fmt.Sprintf("assets/avatars/user-%d.png", uid)
+	// assets/avatars/user-1.png
+	filePath := s.paths.UserAvatarStorageRel(uid)
 
-	if err := filedir.SaveFile(file, path); err != nil {
+	// Absolute Path
+	fullFilePath := s.paths.StorageAbsPath(filePath)
+
+	if err := filedir.SaveFile(file, fullFilePath); err != nil {
 		return nil, err
 	}
 
-	user.Avatar = path
+	user.Avatar = filePath
 
 	if err := user.Update(s.db); err != nil {
 		return nil, err
@@ -213,7 +221,8 @@ func (s *UserService) DeleteAvatarFile(userID uint32) error {
 		return apperrors.ErrUserNotFound
 	}
 
-	fullPath := filepath.Join(config.Config().StoragePath, relativePath)
+	// Absolute Path
+	fullPath := s.paths.StorageAbsPath(relativePath)
 
 	err := filedir.RemoveFileIfExists(fullPath)
 	if err != nil {

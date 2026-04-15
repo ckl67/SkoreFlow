@@ -43,9 +43,15 @@ Client
 │
 ├── infrastructure/     # Technical layers (external systems)
 │   ├── database/
-│   ├── storage/
 │   ├── logger/
 │   └── config/
+│
+├── storage/            # File storage (local or cloud)
+│   ├── sheets/
+│   │   ├── uploaded-sheets/
+│   │   └── thumbnails/
+│   ├── composers/
+│   └── assets/
 │
 ├── pkg/                # Shared utilities (pure, reusable)
 │   ├── file/
@@ -150,13 +156,29 @@ Reusable helpers are separated from business logic.
 ## 📦 Storage Structure
 
 ```bash
-infrastructure/storage/
-├── sheets/
-│   ├── uploaded-sheets/
-│   └── thumbnails/
-├── composers/
-└── assets/
+├── storage/
+│   ├── sheets/
+│   │   ├── uploaded-sheets/
+│   │   └── thumbnails/
+│   ├── composers/
+│   └── assets/
+
 ```
+
+# Rule path for SkoreFlow
+
+To avoid confusion and ensure consistency, we define a clear structure for our file storage in SkoreFlow, both in local development and within Docker containers.
+We use environment variables to set the root path and storage path, and we construct absolute paths using Go's `filepath.Join` to ensure portability across different environments.
+
+```go
+//In local
+APP_ROOT=/home/christian/SkoreFlow_Project/SkoreFlow/backend
+STORAGE_PATH=storage
+```
+
+In database the data are stored relative to the **Storagepath=storage/**
+
+See **path.go** for more details.
 
 ---
 

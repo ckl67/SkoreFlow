@@ -143,6 +143,7 @@ func (ctrl *UserController) GetUser(c *gin.Context) {
 	})
 }
 
+
 // Updates user data (PATCH-style).
 // Only provided fields are modified.
 func (ctrl *UserController) UpdateUser(c *gin.Context) {
@@ -158,7 +159,7 @@ func (ctrl *UserController) UpdateUser(c *gin.Context) {
 
 	logger.User.Info("User %d (role %d) attempts to update user %d", userID, userRole, uid)
 
-	var input forms.UpdateUserRequest
+	var input forms.AdminUpdateUserRequest
 	if err := c.ShouldBindJSON(&input); err != nil {
 		responses.VALIDATION_ERROR(c, err)
 		return

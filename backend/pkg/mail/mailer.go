@@ -59,7 +59,7 @@ func sendMail(to, subject, body, contentType string) error {
 	date := time.Now().Format(time.RFC1123Z)
 
 	// Simple unique Message-ID
-	messageID := fmt.Sprintf("<%d.%s@sheetflow>",
+	messageID := fmt.Sprintf("<%d.%s@skoreflow>",
 		time.Now().UnixNano(),
 		strings.ReplaceAll(cfg.HostServerAddr, "smtp.", ""),
 	)

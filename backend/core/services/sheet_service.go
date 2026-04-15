@@ -9,10 +9,8 @@ package services
 
 import (
 	"errors"
-	"fmt"
 	"mime/multipart"
 	"os"
-	"path"
 	"path/filepath"
 	"strings"
 	"time"
@@ -33,12 +31,16 @@ import (
 // SheetService handles business logic related to music sheets.
 
 type SheetService struct {
-	db *gorm.DB
+	db    *gorm.DB
+	paths *config.Paths
 }
 
 // NewSheetService creates a new instance of SheetService.
-func NewSheetService(db *gorm.DB) *SheetService {
-	return &SheetService{db: db}
+func NewSheetService(db *gorm.DB, paths *config.Paths) *SheetService {
+	return &SheetService{
+		db:    db,
+		paths: paths,
+	}
 }
 
 // findOrCreateComposer retrieves an existing composer by safe name,
@@ -115,20 +117,10 @@ func (s *SheetService) CreateSheet(uid uint32, form forms.CreateSheetRequest, fi
 		return apperrors.ErrSheetAlreadyExists
 	}
 
-	// 4. Build storage paths
-	filePath := path.Join(
-		"sheets/uploaded-sheets",
-		fmt.Sprintf("user-%d", uid),
-		composer.SafeName,
-		safeSheetName+".pdf",
-	)
-
-	thumbnailPath := path.Join(
-		"sheets/thumbnails",
-		fmt.Sprintf("user-%d", uid),
-		composer.SafeName,
-		safeSheetName+".png",
-	)
+	// 4. Build storage paths - Relative
+	// filePath = sheets/uploaded-sheets/user-1/mozart/prelude.pdf
+	filePath := s.paths.SheetPDFStorageRel(uid, composer.SafeName, safeSheetName)
+	thumbnailPath := s.paths.SheetThumbnailStorageRel(uid, composer.SafeName, safeSheetName)
 
 	// 5. Parse release date
 	releaseDate, err := createDate(form.ReleaseDate)
@@ -363,13 +355,23 @@ func (s *SheetService) ProcessSheetStorage(sheet *models.Sheet, file *multipart.
 		return nil
 	}
 
-	storageRoot := config.Config().StoragePath
+	// Example :
+	// rel = sheets/uploaded-sheets/user-1/mozart/prelude.pdf
+	// return =  /home/christian/SkoreFlow_Project/SkoreFlow/backend/storage/sheets/uploaded-sheets/user-1/mozart/prelude.pdf
+	fullFilePath := s.paths.StorageAbsPath(sheet.FilePath)
+	fullThumbnailPath := s.paths.StorageAbsPath(sheet.ThumbnailPath)
 
-	fullFilePath := filepath.Join(storageRoot, sheet.FilePath)
-	fullThumbnailPath := filepath.Join(storageRoot, sheet.ThumbnailPath)
+	// Création du dossier pour le fichier principal
+	if err := filedir.CreateDir(filepath.Dir(fullFilePath)); err != nil {
+		logger.Sheet.Error("(ProcessComposerStorage Service) create dir failed: %v", err)
+		return err
+	}
 
-	filedir.CreateDir(filepath.Dir(fullFilePath))
-	filedir.CreateDir(filepath.Dir(fullThumbnailPath))
+	// Création du dossier pour la miniature
+	if err := filedir.CreateDir(filepath.Dir(fullThumbnailPath)); err != nil {
+		logger.Sheet.Error("(ProcessComposerStorage Service) create dir failed: %v", err)
+		return err
+	}
 
 	// Save file
 	src, err := file.Open()
@@ -383,7 +385,10 @@ func (s *SheetService) ProcessSheetStorage(sheet *models.Sheet, file *multipart.
 	}
 
 	// Remove old thumbnail
-	filedir.RemoveFileIfExists(fullThumbnailPath)
+	if err := filedir.RemoveFileIfExists(fullThumbnailPath); err != nil {
+		logger.Sheet.Error("(ProcessComposerStorage Service) delete file failed: %v", err)
+		return err
+	}
 
 	// Async thumbnail generation
 	go func() {
@@ -404,10 +409,11 @@ func (s *SheetService) deleteSheetOrchestrator(sheet *models.Sheet) error {
 	var hasNotFound bool
 	var hasDeletionError bool
 
-	storageRoot := config.Config().StoragePath
-
-	fullFilePath := filepath.Join(storageRoot, sheet.FilePath)
-	fullThumbnailPath := filepath.Join(storageRoot, sheet.ThumbnailPath)
+	// Example :
+	// rel = sheets/uploaded-sheets/user-1/mozart/prelude.pdf
+	// return =  /home/christian/SkoreFlow_Project/SkoreFlow/backend/storage/sheets/uploaded-sheets/user-1/mozart/prelude.pdf
+	fullFilePath := s.paths.StorageAbsPath(sheet.FilePath)
+	fullThumbnailPath := s.paths.StorageAbsPath(sheet.ThumbnailPath)
 
 	paths := []string{fullFilePath, fullThumbnailPath}
 

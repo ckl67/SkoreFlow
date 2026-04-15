@@ -40,6 +40,8 @@ import (
 type Server struct {
 	DB *gorm.DB
 
+	sfPath *config.Paths
+
 	authService     *services.AuthService
 	userService     *services.UserService
 	SheetService    *services.SheetService
@@ -51,15 +53,17 @@ type Server struct {
 }
 
 // Setup initializes the server state and application components.
-func (server *Server) Setup(version string, db *gorm.DB) {
+func (server *Server) Setup(version string, db *gorm.DB, paths *config.Paths) {
+	server.sfPath = paths
+
 	server.Version = version
 	server.DB = db
 
-	// 1. Initialize services
-	server.authService = services.NewAuthService(db)
-	server.userService = services.NewUserService(db)
-	server.SheetService = services.NewSheetService(db)
-	server.ComposerService = services.NewComposerService(db)
+	// 1. Initialize services with db and path injection
+	server.authService = services.NewAuthService(db, paths)
+	server.userService = services.NewUserService(db, paths)
+	server.SheetService = services.NewSheetService(db, paths)
+	server.ComposerService = services.NewComposerService(db, paths)
 
 	// 2. Database migrations (schema sync with models)
 	if err := server.DB.AutoMigrate(&models.User{}, &models.Sheet{}, &models.Composer{}); err != nil {
@@ -67,7 +71,7 @@ func (server *Server) Setup(version string, db *gorm.DB) {
 	}
 
 	// 3. Start Python micro-service
-	server.StartMicroService()
+	server.StartMicroService(paths)
 
 	// 4. Register API routes
 	server.SetupRouter()
@@ -81,37 +85,22 @@ func (server *Server) Setup(version string, db *gorm.DB) {
 //
 // Notes:
 // - Prevents orphan/zombie processes by binding lifecycle to the server
-func (server *Server) StartMicroService() {
+func (server *Server) StartMicroService(paths *config.Paths) {
 	msConfig := config.Config().MicroService
 
 	// ----------------------------------------------------------------
-	// Validate configuration
+	// MicroService absolute path
 	// ----------------------------------------------------------------
-	if msConfig.MsRoot == "" {
-		logger.Server.Error("(StartMicroService) MICROSERVICE_ROOT not set")
-		return
-	}
+	// Exemple of path construction:
+	// root = /home/christian/SkoreFlow_Project/SkoreFlow/backend/micro-service
 
-	if msConfig.MsName == "" {
-		logger.Server.Error("(StartMicroService) MICROSERVICE_NAME not set")
-		return
-	}
-
-	// ----------------------------------------------------------------
-	// Resolve absolute path
-	// ----------------------------------------------------------------
-	root, err := filepath.Abs(msConfig.MsRoot)
-	if err != nil {
-		logger.Server.Error("(StartMicroService) failed to resolve root: %v", err)
-		return
-	}
+	root := paths.MSAbs
 
 	// ----------------------------------------------------------------
 	// Build paths dynamically
 	// ----------------------------------------------------------------
-	// Example:
-	// root = /backend/micro-service
-	// msName = thumbnail-service
+	// pythonExe : /home/christian/SkoreFlow_Project/SkoreFlow/backend/micro-service/venv/bin/python3
+	// scriptPath : /home/christian/SkoreFlow_Project/SkoreFlow/backend/micro-service/thumbnail-service/app.py
 
 	pythonExe := filepath.Join(root, "venv", "bin", "python3")
 	scriptPath := filepath.Join(root, msConfig.MsName, "app.py")

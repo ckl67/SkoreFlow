@@ -54,7 +54,7 @@ run_user_tests() {
 	echo -e "\n--- [MODULE: USERS] ---"
 
 	# --- 1. ADMIN AUTHENTICATION ---
-	TOKEN_ADMIN=$(login_user "admin@admin.com" "sheetflow")
+	TOKEN_ADMIN=$(login_user "admin@admin.com" "skoreflow")
 	if [ "$TOKEN_ADMIN" = "ERROR" ]; then
 		echo "❌ Admin Login failed. Aborting."
 		kill "$BACKEND_PID"

@@ -29,12 +29,16 @@ import (
 
 // AuthService handles authentication and account lifecycle operations.
 type AuthService struct {
-	db *gorm.DB
+	db    *gorm.DB
+	paths *config.Paths
 }
 
 // NewAuthService creates a new AuthService instance.
-func NewAuthService(db *gorm.DB) *AuthService {
-	return &AuthService{db: db}
+func NewAuthService(db *gorm.DB, paths *config.Paths) *AuthService {
+	return &AuthService{
+		db:    db,
+		paths: paths,
+	}
 }
 
 // Register
@@ -178,7 +182,7 @@ func (s *AuthService) RequestRegistrationConfirmation(email string) error {
 		cfg.FrontendRegisterConfirmPath,
 	)
 
-	if err := mail.SendHTMLMail(email, "Confirm Your Registration", htmlBody); err != nil {
+	if err := mail.SendHTMLMail(email, "Confirm Your SkoreFlow Registration", htmlBody); err != nil {
 		return apperrors.ErrSmtpFailed
 	}
 
@@ -222,7 +226,7 @@ func (s *AuthService) ForgotPassword(email string) error {
 		cfg.FrontendResetPasswordPath,
 	)
 
-	if err := mail.SendHTMLMail(email, "Password Reset", htmlBody); err != nil {
+	if err := mail.SendHTMLMail(email, "SkoreFlow Password Reset", htmlBody); err != nil {
 		return apperrors.ErrSmtpFailed
 	}
 
@@ -288,7 +292,7 @@ func (s *AuthService) buildResetBodyHTML(token string, FrontendOrigin string, Fr
 		token,
 	)
 
-	return fmt.Sprintf("<p>Click here to reset your password: <a href='%s'>Link</a></p>", link)
+	return fmt.Sprintf("<p>Click here to reset your password (link expires in 1 hour): <a href='%s'>Link</a></p>", link)
 }
 
 // buildRegistrationConfirmationBodyHTML (private)

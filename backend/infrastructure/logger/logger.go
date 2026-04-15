@@ -2,6 +2,7 @@ package logger
 
 import (
 	"fmt"
+	"os"
 	"strings"
 	"time"
 )
@@ -12,10 +13,11 @@ import (
 type Level int
 
 const (
-	ERROR Level = iota // 0: Only critical issues
-	WARN               // 1: Important warnings
-	INFO               // 2: General operational info
-	DEBUG              // 3: Detailed technical information
+	FATAL Level = iota // 0: Unrecoverable errors that cause immediate exit
+	ERROR              // 1: Only critical issues
+	WARN               // 2: Important warnings
+	INFO               // 3: General operational info
+	DEBUG              // 4: Detailed technical information
 )
 
 // --- Package Instances ---
@@ -85,6 +87,8 @@ func SetModuleLevel(module string, level string) {
 // parseLevel converts a string ("debug", "info", etc.) to a Level constant.
 func parseLevel(level string) Level {
 	switch strings.ToLower(level) {
+	case "fatal":
+		return FATAL
 	case "error":
 		return ERROR
 	case "warn":
@@ -104,7 +108,7 @@ func GetModuleLevel(module string) string {
 	moduleName := strings.ToLower(module)
 
 	if !enabledModules[moduleName] {
-		return "ERROR"
+		return "DISABLED"
 	}
 
 	lvl, ok := moduleLevels[moduleName]
@@ -118,6 +122,8 @@ func GetModuleLevel(module string) string {
 // String converts the Level constant into a human-readable uppercase string.
 func (l Level) String() string {
 	switch l {
+	case FATAL:
+		return "FATAL"
 	case ERROR:
 		return "ERROR"
 	case WARN:
@@ -136,21 +142,23 @@ func (l Level) String() string {
 // log is the internal engine that handles filtering, formatting, and printing.
 func (l ModuleLogger) log(level Level, label string, format string, args ...interface{}) {
 	// 1. Drop the log if the module isn't explicitly enabled
-	if !enabledModules[l.name] {
-		return
-	}
+	// FATAL must always be printed
+	if level != FATAL {
+		if !enabledModules[l.name] {
+			return
+		}
 
-	// 2. Determine the threshold for this module
-	moduleLevel, ok := moduleLevels[l.name]
-	if !ok {
-		moduleLevel = INFO
-	}
+		// 2. Determine the threshold for this module
+		moduleLevel, ok := moduleLevels[l.name]
+		if !ok {
+			moduleLevel = INFO
+		}
 
-	// 3. Drop the log if the requested severity is too low
-	if level > moduleLevel {
-		return
+		// 3. Drop the log if the requested severity is too low
+		if level > moduleLevel {
+			return
+		}
 	}
-
 	// 4. Format and print the output
 	msg := fmt.Sprintf(format, args...)
 	timestamp := time.Now().Format("2006-01-02 15:04:05")
@@ -158,6 +166,12 @@ func (l ModuleLogger) log(level Level, label string, format string, args ...inte
 }
 
 // --- Public Logging Methods ---
+
+// Fatal logs a message at the ERROR level and then exits the application. Use for unrecoverable errors.
+func (l ModuleLogger) Fatal(format string, args ...interface{}) {
+	l.log(FATAL, "FATAL", format, args...)
+	os.Exit(1)
+}
 
 // Error logs a message at the ERROR level. Use for critical failures.
 func (l ModuleLogger) Error(format string, args ...interface{}) {

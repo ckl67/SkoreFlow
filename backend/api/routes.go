@@ -39,9 +39,10 @@ package api
 // ===============================================================================================
 
 import (
+	"net/http"
+
 	"backend/core/controllers"
 	"backend/middlewares"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -144,7 +145,7 @@ func (server *Server) SetupRouter() {
 
 		api.POST("/register", authCtrl.Register)
 		api.POST("/register/confirm", authCtrl.ConfirmRegistration)
-		api.POST("/register/request_confirmation", authCtrl.RequestRegistrationConfirmation)
+		api.POST("/register/rqconfirm", authCtrl.RequestRegistrationConfirmation)
 
 		api.POST("/login", authCtrl.Login)
 
@@ -161,7 +162,7 @@ func (server *Server) SetupRouter() {
 			// User self-management (no ID needed)
 			// -----------------------------------------------------------------------------------
 			protected.GET("/me", userCtrl.GetProfile)
-			protected.PUT("/me", userCtrl.UpdateUser)
+			// protected.PUT("/me", userCtrl.UUpdateUser)
 			protected.POST("/me/avatar", userCtrl.UploadAvatar)
 			protected.DELETE("/me/avatar", userCtrl.DeleteAvatar)
 
