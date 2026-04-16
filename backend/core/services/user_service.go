@@ -11,7 +11,6 @@ import (
 	"errors"
 	"fmt"
 	"mime/multipart"
-	"os"
 	"strings"
 	"time"
 
@@ -96,7 +95,7 @@ func (s *UserService) CreateUser(input forms.AdmCreateUserRequest) (*models.User
 		Email:               email,
 		Password:            hashedPassword,
 		Role:                config.RoleUser,
-		Avatar:              "avatars/default.png",
+		Avatar:              "users/default.png",
 		PasswordReset:       "",
 		PasswordResetExpire: time.Time{},
 	}
@@ -177,6 +176,32 @@ func (s *UserService) UpdateUser(uid uint32, input forms.AdmUpdateUserRequest) (
 	return &user, nil
 }
 
+// UpdateUser Profile
+func (s *UserService) UpdateProfile(uid uint32, input forms.UpdateUserRequest) (*models.User, error) {
+	var user models.User
+
+	// 1. Retrieve existing user
+	if err := user.FindByID(s.db, uid); err != nil {
+		return nil, apperrors.ErrUserNotFound
+	}
+
+	// 2. Apply updates (partial update)
+
+	if input.Username != nil {
+		user.Username = *input.Username
+	}
+
+	// email not allowed to be updated for now, to avoid complexity with verification and uniqueness
+	// Avatar update is handled separately via UploadAvatar, so we ignore it here to avoid confusion.
+
+	// 4. Persist changes
+	if err := user.Update(s.db); err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
 // UploadAvatar uploads and assigns a new avatar to a user.
 func (s *UserService) UploadAvatar(uid uint32, file *multipart.FileHeader) (*models.User, error) {
 	var user models.User
@@ -208,7 +233,7 @@ func (s *UserService) UploadAvatar(uid uint32, file *multipart.FileHeader) (*mod
 // Rules:
 // - An admin cannot delete their own account.
 func (s *UserService) DeleteUser(targetUID uint32, adminID uint32) error {
-	logger.User.Warn("(DeleteUser) Admin %d attempts to delete user %d", adminID, targetUID)
+	logger.User.Debug("(DeleteUser) Admin %d attempts to delete user %d", adminID, targetUID)
 
 	// Prevent self-deletion
 	if targetUID == adminID {
@@ -222,64 +247,12 @@ func (s *UserService) DeleteUser(targetUID uint32, adminID uint32) error {
 	}
 
 	// Delete avatar file if exists other delete only the user record
-	relativePath := user.Avatar
-	if relativePath != "" {
-		// Absolute Path
-		fullPath := s.paths.StorageAbsPath(relativePath)
-
-		logger.User.Info("Deleting user %d and avatar file %s", targetUID, fullPath)
-
-		err := filedir.RemoveFileIfExists(fullPath)
-		if err != nil {
-			if os.IsNotExist(err) {
-				logger.User.Warn("Avatar file not found: %s", fullPath)
-				return apperrors.ErrUserAvatarFileNotFound
-			} else {
-				logger.User.Error("Avatar deletion failed: %s (%v)", fullPath, err)
-				return apperrors.ErrUserAvatarFileNotDeleted
-			}
-		}
-
-		// filedir.CleanEmptyDirs(filepath.Dir(fullPath))
-
-	}
+	// will not delete the Avatar file because they cab be default.png
 
 	// Perform database hard delete
 	if _, err := user.Delete(s.db); err != nil {
 		return err
 	}
 
-	return nil
-}
-
-// DeleteAvatarFile removes a user's avatar file from storage.
-// Behavior:
-// - Logs warning if file is missing
-// - Cleans empty directories after deletion
-func (s *UserService) DeleteAvatarFile(userID uint32) error {
-	var user models.User
-
-	if err := user.FindByID(s.db, userID); err != nil {
-		return apperrors.ErrUserNotFound
-	}
-
-	relativePath := user.Avatar
-	if relativePath == "" {
-		return apperrors.ErrUserNotFound
-	}
-
-	// Absolute Path
-	fullPath := s.paths.StorageAbsPath(relativePath)
-
-	err := filedir.RemoveFileIfExists(fullPath)
-	if err != nil {
-		if os.IsNotExist(err) {
-			logger.User.Warn("Avatar file not found: %s", fullPath)
-		} else {
-			logger.User.Error("Avatar deletion failed: %s (%v)", fullPath, err)
-		}
-	}
-
-	// filedir.CleanEmptyDirs(filepath.Dir(fullPath))
 	return nil
 }

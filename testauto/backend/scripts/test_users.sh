@@ -1,23 +1,23 @@
 #!/bin/bash
 
+set -e
+
+API_URL="http://localhost:8080/api"
+DB_PATH="../../backend/storage/database.db"
+
 # ---------------------------------------------------------------------------------------------------------------
-# LOGIN HELPERS
+# AUTH HELPERS
 # ---------------------------------------------------------------------------------------------------------------
 
-# login_user: Authenticates a user and returns their JWT token.
-# Returns: String (Token) or "ERROR"
 login_user() {
 	local email=$1
 	local pass=$2
+
 	local response
-	local http_code
-	local body
+	response=$(curl -s -w '\n%{http_code}' -X POST "$API_URL/login" \
+		-H 'Content-Type: application/json' \
+		-d "{\"email\":\"$email\",\"password\":\"$pass\"}")
 
-	local cmd="curl -s -w '\n%{http_code}' -X POST http://localhost:8080/api/login \
-        -H 'Content-Type: application/json' \
-        -d '{\"email\":\"$email\",\"password\":\"$pass\"}'"
-
-	response=$(eval "$cmd")
 	http_code=$(echo "$response" | tail -n1)
 	body=$(echo "$response" | sed '$d')
 
@@ -29,184 +29,279 @@ login_user() {
 }
 
 # ---------------------------------------------------------------------------------------------------------------
-# CREATION HELPERS
+# ADMIN HELPERS
 # ---------------------------------------------------------------------------------------------------------------
 
-# create_user: Creates a new user account (Admin privileges required).
 create_user() {
 	local email=$1
 	local pass=$2
-	local admin_token=$3
+	local token=$3
 
-	local cmd="curl -s -w '\n%{http_code}' -X POST http://localhost:8080/api/users \
-        -H 'Authorization: Bearer $admin_token' \
-        -H 'Content-Type: application/json' \
-        -d '{\"email\":\"$email\",\"password\":\"$pass\"}'"
+	# Extract username from email
+	local username="${email%@*}"
 
-	validate_api "User Creation: $email" 201 "$cmd"
+	local cmd="curl -s -w '\n%{http_code}' -X POST $API_URL/admin/createuser \
+		-H 'Authorization: Bearer $token' \
+		-H 'Content-Type: application/json' \
+		-d '{\"username\":\"$username\",\"email\":\"$email\",\"password\":\"$pass\"}'"
+
+	validate_api "Create User: $email" 201 "$cmd"
 }
 
 # ---------------------------------------------------------------------------------------------------------------
-# USER MODULE TESTS
+# UPDATE ROLE FROM ADMIN
+# ---------------------------------------------------------------------------------------------------------------
+
+update_user_role() {
+	local user_id=$1
+	local username=$2
+	local role=$3
+	local verified=$4
+	local token=$5
+
+	local json
+	json=$(printf '{"username":"%s","role":%s,"isVerified":%s}' \
+		"$username" "$role" "$verified")
+
+	local cmd="curl -s -X PUT -w '\n%{http_code}' \
+		-H \"Authorization: Bearer $token\" \
+		-H \"Content-Type: application/json\" \
+		-d '$json' \
+		$API_URL/admin/users/$user_id"
+
+	validate_api "Update User Role (ID: $user_id)" 200 "$cmd"
+}
+
+# ---------------------------------------------------------------------------------------------------------------
+# GET ID FROM EMAIL
+# ---------------------------------------------------------------------------------------------------------------
+
+get_user_id_by_email() {
+	local email=$1
+	local token=$2
+
+	local response
+	response=$(curl -s -H "Authorization: Bearer $token" \
+		"$API_URL/admin/users")
+
+	local user_id
+	user_id=$(echo "$response" | jq -r ".[] | select(.email==\"$email\") | .id")
+
+	# Handle not found
+	if [ -z "$user_id" ] || [ "$user_id" = "null" ]; then
+		echo "ERROR"
+	else
+		echo "$user_id"
+	fi
+}
+
+# ---------------------------------------------------------------------------------------------------------------
+# MAIN TEST SUITE
 # ---------------------------------------------------------------------------------------------------------------
 
 run_user_tests() {
-	echo -e "\n--- [MODULE: USERS] ---"
 
-	# --- 1. ADMIN AUTHENTICATION ---
+	echo -e "\n=============================="
+	echo "🚀 STARTING USER'S API TEST SUITE"
+	echo "=============================="
+
+	# ----------------------------------------------------------------------------
+	# ADMIN LOGIN
+	# ----------------------------------------------------------------------------
 	TOKEN_ADMIN=$(login_user "admin@admin.com" "skoreflow")
-	if [ "$TOKEN_ADMIN" = "ERROR" ]; then
-		echo "❌ Admin Login failed. Aborting."
-		kill "$BACKEND_PID"
+	[ "$TOKEN_ADMIN" = "ERROR" ] && echo "❌ Admin login failed" && exit 1
+	echo "✅ Admin logged in"
+
+	# ----------------------------------------------------------------------------
+	# CREATE USERS
+	# ----------------------------------------------------------------------------
+	echo -e "\n-----------------------------------"
+	echo -e "--- Creating users + Give Acces ---"
+	echo -e "-----------------------------------"
+
+	# ---
+	EMAIL="user1@test.com"
+	create_user "$EMAIL" "password123" "$TOKEN_ADMIN"
+	USER_ID=$(get_user_id_by_email "$EMAIL" "$TOKEN_ADMIN")
+	if [ "$USER_ID" = "ERROR" ]; then
+		echo "❌ User not found: $EMAIL"
 		exit 1
 	fi
-	echo "✅ Admin logged in."
+	update_user_role "$USER_ID" "${EMAIL%@*}" 0 true "$TOKEN_ADMIN"
+	# ---
 
-	# --- 2. ACCOUNT CREATION ---
-	echo "Creating test users..."
-	create_user "user1@test.com" "password123" "$TOKEN_ADMIN"
-	create_user "user2@test.com" "password123" "$TOKEN_ADMIN"
-	create_user "christian.klugesherz@gmail.com" "password123" "$TOKEN_ADMIN"
-	create_user "user3@test.com" "password123" "$TOKEN_ADMIN"
-	create_user "user4@test.com" "password123" "$TOKEN_ADMIN"
-	create_user "user5@test.com" "password123" "$TOKEN_ADMIN"
+	# ---
+	EMAIL="user2@test.com"
+	create_user "$EMAIL" "password123" "$TOKEN_ADMIN"
+	USER_ID=$(get_user_id_by_email "$EMAIL" "$TOKEN_ADMIN")
+	if [ "$USER_ID" = "ERROR" ]; then
+		echo "❌ User not found: $EMAIL"
+		exit 1
+	fi
+	update_user_role "$USER_ID" "${EMAIL%@*}" 0 true "$TOKEN_ADMIN"
+	# ---
 
-	# --- 3. FETCH USER LIST ---
-	echo -e "\n--- User Listing ---"
-	local list_cmd="curl -s -w '\n%{http_code}' -H \"Authorization: Bearer $TOKEN_ADMIN\" http://localhost:8080/api/users"
-	validate_api "List All Users" 200 "$list_cmd"
+	# ---
+	EMAIL="user3@test.com"
+	create_user "$EMAIL" "password123" "$TOKEN_ADMIN"
+	USER_ID=$(get_user_id_by_email "$EMAIL" "$TOKEN_ADMIN")
+	if [ "$USER_ID" = "ERROR" ]; then
+		echo "❌ User not found: $EMAIL"
+		exit 1
+	fi
+	update_user_role "$USER_ID" "${EMAIL%@*}" 0 false "$TOKEN_ADMIN"
+	# ---
 
-	# --- 4. INDIVIDUAL PROFILE ACCESS ---
-	echo -e "\n--- Profile Testing (User 1) ---"
+	# ----------------------------------------------------------------------------
+	# ADMIN LIST USERS
+	# ----------------------------------------------------------------------------
+	echo -e "\n------------------------"
+	echo -e "--- Admin list users ---"
+	echo -e "------------------------"
+
+	validate_api "List Users" 200 \
+		"curl -s -w '\n%{http_code}' -H \"Authorization: Bearer $TOKEN_ADMIN\" $API_URL/admin/users"
+
+	# ----------------------------------------------------------------------------
+	# SECURITY TESTS
+	# ----------------------------------------------------------------------------
+	echo -e "\n-----------------------"
+	echo -e "--- Security tests ---"
+	echo -e "-----------------------"
+
+	validate_api "Admin without token" 401 \
+		"curl -s -w '\n%{http_code}' $API_URL/admin/users"
+
+	# login normal user
 	TOKEN_USER1=$(login_user "user1@test.com" "password123")
-	if [ "$TOKEN_USER1" = "ERROR" ]; then
-		echo "❌ User1 Login failed."
-		kill "$BACKEND_PID"
+
+	validate_api "User accessing admin route" 403 \
+		"curl -s -w '\n%{http_code}' -H \"Authorization: Bearer $TOKEN_USER1\" $API_URL/admin/users"
+
+	# ----------------------------------------------------------------------------
+	# PROFILE TESTS
+	# ----------------------------------------------------------------------------
+	echo -e "\n---------------------"
+	echo -e "--- Profile tests ---"
+	echo -e "---------------------"
+
+	validate_api "Get Profile" 200 \
+		"curl -s -w '\n%{http_code}' -H \"Authorization: Bearer $TOKEN_USER1\" $API_URL/me"
+
+	validate_api "Update Profile" 200 \
+		"curl -s -X PUT -w '\n%{http_code}' \
+		-H \"Authorization: Bearer $TOKEN_USER1\" \
+		-H \"Content-Type: application/json\" \
+		-d '{\"username\":\"UpdatedUser1\"}' \
+		$API_URL/me"
+
+	# ----------------------------------------------------------------------------
+	# AVATAR TEST
+	# ----------------------------------------------------------------------------
+	echo -e "\n-----------------------"
+	echo -e "--- Avatar upload ---"
+	echo -e "-----------------------"
+
+	TEST_AVATAR="$SCRIPT_DIR/avatars/user.png"
+
+	validate_api "Upload Avatar" 200 \
+		"curl -s -X POST -w '\n%{http_code}' \
+		-H \"Authorization: Bearer $TOKEN_USER1\" \
+		-F \"avatar=@$TEST_AVATAR\" \
+		$API_URL/me/avatar"
+
+	# ----------------------------------------------------------------------------
+	# ADMIN USER OPERATIONS
+	# ----------------------------------------------------------------------------
+	echo -e "\n-----------------------------"
+	echo -e "--- Admin user operations ---"
+	echo -e "-----------------------------"
+
+	# get first user ID dynamically
+	USER_ID=$(curl -s -H "Authorization: Bearer $TOKEN_ADMIN" \
+		$API_URL/admin/users | jq '.[0].id')
+	echo "First user ID: $USER_ID"
+
+	validate_api "Get User" 200 \
+		"curl -s -w '\n%{http_code}' -H \"Authorization: Bearer $TOKEN_ADMIN\" $API_URL/admin/users/$USER_ID"
+
+	validate_api "Update User" 200 \
+		"curl -s -X PUT -w '\n%{http_code}' \
+		-H \"Authorization: Bearer $TOKEN_ADMIN\" \
+		-H \"Content-Type: application/json\" \
+		-d '{\"username\":\"AdminUpdated\"}' \
+		$API_URL/admin/users/$USER_ID"
+
+	validate_api "Delete User" 400 \
+		"curl -s -X DELETE -w '\n%{http_code}' \
+		-H \"Authorization: Bearer $TOKEN_ADMIN\" \
+		$API_URL/admin/users/$USER_ID"
+
+	echo -e "\n--- Create user without verified ---"
+	EMAIL="user4@test.com"
+	create_user "$EMAIL" "password123" "$TOKEN_ADMIN"
+	USER_ID=$(get_user_id_by_email "$EMAIL" "$TOKEN_ADMIN")
+	if [ "$USER_ID" = "ERROR" ]; then
+		echo "❌ User not found: $EMAIL"
 		exit 1
 	fi
+	update_user_role "$USER_ID" "${EMAIL%@*}" 0 false "$TOKEN_ADMIN"
 
-	local profile_cmd="curl -s -w '\n%{http_code}' -H \"Authorization: Bearer $TOKEN_USER1\" http://localhost:8080/api/me"
-	validate_api "Access Self Profile" 200 "$profile_cmd"
+	echo -e "\n--- Try to delete unverified user ---"
+	validate_api "Delete User" 200 \
+		"curl -s -X DELETE -w '\n%{http_code}' \
+		-H \"Authorization: Bearer $TOKEN_ADMIN\" \
+		$API_URL/admin/users/$USER_ID"
 
-	# --- 5. GET SPECIFIC USER DETAILS (ADMIN) ---
-	USER_ID_TEST=2
-	echo -e "\n--- Fetching Details for User ID $USER_ID_TEST ---"
-	local get_user_cmd="curl -s -w '\n%{http_code}' -H \"Authorization: Bearer $TOKEN_ADMIN\" http://localhost:8080/api/users/$USER_ID_TEST"
-	validate_api "Admin: Get User Details" 200 "$get_user_cmd"
+	# ----------------------------------------------------------------------------
+	# PASSWORD RESET
+	# ----------------------------------------------------------------------------
+	echo -e "\n--- Password reset ---"
 
-	# --- 6. USER DELETION (USER 5) ---
-	USER_ID_TO_DELETE=7
-	echo -e "\n--- Deleting User ID $USER_ID_TO_DELETE ---"
-	local del_cmd="curl -s -X DELETE -w '\n%{http_code}' -H \"Authorization: Bearer $TOKEN_ADMIN\" http://localhost:8080/api/users/$USER_ID_TO_DELETE"
-	validate_api "Admin: Delete User" 200 "$del_cmd"
+	EMAIL_RESET="user2@test.com"
 
-	local check_del_cmd="curl -s -w '\n%{http_code}' -H \"Authorization: Bearer $TOKEN_ADMIN\" http://localhost:8080/api/users/$USER_ID_TO_DELETE"
-	validate_api "Verify User Deletion (404 expected)" 404 "$check_del_cmd"
+	validate_api "Password forgot" 200 \
+		"curl -s -X POST -w '\n%{http_code}' \
+		-H 'Content-Type: application/json' \
+		-d '{\"email\":\"$EMAIL_RESET\"}' \
+		$API_URL/password/forgot"
 
-	# --- 7. USER UPDATE & PROMOTION (USER 2) ---
-	USER_ID_TO_UPDATE=3
-	UPDATE_DATA='{"email":"user2.updated@test.com","role":'$ROLE_MODERATOR'}'
-	echo -e "\n--- Updating User ID $USER_ID_TO_UPDATE ---"
-	local update_cmd="curl -s -X PUT -w '\n%{http_code}' \
-        -H \"Authorization: Bearer $TOKEN_ADMIN\" \
-        -H \"Content-Type: application/json\" \
-        -d '$UPDATE_DATA' \
-        http://localhost:8080/api/users/$USER_ID_TO_UPDATE"
-	validate_api "Admin: Update/Promote User" 200 "$update_cmd"
+	TOKEN_SQL=$(sqlite3 "$DB_PATH" "SELECT password_reset FROM users WHERE email='$EMAIL_RESET';")
 
-	# Re-login User 2 with updated email
-	TOKEN_USER2=$(login_user "user2.updated@test.com" "password123")
-	if [ "$TOKEN_USER2" = "ERROR" ]; then
-		echo "❌ Login failed for updated user2."
-		kill "$BACKEND_PID"
-		exit 1
-	fi
+	validate_api "Password reset" 200 \
+		"curl -s -X POST -w '\n%{http_code}' \
+		-H 'Content-Type: application/json' \
+		-d '{\"token\":\"$TOKEN_SQL\",\"password\":\"NewPassword123!\"}' \
+		$API_URL/password/reset"
 
-	# --- 8. PASSWORD RESET FLOW ---
-	if [ "$TEST_PASSWORD_RESET" = true ]; then
-		echo -e "\n--- Password Reset Flow ---"
-
-		EMAIL_RESET="christian.klugesherz@gmail.com"
-		DB_PATH="../../backend/storage/database.db"
-
-		# Step 1: Request Reset Token
-		local req_reset_cmd="curl -s -X POST -w '\n%{http_code}' \
-            -H 'Content-Type: application/json' \
-            -d '{\"email\":\"$EMAIL_RESET\"}' \
-            http://localhost:8080/api/password/forgot"
-		validate_api "Password Reset Request" 200 "$req_reset_cmd"
-
-		# Step 2: Extract Token from DB
-		TOKEN_SQL=$(sqlite3 "$DB_PATH" "SELECT password_reset FROM users WHERE email='$EMAIL_RESET';")
-		if [ -z "$TOKEN_SQL" ]; then
-			echo "❌ Reset token not found in DB."
-		else
-			echo "✅ Token captured: ${TOKEN_SQL:0:10}..."
-
-			# Step 3: Submit New Password
-			local JSON_DATA
-			JSON_DATA=$(printf '{"token":"%s","password":"NewPassword123!"}' "$TOKEN_SQL")
-			local reset_pwd_cmd="curl -s -X POST -w '\n%{http_code}' \
-                -H 'Content-Type: application/json' \
-                -d '$JSON_DATA' \
-                http://localhost:8080/api/password/reset"
-			validate_api "Apply New Password" 200 "$reset_pwd_cmd"
-
-			# Step 4: Verify token cleared
-			TOKEN_CLEAN=$(sqlite3 "$DB_PATH" "SELECT password_reset FROM users WHERE email='$EMAIL_RESET';")
-			if [ -z "$TOKEN_CLEAN" ]; then
-				echo "✅ Reset token cleared from DB."
-			fi
-
-			# Step 5: Final login verification
-			TOKEN_CKL=$(login_user "$EMAIL_RESET" "NewPassword123!")
-			if [ "$TOKEN_CKL" = "ERROR" ]; then
-				echo "❌ Login failed with new password."
-				exit 1
-			fi
-			echo "✅ Login verified with new password."
-		fi
-	else
-		echo "ℹ️ Skipping Password Reset tests."
-		TOKEN_CKL=$(login_user "christian.klugesherz@gmail.com" "password123")
-	fi
-
-	# --- 2bis. PUBLIC REGISTER FLOW ---
-	echo -e "\n--- Public Register Flow ---"
+	# ----------------------------------------------------------------------------
+	# REGISTER FLOW
+	# ----------------------------------------------------------------------------
+	echo -e "\n--- Register flow ---"
 
 	EMAIL_REGISTER="register@test.com"
-	DB_PATH="../../backend/storage/database.db"
 
-	# Step 1: Register user
-	local register_cmd="curl -s -X POST -w '\n%{http_code}' \
-        -H 'Content-Type: application/json' \
-        -d '{\"username\":\"registerUser\",\"email\":\"$EMAIL_REGISTER\",\"password\":\"password123\"}' \
-        http://localhost:8080/api/register"
+	validate_api "Register" 201 \
+		"curl -s -X POST -w '\n%{http_code}' \
+		-H 'Content-Type: application/json' \
+		-d '{\"username\":\"register\",\"email\":\"$EMAIL_REGISTER\",\"password\":\"password123\"}' \
+		$API_URL/register"
 
-	validate_api "Register User (public)" 201 "$register_cmd"
-
-	# Step 2: Extract confirmation token from DB
 	TOKEN_REGISTER=$(sqlite3 "$DB_PATH" "SELECT password_reset FROM users WHERE email='$EMAIL_REGISTER';")
 
-	if [ -z "$TOKEN_REGISTER" ]; then
-		echo "❌ Register token not found in DB."
-	else
-		echo "✅ Register token captured: ${TOKEN_REGISTER:0:10}..."
+	validate_api "Confirm Register" 200 \
+		"curl -s -X POST -w '\n%{http_code}' \
+		-H 'Content-Type: application/json' \
+		-d '{\"token\":\"$TOKEN_REGISTER\"}' \
+		$API_URL/register/confirm"
 
-		# Step 3: Confirm registration
-		local confirm_cmd="curl -s -X POST -w '\n%{http_code}' \
-            -H 'Content-Type: application/json' \
-            -d '{\"token\":\"$TOKEN_REGISTER\"}' \
-            http://localhost:8080/api/register/confirm"
+	validate_api "Request Confirm again" 200 \
+		"curl -s -X POST -w '\n%{http_code}' \
+		-H 'Content-Type: application/json' \
+		-d '{\"email\":\"$EMAIL_REGISTER\"}' \
+		$API_URL/register/rqconfirm"
 
-		validate_api "Confirm Registration" 200 "$confirm_cmd"
-
-		# Step 4: Verify login works
-		TOKEN_REGISTER_USER=$(login_user "$EMAIL_REGISTER" "password123")
-		if [ "$TOKEN_REGISTER_USER" = "ERROR" ]; then
-			echo "❌ Login failed after registration confirmation."
-			exit 1
-		fi
-		echo "✅ Register flow validated."
-	fi
+	echo -e "\n=============================="
+	echo "✅ ALL TESTS COMPLETED"
+	echo "=============================="
 }

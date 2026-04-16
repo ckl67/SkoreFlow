@@ -89,8 +89,13 @@ source "./scripts/test_composers.sh"
 echo "Cleaning environment..."
 
 # Kill any lingering processes on backend ports (Go: 8080, Flask Microservice: 5010)
-fuser -k 8080/tcp 2>/dev/null
-fuser -k 5010/tcp 2>/dev/null
+if fuser 8080/tcp >/dev/null 2>&1; then
+	fuser -k 8080/tcp
+fi
+
+if fuser 5010/tcp >/dev/null 2>&1; then
+	fuser -k 5010/tcp
+fi
 
 # Wait for OS to release file handles
 sleep 1
@@ -100,26 +105,28 @@ if [ "$KILL_PROCESS" = true ]; then
 fi
 
 SCRIPT_DIR=$(pwd)
-BACKEND_DIR="../../backend/"
+BACKEND_DIR="../../backend"
 
 if [ "$RUN_SHEETS" = true ] || [ "$RUN_COMPOSERS" = true ]; then
 
 	echo "Physical cleanup of Database and Storage"
 
 	# Physical cleanup of Database and Storage
-	rm -f "$BACKEND_DIR/infrastructure/storage/database.db"
-	rm -rf "$BACKEND_DIR/infrastructure/storage/sheets/uploaded-sheets/"*
-	rm -rf "$BACKEND_DIR/infrastructure/storage/sheets/thumbnails/"*
-	rm -rf "$BACKEND_DIR/infrastructure/storage/composers/"*
+	rm -f "$BACKEND_DIR/storage/database.db"
+	rm -rf "$BACKEND_DIR/storage/users/"*
+	rm -rf "$BACKEND_DIR/storage/sheets/uploaded-sheets/"*
+	rm -rf "$BACKEND_DIR/storage/sheets/thumbnails/"*
+	rm -rf "$BACKEND_DIR/storage/composers/"*
 
 	# Ensure directory structure exists
-	mkdir -p "$BACKEND_DIR/infrastructure/storage/sheets/thumbnails"
-	mkdir -p "$BACKEND_DIR/infrastructure/storage/sheets/uploaded-sheets"
-	mkdir -p "$BACKEND_DIR/infrastructure/storage/composers"
+	mkdir -p "$BACKEND_DIR/storage/users"
+	mkdir -p "$BACKEND_DIR/storage/sheets/uploaded-sheets"
+	mkdir -p "$BACKEND_DIR/storage/sheets/thumbnails"
+	mkdir -p "$BACKEND_DIR/storage/composers"
 
 	# Restore default assets for composers (portraits)
-	if [ -d "$BACKEND_DIR/infrastructure/storage/assets" ]; then
-		cp -r "$BACKEND_DIR/infrastructure/storage/assets/." "$BACKEND_DIR/infrastructure/storage/composers/"
+	if [ -d "$BACKEND_DIR/storage/assets" ]; then
+		cp -r "$BACKEND_DIR/storage/assets/avatars/admin.png" "$BACKEND_DIR/storage/users"
 	fi
 else
 	echo "-->> NO Physical cleanup of Database and Storage"
@@ -144,7 +151,7 @@ echo " "
 # Health check loop
 echo "Waiting for server to be ready..."
 until curl -s http://localhost:8080/health >/dev/null; do
-	sleep 0.5
+	sleep 1.0
 	echo -n "."
 done
 echo -e "\n✅ Server is UP and running!"
@@ -166,6 +173,7 @@ else
 	echo "⏩ Skipping User tests (use --sheets or --composer or --all to include)"
 fi
 
+exit 1
 # 3. Conditional: Sheet Management
 if [ "$RUN_SHEETS" = true ]; then
 	run_sheet_tests

@@ -10,7 +10,7 @@ This document provides instructions for testing the registration, login, and pas
 # Variable setting
 EMAIL="christian.klugesherz@gmail.com"
 DB_PATH="./storage/database.db"
-AVATAR_FILE="/home/christian/SkoreFlow_Project/SkoreFlow/testauto/backend/avatars/avatar-ckl.png"
+AVATAR_FILE="/home/christian/SkoreFlow_Project/SkoreFlow/testauto/backend/users/avatar-ckl.png"
 ADMIN_EMAIL="admin@admin.com"
 ADMIN_PASSWORD="skoreflow"
 ```
@@ -169,6 +169,35 @@ curl -X POST http://localhost:8080/api/me/avatar \
  -F "avatar=@$AVATAR_FILE" | jq
 ```
 
+## user update profile
+
+To update the user's profile information, you can use the following command with the JWT token obtained from the login step:
+
+```shell
+
+TOKEN_USER1=$(curl -X POST http://localhost:8080/api/login \
+ -H "Content-Type: application/json" \
+ -d '{"email":"user1@test.com","password":"password123"}' | jq -r '.token')
+
+TOKEN_USER2=$(curl -X POST http://localhost:8080/api/login \
+ -H "Content-Type: application/json" \
+ -d '{"email":"user2.updated@test.com","password":"password123"}' | jq -r '.token')
+
+
+echo "JWT Token1 : $TOKEN_USER1"
+echo "JWT Token2 : $TOKEN_USER2"
+```
+
+Profile update example:
+
+```shell
+curl -X PUT http://localhost:8080/api/me  \
+  -H "Authorization: Bearer $TOKEN_USER1" \
+  -H "Content-Type: application/json" \
+  -d '{  "username": "UpdatedUser1"}' | jq
+
+```
+
 # From the Admin perscpective
 
 ## Login
@@ -266,7 +295,7 @@ Create a avatar file for testing, then delete it after the test:
 
 ```shell
 # Create a test avatar file
-TEST_AVATAR="/home/christian/SkoreFlow_Project/SkoreFlow/backend/storage/avatars/test-avatar.png"
+TEST_AVATAR="/home/christian/SkoreFlow_Project/SkoreFlow/backend/storage/users/test-avatar.png"
 touch "$TEST_AVATAR"
 # After the test, delete the test avatar file
 go run cmd/cli/main.go -cleanup-avatars

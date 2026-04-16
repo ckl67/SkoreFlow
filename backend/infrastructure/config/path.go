@@ -63,7 +63,7 @@ func (p *Paths) StorageAbsPath(rel string) string {
 // Remark : path.Join : Not depending of the OS = always /  --  filepath.Join : depending of the OS / or \
 func (p *Paths) UserAvatarStorageRel(userID uint32) string {
 	return path.Join(
-		"avatars",
+		"users",
 		fmt.Sprintf("user-%d.png", userID),
 	)
 }

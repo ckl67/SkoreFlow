@@ -64,6 +64,29 @@ func (ctrl *UserController) GetProfile(c *gin.Context) {
 	responses.JSON(c, http.StatusOK, userGotten)
 }
 
+// Updates user data (PATCH-style).
+// Only provided fields are modified.
+func (ctrl *UserController) UpdateProfile(c *gin.Context) {
+	userID := c.GetUint32("user_id")
+	userRole := c.GetInt("user_role")
+
+	logger.User.Info("User %d (role %d) attempts to update itself", userID, userRole)
+
+	var input forms.UpdateUserRequest
+	if err := c.ShouldBindJSON(&input); err != nil {
+		responses.VALIDATION_ERROR(c, err)
+		return
+	}
+
+	updatedUser, err := ctrl.userService.UpdateProfile(uint32(userID), input)
+	if err != nil {
+		responses.ERROR(c, http.StatusInternalServerError, err)
+		return
+	}
+
+	responses.JSON(c, http.StatusOK, updatedUser)
+}
+
 // Returns the full list of users.
 // Typically restricted or monitored (admin/audit usage).
 func (ctrl *UserController) AdmGetUsers(c *gin.Context) {
@@ -191,19 +214,6 @@ func (ctrl *UserController) UploadAvatar(c *gin.Context) {
 	}
 
 	responses.JSON(c, http.StatusOK, user)
-}
-
-// Removes the user's avatar file from storage.
-func (ctrl *UserController) DeleteAvatar(c *gin.Context) {
-	uid := c.GetUint32("user_id")
-
-	err := ctrl.userService.DeleteAvatarFile(uid)
-	if err != nil {
-		responses.ERROR(c, http.StatusInternalServerError, err)
-		return
-	}
-
-	responses.JSON(c, http.StatusOK, err)
 }
 
 // Deletes a user from the system.

@@ -84,7 +84,7 @@ func (s *AuthService) Register(form forms.RegisterRequest) (*models.User, error)
 		Username:   username,
 		Email:      email,
 		Password:   hashedPassword,
-		Avatar:     "avatars/default.png",
+		Avatar:     "users/default.png",
 		Role:       config.RoleUser,
 		IsVerified: false,
 	}

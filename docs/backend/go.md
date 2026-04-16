@@ -37,7 +37,7 @@ For this project, to maintain autonomy and avoid external publishing constraints
 
 In Go, the **Current Working Directory (CWD)** is where the process runs.
 The standard library function `os.Getwd()` returns the absolute path of the current directory.
-Any relative file paths in your code (e.g. `“assets/avatars/user-1.png”`) are resolved **against this CWD**.
+Any relative file paths in your code (e.g. `“users/user-1.png”`) are resolved **against this CWD**.
 
 ## Root Directory
 
@@ -49,7 +49,7 @@ In practice, this means you should run Go commands **inside or below** the direc
 
 ## Relative Paths
 
-Any path literal like `fmt.Sprintf("assets/avatars/user-%d.png", uid)` is relative to the process’s CWD. In code you might write:
+Any path literal like `fmt.Sprintf("users/user-%d.png", uid)` is relative to the process’s CWD. In code you might write:
 Remember: a **relative path in Go always depends on the execution context (the CWD)**
 
 # Rule path for SkoreFlow and Docker Containers

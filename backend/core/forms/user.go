@@ -52,7 +52,6 @@ type AdmUpdateUserRequest struct {
 // UpdateUserRequest defines the payload for updating a user.
 type UpdateUserRequest struct {
 	Username *string `json:"username" binding:"omitempty,min=3,max=100"`
-	Role     *int    `json:"role"`
 }
 
 // UploadAvatarRequest defines the payload for uploading a user avatar.

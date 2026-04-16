@@ -42,7 +42,7 @@ func Load(db *gorm.DB, email string, password string) {
 		Email:      format.SanitizeUserEmail(email),
 		Password:   hashedPassword,
 		Role:       config.RoleAdmin,
-		Avatar:     "avatars/admin.png",
+		Avatar:     "users/admin.png",
 		IsVerified: true,
 	}
 

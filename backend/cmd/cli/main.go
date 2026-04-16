@@ -114,7 +114,7 @@ func runAvatarCleanup(db *gorm.DB, paths *config.Paths) {
 	// ----------------------------------------------------------------------------
 	// 3. Resolve avatar storage directory
 	// ----------------------------------------------------------------------------
-	avatarDir := paths.StorageAbsPath("avatars")
+	avatarDir := paths.StorageAbsPath("users")
 
 	// Read all entries (files + directories) in the avatar folder
 	files, err := os.ReadDir(avatarDir)
