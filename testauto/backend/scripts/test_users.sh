@@ -138,7 +138,7 @@ run_user_tests() {
 		echo "❌ User not found: $EMAIL"
 		exit 1
 	fi
-	update_user_role "$USER_ID" "${EMAIL%@*}" 0 true "$TOKEN_ADMIN"
+	update_user_role "$USER_ID" "${EMAIL%@*}" "$ROLE_MODERATOR" true "$TOKEN_ADMIN"
 	# ---
 
 	# ---

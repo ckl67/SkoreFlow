@@ -62,6 +62,8 @@ func (u *User) ExistsByUserName(db *gorm.DB, username string) (bool, error) {
 	return count > 0, err
 }
 
+
+
 // FindByID retrieves a user by their unique identifier.
 func (u *User) FindByID(db *gorm.DB, id uint32) error {
 	return db.First(u, id).Error

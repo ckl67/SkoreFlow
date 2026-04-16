@@ -43,6 +43,11 @@ export ROLE_USER=0
 export ROLE_MODERATOR=1
 export ROLE_ADMINISTRATOR=2
 
+# Tokens will be populated by run_user_tests
+export TOKEN_USER1
+export TOKEN_USER2
+export TOKEN_CKL
+
 # --- ARGUMENT PARSING ---
 for arg in "$@"; do
 	case $arg in
@@ -66,16 +71,6 @@ for arg in "$@"; do
 		;;
 	esac
 done
-
-# --- IMPORT MODULES ---
-# shellcheck disable=SC1091
-source "./scripts/test_basics.sh"
-# shellcheck disable=SC1091
-source "./scripts/test_users.sh"
-# shellcheck disable=SC1091
-source "./scripts/test_sheets.sh"
-# shellcheck disable=SC1091
-source "./scripts/test_composers.sh"
 
 # ---------------------------------------------------------------------------------------------------------------
 # ENVIRONMENT SETUP
@@ -159,25 +154,27 @@ cd "$SCRIPT_DIR" || exit
 # ---------------------------------------------------------------------------------------------------------------
 
 # 1. Basic Health and Sanity tests
-run_basic_tests
+echo "Running basic tests (Node.js)..."
+node tests/basic.test.js
 
 # 2. User Management (MANDATORY: Generates tokens for other tests)
 if [ "$RUN_SHEETS" = true ] || [ "$RUN_COMPOSERS" = true ]; then
-	run_user_tests
+	echo "Running user tests (Node.js)..."
+	node tests/user.test.js
 else
 	echo "⏩ Skipping User tests (use --sheets or --composer or --all to include)"
 fi
 
 # 3. Conditional: Sheet Management
 if [ "$RUN_SHEETS" = true ]; then
-	run_sheet_tests
+	node tests/sheet.test.js
 else
 	echo "⏩ Skipping Sheet tests (use --sheets or --all to include)"
 fi
 
 # 4. Conditional: Composer Management
 if [ "$RUN_COMPOSERS" = true ]; then
-	run_composer_tests
+	node tests/composer.test.js
 else
 	echo "⏩ Skipping Composer tests (use --composers or --all to include)"
 fi

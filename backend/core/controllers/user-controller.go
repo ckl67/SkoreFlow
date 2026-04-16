@@ -249,3 +249,34 @@ func (ctrl *UserController) AdmDeleteUser(c *gin.Context) {
 		"message": fmt.Sprintf("User %d successfully deleted", targetUID),
 	})
 }
+
+// Removes the user's avatar file from storage.
+func (ctrl *UserController) DeleteAvatar(c *gin.Context) {
+	uid := c.GetUint32("user_id")
+
+	err := ctrl.userService.DeleteAvatarFile(uid)
+	if err != nil {
+		responses.ERROR(c, http.StatusInternalServerError, err)
+		return
+	}
+
+	responses.JSON(c, http.StatusOK, err)
+}
+
+// AdmGetResetToken
+func (ctrl *UserController) AdmGetResetToken(c *gin.Context) {
+	adminID := c.GetUint32("user_id")
+	email := c.Param("email")
+
+	logger.User.Warn("Admin %d requested reset token for %s", adminID, email)
+
+	token, err := ctrl.userService.GetResetToken(email)
+	if err != nil {
+		responses.ERROR(c, http.StatusNotFound, err)
+		return
+	}
+
+	responses.JSON(c, http.StatusOK, gin.H{
+		"token": token,
+	})
+}

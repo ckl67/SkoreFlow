@@ -11,6 +11,8 @@ import (
 	"errors"
 	"fmt"
 	"mime/multipart"
+	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -255,4 +257,53 @@ func (s *UserService) DeleteUser(targetUID uint32, adminID uint32) error {
 	}
 
 	return nil
+}
+
+// DeleteAvatarFile removes a user's avatar file from storage.
+// Behavior:
+// - Logs warning if file is missing
+// - Cleans empty directories after deletion
+func (s *UserService) DeleteAvatarFile(userID uint32) error {
+	var user models.User
+
+	if err := user.FindByID(s.db, userID); err != nil {
+		return apperrors.ErrUserNotFound
+	}
+
+	relativePath := user.Avatar
+	if relativePath == "" {
+		return apperrors.ErrUserNotFound
+	}
+
+	// Absolute Path
+	fullPath := s.paths.StorageAbsPath(relativePath)
+
+	err := filedir.RemoveFileIfExists(fullPath)
+	if err != nil {
+		if os.IsNotExist(err) {
+			logger.User.Warn("Avatar file not found: %s", fullPath)
+		} else {
+			logger.User.Error("Avatar deletion failed: %s (%v)", fullPath, err)
+		}
+	}
+
+	filedir.CleanEmptyDirs(filepath.Dir(fullPath))
+	return nil
+}
+
+// GetResetToken
+func (s *UserService) GetResetToken(vemail string) (string, error) {
+	var user models.User
+
+	email := format.SanitizeUserEmail(vemail)
+
+	exists, err := new(models.User).ExistsByEmail(s.db, email)
+	if err != nil {
+		return "", nil
+	}
+	if exists {
+		return "", apperrors.ErrUserEmailAlreadyUsed
+	}
+
+	return user.PasswordReset, nil
 }

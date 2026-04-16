@@ -39,9 +39,11 @@ package api
 // ===============================================================================================
 
 import (
+	"fmt"
 	"net/http"
 
 	"backend/core/controllers"
+	"backend/infrastructure/config"
 	"backend/middlewares"
 
 	"github.com/gin-gonic/gin"
@@ -210,6 +212,14 @@ func (server *Server) SetupRouter() {
 				adminRoutes.POST("/admin/createuser", userCtrl.AdmCreateUser)  // MOK
 				adminRoutes.PUT("/admin/users/:id", userCtrl.AdmUpdateUser)    // MOK
 				adminRoutes.DELETE("/admin/users/:id", userCtrl.AdmDeleteUser) // MOK
+
+				if config.Config().Backend_Dev_Mode {
+					fmt.Println("=================================")
+					fmt.Println("BE CARE ROOT NOT ALLOWED IN PROD")
+					fmt.Println("=================================")
+					adminRoutes.GET("/test/reset-token/:email", userCtrl.AdmGetResetToken) // MOK
+				}
+
 			}
 		}
 	}
