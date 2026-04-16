@@ -12,7 +12,6 @@ import (
 	"fmt"
 	"mime/multipart"
 	"os"
-	"path/filepath"
 	"strings"
 	"time"
 
@@ -143,13 +142,13 @@ func (s *UserService) UpdateUser(uid uint32, input forms.AdmUpdateUserRequest) (
 		user.Username = *input.Username
 	}
 
-	if input.Email != nil {
-		user.Email = format.SanitizeUserEmail(*input.Email)
-	}
+	// email not allowed to be updated for now, to avoid complexity with verification and uniqueness
 
 	if input.Role != nil {
 		user.Role = *input.Role
 	}
+
+	// Avatar update is handled separately via UploadAvatar, so we ignore it here to avoid confusion.
 
 	if input.IsVerified != nil {
 		user.IsVerified = *input.IsVerified
@@ -209,6 +208,8 @@ func (s *UserService) UploadAvatar(uid uint32, file *multipart.FileHeader) (*mod
 // Rules:
 // - An admin cannot delete their own account.
 func (s *UserService) DeleteUser(targetUID uint32, adminID uint32) error {
+	logger.User.Warn("(DeleteUser) Admin %d attempts to delete user %d", adminID, targetUID)
+
 	// Prevent self-deletion
 	if targetUID == adminID {
 		return fmt.Errorf("SECURITY_ERR: an admin cannot delete their own account")
@@ -220,7 +221,30 @@ func (s *UserService) DeleteUser(targetUID uint32, adminID uint32) error {
 		return apperrors.ErrUserNotFound
 	}
 
-	// Perform hard delete
+	// Delete avatar file if exists other delete only the user record
+	relativePath := user.Avatar
+	if relativePath != "" {
+		// Absolute Path
+		fullPath := s.paths.StorageAbsPath(relativePath)
+
+		logger.User.Info("Deleting user %d and avatar file %s", targetUID, fullPath)
+
+		err := filedir.RemoveFileIfExists(fullPath)
+		if err != nil {
+			if os.IsNotExist(err) {
+				logger.User.Warn("Avatar file not found: %s", fullPath)
+				return apperrors.ErrUserAvatarFileNotFound
+			} else {
+				logger.User.Error("Avatar deletion failed: %s (%v)", fullPath, err)
+				return apperrors.ErrUserAvatarFileNotDeleted
+			}
+		}
+
+		// filedir.CleanEmptyDirs(filepath.Dir(fullPath))
+
+	}
+
+	// Perform database hard delete
 	if _, err := user.Delete(s.db); err != nil {
 		return err
 	}
@@ -256,6 +280,6 @@ func (s *UserService) DeleteAvatarFile(userID uint32) error {
 		}
 	}
 
-	filedir.CleanEmptyDirs(filepath.Dir(fullPath))
+	// filedir.CleanEmptyDirs(filepath.Dir(fullPath))
 	return nil
 }

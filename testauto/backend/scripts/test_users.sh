@@ -144,7 +144,8 @@ run_user_tests() {
 			echo "✅ Token captured: ${TOKEN_SQL:0:10}..."
 
 			# Step 3: Submit New Password
-			local JSON_DATA=$(printf '{"token":"%s","password":"NewPassword123!"}' "$TOKEN_SQL")
+			local JSON_DATA
+			JSON_DATA=$(printf '{"token":"%s","password":"NewPassword123!"}' "$TOKEN_SQL")
 			local reset_pwd_cmd="curl -s -X POST -w '\n%{http_code}' \
                 -H 'Content-Type: application/json' \
                 -d '$JSON_DATA' \

@@ -145,7 +145,7 @@ func (ctrl *UserController) AdmGetUser(c *gin.Context) {
 
 // Updates user data (PATCH-style).
 // Only provided fields are modified.
-func (ctrl *UserController) UpdateUser(c *gin.Context) {
+func (ctrl *UserController) AdmUpdateUser(c *gin.Context) {
 	userID := c.GetUint32("user_id")
 	userRole := c.GetInt("user_role")
 
@@ -211,7 +211,7 @@ func (ctrl *UserController) DeleteAvatar(c *gin.Context) {
 // Security rules:
 // - An admin cannot delete their own account
 // - Errors are mapped to appropriate HTTP responses
-func (ctrl *UserController) DeleteUser(c *gin.Context) {
+func (ctrl *UserController) AdmDeleteUser(c *gin.Context) {
 	adminID := c.GetUint32("user_id")
 
 	uidString := c.Param("id")

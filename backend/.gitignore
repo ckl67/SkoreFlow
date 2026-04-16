@@ -40,4 +40,5 @@ tmp/
 *.so
 *.dylib
 *.db
+__debug*
 

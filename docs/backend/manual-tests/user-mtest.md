@@ -171,6 +171,8 @@ curl -X POST http://localhost:8080/api/me/avatar \
 
 # From the Admin perscpective
 
+## Login
+
 from the admin perspective, you can log in with the following
 
 ```shell
@@ -192,7 +194,7 @@ echo "JWT Token: $TOKEN_ADMIN"
 
 ```
 
-# User creation by admin
+## User creation by admin
 
 To create a new user as an admin, you can use the following command:
 
@@ -215,4 +217,57 @@ curl -i -X POST http://localhost:8080/api/admin/createuser \
   "password":"password123"
 }' | jq
 
+```
+
+## User listing by admin
+
+To list all users as an admin, you can use the following command:
+
+```shell
+curl -H "Authorization: Bearer $TOKEN_ADMIN" http://localhost:8080/api/admin/users | jq
+```
+
+## User details by admin
+
+To get the details of a specific user as an admin, you can use the following command, replacing `<USER_ID>` with the actual ID of the user you want to retrieve:
+
+```shell
+curl -H "Authorization: Bearer $TOKEN_ADMIN" http://localhost:8080/api/admin/users/2 | jq
+```
+
+## User update by admin
+
+To update a user's information as an admin, you can use the following command, replacing `<USER_ID>` with the actual ID of the user you want to update:
+
+```shell
+curl -X PUT \
+-H "Authorization: Bearer $TOKEN_ADMIN" \
+-H "Content-Type: application/json" \
+-d '{
+  "username": "UpdatedUser2",
+  "role": 1,
+  "isVerified": true
+}' \
+http://localhost:8080/api/admin/users/4 | jq
+```
+
+## User deletion by admin
+
+To delete a user as an admin, you can use the following command, replacing `<USER_ID>` with the actual ID of the user you want to delete:
+
+```shell
+curl -X DELETE "http://localhost:8080/api/admin/users/3" \
+ -H "Authorization: Bearer $TOKEN_ADMIN" | jq
+```
+
+## Cleaning upavatar files
+
+Create a avatar file for testing, then delete it after the test:
+
+```shell
+# Create a test avatar file
+TEST_AVATAR="/home/christian/SkoreFlow_Project/SkoreFlow/backend/storage/avatars/test-avatar.png"
+touch "$TEST_AVATAR"
+# After the test, delete the test avatar file
+go run cmd/cli/main.go -cleanup-avatars
 ```

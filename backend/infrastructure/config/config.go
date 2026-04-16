@@ -3,7 +3,6 @@ package config
 import (
 	"fmt"
 	"log"
-	"os"
 	"strings"
 	"sync"
 
@@ -50,10 +49,19 @@ type DatabaseConfig struct {
 
 // Internal Microservice Configuration
 // Used for internal services (e.g. thumbnail generation)
-type microServiceConfig struct {
+type MicroServiceConfig struct {
 	MsName string `env:"MS_NAME"`
 	MsPort int    `env:"MS_PORT"`
 	MsRoot string `env:"MS_ROOT"`
+}
+
+// Fronten Configuration
+type FrontendConfig struct {
+	Origin              string `env:"FRONTEND_ORIGIN"`                // e.g. http://localhost:3000
+	ResetPasswordPath   string `env:"FRONTEND_RESET_PASSWORD_PATH"`   // e.g. /reset-password
+	RegisterConfirmPath string `env:"FRONTEND_REGISTER_CONFIRM_PATH"` // e.g. /register/confirm
+
+	CorsAllowedOrigins string `env:"CORS_ALLOWED_ORIGINS"` // Allowed origins for CORS e.g. http://localhost:3000,https://app.skoreflow.com
 }
 
 // Global Server Configuration
@@ -61,24 +69,25 @@ type microServiceConfig struct {
 type ServerConfig struct {
 	Backend_Dev_Mode bool `env:"BACKEND_DEV_MODE"`
 
-	AppRoot     string `env:"APP_ROOT"`
-	StoragePath string `env:"STORAGE_PATH"`
+	// Paths
+	AppRoot     string `env:"APP_ROOT"`     //	APP_ROOT=/app or APP_ROOT=/home/<linuxuser>/SkoreFlow_Project/SkoreFlow/backend
+	StoragePath string `env:"STORAGE_PATH"` // STORAGE_PATH=storage
 
+	// Admin Email
 	AdminEmail    string `env:"ADMIN_EMAIL"`
 	AdminPassword string `env:"ADMIN_PASSWORD"`
-	ApiSecret     string `env:"API_SECRET"`
 
+	// Authentification
+	ApiSecret string `env:"API_SECRET"`
+
+	// Access
 	BackendListenAddress string `env:"BACKEND_LISTEN_ADDRESS"` // e.g. : 0.0.0.0:8080
 
-	FrontendOrigin              string `env:"FRONTEND_ORIGIN"`                // e.g. http://localhost:3000
-	FrontendResetPasswordPath   string `env:"FRONTEND_RESET_PASSWORD_PATH"`   // e.g. /reset-password
-	FrontendRegisterConfirmPath string `env:"FRONTEND_REGISTER_CONFIRM_PATH"` // e.g. /register/confirm
-
-	CorsAllowedOrigins string `env:"CORS_ALLOWED_ORIGINS"` // Allowed origins for CORS e.g. http://localhost:3000,https://app.skoreflow.com
-
+	// Others
 	Database     DatabaseConfig
 	Smtp         SmtpConfig
-	MicroService microServiceConfig
+	MicroService MicroServiceConfig
+	Frontend     FrontendConfig
 }
 
 // Config Builder
@@ -106,52 +115,60 @@ var (
 // This function exposes sensitive data (passwords, secrets).
 // Use ONLY in development or debug mode.
 func (c ServerConfig) LogSafe() {
-	logger.Main.Debug("------ SERVER CONFIG ------")
+	fmt.Println("------ SERVER CONFIG ------")
 
-	wd, _ := os.Getwd()
-	logger.Main.Debug("WORKDIR: %s", wd)
+	if c.Backend_Dev_Mode {
 
-	logger.Main.Debug("BACKEND_DEV_MODE :%t", c.Backend_Dev_Mode)
+		fmt.Printf("BACKEND_DEV_MODE :%t\n", c.Backend_Dev_Mode)
 
-	logger.Main.Debug("AdminEmail: %s", c.AdminEmail)
-	logger.Main.Debug("AdminPassword: %s", c.AdminPassword) // ❌ sensitive
-	logger.Main.Debug("ApiSecret: %s", c.ApiSecret)         // ❌ sensitive
+		fmt.Println("Paths:")
+		fmt.Printf("  StoragePath: %s\n", c.StoragePath)
+		fmt.Printf("  AppRoot: %s\n", c.AppRoot)
+		fmt.Printf("  StoragePath (joined): %s\n", c.AppRoot+"/"+c.StoragePath)
 
-	logger.Main.Debug("StoragePath: %s", c.StoragePath)
-	logger.Main.Debug("AppRoot: %s", c.AppRoot)
-	logger.Main.Debug("StoragePath (joined): %s", c.AppRoot+"/"+c.StoragePath)
+		fmt.Println("Admin Mail:")
+		fmt.Printf("  AdminEmail: %s\n", c.AdminEmail)
+		fmt.Printf("  AdminPassword: %s\n", c.AdminPassword) // ❌ sensitive
 
-	logger.Main.Debug("BackendListenAddress: %s", c.BackendListenAddress)
+		fmt.Println("Authentification:")
+		fmt.Printf("  ApiSecret: %s\n", c.ApiSecret) // ❌ sensitive
 
-	logger.Main.Debug("Database:")
-	logger.Main.Debug("  Driver: %s", c.Database.Driver)
-	logger.Main.Debug("  Host: %s", c.Database.Host)
-	logger.Main.Debug("  User: %s", c.Database.User)
-	logger.Main.Debug("  Password: %s", c.Database.Password) // ❌ sensitive
-	logger.Main.Debug("  Name: %s", c.Database.Name)
-	logger.Main.Debug("  Port: %d", c.Database.Port)
+		fmt.Println("Backend Access:")
+		fmt.Printf("  BackendListenAddress: %s\n", c.BackendListenAddress)
 
-	logger.Main.Debug("SMTP:")
-	logger.Main.Debug("  Enabled: %t", c.Smtp.Enabled)
-	logger.Main.Debug("  From: %s", c.Smtp.From)
-	logger.Main.Debug("  Host: %s", c.Smtp.HostServerAddr)
-	logger.Main.Debug("  Port: %d", c.Smtp.HostServerPort)
-	logger.Main.Debug("  Username: %s", c.Smtp.Username)
-	logger.Main.Debug("  Password: %s", c.Smtp.PasswordBase64) // ❌ sensitive
+		fmt.Println("Database:")
+		fmt.Printf("  Driver: %s\n", c.Database.Driver)
+		fmt.Printf("  Host: %s\n", c.Database.Host)
+		fmt.Printf("  User: %s\n", c.Database.User)
+		fmt.Printf("  Password: %s\n", c.Database.Password) // ❌ sensitive
+		fmt.Printf("  Name: %s\n", c.Database.Name)
+		fmt.Printf("  Port: %d\n", c.Database.Port)
 
-	logger.Main.Debug("MicroService:")
-	logger.Main.Debug("  Name: %s", c.MicroService.MsName)
-	logger.Main.Debug("  Port: %d", c.MicroService.MsPort)
-	logger.Main.Debug("  Root %s:", c.MicroService.MsRoot)
-	logger.Main.Debug("  Full Path: %s", c.AppRoot+"/"+c.MicroService.MsRoot)
+		fmt.Println("SMTP:")
+		fmt.Printf("  Enabled: %t\n", c.Smtp.Enabled)
+		fmt.Printf("  From: %s\n", c.Smtp.From)
+		fmt.Printf("  Host: %s\n", c.Smtp.HostServerAddr)
+		fmt.Printf("  Port: %d\n", c.Smtp.HostServerPort)
+		fmt.Printf("  Username: %s\n", c.Smtp.Username)
+		fmt.Printf("  Password: %s\n", c.Smtp.PasswordBase64) // ❌ sensitive
 
-	logger.Main.Debug("Frontend:")
-	logger.Main.Debug("FrontendOrigin: %s", c.FrontendOrigin)
-	logger.Main.Debug("FrontendResetPasswordPath: %s", c.FrontendResetPasswordPath)
-	logger.Main.Debug("FrontendRegisterConfirmPath: %s", c.FrontendRegisterConfirmPath)
-	logger.Main.Debug("CORS Origins: %s", c.CorsAllowedOrigins)
+		fmt.Println("MicroService:")
+		fmt.Printf("  Name: %s\n", c.MicroService.MsName)
+		fmt.Printf("  Port: %d\n", c.MicroService.MsPort)
+		fmt.Printf("  Root %s:\n", c.MicroService.MsRoot)
+		fmt.Printf("  Full Path: %s\n", c.AppRoot+"/"+c.MicroService.MsRoot)
 
-	logger.Main.Debug("--------------------------------------")
+		fmt.Println("Frontend:")
+		fmt.Printf("  FrontendOrigin: %s\n", c.Frontend.Origin)
+		fmt.Printf("  FrontendResetPasswordPath: %s\n", c.Frontend.ResetPasswordPath)
+		fmt.Printf("  FrontendRegisterConfirmPath: %s\n", c.Frontend.RegisterConfirmPath)
+		fmt.Printf("  CORS Origins: %s\n", c.Frontend.CorsAllowedOrigins)
+
+	} else {
+		fmt.Println("BACKEND PROD MODE")
+	}
+
+	fmt.Println("--------------------------------------")
 }
 
 // Builder Entry Point
@@ -248,11 +265,12 @@ func NewConfig() ServerConfig {
 
 		BackendListenAddress: "0.0.0.0:8080",
 
-		FrontendOrigin:              "http://localhost:3000", //(ex: Dev http://localhost:3000 ou Prod https://app.skoreflow.com)
-		FrontendResetPasswordPath:   "/reset-password",
-		FrontendRegisterConfirmPath: "/register/confirm",
-
-		CorsAllowedOrigins: "http://localhost:3000", //(ex: http://localhost:3000,https://app.skoreflow.com)
+		Frontend: FrontendConfig{
+			Origin:              "http://localhost:3000", //(ex: Dev http://localhost:3000 ou Prod https://app.skoreflow.com)
+			ResetPasswordPath:   "/reset-password",
+			RegisterConfirmPath: "/register/confirm",
+			CorsAllowedOrigins:  "http://localhost:3000", //(ex: http://localhost:3000,https://app.skoreflow.com)
+		},
 
 		Database: DatabaseConfig{
 			Driver: "sqlite",
@@ -260,7 +278,7 @@ func NewConfig() ServerConfig {
 
 		Smtp: SmtpConfig{},
 
-		MicroService: microServiceConfig{
+		MicroService: MicroServiceConfig{
 			MsName: "thumbnail-service",
 			MsPort: 5010,
 			MsRoot: "",

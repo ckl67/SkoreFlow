@@ -185,8 +185,8 @@ func (s *AuthService) RequestRegistrationConfirmation(email string) error {
 
 	htmlBody := s.buildRegistrationConfirmationBodyHTML(
 		user.PasswordReset,
-		cfg.FrontendOrigin,
-		cfg.FrontendRegisterConfirmPath,
+		cfg.Frontend.Origin,
+		cfg.Frontend.RegisterConfirmPath,
 	)
 
 	if err := mail.SendHTMLMail(email, "Confirm Your SkoreFlow Registration", htmlBody); err != nil {
@@ -229,8 +229,8 @@ func (s *AuthService) ForgotPassword(email string) error {
 
 	htmlBody := s.buildResetBodyHTML(
 		user.PasswordReset,
-		cfg.FrontendOrigin,
-		cfg.FrontendResetPasswordPath,
+		cfg.Frontend.Origin,
+		cfg.Frontend.ResetPasswordPath,
 	)
 
 	if err := mail.SendHTMLMail(email, "SkoreFlow Password Reset", htmlBody); err != nil {

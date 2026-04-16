@@ -10,6 +10,10 @@ Whether you're new to SkoreFlow or an experienced developer, this documentation 
 
 ## Table of Contents
 
+### General
+
+- [HTTP Status Codes](./general/http_status_codes.md)
+
 ### Development Environment
 
 - [Visual Studio Code settings](./environment/vscode.md)
@@ -17,10 +21,12 @@ Whether you're new to SkoreFlow or an experienced developer, this documentation 
 ### Backend Guides
 
 - [Architecure](./backend/architecture.md)
+- [cors explanation](./backend/cors.md)
 - [go ans Docker paths](./backend/go.md)
 - [Installation](./backend/install.md)
 - [Automatic Code Reloading with Air](./backend/air.md)
 - [Running the Backend](./backend/run.md)
+- [Debugging](./backend/debug.md)
 - [Backend Testing](./backend/test.md)
 
 ### Frontend Guides

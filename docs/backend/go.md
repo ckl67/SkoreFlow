@@ -59,7 +59,7 @@ We use environment variables to set the root path and storage path, and we const
 
 ```go
 //In local
-APP_ROOT=/home/christian/SkoreFlow_Project/SkoreFlow/backend
+APP_ROOT=/home/<linuxuser>/SkoreFlow_Project/SkoreFlow/backend
 STORAGE_PATH=storage
 
 //In Docker

@@ -44,7 +44,6 @@ type AdmCreateUserRequest struct {
 // AdminUpdateUserRequest defines the payload for updating a user.
 type AdmUpdateUserRequest struct {
 	Username   *string `json:"username" binding:"omitempty,min=3,max=100"`
-	Email      *string `json:"email" binding:"omitempty,email"`
 	Password   *string `json:"password" binding:"omitempty,min=8,max=100"`
 	Role       *int    `json:"role"`
 	IsVerified *bool   `json:"isVerified"`
