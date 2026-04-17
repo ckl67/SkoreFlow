@@ -201,11 +201,15 @@ func (ctrl *UserController) AdmUpdateUser(c *gin.Context) {
 func (ctrl *UserController) UploadAvatar(c *gin.Context) {
 	uid := c.GetUint32("user_id")
 
+	logger.User.Debug("User %d attempts to upload file", uid)
+
 	var form forms.UploadAvatarRequest
 	if err := c.ShouldBind(&form); err != nil {
 		responses.VALIDATION_ERROR(c, err)
 		return
 	}
+
+	logger.User.Debug("User %d attempts to upload file %s", uid, form.File.Filename)
 
 	user, err := ctrl.userService.UploadAvatar(uid, form.File)
 	if err != nil {

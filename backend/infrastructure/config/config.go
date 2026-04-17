@@ -211,6 +211,7 @@ func (b configBuilder) Build() ServerConfig {
 	conf := NewConfig()
 
 	// Read Configuration via .env file
+	// from the working directory
 	dotenvFile := ".env"
 	if b.dotenvFile != "" {
 		dotenvFile = b.dotenvFile

@@ -166,6 +166,7 @@ func (server *Server) SetupRouter() {
 			protected.GET("/me", userCtrl.GetProfile)           // MOK
 			protected.PUT("/me", userCtrl.UpdateProfile)        // MOK
 			protected.POST("/me/avatar", userCtrl.UploadAvatar) // MOK
+			// protected.DELETE("/me/avatar", userCtrl.DeleteAvatar)
 
 			// -----------------------------------------------------------------------------------
 			// SHEETS (Music scores)

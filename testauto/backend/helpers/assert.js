@@ -1,6 +1,9 @@
-// --------------------------------------------------------------------------------
-// ASSERT / VALIDATION HELPER (équivalent validate_api)
-// --------------------------------------------------------------------------------
+// Simple CLI test assertion helper
+//
+// → Validates HTTP response status against an expected value
+// → Prints formatted output to stdout (success) or stderr (failure)
+// → On failure, displays error details and terminates the process with exit code 1
+// → Designed for command-line automated API testing (Node.js)
 
 function prettyPrint(data) {
   if (!data) return;

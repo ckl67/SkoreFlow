@@ -29,7 +29,7 @@ func main() {
 	logger.SetModuleLevel("main", "debug") // In debug, will also display the configuration used
 	logger.SetModuleLevel("server", "info")
 	logger.SetModuleLevel("login", "info")
-	logger.SetModuleLevel("user", "info")
+	logger.SetModuleLevel("user", "debug")
 	logger.SetModuleLevel("sheet", "info")
 	logger.SetModuleLevel("composer", "info")
 	logger.SetModuleLevel("db", "info")

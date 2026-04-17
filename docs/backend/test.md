@@ -35,3 +35,54 @@ Some manual testing commands are provided below, but you can also create your ow
 List of manual tests:
 [smoke](./manual-tests/smoke-mtest.md)
 [register and login](./manual-tests/user-mtest.md)
+
+## Autotests Coding
+
+Automated tests are now implemented in **JavaScript (Node.js)**.
+
+This approach provides more flexibility compared to shell-based testing, especially for:
+
+- complex workflows
+- API chaining
+- file uploads (multipart/form-data)
+- structured assertions and error handling
+
+---
+
+### Project Structure
+
+The test suite is organized as follows:
+
+```bash
+testauto/
+    auto-test.sh        # Main test runner (entry point)
+    config.js           # Global configuration (API URL, etc.)
+    helpers/            # Reusable logic (API calls, assertions, auth, reset)
+    tests/              # Test suites grouped by domain
+    resources/          # Test assets (images, PDFs, etc.)
+```
+
+### Dependencies
+
+The test framework relies on the following Node.js libraries:
+
+- axios → HTTP client used for all API requests
+- form-data → Required for multipart requests (e.g. file uploads)
+
+To install dependencies:
+
+```shell
+npm install
+
+# Or manually:
+
+npm install axios form-data
+```
+
+Notes
+
+- All HTTP requests are now handled via a unified axios-based helper.
+- Multipart uploads (e.g. avatar, PDF) require form-data to properly replicate curl -F behavior.
+- The shell script (auto-test.sh) remains the entry point and orchestrates test execution.
+
+This setup ensures consistency, maintainability, and better debugging capabilities compared to raw shell scripts.
