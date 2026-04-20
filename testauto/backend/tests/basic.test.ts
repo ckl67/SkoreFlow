@@ -1,5 +1,5 @@
-const { request } = require("../helpers/api");
-const { assertStatus } = require("../helpers/assert");
+import { request } from "../helpers/api.js";
+import { assertStatus } from "../helpers/assert.js";
 
 // --------------------------------------------------------------------------------
 // BASIC SMOKE TESTS
@@ -10,6 +10,7 @@ async function run() {
 
   // 1. Health Check
   let res = await request("GET", "http://localhost:8080/health");
+
   assertStatus("Server Health Check", res, 200);
 
   // 2. Version Check

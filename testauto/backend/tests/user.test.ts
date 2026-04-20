@@ -1,16 +1,17 @@
-import fs from "fs";
-import axios from "axios";
-import FormData from "form-data";
-
-import { API_URL } from "../config";
-
-import { request } from "../helpers/api";
-import { assertStatus } from "../helpers/assert";
-import { login } from "../helpers/auth";
-import { createUser, updateUser, getUserIdByEmail } from "../helpers/user";
-
-import { API_URL } from "../config";
 const ENABLE_PW_RESET = process.env.TEST_PASSWORD_RESET === "true";
+
+import { login } from "../helpers/auth.js";
+import {
+  createUser,
+  updateUser,
+  getUserIdByEmail,
+  userLoadAvatar,
+} from "../helpers/user.js";
+import { request } from "../helpers/api.js";
+import { assertStatus } from "../helpers/assert.js";
+import { API_URL } from "../config.js";
+import { getResetToken } from "../helpers/reset.js";
+import { sleep } from "../helpers/common.js";
 
 interface TestUser {
   email: string;
@@ -52,10 +53,15 @@ async function run() {
   for (const u of users) {
     const id = await getUserIdByEmail(u.email, TOKEN_ADMIN);
 
+    // without this verification
+    // username: is not assignable to parameter of type 'RequestOptions' with 'exactOptionalPropertyTypes: true'.
+    // Consider adding 'undefined' to the types of the target's properties.
+    const uname = u.email.split("@")[0] ?? "default_user";
+
     await updateUser(
       id,
       {
-        username: u.email.split("@")[0],
+        username: uname,
         password: "password123",
         role: u.role,
         isVerified: u.verified,
@@ -106,18 +112,15 @@ async function run() {
   // ----------------------------------------------------------------------------
   // AVATAR
   // ----------------------------------------------------------------------------
+  console.log("\n--- Attente de 2 secondes avant l'upload ---");
+  //await sleep(2000);
+
   console.log("\n--- Avatar upload ---");
 
-  const form = new FormData();
-  form.append("avatar", fs.createReadStream("./resources/avatars/user.png"));
+  userLoadAvatar("./resources/avatars/user.png", TOKEN_USER1);
 
-  res = await request("POST", `${API_URL}/me/avatar`, {
-    token: TOKEN_USER1,
-    data: form,
-    headers: form.getHeaders(),
-  });
+  console.log("\n--- Attente de 2 secondes avant l'upload ---");
 
-  assertStatus("Upload Avatar", res, 200);
   // ----------------------------------------------------------------------------
   // ADMIN OPERATIONS
   // ----------------------------------------------------------------------------
@@ -150,10 +153,19 @@ async function run() {
   // ----------------------------------------------------------------------------
   const email4 = "user4@test.com";
 
-  await createUser(email4, "password123", TOKEN_ADMIN);
+  await createUser({ email: email4, password: "password123" }, TOKEN_ADMIN);
   const id4 = await getUserIdByEmail(email4, TOKEN_ADMIN);
 
-  await updateUser(id4, "user4", 0, false, TOKEN_ADMIN);
+  await updateUser(
+    id4,
+    {
+      username: "user4",
+      password: "password123",
+      role: 0,
+      isVerified: false,
+    },
+    TOKEN_ADMIN,
+  );
 
   res = await request("DELETE", `${API_URL}/admin/users/${id4}`, {
     token: TOKEN_ADMIN,
@@ -187,7 +199,13 @@ async function run() {
       assertStatus("Password reset", res, 200);
     } catch (err) {
       console.error("🛑 Aborting tests due to failure in getResetToken");
-      console.error(err.message);
+      // Error standard
+      if (err instanceof Error) {
+        console.error(err.message);
+      } else {
+        console.error("Une erreur inconnue est survenue", err);
+      }
+
       process.exit(1);
     }
   } else {
@@ -225,7 +243,13 @@ async function run() {
       assertStatus("Request confirm again", res, 200);
     } catch (err) {
       console.error("🛑 Aborting tests due to failure in getResetToken");
-      console.error(err.message);
+      // Error standard
+      if (err instanceof Error) {
+        console.error(err.message);
+      } else {
+        console.error("Une erreur inconnue est survenue", err);
+      }
+
       process.exit(1);
     }
   } else {

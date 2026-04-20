@@ -1,12 +1,5 @@
-const { API_URL } = require("../config");
-
-const { request } = require("../helpers/api");
-const { assertStatus } = require("../helpers/assert");
-const { login } = require("../helpers/auth");
-
-const axios = require("axios");
-const FormData = require("form-data");
-const fs = require("fs");
+import { login } from "../helpers/auth.js";
+import { createComposer } from "../helpers/composer.js";
 
 // --------------------------------------------------------------------------------
 // MAIN TEST
@@ -18,6 +11,7 @@ async function run() {
   console.log("=================================");
 
   // ----------------------------------------------------------------------------
+  //await sleep(2000);
 
   // ----------------------------------------------------------------------------
   // CREATE USERS
@@ -45,14 +39,16 @@ async function run() {
   ];
 
   for (const c of composers) {
-    await createComposer({
-      name: c.name,
-      externalURL: "",
-      epoch: c.description,
-      uploadFile: c.file,
-      isVerified: false,
-      token: TOKEN_USER2,
-    });
+    await createComposer(
+      {
+        name: c.name,
+        externalURL: "",
+        epoch: c.description,
+        uploadFile: c.file,
+        isVerified: false,
+      },
+      TOKEN_USER2,
+    );
   }
 }
 

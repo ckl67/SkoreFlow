@@ -125,6 +125,7 @@ if [ "$CLEAN_DB_FILES" = true ]; then
 	# Restore default assets for composers (portraits)
 	if [ -d "$BACKEND_DIR/storage/assets" ]; then
 		cp -r "$BACKEND_DIR/storage/assets/avatars/admin.png" "$BACKEND_DIR/storage/users"
+		cp -r "$BACKEND_DIR/storage/assets/avatars/default.png" "$BACKEND_DIR/storage/users"
 	fi
 else
 	echo "-->> NO Physical cleanup of Database and Storage"
@@ -163,26 +164,26 @@ cd "$SCRIPT_DIR" || exit
 
 # 1. Basic Health and Sanity tests
 echo "Running basic tests (Node.js TypeScript)..."
-npx ts-node tests/basic.test.js || exit 1 # Exit immediately if basic tests fail, as they indicate fundamental issues with the server setup
+npx tsx tests/basic.test.ts || exit 1 # Exit immediately if basic tests fail, as they indicate fundamental issues with the server setup
 
 # 2. User Management (MANDATORY: Generates tokens for other tests)
 if [ "$RUN_USERS" = true ]; then
-	echo "Running user tests (Node.jsTypeScript)..."
-	npx ts-node tests/user.test.ts || exit 1 # Exit immediately if user tests fail, since they are critical for subsequent tests
+	echo "Running user tests (Node.js TypeScript)..."
+	npx tsx tests/user.test.ts || exit 1 # Exit immediately if user tests fail, since they are critical for subsequent tests
 else
 	echo "⏩ Skipping User tests (use --users or --all to include)"
 fi
 
 # 3. Conditional: Sheet Management
 if [ "$RUN_SHEETS" = true ]; then
-	npx ts-node tests/sheet.test.js || exit 1
+	npx tsx tests/sheet.test.js || exit 1
 else
 	echo "⏩ Skipping Sheet tests (use --sheets or --all to include)"
 fi
 
 # 4. Conditional: Composer Management
 if [ "$RUN_COMPOSERS" = true ]; then
-	npx ts-node tests/composer.test.js || exit 1
+	npx tsx tests/composer.test.js || exit 1
 else
 	echo "⏩ Skipping Composer tests (use --composers or --all to include)"
 fi

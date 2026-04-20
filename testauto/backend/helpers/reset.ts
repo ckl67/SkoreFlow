@@ -3,8 +3,7 @@
 // --------------------------------------------------------------------------------
 
 import { request } from "./api.js";
-
-const { API_URL } = require("../config");
+import { API_URL } from "../config.js";
 
 // --------------------------------------------------------------------------------
 // getResetToken
@@ -30,4 +29,4 @@ async function getResetToken(email: string, adminToken: string) {
 // --------------------------------------------------------------------------------
 // EXPORT (ESM)
 // --------------------------------------------------------------------------------
-module.exports = { getResetToken };
+export { getResetToken };

@@ -80,7 +80,7 @@ type UpdateUserRequest struct {
 
 // UploadAvatarRequest defines the payload for uploading a user avatar.
 type UploadAvatarRequest struct {
-	File *multipart.FileHeader `form:"avatar" binding:"required"`
+	File *multipart.FileHeader `form:"uploadFile" binding:"required"`
 }
 
 // ValidateForm performs custom validation for CreateComposerRequest.

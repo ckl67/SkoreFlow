@@ -214,9 +214,11 @@ func (s *UserService) UploadAvatar(uid uint32, file *multipart.FileHeader) (*mod
 
 	// Relative Path (stored in DB)
 	filePath := s.paths.UserAvatarStorageRel(uid)
+	logger.User.Debug("(UploadAvatar) Relative path %s", filePath)
 
 	// Absolute Path
 	fullFilePath := s.paths.StorageAbsPath(filePath)
+	logger.User.Debug("(UploadAvatar) Absolute path %s", fullFilePath)
 
 	if err := filedir.SaveFile(file, fullFilePath); err != nil {
 		return nil, err

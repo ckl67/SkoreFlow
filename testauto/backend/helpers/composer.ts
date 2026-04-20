@@ -2,12 +2,12 @@
 // HELPERS
 // --------------------------------------------------------------------------------
 
+import { API_URL } from "../config.js";
+
 import { assertStatus } from "./assert.js";
 import { createReadStream } from "node:fs";
 import FormData from "form-data";
 import { request } from "./api.js";
-
-const { API_URL } = require("../config");
 
 // --------------------------------------------------------------------------------
 // createComposer
@@ -79,4 +79,4 @@ async function createComposer(
 // EXPORT (ESM)
 // --------------------------------------------------------------------------------
 
-module.exports = { createComposer };
+export { createComposer };

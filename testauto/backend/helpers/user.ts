@@ -4,8 +4,10 @@
 
 import { request } from "./api.js";
 import { assertStatus } from "./assert.js";
+import { createReadStream } from "node:fs";
+import FormData from "form-data";
 
-const { API_URL } = require("../config");
+import { API_URL } from "../config.js";
 
 // --------------------------------------------------------------------------------
 // createUser
@@ -31,7 +33,7 @@ const { API_URL } = require("../config");
 // TYPES
 // --------------------------------------------------------------------------------
 interface RequestOptions {
-  email: string;
+  email?: string;
   username?: string;
   password?: string;
   role?: number;
@@ -52,6 +54,10 @@ async function createUser(
   token: string,
   expected = 201,
 ) {
+  if (!email) {
+    throw new Error("email mandatory username.");
+  }
+
   const username = email.split("@")[0];
 
   console.log(`\n Creating User: ${username} (${email})`);
@@ -127,7 +133,30 @@ async function getUserIdByEmail(email: string, token: string) {
 }
 
 // --------------------------------------------------------------------------------
+// createComposer
+// --------------------------------------------------------------------------------
+async function userLoadAvatar(
+  uploadFile: string,
+  token: string,
+  expected = 200,
+) {
+  const form = new FormData();
+
+  if (uploadFile) form.append("uploadFile", createReadStream(uploadFile));
+
+  console.log(`\n Upload Avatar for User  (File: ${uploadFile || "None"})`);
+
+  const res = await request("POST", `${API_URL}/me/avatar`, {
+    token,
+    data: form,
+    headers: form.getHeaders(),
+  });
+
+  assertStatus(`Upload Avatar : ${uploadFile}`, res, expected);
+}
+
+// --------------------------------------------------------------------------------
 // EXPORT (ESM)
 // --------------------------------------------------------------------------------
 
-module.exports = { createUser, updateUser, getUserIdByEmail };
+export { createUser, updateUser, getUserIdByEmail, userLoadAvatar };

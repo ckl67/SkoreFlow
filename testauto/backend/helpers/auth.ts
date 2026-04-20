@@ -6,7 +6,7 @@
 // --------------------------------------------------------------------------------
 
 import { request } from "./api.js";
-const { API_URL } = require("../config");
+import { API_URL } from "../config.js";
 
 // --------------------------------------------------------------------------------
 // login(email, password)
@@ -53,4 +53,4 @@ async function login(email: string, password: string) {
   return res.data.token;
 }
 
-module.exports = { login };
+export { login };
