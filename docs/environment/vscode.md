@@ -41,7 +41,9 @@ Open VS Code and install the following extensions:
 - Pylance (for Python linting and analysis)
 - Markdown All in One (for editing markdown files)
 
----
+- npm IntelliSense for javascript
+- Auto Import, auto generate the javascript require
+- Error Lens: Highlights errors directly at the end of the line (saves time).
 
 ## 3. Install Required System Tools
 
@@ -122,11 +124,39 @@ Create `.vscode/launch.json`:
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Launch Package",
+      "name": "Debug Server",
       "type": "go",
       "request": "launch",
-      "mode": "auto",
-      "program": "${fileDirname}"
+      "mode": "debug",
+      "program": "${workspaceFolder}/backend/cmd/server",
+      "cwd": "${workspaceFolder}/backend"
+    },
+
+    {
+      "name": "Debug CLI (no args)",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "program": "${workspaceFolder}/backend/cmd/cli",
+      "cwd": "${workspaceFolder}/backend"
+    },
+
+    {
+      "name": "Debug CLI (list users)",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "program": "${workspaceFolder}/backend/cmd/cli",
+      "cwd": "${workspaceFolder}/backend",
+      "args": ["-list-users"]
+    },
+
+    {
+      "name": "Debug JS Test Auto",
+      "type": "node",
+      "request": "launch",
+      "program": "${file}",
+      "skipFiles": ["<node_internals>/**"]
     }
   ]
 }
@@ -147,6 +177,11 @@ Create `.vscode/settings.json`:
 ```json
 {
   // --- GÉNÉRAL ---
+  // Internal VSC Javascript motor correction
+  // checkJs not used
+  // we will use eslint.config.mjs (ESLint) and tsconfig.json (TypeScript)
+  "js/ts.implicitProjectConfig.checkJs": false,
+
   "editor.formatOnSave": true,
   "editor.tabSize": 2,
   "editor.detectIndentation": false,

@@ -52,11 +52,12 @@ module backend
 // | `github.com/stretchr/testify`            |  Framework de **tests unitaires** Go, avec assertions (`assert`) et mocks pour simplifier l’écriture de tests.                                          |
 // | `golang.org/x/crypto`                    |  Fournit des fonctions **cryptographiques avancées**, comme bcrypt, PBKDF2, AES, etc., pour le hachage des mots de passe et la sécurité.                |
 // | `gorm.io/driver/mysql`                   |  Driver **MySQL/MariaDB** pour GORM. Permet de se connecter et interagir avec une base MySQL via GORM.                                                  |
+// | `golang.org/x/image`                     |  For image Handling
 // | `gorm.io/driver/postgres`                |  Driver **PostgreSQL** pour GORM. Permet de se connecter et interagir avec une base PostgreSQL via GORM.                                                |
 // | `gorm.io/gorm`                           |  ORM (**Object-Relational Mapping**) pour Go. Facilite les interactions avec différentes bases SQL (MySQL, PostgreSQL, SQLite) avec des structs Go.     |
 // =====================================================================================================================================================================================================
 
-go 1.24.0
+go 1.25.0
 
 require (
 	github.com/gin-contrib/cors v1.7.6
@@ -66,7 +67,8 @@ require (
 	github.com/golang-jwt/jwt/v5 v5.3.1
 	github.com/golobby/config/v3 v3.2.2
 	github.com/mozillazg/go-unidecode v0.2.0
-	golang.org/x/crypto v0.48.0
+	golang.org/x/crypto v0.49.0
+	golang.org/x/image v0.39.0
 	gorm.io/driver/mysql v1.6.0
 	gorm.io/driver/postgres v1.6.0
 	gorm.io/gorm v1.31.1
@@ -115,12 +117,12 @@ require (
 	go.uber.org/mock v0.5.0 // indirect
 	golang.org/x/arch v0.20.0 // indirect
 	golang.org/x/exp v0.0.0-20251023183803-a4bb9ffd2546 // indirect
-	golang.org/x/mod v0.32.0 // indirect
-	golang.org/x/net v0.49.0 // indirect
-	golang.org/x/sync v0.19.0 // indirect
-	golang.org/x/sys v0.41.0 // indirect
-	golang.org/x/text v0.34.0 // indirect
-	golang.org/x/tools v0.41.0 // indirect
+	golang.org/x/mod v0.34.0 // indirect
+	golang.org/x/net v0.52.0 // indirect
+	golang.org/x/sync v0.20.0 // indirect
+	golang.org/x/sys v0.42.0 // indirect
+	golang.org/x/text v0.36.0 // indirect
+	golang.org/x/tools v0.43.0 // indirect
 	google.golang.org/protobuf v1.36.9 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	modernc.org/libc v1.67.6 // indirect

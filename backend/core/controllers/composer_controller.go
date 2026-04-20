@@ -52,6 +52,7 @@ func (ctrl *ComposerController) CreateComposer(c *gin.Context) {
 		responses.ERROR(c, http.StatusBadRequest, err)
 		return
 	}
+	logger.Composer.Debug("(CreateComposer) Step 2Created by User ID: %d with User Role: %d\n", uid, userRole)
 
 	// 3. Validation
 	if err := form.ValidateForm(); err != nil {

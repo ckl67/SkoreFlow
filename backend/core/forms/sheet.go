@@ -25,10 +25,27 @@ package forms
 // RULE:
 // → Never duplicate binding validation inside ValidateForm()
 
+// ===============================================================================================
+// Black Import !
+// ===============================================================================================
+// Blank imports like _ "image/jpeg" follow the "Registration Pattern".
+// 1. It imports the package solely for its side effects.
+// 2. Before main() starts, the package's init() function is executed.
+// 3. This init() calls image.RegisterFormat() to "teach" the standard
+//    "image" package how to handle this specific format.
+// 4. When image.Decode() or image.DecodeConfig() is called, the 'image'
+//    package uses the registered decoder (JPEG, PNG, or WebP) to process the file.
+// ===============================================================================================
+
 import (
 	"errors"
 	"mime/multipart"
 	"strings"
+
+	_ "image/jpeg"
+	_ "image/png"
+
+	_ "golang.org/x/image/webp"
 )
 
 // -----------------------

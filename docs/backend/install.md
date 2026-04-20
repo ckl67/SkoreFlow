@@ -4,7 +4,7 @@ This document explains the step by step to set up the development environment an
 
 ---
 
-## 1. Clone the Repository
+## Clone the Repository
 
 ```bash
 git clone https://github.com/ckl67/skoreflow.git
@@ -13,17 +13,16 @@ cd skoreflow
 
 ---
 
-## 2. Prerequisites
+## Prerequisites
 
 Make sure you have the following installed:
 
 - Go (programming language and compiler)
 - See below for specific installation instructions.
 
-
 ---
 
-## 3. Remove Previous Go Installation
+## Remove Previous Go Installation
 
 Before installing a clean version:
 
@@ -34,17 +33,23 @@ sudo rm -rf /usr/local/go
 
 ---
 
-## 4. Install Go
+## Install Go
 
 It is not recommended to install Go using snap.
-We are using the specific version 1.24.0 to ensure compatibility with our codebase and avoid potential issues with newer versions.
 
-```bash
-wget https://go.dev/dl/go1.24.0.linux-amd64.tar.gz
-sudo tar -C /usr/local -xzf go1.24.0.linux-amd64.tar.gz
+We are using the specific version 1.25.0 to ensure compatibility with our codebase and avoid potential issues with newer versions.
+Upgrated to 1.25.0 has been requested by the use of package
+
+```go
+_ "golang.org/x/image/webp"
 ```
 
-Add Go to your path 
+```bash
+wget https://go.dev/dl/go1.25.0.linux-amd64.tar.gz
+sudo tar -C /usr/local -xzf go1.25.0.linux-amd64.tar.gz
+```
+
+Add Go to your path
 
 ```bash
 echo 'export PATH=$PATH:/usr/local/go/bin' >> ~/.bashrc
@@ -60,7 +65,6 @@ go env GOPATH
 which go
 ```
 
-
 ### Verify installation
 
 ```bash
@@ -69,7 +73,7 @@ go version
 
 ---
 
-## 5. Backend Setup
+## Backend Setup
 
 Clean and synchronize dependencies:
 
@@ -78,86 +82,39 @@ go clean -modcache
 go mod tidy
 ```
 
-
 ---
 
+## Image Format Registration in Go
 
-## 8. Branching Strategy
+The Blank Import Mechanism (\_):
 
-- main: production-ready code  
-- dev: integration branch  
-- feature branches: feature/<name>  
+In Go, importing a package with an underscore (e.g., \_ "image/jpeg") is used for the side effect of registering the format.
+These packages contain an init() function that automatically registers their respective decoders (JPEG, PNG, WebP) into the core image package upon startup.
 
-Example:
+Standard Library vs. X-Repositories:
 
-```bash
-git checkout -b feature/add-auth-endpoint
+- image/jpeg and image/png are part of the Go Standard Library. They are built-in and do not affect your go.mod file.
+- golang.org/x/image/webp belongs to the extended repositories.
+- Because it is external to the core runtime, you must run
+
+```shell
+go get golang.org/x/image/webp
 ```
 
----
+which adds it as a dependency in your go.mod.
 
-## 9. Commit Guidelines
+Consequences of Go 1.25 Update !!
 
-Use clear and structured commit messages:
+Adding a modern "x" library dependency might automatically bump (increase) your go.mod version to go 1.25.0 if the library requires the latest toolchain features. This ensures compatibility and security across all dependencies.
 
-type(scope): description
+```go
+// go.mod
 
-### Examples
-
-```
-feat(auth): add login endpoint
-fix(user): correct validation bug
-refactor(sheet): improve file handling
+go 1.25.0
 ```
 
----
+Afterwars it is mandatory to run
 
-## 10. Pull Request Rules
-
-Before submitting a pull request:
-
-- Ensure the project builds successfully  
-- Run:
-
-```bash
-go mod tidy
+```shell
+make reset
 ```
-
-- Keep pull requests small and focused  
-- Provide a clear description:
-  - what was done  
-  - why  
-  - any side effects  
-
----
-
-## 11. Code Style
-
-- Follow standard Go conventions (gofmt, go vet)  
-- Keep functions small and focused  
-- Avoid unnecessary abstractions  
-- Use explicit error handling  
-
----
-
-## 12. Testing
-
-Run tests:
-
-```bash
-go test ./...
-```
-
----
-
-## 13. Notes
-
-- Avoid breaking existing APIs  
-- Maintain consistency with the current architecture  
-- Prefer readability over cleverness  
-
----
-
-## 14. Questions
-
-If something is unclear, open an issue or start a discussion.

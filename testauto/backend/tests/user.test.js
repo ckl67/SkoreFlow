@@ -1,50 +1,21 @@
+import fs from "fs";
+import axios from "axios";
+import FormData from "form-data";
+
+import { API_URL } from "../config";
+
+import { request } from "../helpers/api";
+import { assertStatus } from "../helpers/assert";
+import { login } from "../helpers/auth";
+import { createUser, updateUser, getUserIdByEmail } from "../helpers/user";
+
+import { API_URL } from "../config";
 const ENABLE_PW_RESET = process.env.TEST_PASSWORD_RESET === "true";
-const { API_URL } = require("../config");
 
-const { request } = require("../helpers/api");
-const { assertStatus } = require("../helpers/assert");
-const { login } = require("../helpers/auth");
-
-const axios = require("axios");
-const FormData = require("form-data");
-const fs = require("fs");
-
-// --------------------------------------------------------------------------------
-// HELPERS
-// --------------------------------------------------------------------------------
-async function createUser(email, password, token) {
-  const username = email.split("@")[0];
-
-  const res = await request("POST", `${API_URL}/admin/createuser`, {
-    token,
-    data: { username, email, password },
-  });
-
-  assertStatus(`Create User: ${email}`, res, 201);
-}
-
-async function getUserIdByEmail(email, token) {
-  const res = await request("GET", `${API_URL}/admin/users`, {
-    token,
-  });
-
-  const user = res.data.find((u) => u.email === email);
-
-  if (!user) {
-    console.error(`❌ User not found: ${email}`);
-    process.exit(1);
-  }
-
-  return user.id;
-}
-
-async function updateUserRole(userId, username, role, isVerified, token) {
-  const res = await request("PUT", `${API_URL}/admin/users/${userId}`, {
-    token,
-    data: { username, role, isVerified },
-  });
-
-  assertStatus(`Update Role (ID: ${userId})`, res, 200);
+interface TestUser {
+  email: string;
+  role: number;
+  verified: boolean;
 }
 
 // --------------------------------------------------------------------------------
@@ -55,7 +26,6 @@ async function run() {
   console.log("\n==============================");
   console.log("🚀 STARTING USER TESTS (Node)");
   console.log("==============================");
-
   // ----------------------------------------------------------------------------
   // ADMIN LOGIN
   // ----------------------------------------------------------------------------
@@ -67,20 +37,29 @@ async function run() {
   // ----------------------------------------------------------------------------
   console.log("\n--- Creating users ---");
 
-  const users = [
+  const users: TestUser[] = [
     { email: "user1@test.com", role: 0, verified: true },
     { email: "user2@test.com", role: 1, verified: true },
     { email: "user3@test.com", role: 0, verified: false },
   ];
 
   for (const u of users) {
-    await createUser(u.email, "password123", TOKEN_ADMIN);
+    await createUser({ email: u.email, password: "password123" }, TOKEN_ADMIN);
+  }
+
+  console.log("\n--- Update users ---");
+
+  for (const u of users) {
     const id = await getUserIdByEmail(u.email, TOKEN_ADMIN);
-    await updateUserRole(
+
+    await updateUser(
       id,
-      u.email.split("@")[0],
-      u.role,
-      u.verified,
+      {
+        username: u.email.split("@")[0],
+        password: "password123",
+        role: u.role,
+        isVerified: u.verified,
+      },
       TOKEN_ADMIN,
     );
   }
@@ -174,7 +153,7 @@ async function run() {
   await createUser(email4, "password123", TOKEN_ADMIN);
   const id4 = await getUserIdByEmail(email4, TOKEN_ADMIN);
 
-  await updateUserRole(id4, "user4", 0, false, TOKEN_ADMIN);
+  await updateUser(id4, "user4", 0, false, TOKEN_ADMIN);
 
   res = await request("DELETE", `${API_URL}/admin/users/${id4}`, {
     token: TOKEN_ADMIN,

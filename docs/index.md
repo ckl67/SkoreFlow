@@ -13,6 +13,9 @@ Whether you're new to SkoreFlow or an experienced developer, this documentation 
 ### General
 
 - [HTTP Status Codes](./general/http_status_codes.md)
+- [Javascript](./general/javascript.md)
+- [JSON Handling](./general/json.md)
+- [Error Handling](./general/error_handling.md)
 
 ### Development Environment
 
@@ -29,7 +32,10 @@ Whether you're new to SkoreFlow or an experienced developer, this documentation 
 - [Debugging](./backend/debug.md)
 - [Backend Testing](./backend/test.md)
 
+- [TypeScript Setup Requirements](./general/javascript_requirements.md)
+
 ### Frontend Guides
 
+- [JavaScript Coding Style](./general/javascript_ecosystem.md)
 - [Architecture](./frontend/architecture.md)
 - [Installation](./frontend/install.md)

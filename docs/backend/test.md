@@ -86,3 +86,22 @@ Notes
 - The shell script (auto-test.sh) remains the entry point and orchestrates test execution.
 
 This setup ensures consistency, maintainability, and better debugging capabilities compared to raw shell scripts.
+
+# ESM signifie ECMAScript Modules.
+
+Because we are using typestrict, a modification of package.json is mandotory to indicate that we are using module
+
+```json
+{
+  "type": "module",
+  "dependencies": {
+    "axios": "^1.15.1",
+    "form-data": "^4.0.5"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^6.0.3"
+  }
+}
+```

@@ -209,6 +209,12 @@ func (ctrl *UserController) UploadAvatar(c *gin.Context) {
 		return
 	}
 
+	// 3. Validation
+	if err := form.ValidateForm(); err != nil {
+		responses.ERROR(c, http.StatusBadRequest, err)
+		return
+	}
+
 	logger.User.Debug("User %d attempts to upload file %s", uid, form.File.Filename)
 
 	user, err := ctrl.userService.UploadAvatar(uid, form.File)

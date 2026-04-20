@@ -58,13 +58,7 @@ func (s *ComposerService) CreateComposer(uid uint32, userRole int, req forms.Cre
 	isAdmin := userRole == config.RoleAdmin
 	isModerator := userRole == config.RoleModerator
 
-	if !isAdmin && !isModerator {
-		logger.Composer.Warn(
-			"Unauthorized composer creation: user=%d role=%d required=[%d,%d] name=%s",
-			uid, userRole, config.RoleAdmin, config.RoleModerator, req.Name,
-		)
-		return apperrors.ErrAccessForbidden
-	}
+	// Everyone can create a composer, but only admin and moderator can validate verification
 
 	// 2. Mandatory fields validation
 	if req.Name == "" {
@@ -84,8 +78,16 @@ func (s *ComposerService) CreateComposer(uid uint32, userRole int, req forms.Cre
 		IsVerified:  false,
 	}
 
-	if req.IsVerified != nil {
-		composer.IsVerified = *req.IsVerified
+	if req.IsVerified {
+		if !isAdmin && !isModerator {
+			logger.Composer.Warn(
+				"Unauthorized composer validation : user=%d role=%d required=[%d,%d] name=%s",
+				uid, userRole, config.RoleAdmin, config.RoleModerator, req.Name,
+			)
+			return apperrors.ErrAccessForbidden
+		}
+
+		composer.IsVerified = req.IsVerified
 	}
 
 	// 4. File processing (optional)
@@ -209,6 +211,8 @@ func (s *ComposerService) ProcessComposerStorage(composer *models.Composer, file
 	if file == nil {
 		return nil
 	}
+
+	logger.Composer.Debug("(ProcessComposerStorage Service) processing file: %s for composer: %s", file.Filename, composer.Name)
 
 	ext := strings.ToLower(filepath.Ext(file.Filename))
 	if ext == "" {

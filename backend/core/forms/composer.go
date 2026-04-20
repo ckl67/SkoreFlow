@@ -26,6 +26,18 @@ package forms
 // → Never duplicate binding validation inside ValidateForm()
 // ===============================================================================================
 
+// ===============================================================================================
+// Black Import !
+// ===============================================================================================
+// Blank imports like _ "image/jpeg" follow the "Registration Pattern".
+// 1. It imports the package solely for its side effects.
+// 2. Before main() starts, the package's init() function is executed.
+// 3. This init() calls image.RegisterFormat() to "teach" the standard
+//    "image" package how to handle this specific format.
+// 4. When image.Decode() or image.DecodeConfig() is called, the 'image'
+//    package uses the registered decoder (JPEG, PNG, or WebP) to process the file.
+// ===============================================================================================
+
 import (
 	"errors"
 	"image"
@@ -33,6 +45,11 @@ import (
 	"net/http"
 	"path/filepath"
 	"strings"
+
+	_ "image/jpeg"
+	_ "image/png"
+
+	_ "golang.org/x/image/webp"
 )
 
 // -----------------------
@@ -54,7 +71,7 @@ type CreateComposerRequest struct {
 	ExternalURL string                `form:"externalURL"`
 	Epoch       string                `form:"epoch"`
 	File        *multipart.FileHeader `form:"uploadFile"`
-	IsVerified  *bool                 `form:"isVerified"`
+	IsVerified  bool                  `form:"isVerified"`
 }
 
 // UpdateComposerRequest defines the payload for updating a composer.
@@ -139,8 +156,8 @@ func (req *CreateComposerRequest) ValidateForm() error {
 		}
 
 		// 6. Validate dimensions
-		if imgConfig.Width > 800 || imgConfig.Height > 800 {
-			return errors.New("image dimensions too large (max 800x800)")
+		if imgConfig.Width > 2000 || imgConfig.Height > 2000 {
+			return errors.New("image dimensions too large (max 2000x2000)")
 		}
 
 		if imgConfig.Width < 50 || imgConfig.Height < 50 {
