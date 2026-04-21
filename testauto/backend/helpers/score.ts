@@ -10,23 +10,23 @@ import FormData from "form-data";
 import { request } from "./api.js";
 
 // --------------------------------------------------------------------------------
-// createsheet
+// createScore
 // --------------------------------------------------------------------------------
 //
 //	File            *multipart.FileHeader `form:"uploadFile"`
 //	Composer        string                `form:"composer"`
-//	SheetName       string                `form:"sheetName"`
+//	ScoreName       string                `form:"scoreName"`
 //	ReleaseDate     string                `form:"releaseDate"`
 //	Categories      string                `form:"categories"`
 //	Tags            string                `form:"tags"`
 //	InformationText string                `form:"informationText"`
 //
 //
-//    createsheet({
+//    createScore({
 //      name: "mozart",
 //      externalURL: "https://fr.wikipedia.org/wiki/mozart",
 //      epoch: "Moderne",
-//      uploadFile: "resources/sheets/mozart.png",
+//      uploadFile: "resources/scores/mozart.png",
 //      isVerified: true},
 //      TOKEN
 //    );
@@ -39,7 +39,7 @@ import { request } from "./api.js";
 interface RequestOptions {
   uploadFile: string;
   composer?: string;
-  sheetName: string;
+  scoreName: string;
   releaseDate?: string;
   categories?: string;
   tags?: string;
@@ -47,11 +47,11 @@ interface RequestOptions {
 }
 
 // --------------------------------------------------------------------------------
-// createsheet
+// createScore
 // --------------------------------------------------------------------------------
-async function createsheet(
+async function createScore(
   {
-    sheetName,
+    scoreName,
     releaseDate,
     categories,
     tags,
@@ -64,7 +64,7 @@ async function createsheet(
 ) {
   const form = new FormData();
 
-  if (sheetName) form.append("sheetName", sheetName);
+  if (scoreName) form.append("scoreName", scoreName);
   if (releaseDate) form.append("releaseDate", releaseDate);
   if (categories) form.append("categories", categories);
   if (tags) form.append("tags", tags);
@@ -73,20 +73,20 @@ async function createsheet(
   if (uploadFile) form.append("uploadFile", createReadStream(uploadFile));
 
   console.log(
-    `\n Creating sheet: ${sheetName} (File: ${uploadFile || "None"})`,
+    `\n Creating score: ${scoreName} (File: ${uploadFile || "None"})`,
   );
 
-  const res = await request("POST", `${API_URL}/sheets/upload`, {
+  const res = await request("POST", `${API_URL}/scores/upload`, {
     token,
     data: form,
     headers: form.getHeaders(),
   });
 
-  assertStatus(`Create sheet: ${sheetName}`, res, expected);
+  assertStatus(`Create score: ${scoreName}`, res, expected);
 }
 
 // --------------------------------------------------------------------------------
 // EXPORT (ESM)
 // --------------------------------------------------------------------------------
 
-export { createsheet };
+export { createScore };

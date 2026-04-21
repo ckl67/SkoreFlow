@@ -378,7 +378,7 @@ Backend Go (Gin)
 
 ```go
 Struct
-type CreateSheetRequest struct {
+type CreateScoreRequest struct {
     Title       string    `json:"title"`
     ReleaseDate time.Time `json:"release_date"`
 }
@@ -387,8 +387,8 @@ type CreateSheetRequest struct {
 Controller
 
 ```go
-func CreateSheet(c *gin.Context) {
-    var req CreateSheetRequest
+func CreateScore(c *gin.Context) {
+    var req CreateScoreRequest
 
     if err := c.ShouldBindJSON(&req); err != nil {
         c.JSON(http.StatusBadRequest, gin.H{

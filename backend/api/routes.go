@@ -84,7 +84,7 @@ func (server *Server) SetupRouter() {
 	// Controllers act as HTTP adapters → they depend on services
 	userCtrl := controllers.NewUserController(server.userService)
 	authCtrl := controllers.NewAuthController(server.authService)
-	sheetCtrl := controllers.NewSheetController(server.SheetService)
+	scoreCtrl := controllers.NewScoreController(server.ScoreService)
 	composerCtrl := controllers.NewComposerController(server.ComposerService)
 
 	// -------------------------------------------------------------------------------------------
@@ -169,26 +169,26 @@ func (server *Server) SetupRouter() {
 			// protected.DELETE("/me/avatar", userCtrl.DeleteAvatar)
 
 			// -----------------------------------------------------------------------------------
-			// SHEETS (Music scores)
+			// SCORES (Music scores)
 			// -----------------------------------------------------------------------------------
 			// Design strategy:
 			// - GET  → simple queries (pagination, filters via query params)
 			// - POST → complex searches (large payload, advanced filters)
 
 			// Upload
-			protected.POST("/sheets/upload", sheetCtrl.CreateSheet)
+			protected.POST("/scores/upload", scoreCtrl.CreateScore)
 
 			// Search & listing
-			protected.GET("/sheets", sheetCtrl.GetSheetsPage)
-			protected.POST("/sheets/search", sheetCtrl.GetSheetsPage)
+			protected.GET("/scores", scoreCtrl.GetScoresPage)
+			protected.POST("/scores/search", scoreCtrl.GetScoresPage)
 
 			// CRUD operations
-			protected.GET("/sheets/:id", sheetCtrl.GetSheet)
-			protected.PUT("/sheets/:id", sheetCtrl.UpdateSheet)
-			protected.DELETE("/sheets/:id", sheetCtrl.DeleteSheet)
+			protected.GET("/scores/:id", scoreCtrl.GetScore)
+			protected.PUT("/scores/:id", scoreCtrl.UpdateScore)
+			protected.DELETE("/scores/:id", scoreCtrl.DeleteScore)
 
 			// Partial update (annotations only)
-			protected.PATCH("/sheets/:id/annotations", sheetCtrl.UpdateAnnotations)
+			protected.PATCH("/scores/:id/annotations", scoreCtrl.UpdateAnnotations)
 
 			// -----------------------------------------------------------------------------------
 			// COMPOSERS

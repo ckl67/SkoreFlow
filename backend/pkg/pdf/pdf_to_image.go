@@ -39,7 +39,7 @@ func RequestToPdfToImage(pdfPath string, thumbPath string, logLevel string) bool
 
 	jsonData, err := json.Marshal(payload)
 	if err != nil {
-		logger.Sheet.Error("Failed to encode JSON for microservice: %v", err)
+		logger.Score.Error("Failed to encode JSON for microservice: %v", err)
 		return false
 	}
 
@@ -50,16 +50,16 @@ func RequestToPdfToImage(pdfPath string, thumbPath string, logLevel string) bool
 
 	resp, err := client.Post(url, "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
-		logger.Sheet.Error("Python microservice unreachable: %v", err)
+		logger.Score.Error("Python microservice unreachable: %v", err)
 		return false
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		logger.Sheet.Error("Microservice failed (Status: %d)", resp.StatusCode)
+		logger.Score.Error("Microservice failed (Status: %d)", resp.StatusCode)
 		return false
 	}
 
-	logger.Sheet.Debug("Thumbnail successfully generated: %s", absThumbPath)
+	logger.Score.Debug("Thumbnail successfully generated: %s", absThumbPath)
 	return true
 }

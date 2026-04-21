@@ -1,0 +1,23 @@
+{
+  "version": "0.2",
+  "language": "en",
+  "ignorePaths": [
+    "node_modules/**",
+    "vendor/**",
+    ".git/**",
+    "node_modules/**",
+    "vendor/**",
+    ".git/**",
+    ".vscode/**",
+    ".gitignore", // specific file
+    "**/.*" // ignore ghost files
+  ],
+  "dictionaries": ["custom-dictionary"],
+  "dictionaryDefinitions": [
+    {
+      "name": "custom-dictionary",
+      "path": "./.cspell/custom-dictionary.txt",
+      "addWords": true
+    }
+  ]
+}

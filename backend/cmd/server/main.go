@@ -30,7 +30,7 @@ func main() {
 	logger.SetModuleLevel("server", "info")
 	logger.SetModuleLevel("login", "info")
 	logger.SetModuleLevel("user", "debug")
-	logger.SetModuleLevel("sheet", "debug")
+	logger.SetModuleLevel("score", "debug")
 	logger.SetModuleLevel("composer", "debug")
 	logger.SetModuleLevel("db", "info")
 	logger.SetModuleLevel("http", "info")

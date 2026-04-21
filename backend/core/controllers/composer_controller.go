@@ -92,7 +92,7 @@ func (ctrl *ComposerController) GetComposersPage(c *gin.Context) {
 		return
 	}
 
-	logger.Sheet.Debug("(Controller GetComposersPage) : User: %d | Search: %s | Page: %d | PageSize: %d | SortBy: %s",
+	logger.Score.Debug("(Controller GetComposersPage) : User: %d | Search: %s | Page: %d | PageSize: %d | SortBy: %s",
 		uid, form.Search, form.Page, form.Limit, form.SortBy)
 
 	pageData, err := ctrl.service.GetComposersPage(uid, form)

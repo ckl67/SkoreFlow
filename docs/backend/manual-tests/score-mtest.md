@@ -1,4 +1,4 @@
-# Setup Manual sheet tests
+# Setup Manual score tests
 
 ## List of all users
 
@@ -26,17 +26,19 @@ curl -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/me | jq
 
 ```
 
-## Create sheet
+## Create score
 
 ```shell
 
 NAME="Sonate au Clair de Lune"
 COMPOSER="Ludwig Van Beethoven"
-FILE_PATH="resources/sheets/Ludwig Van Beethoven/Sonate No. 14 - Clair de lune.pdf"
+FILE_PATH="resources/scores/Ludwig Van Beethoven/Sonate No. 14 - Clair de lune.pdf"
 
-curl -X POST "http://localhost:8080/api/sheets/upload" \
+COMPOSER="Beethoven"
+
+curl -X POST "http://localhost:8080/api/scores/upload" \
   -H "Authorization: Bearer $TOKEN_USER2" \
-  -F "sheetName=$NAME" \
+  -F "scoreName=$NAME" \
   -F "composer=$COMPOSER" \
   -F "releaseDate=1965-12-12T00:00:00Z" \
   -F "categories=Classical,Romantic" \

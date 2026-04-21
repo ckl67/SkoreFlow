@@ -5,11 +5,11 @@ La solution : Utilise des doubles guillemets "...".
 
 ```shell
 # Plutôt que
-curl -s -w '\n%{http_code}' -X PUT http://localhost:8080/api/sheet/$name -H 'Authorization: Bearer $TOKEN_USER2' ...
+curl -s -w '\n%{http_code}' -X PUT http://localhost:8080/api/score/$name -H 'Authorization: Bearer $TOKEN_USER2' ...
 
 # Préférer
 
-curl -v -X PUT "http://localhost:8080/api/sheet/$name" -H "Authorization: Bearer $TOKEN_USER2" ....
+curl -v -X PUT "http://localhost:8080/api/score/$name" -H "Authorization: Bearer $TOKEN_USER2" ....
 ```
 
 Exécuter la commande auto-test va aussi mettre en place un contexte, qui va permettre de créer un contexte database + fichier
@@ -68,9 +68,9 @@ C'est uniquement parce que tu tapes la commande manuellement dans ton terminal L
 Avec react nous pourrons laisser le point virgule
 
 ```shell
-curl -X POST "http://localhost:8080/api/sheet/upload \
+curl -X POST "http://localhost:8080/api/score/upload \
  -H 'Authorization: Bearer $TOKEN' \
- -F 'sheetName=Sonate au Clair de Lune' \
+ -F 'scoreName=Sonate au Clair de Lune' \
  -F 'composer=Ludwig Van Beethoven' \
  -F 'releaseDate=2024-01-01' \
  -F 'categories=Classical,Romantic' \
@@ -86,25 +86,25 @@ curl -X POST "http://localhost:8080/api/sheet/upload \
 # Avec GET
 ################
 # Lister les partitions (GET simple)
-curl -H "Authorization: Bearer $TOKEN_USER1" "http://localhost:8080/api/sheets?page=1&limit=5" | jq
+curl -H "Authorization: Bearer $TOKEN_USER1" "http://localhost:8080/api/scores?page=1&limit=5" | jq
 
 # Liste triée alphabétiquement
-curl -H "Authorization: Bearer $TOKEN_USER1" "http://localhost:8080/api/sheets?page=1&limit=10&sort=sheet_name%20asc" | jq
+curl -H "Authorization: Bearer $TOKEN_USER1" "http://localhost:8080/api/scores?page=1&limit=10&sort=score_name%20asc" | jq
 
 # Liste triée par date de création
-curl -H "Authorization: Bearer $TOKEN_USER1" "http://localhost:8080/api/sheets?page=1&limit=10&sort=created_at%20desc" | jq
+curl -H "Authorization: Bearer $TOKEN_USER1" "http://localhost:8080/api/scores?page=1&limit=10&sort=created_at%20desc" | jq
 
 # Filtrer par compositeur
-curl -H "Authorization: Bearer $TOKEN_USER1" "http://localhost:8080/api/sheets?page=1&limit=10&composer=Mozart" | jq
+curl -H "Authorization: Bearer $TOKEN_USER1" "http://localhost:8080/api/scores?page=1&limit=10&composer=Mozart" | jq
 
 # Filtrer par tag
-curl -H "Authorization: Bearer $TOKEN_USER1" "http://localhost:8080/api/sheets?page=1&limit=10&tag=Piano" | jq
+curl -H "Authorization: Bearer $TOKEN_USER1" "http://localhost:8080/api/scores?page=1&limit=10&tag=Piano" | jq
 
 #Filtrer par catégorie
-curl -H "Authorization: Bearer $TOKEN_USER1" "http://localhost:8080/api/sheets?page=1&limit=10&category=Classical" | jq
+curl -H "Authorization: Bearer $TOKEN_USER1" "http://localhost:8080/api/scores?page=1&limit=10&category=Classical" | jq
 
 #Recherche textuelle
-curl -H "Authorization: Bearer $TOKEN_USER1" "http://localhost:8080/api/sheets?page=1&limit=10&search=Nocturne" | jq
+curl -H "Authorization: Bearer $TOKEN_USER1" "http://localhost:8080/api/scores?page=1&limit=10&search=Nocturne" | jq
 
 ################
 # Avec POST
@@ -115,49 +115,49 @@ curl -X POST \
 -H "Authorization: Bearer $TOKEN_USER1" \
 -H "Content-Type: application/json" \
 -d '{"page":1,"limit":5}' \
-"http://localhost:8080/api/sheets" | jq
+"http://localhost:8080/api/scores" | jq
 
 # Liste triée alphabétiquement
 curl -X POST \
 -H "Authorization: Bearer $TOKEN_USER1" \
 -H "Content-Type: application/json" \
--d '{"page":1,"limit":10,"sort":"sheet_name asc"}' \
-"http://localhost:8080/api/sheets" | jq
+-d '{"page":1,"limit":10,"sort":"score_name asc"}' \
+"http://localhost:8080/api/scores" | jq
 
 # Liste triée par date de création
 curl -X POST \
 -H "Authorization: Bearer $TOKEN_USER1" \
 -H "Content-Type: application/json" \
 -d '{"page":1,"limit":10,"sort":"created_at desc"}' \
-"http://localhost:8080/api/sheets" | jq
+"http://localhost:8080/api/scores" | jq
 
 # Filtrer par compositeur
 curl -X POST \
 -H "Authorization: Bearer $TOKEN_USER1" \
 -H "Content-Type: application/json" \
 -d '{"page":1,"limit":10,"composer":"Mozart"}' \
-"http://localhost:8080/api/sheets" | jq
+"http://localhost:8080/api/scores" | jq
 
 # Filtrer par tag
 curl -X POST \
 -H "Authorization: Bearer $TOKEN_USER1" \
 -H "Content-Type: application/json" \
 -d '{"page":1,"limit":10,"tag":"Piano"}' \
-"http://localhost:8080/api/sheets" | jq
+"http://localhost:8080/api/scores" | jq
 
 #Filtrer par catégorie
 curl -X POST \
 -H "Authorization: Bearer $TOKEN_USER1" \
 -H "Content-Type: application/json" \
 -d '{"page":1,"limit":10,"category":"Classical"}' \
-"http://localhost:8080/api/sheets" | jq
+"http://localhost:8080/api/scores" | jq
 
 #Recherche textuelle
 curl -X POST \
 -H "Authorization: Bearer $TOKEN_USER1" \
 -H "Content-Type: application/json" \
 -d '{"page":1,"limit":10,"search":"Nocturne"}' \
-"http://localhost:8080/api/sheets" | jq
+"http://localhost:8080/api/scores" | jq
 
 ```
 
@@ -170,7 +170,7 @@ la manipuler
 
 ```shell
 
-  curl -s -H "Authorization: Bearer $TOKEN_USER1" "http://localhost:8080/api/sheets?limit=1" | jq -r
+  curl -s -H "Authorization: Bearer $TOKEN_USER1" "http://localhost:8080/api/scores?limit=1" | jq -r
 
   #renvoie
   {
@@ -179,22 +179,22 @@ la manipuler
     "rows": [
       {
         "id": 6,
-        "safe_sheet_name": "nocturne-opus-9-n2",
-        "sheet_name": "Nocturne Opus 9 N2",
+        "safe_score_name": "nocturne-opus-9-n2",
+        "score_name": "Nocturne Opus 9 N2",
         ...
       },
       {
         "id": 5,
-        "safe_sheet_name": "logical-song",
+        "safe_score_name": "logical-song",
         ...
       }
     ]
   }
 
   # Extraction id
-  SHEET_ID=$(curl -s -H "Authorization: Bearer $TOKEN_USER2"  "http://localhost:8080/api/sheets?search=Logical" | jq -r '.rows[0].id')
+  SCORE_ID=$(curl -s -H "Authorization: Bearer $TOKEN_USER2"  "http://localhost:8080/api/scores?search=Logical" | jq -r '.rows[0].id')
 
-  echo "L'ID de la partition est : $SHEET_ID"
+  echo "L'ID de la partition est : $SCORE_ID"
 ```
 
 Quand on écrit .rows[0].id, tu donnes un itinéraire à jq :
@@ -208,24 +208,24 @@ Quand on écrit .rows[0].id, tu donnes un itinéraire à jq :
 # Détail d'une partition
 
 ```shell
-curl -H "Authorization: Bearer $TOKEN_USER1" "http://localhost:8080/api/sheet/7" | jq
-curl -H "Authorization: Bearer $TOKEN_USER2" -X GET "http://localhost:8080/api/sheet/7" | jq
+curl -H "Authorization: Bearer $TOKEN_USER1" "http://localhost:8080/api/score/7" | jq
+curl -H "Authorization: Bearer $TOKEN_USER2" -X GET "http://localhost:8080/api/score/7" | jq
 ```
 
 # Suppression d'une partition
 
 ```shell
-curl -H "Authorization: Bearer $TOKEN_USER2" -X DELETE "http://localhost:8080/api/sheet/13" | jq
+curl -H "Authorization: Bearer $TOKEN_USER2" -X DELETE "http://localhost:8080/api/score/13" | jq
 ```
 
 # Mettre à jour une partition
 
 Les champs qui peuvent être mis à jour
-IMPORTANT : On ne modifie jamais le SafeSheetName pour préserver l'intégrité du stockage disque.
+IMPORTANT : On ne modifie jamais le SafeScoreName pour préserver l'intégrité du stockage disque.
 
 ```shell
 	File            *multipart.FileHeader `form:"uploadFile"`
-  SheetName       string                `form:"sheetName"`
+  ScoreName       string                `form:"scoreName"`
 	ReleaseDate     string                `form:"releaseDate"`
 	Categories      string                `form:"categories"`
 	Tags            string                `form:"tags"`
@@ -234,9 +234,9 @@ IMPORTANT : On ne modifie jamais le SafeSheetName pour préserver l'intégrité 
 
 curl -X PUT \
 -H "Authorization: Bearer $TOKEN_USER2" \
--F "sheetName=New Title" \
+-F "scoreName=New Title" \
 -F "tags=Pop,Rock" \
-"http://localhost:8080/api/sheet/7" | jq
+"http://localhost:8080/api/score/7" | jq
 
 ```
 
@@ -249,7 +249,7 @@ curl -X PATCH \
 -d '{
   "annotations": "[{\"type\":\"circle\",\"x\":150,\"y\":200,\"radius\":20,\"color\":\"red\"}]"
 }' \
-"http://localhost:8080/api/sheet/7/annotations" | jq
+"http://localhost:8080/api/score/7/annotations" | jq
 
 ```
 

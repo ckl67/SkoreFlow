@@ -4,7 +4,7 @@
 .env
 !.env.sample
 
-# Ignore directory where scores/sheets and database are stored
+# Ignore directory where scores/scores and database are stored
 # Note: A leading '/' targets the git root.
 # Once a directory is ignored, Git stops tracking its subdirectories.
 #   --> /* ignores the content

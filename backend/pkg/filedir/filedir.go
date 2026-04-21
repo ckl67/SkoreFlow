@@ -28,14 +28,14 @@ func RemoveFileIfExists(path string) error {
 	err := os.Remove(path)
 	if err != nil {
 		if os.IsNotExist(err) {
-			logger.Sheet.Debug("File not found (nothing to delete): %s", path)
+			logger.Score.Debug("File not found (nothing to delete): %s", path)
 			return nil
 		}
-		logger.Sheet.Warn("Failed to delete file %s: %v", path, err)
+		logger.Score.Warn("Failed to delete file %s: %v", path, err)
 		return err
 	}
 
-	logger.Sheet.Debug("File deleted: %s", path)
+	logger.Score.Debug("File deleted: %s", path)
 	return nil
 }
 
@@ -73,13 +73,13 @@ func CleanEmptyDirs(dirPath string) {
 		if os.IsNotExist(err) {
 			return
 		}
-		logger.Sheet.Warn("Cannot read directory %s: %v", dirPath, err)
+		logger.Score.Warn("Cannot read directory %s: %v", dirPath, err)
 		return
 	}
 
 	if len(files) == 0 {
 		if err := os.Remove(dirPath); err == nil {
-			logger.Sheet.Debug("Empty directory removed: %s", dirPath)
+			logger.Score.Debug("Empty directory removed: %s", dirPath)
 			CleanEmptyDirs(filepath.Dir(dirPath)) // clean parent
 		}
 	}

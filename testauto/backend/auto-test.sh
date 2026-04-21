@@ -25,13 +25,13 @@ HelpTXT="
 bash auto-test.sh		: Standard Run - We Keep the FORMER Database and Storage - No cleaning just smoke tests - Afterwards Server is Running
 
 bash auto-test.sh --kill	: Kill The process to be sure that there is no Background process - Usefull to run the server manually or for Air
-bash auto-test.sh --clean	: Clean the Database and Storage before running tests (Use with --sheets or --composers to have a full clean)
+bash auto-test.sh --clean	: Clean the Database and Storage before running tests (Use with --scores or --composers to have a full clean)
 
-bash auto-test.sh --all		: Run everything (Smoke, Users, Sheets, Composers) without including SMTP/Google password reset tests
+bash auto-test.sh --all		: Run everything (Smoke, Users, Scores, Composers) without including SMTP/Google password reset tests
 
 Otherwise Can be combined with:
 bash auto-test.sh --users	: Run Smoke tests + User tests
-bash auto-test.sh --sheets	: Run Smoke tests + Sheet tests
+bash auto-test.sh --scores	: Run Smoke tests + Score tests
 bash auto-test.sh --composers	: Run Smoke tests + Composer tests
 bash auto-test.sh --pwreset	: Include SMTP/Google password reset tests
 
@@ -43,7 +43,7 @@ bash auto-test.sh --help	: Help
 export TEST_PASSWORD_RESET=false
 
 export RUN_USERS=false
-export RUN_SHEETS=false
+export RUN_SCORES=false
 export RUN_COMPOSERS=false
 
 export KILL_PROCESS=false
@@ -60,13 +60,13 @@ for arg in "$@"; do
 	--pwreset) export TEST_PASSWORD_RESET=true ;;
 	--clean) export CLEAN_DB_FILES=true ;;
 	--users) export RUN_USERS=true ;;
-	--sheets) export RUN_SHEETS=true ;;
+	--scores) export RUN_SCORES=true ;;
 	--composers) export RUN_COMPOSERS=true ;;
 	--kill) export KILL_PROCESS=true ;;
 	--all)
 		export RUN_USERS=true
 		export RUN_COMPOSERS=true
-		export RUN_SHEETS=true
+		export RUN_SCORES=true
 		;;
 	--help)
 		echo "$HelpTXT"
@@ -112,14 +112,14 @@ if [ "$CLEAN_DB_FILES" = true ]; then
 	# Physical cleanup of Database and Storage
 	rm -f "$BACKEND_DIR/storage/database.db"
 	rm -rf "$BACKEND_DIR/storage/users/"*
-	rm -rf "$BACKEND_DIR/storage/sheets/uploaded-sheets/"*
-	rm -rf "$BACKEND_DIR/storage/sheets/thumbnails/"*
+	rm -rf "$BACKEND_DIR/storage/scores/uploaded-scores/"*
+	rm -rf "$BACKEND_DIR/storage/scores/thumbnails/"*
 	rm -rf "$BACKEND_DIR/storage/composers/"*
 
 	# Ensure directory structure exists
 	mkdir -p "$BACKEND_DIR/storage/users"
-	mkdir -p "$BACKEND_DIR/storage/sheets/uploaded-sheets"
-	mkdir -p "$BACKEND_DIR/storage/sheets/thumbnails"
+	mkdir -p "$BACKEND_DIR/storage/scores/uploaded-scores"
+	mkdir -p "$BACKEND_DIR/storage/scores/thumbnails"
 	mkdir -p "$BACKEND_DIR/storage/composers"
 
 	# Restore default assets for composers (portraits)
@@ -175,11 +175,11 @@ else
 	echo "⏩ Skipping User tests (use --users or --all to include)"
 fi
 
-# 3. Conditional: Sheet Management
-if [ "$RUN_SHEETS" = true ]; then
-	npx tsx tests/sheet.test.js || exit 1
+# 3. Conditional: Score Management
+if [ "$RUN_SCORES" = true ]; then
+	npx tsx tests/score.test.js || exit 1
 else
-	echo "⏩ Skipping Sheet tests (use --sheets or --all to include)"
+	echo "⏩ Skipping Score tests (use --scores or --all to include)"
 fi
 
 # 4. Conditional: Composer Management

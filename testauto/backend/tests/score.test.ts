@@ -1,5 +1,5 @@
 import { login } from "../helpers/auth.js";
-import { createsheet } from "../helpers/sheet.js";
+import { createScore } from "../helpers/score.js";
 
 // --------------------------------------------------------------------------------
 // MAIN TEST
@@ -7,7 +7,7 @@ import { createsheet } from "../helpers/sheet.js";
 // async meaning that it returns a Promise because we are using : await
 async function run() {
   console.log("\n=================================");
-  console.log("🚀 STARTING sheet TESTS (Node)");
+  console.log("🚀 STARTING score TESTS (Node)");
   console.log("=================================");
 
   // ----------------------------------------------------------------------------
@@ -16,11 +16,11 @@ async function run() {
   // ----------------------------------------------------------------------------
   // CREATE USERS
   // ----------------------------------------------------------------------------
-  console.log("\n--- Creating sheets ---");
+  console.log("\n--- Creating scores ---");
 
   const TOKEN_USER2 = await login("user2@test.com", "password123");
 
-  const sheets = [
+  const scores = [
     {
       name: "Mozart3",
       description: "Classic",
@@ -29,17 +29,17 @@ async function run() {
     {
       name: "Beethoven",
       description: "twenty century ",
-      file: "resources/sheets/Beethoven.png",
+      file: "resources/scores/Beethoven.png",
     },
     {
       name: "SuperTramp",
       description: "Moderne",
-      file: "resources/sheets/Supertramp.png",
+      file: "resources/scores/Supertramp.png",
     },
   ];
 
-  for (const c of sheets) {
-    /** await createsheet(
+  for (const c of scores) {
+    /** await createScore(
       {
         name: c.name,
         externalURL: "",

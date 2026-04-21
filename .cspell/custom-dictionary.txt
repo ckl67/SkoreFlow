@@ -1,0 +1,26 @@
+# Custom Dictionary Words
+backend
+  apperrors
+  createuser
+  esbenp
+  frontend
+  gitgraph
+  gofmt
+  gofumpt
+  golangci
+  gonic
+  gopath
+  gopher
+  gorm
+  kubernetes
+  kühl
+  microservice
+  mkhl
+  mvdan
+  rqconfirm
+  shellcheck
+  shfmt
+  Skoreflow
+  sonate
+  Supertramp
+  testauto

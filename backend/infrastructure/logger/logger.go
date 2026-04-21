@@ -29,7 +29,7 @@ var (
 	Server   = New("server")
 	Login    = New("login")
 	User     = New("user")
-	Sheet    = New("sheet")
+	Score    = New("score")
 	Composer = New("composer")
 	DB       = New("db")
 	HTTP     = New("http")
@@ -40,7 +40,7 @@ var (
 Usage Examples:
 logger.Main.Debug("Loading configuration...")
 logger.Login.Info("Login attempt for user: %s", "christian")
-logger.Sheet.Info("New sheet created: %s", "Sonata No.1")
+logger.Score.Info("New score created: %s", "Sonata No.1")
 logger.Composer.Warn("Could not load portrait for composer: %s", "Beethoven")
 */
 

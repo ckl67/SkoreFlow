@@ -10,4 +10,5 @@
 *.sln
 *.sw?
 
-
+# Dictionary
+!c.spell.json

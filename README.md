@@ -13,7 +13,7 @@ So welcome to SkoreFlow 🎉
 
 SkoreFlow provides a structured pipeline to:
 
-- Upload and manage sheet music files
+- Upload and manage score music files
 - Organize scores, composers, and users
 - Process files (storage, thumbnails, normalization, score annotations)
 - Expose a robust REST API for frontend and integrations
@@ -77,3 +77,5 @@ cd skoreflow
 ## ✅ Code of Conduct
 
 - See [CODE_OF_CONDUCT](./CODE_OF_CONDUCT.md)
+
+Test de Pull Request le 22/04/2026

@@ -66,8 +66,8 @@ func (p *Pagination) GetSort() string {
 		"id desc": true,
 
 		// Names
-		"sheet_name asc":  true,
-		"sheet_name desc": true,
+		"score_name asc":  true,
+		"score_name desc": true,
 		"composer asc":    true,
 		"composer desc":   true,
 

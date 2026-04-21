@@ -44,10 +44,10 @@ var (
 	ErrSmtpNotConfigured = errors.New("smtp not configured")
 	ErrSmtpFailed        = errors.New("smtp failed")
 
-	// Sheet
-	ErrSheetAlreadyExists = errors.New("sheet already exists for this user and composer")
-	ErrSheetInvalidID     = errors.New("invalid sheet ID")
-	ErrSheetNotFound      = errors.New("sheet not found")
+	// Score
+	ErrScoreAlreadyExists = errors.New("score already exists for this user and composer")
+	ErrScoreInvalidID     = errors.New("invalid score ID")
+	ErrScoreNotFound      = errors.New("score not found")
 
 	// Other
 	ErrInvalidDate = errors.New("invalid date format")

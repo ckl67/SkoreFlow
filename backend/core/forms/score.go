@@ -55,8 +55,8 @@ import (
 // Update → pointers
 // -----------------------
 
-// GetSheetsPageRequest defines pagination and filtering for sheet listing.
-type GetSheetsPageRequest struct {
+// GetScoresPageRequest defines pagination and filtering for score listing.
+type GetScoresPageRequest struct {
 	PaginatedRequest
 	Search   string `form:"search" json:"search"`
 	Tag      string `form:"tag" json:"tag"`
@@ -64,21 +64,21 @@ type GetSheetsPageRequest struct {
 	Composer string `form:"composer" json:"composer"`
 }
 
-// CreateSheetRequest defines the payload for creating a new sheet.
-type CreateSheetRequest struct {
+// CreateScoreRequest defines the payload for creating a new score.
+type CreateScoreRequest struct {
 	File            *multipart.FileHeader `form:"uploadFile" binding:"required"`
 	Composer        string                `form:"composer"`
-	SheetName       string                `form:"sheetName" binding:"required"`
+	ScoreName       string                `form:"scoreName" binding:"required"`
 	ReleaseDate     string                `form:"releaseDate"`
 	Categories      string                `form:"categories"`
 	Tags            string                `form:"tags"`
 	InformationText string                `form:"informationText"`
 }
 
-// UpdateSheetRequest defines the payload for updating an existing sheet.
-type UpdateSheetRequest struct {
+// UpdateScoreRequest defines the payload for updating an existing score.
+type UpdateScoreRequest struct {
 	File            *multipart.FileHeader `form:"uploadFile"`
-	SheetName       string                `form:"sheetName"`
+	ScoreName       string                `form:"scoreName"`
 	ReleaseDate     string                `form:"releaseDate"`
 	Categories      string                `form:"categories"`
 	Tags            string                `form:"tags"`
@@ -90,19 +90,19 @@ type TagRequest struct {
 	TagValue string `form:"tagValue"`
 }
 
-// InformationTextRequest defines a payload for updating sheet information text.
+// InformationTextRequest defines a payload for updating score information text.
 type InformationTextRequest struct {
 	InformationText string `form:"informationText"`
 }
 
-// ValidateForm performs custom validation for CreateSheetRequest.
+// ValidateForm performs custom validation for CreateScoreRequest.
 // Validations:
 // - File is required
 // - Composer is required
-// - SheetName is required
+// - ScoreName is required
 // - File must be a PDF
 // - Max file size: 10MB
-func (req *CreateSheetRequest) ValidateForm() error {
+func (req *CreateScoreRequest) ValidateForm() error {
 	if req.File == nil {
 		return errors.New("file is required")
 	}
@@ -111,8 +111,8 @@ func (req *CreateSheetRequest) ValidateForm() error {
 		return errors.New("composer is required")
 	}
 
-	if strings.TrimSpace(req.SheetName) == "" {
-		return errors.New("sheet name is required")
+	if strings.TrimSpace(req.ScoreName) == "" {
+		return errors.New("score name is required")
 	}
 
 	// File validation
@@ -127,13 +127,13 @@ func (req *CreateSheetRequest) ValidateForm() error {
 	return nil
 }
 
-// ValidateForm performs custom validation for UpdateSheetRequest.
+// ValidateForm performs custom validation for UpdateScoreRequest.
 // Validations:
 // - File is optional
 // - If provided:
 //   - Must be a PDF
 //   - Max file size: 10MB
-func (req *UpdateSheetRequest) ValidateForm() error {
+func (req *UpdateScoreRequest) ValidateForm() error {
 	if req.File != nil {
 
 		if req.File.Size > 10<<20 {
