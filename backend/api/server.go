@@ -44,7 +44,7 @@ type Server struct {
 
 	authService     *services.AuthService
 	userService     *services.UserService
-	SheetService    *services.SheetService
+	ScoreService    *services.ScoreService
 	ComposerService *services.ComposerService
 
 	Router    *gin.Engine
@@ -62,11 +62,11 @@ func (server *Server) Setup(version string, db *gorm.DB, paths *config.Paths) {
 	// 1. Initialize services with db and path injection
 	server.authService = services.NewAuthService(db, paths)
 	server.userService = services.NewUserService(db, paths)
-	server.SheetService = services.NewSheetService(db, paths)
+	server.ScoreService = services.NewScoreService(db, paths)
 	server.ComposerService = services.NewComposerService(db, paths)
 
 	// 2. Database migrations (schema sync with models)
-	if err := server.DB.AutoMigrate(&models.User{}, &models.Sheet{}, &models.Composer{}); err != nil {
+	if err := server.DB.AutoMigrate(&models.User{}, &models.Score{}, &models.Composer{}); err != nil {
 		logger.DB.Error("(Setup) migration failed: %v", err)
 	}
 

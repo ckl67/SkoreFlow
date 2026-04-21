@@ -25,16 +25,19 @@ async function run() {
       name: "Mozart3",
       description: "Classic",
       file: "",
+      verified: true,
     },
     {
       name: "Beethoven",
       description: "Twenty century",
       file: "resources/composers/Beethoven.png",
+      verified: false,
     },
     {
       name: "SuperTramp",
       description: "Moderne",
       file: "resources/composers/Supertramp.png",
+      verified: true,
     },
   ];
 
@@ -45,7 +48,7 @@ async function run() {
         externalURL: "",
         epoch: c.description,
         uploadFile: c.file,
-        isVerified: false,
+        isVerified: c.verified,
       },
       TOKEN_USER2,
     );

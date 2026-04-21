@@ -41,6 +41,7 @@ Open VS Code and install the following extensions:
 - Pylance (for Python linting and analysis)
 - Markdown All in One (for editing markdown files)
 - Code Spell Checker
+- markdownlint rules to encourage standards and consistency for Markdown files.
 
 - npm IntelliSense for javascript
 - Auto Import, auto generate the javascript require
@@ -97,7 +98,7 @@ However, contributors are strongly encouraged to follow this setup to maintain c
 
 These files are NOT committed to the repository by default. You must create them locally.
 
-### Create the folder:
+### Create the folder
 
 On the root of the project, create the `.vscode` folder if it doesn't exist:
 
@@ -177,7 +178,7 @@ Create `.vscode/settings.json`:
 
 ```json
 {
-  // --- GÉNÉRAL ---
+  // --- GENERAL ---
   // Internal VSC Javascript motor correction
   // checkJs not used
   // we will use eslint.config.mjs (ESLint) and tsconfig.json (TypeScript)

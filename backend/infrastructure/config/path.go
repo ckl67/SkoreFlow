@@ -51,10 +51,10 @@ func NewPaths(cfg ServerConfig) *Paths {
 }
 
 // StorageAbsPath returns the absolute path for a given relative path within the storage directory.
-// fullPath := paths.StoragePath(sheet.FilePath)
+// fullPath := paths.StoragePath(score.FilePath)
 // Example :
-// rel = sheets/uploaded-sheets/user-1/mozart/prelude.pdf
-// return =  /home/christian/SkoreFlow_Project/SkoreFlow/backend/storage/sheets/uploaded-sheets/user-1/mozart/prelude.pdf
+// rel = scores/uploaded-scores/user-1/mozart/prelude.pdf
+// return =  /home/christian/SkoreFlow_Project/SkoreFlow/backend/storage/scores/uploaded-scores/user-1/mozart/prelude.pdf
 func (p *Paths) StorageAbsPath(rel string) string {
 	return filepath.Join(p.StorageAbs, rel)
 }
@@ -78,24 +78,24 @@ func (p *Paths) ComposerPicturePath(composerSafeName, ext string) string {
 	)
 }
 
-// SheetPDFStorageRel constructs the relative storage path for an uploaded sheet PDF.
+// ScorePDFStorageRel constructs the relative storage path for an uploaded score PDF.
 // Remark : path.Join : Not depending of the OS = always /  --  filepath.Join : depending of the OS / or \
-func (p *Paths) SheetPDFStorageRel(userID uint32, composerSafeName, sheetSafeName string) string {
+func (p *Paths) ScorePDFStorageRel(userID uint32, composerSafeName, scoreSafeName string) string {
 	return path.Join(
-		"sheets/uploaded-sheets",
+		"scores/uploaded-scores",
 		fmt.Sprintf("user-%d", userID),
 		composerSafeName,
-		sheetSafeName+".pdf",
+		scoreSafeName+".pdf",
 	)
 }
 
-// SheetThumbnailStorageRel constructs the relative storage path for a sheet thumbnail image.
+// ScoreThumbnailStorageRel constructs the relative storage path for a score thumbnail image.
 // Remark : path.Join : Not depending of the OS = always /  --  filepath.Join : depending of the OS / or \
-func (p *Paths) SheetThumbnailStorageRel(userID uint32, composerSafeName, sheetSafeName string) string {
+func (p *Paths) ScoreThumbnailStorageRel(userID uint32, composerSafeName, scoreSafeName string) string {
 	return path.Join(
-		"sheets/thumbnails",
+		"scores/thumbnails",
 		fmt.Sprintf("user-%d", userID),
 		composerSafeName,
-		sheetSafeName+".png",
+		scoreSafeName+".png",
 	)
 }

@@ -4,7 +4,7 @@ package services
 // Layer              | Component      | Business Role
 // -------------------|----------------|----------------------------------------------------------
 // ORCHESTRATION      | services/      | Core business logic. Coordinates models, storage,
-//                    |                | file processing, and business rules for sheets.
+//                    |                | file processing, and business rules for scores.
 // ===============================================================================================
 
 import (
@@ -28,16 +28,16 @@ import (
 	"gorm.io/gorm"
 )
 
-// SheetService handles business logic related to music sheets.
+// ScoreService handles business logic related to music scores.
 
-type SheetService struct {
+type ScoreService struct {
 	db    *gorm.DB
 	paths *config.Paths
 }
 
-// NewSheetService creates a new instance of SheetService.
-func NewSheetService(db *gorm.DB, paths *config.Paths) *SheetService {
-	return &SheetService{
+// NewScoreService creates a new instance of ScoreService.
+func NewScoreService(db *gorm.DB, paths *config.Paths) *ScoreService {
+	return &ScoreService{
 		db:    db,
 		paths: paths,
 	}
@@ -49,7 +49,7 @@ func NewSheetService(db *gorm.DB, paths *config.Paths) *SheetService {
 // Behavior:
 // - Uses sanitized name for lookup
 // - Creates a minimal composer if not found
-func (s *SheetService) findOrCreateComposer(name string) (*models.Composer, error) {
+func (s *ScoreService) findOrCreateComposer(name string) (*models.Composer, error) {
 	safeName := format.SanitizeName(name)
 	var composer models.Composer
 
@@ -77,19 +77,19 @@ func (s *SheetService) findOrCreateComposer(name string) (*models.Composer, erro
 	return nil, err
 }
 
-// CreateSheet orchestrates the full creation workflow of a sheet.
+// CreateScore orchestrates the full creation workflow of a score.
 // Storage mapping:
 //
 //	DB paths:
-//	  sheets/uploaded-sheets/user-1/mozart/fur-elise.pdf
-//	  sheets/thumbnails/user-1/mozart/fur-elise.png
+//	  scores/uploaded-scores/user-1/mozart/fur-elise.pdf
+//	  scores/thumbnails/user-1/mozart/fur-elise.png
 //
 //	Disk paths:
-//	  ./storage/sheets/uploaded-sheets/user-1/mozart/fur-elise.pdf
-//	  ./storage/sheets/thumbnails/user-1/mozart/fur-elise.png
-func (s *SheetService) CreateSheet(uid uint32, form forms.CreateSheetRequest, file *multipart.FileHeader) error {
-	// 1. Normalize sheet name
-	safeSheetName := format.SanitizeName(form.SheetName)
+//	  ./storage/scores/uploaded-scores/user-1/mozart/fur-elise.pdf
+//	  ./storage/scores/thumbnails/user-1/mozart/fur-elise.png
+func (s *ScoreService) CreateScore(uid uint32, form forms.CreateScoreRequest, file *multipart.FileHeader) error {
+	// 1. Normalize score name
+	safeScoreName := format.SanitizeName(form.ScoreName)
 
 	// 2. Resolve composer or will create a new one
 	composer, err := s.findOrCreateComposer(form.Composer)
@@ -98,21 +98,21 @@ func (s *SheetService) CreateSheet(uid uint32, form forms.CreateSheetRequest, fi
 	}
 
 	// 3. Uniqueness check
-	exists, err := models.SheetExists(s.db, safeSheetName, composer.ID, uid)
+	exists, err := models.ScoreExists(s.db, safeScoreName, composer.ID, uid)
 	if err != nil {
 		return err
 	}
 	if exists {
-		return apperrors.ErrSheetAlreadyExists
+		return apperrors.ErrScoreAlreadyExists
 	}
 
 	// 4. Build storage paths - Relative
-	// filePath = sheets/uploaded-sheets/user-1/mozart/prelude.pdf
-	filePath := s.paths.SheetPDFStorageRel(uid, composer.SafeName, safeSheetName)
-	thumbnailPath := s.paths.SheetThumbnailStorageRel(uid, composer.SafeName, safeSheetName)
+	// filePath = scores/uploaded-scores/user-1/mozart/prelude.pdf
+	filePath := s.paths.ScorePDFStorageRel(uid, composer.SafeName, safeScoreName)
+	thumbnailPath := s.paths.ScoreThumbnailStorageRel(uid, composer.SafeName, safeScoreName)
 
-	logger.Sheet.Debug("(CreateSheet) filePath Relative %s", filePath)
-	logger.Sheet.Debug("(CreateSheet) thumbnailPath Relative %s", thumbnailPath)
+	logger.Score.Debug("(CreateScore) filePath Relative %s", filePath)
+	logger.Score.Debug("(CreateScore) thumbnailPath Relative %s", thumbnailPath)
 
 	// 5. Parse release date
 	releaseDate, err := createDate(form.ReleaseDate)
@@ -121,9 +121,9 @@ func (s *SheetService) CreateSheet(uid uint32, form forms.CreateSheetRequest, fi
 	}
 
 	// 6. Build model
-	sheet := models.Sheet{
-		SafeSheetName: safeSheetName,
-		SheetName:     strings.TrimSpace(form.SheetName),
+	score := models.Score{
+		SafeScoreName: safeScoreName,
+		ScoreName:     strings.TrimSpace(form.ScoreName),
 
 		ComposerID: composer.ID,
 
@@ -139,52 +139,52 @@ func (s *SheetService) CreateSheet(uid uint32, form forms.CreateSheetRequest, fi
 	}
 
 	// 7. Storage processing
-	if err := s.ProcessSheetStorage(&sheet, file); err != nil {
+	if err := s.ProcessScoreStorage(&score, file); err != nil {
 		return err
 	}
 
 	// 8. Persist
-	return sheet.Create(s.db)
+	return score.Create(s.db)
 }
 
-// UpdateSheet updates sheet metadata and optionally replaces the file.
+// UpdateScore updates score metadata and optionally replaces the file.
 //
 // Behavior:
 // - Verifies ownership
 // - Applies partial updates
 // - Re-checks uniqueness if name changes
 // - Reprocesses file if provided
-func (s *SheetService) UpdateSheet(uid uint32, sheetID uint, form forms.UpdateSheetRequest, file *multipart.FileHeader) (*models.Sheet, error) {
-	// 1. Fetch existing sheet
-	sheet, err := models.FindSheetByID(s.db, sheetID)
+func (s *ScoreService) UpdateScore(uid uint32, scoreID uint, form forms.UpdateScoreRequest, file *multipart.FileHeader) (*models.Score, error) {
+	// 1. Fetch existing score
+	score, err := models.FindScoreByID(s.db, scoreID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, apperrors.ErrSheetNotFound
+			return nil, apperrors.ErrScoreNotFound
 		}
 		return nil, err
 	}
 
 	// 2. Ownership check
-	if sheet.UploaderID != uid {
-		logger.Sheet.Warn("Unauthorized modification attempt: user=%d sheetID=%d owner=%d", uid, sheetID, sheet.UploaderID)
+	if score.UploaderID != uid {
+		logger.Score.Warn("Unauthorized modification attempt: user=%d scoreID=%d owner=%d", uid, scoreID, score.UploaderID)
 		return nil, apperrors.ErrAccessForbidden
 	}
 
 	// 3. Apply updates
 
-	if form.SheetName != "" {
-		newSafeName := format.SanitizeName(form.SheetName)
+	if form.ScoreName != "" {
+		newSafeName := format.SanitizeName(form.ScoreName)
 
-		exists, err := models.SheetExists(s.db, newSafeName, sheet.ComposerID, uid)
+		exists, err := models.ScoreExists(s.db, newSafeName, score.ComposerID, uid)
 		if err != nil {
 			return nil, err
 		}
-		if exists && newSafeName != sheet.SafeSheetName {
-			return nil, apperrors.ErrSheetAlreadyExists
+		if exists && newSafeName != score.SafeScoreName {
+			return nil, apperrors.ErrScoreAlreadyExists
 		}
 
-		sheet.SheetName = form.SheetName
-		sheet.SafeSheetName = newSafeName
+		score.ScoreName = form.ScoreName
+		score.SafeScoreName = newSafeName
 	}
 
 	if form.ReleaseDate != "" {
@@ -192,93 +192,93 @@ func (s *SheetService) UpdateSheet(uid uint32, sheetID uint, form forms.UpdateSh
 		if err != nil {
 			return nil, apperrors.ErrInvalidDate
 		}
-		sheet.ReleaseDate = date
+		score.ReleaseDate = date
 	}
 
 	if form.Tags != "" {
-		sheet.Tags = domain.CleanTagsCategories(form.Tags)
+		score.Tags = domain.CleanTagsCategories(form.Tags)
 	}
 
 	if form.Categories != "" {
-		sheet.Categories = domain.CleanTagsCategories(form.Categories)
+		score.Categories = domain.CleanTagsCategories(form.Categories)
 	}
 
 	if form.InformationText != "" {
-		sheet.InformationText = form.InformationText
+		score.InformationText = form.InformationText
 	}
 
 	// 4. File processing (if provided)
-	if err := s.ProcessSheetStorage(sheet, file); err != nil {
+	if err := s.ProcessScoreStorage(score, file); err != nil {
 		return nil, err
 	}
 
 	// 5. Persist
-	if err := sheet.Update(s.db); err != nil {
+	if err := score.Update(s.db); err != nil {
 		return nil, err
 	}
 
-	return sheet, nil
+	return score, nil
 }
 
-// DeleteSheet performs full deletion (authorization + files + database).
+// DeleteScore performs full deletion (authorization + files + database).
 //
 // Rules:
 // - Allowed for owner or admin
 // - Deletes physical files first, then DB record
-func (s *SheetService) DeleteSheet(uid uint32, sheetID uint, userRole int) error {
-	// 1. Fetch sheet
-	sheet, err := models.FindSheetByID(s.db, sheetID)
+func (s *ScoreService) DeleteScore(uid uint32, scoreID uint, userRole int) error {
+	// 1. Fetch score
+	score, err := models.FindScoreByID(s.db, scoreID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return apperrors.ErrSheetNotFound
+			return apperrors.ErrScoreNotFound
 		}
 		return err
 	}
 
 	// 2. Authorization
 	isAdmin := userRole == config.RoleAdmin
-	isOwner := sheet.UploaderID == uid
+	isOwner := score.UploaderID == uid
 
 	if !isAdmin && !isOwner {
-		logger.Sheet.Warn("Unauthorized deletion attempt: user=%d sheetID=%d", uid, sheetID)
+		logger.Score.Warn("Unauthorized deletion attempt: user=%d scoreID=%d", uid, scoreID)
 		return apperrors.ErrAccessForbidden
 	}
 
 	// 3. Orchestrate deletion
-	if err := s.deleteSheetOrchestrator(sheet); err != nil {
-		logger.Sheet.Error("Deletion failed: sheetID=%d error=%v", sheetID, err)
+	if err := s.deleteScoreOrchestrator(score); err != nil {
+		logger.Score.Error("Deletion failed: scoreID=%d error=%v", scoreID, err)
 		return err
 	}
 
-	logger.Sheet.Info("Sheet deleted: sheetID=%d user=%d", sheetID, uid)
+	logger.Score.Info("Score deleted: scoreID=%d user=%d", scoreID, uid)
 	return nil
 }
 
-// GetSheet retrieves a sheet after verifying access permissions.
-func (s *SheetService) GetSheet(uid uint32, sheetID uint, userRole int) (*models.Sheet, error) {
-	sheet, err := models.FindSheetByID(s.db, sheetID)
+// GetScore retrieves a score after verifying access permissions.
+func (s *ScoreService) GetScore(uid uint32, scoreID uint, userRole int) (*models.Score, error) {
+	score, err := models.FindScoreByID(s.db, scoreID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, apperrors.ErrSheetNotFound
+			return nil, apperrors.ErrScoreNotFound
 		}
 		return nil, err
 	}
 
 	isAdmin := userRole == config.RoleAdmin
-	isOwner := sheet.UploaderID == uid
+	isOwner := score.UploaderID == uid
 
 	if !isAdmin && !isOwner {
-		logger.Sheet.Error("Access denied: user=%d sheetID=%d owner=%d", uid, sheetID, sheet.UploaderID)
+		logger.Score.Error("Access denied: user=%d scoreID=%d owner=%d", uid, scoreID, score.UploaderID)
 		return nil, apperrors.ErrAccessForbidden
 	}
 
-	return sheet, nil
+	return score, nil
 }
 
-// UpdateAnnotations updates only the annotations field for a given sheet.
-func (s *SheetService) UpdateAnnotations(uid uint32, sheetID uint, annotations string) error {
-	result := s.db.Model(&models.Sheet{}).
-		Where("id = ? AND uploader_id = ?", sheetID, uid).
+// UpdateAnnotations updates only the annotations field for a given score.
+func (s *ScoreService) UpdateAnnotations(uid uint32, scoreID uint, annotations string) error {
+	result := s.db.Model(&models.Score{}).
+		Where("id = ? AND uploader_id = ?", scoreID, uid).
 		Update("annotations", annotations).
 		Update("updated_at", time.Now())
 
@@ -287,14 +287,14 @@ func (s *SheetService) UpdateAnnotations(uid uint32, sheetID uint, annotations s
 	}
 
 	if result.RowsAffected == 0 {
-		return apperrors.ErrSheetNotFound
+		return apperrors.ErrScoreNotFound
 	}
 
 	return nil
 }
 
-// GetSheetsPage handles paginated listing with filters and search.
-func (s *SheetService) GetSheetsPage(uid uint32, form forms.GetSheetsPageRequest) (*models.Pagination, error) {
+// GetScoresPage handles paginated listing with filters and search.
+func (s *ScoreService) GetScoresPage(uid uint32, form forms.GetScoresPageRequest) (*models.Pagination, error) {
 	// 1. Defaults
 	if form.Page <= 0 {
 		form.Page = 1
@@ -318,40 +318,40 @@ func (s *SheetService) GetSheetsPage(uid uint32, form forms.GetSheetsPageRequest
 		safeCompSearch = "%" + format.SanitizeName(form.Composer) + "%"
 	}
 
-	logger.Sheet.Debug("GetSheetsPage: sort=%s", pagination.Sort)
+	logger.Score.Debug("GetScoresPage: sort=%s", pagination.Sort)
 
-	var sheet models.Sheet
-	result, err := sheet.List(s.db, &pagination, safeCompSearch, form.Tag, form.Category, form.Search, uid)
+	var score models.Score
+	result, err := score.List(s.db, &pagination, safeCompSearch, form.Tag, form.Category, form.Search, uid)
 	if err != nil {
-		logger.Sheet.Error("List failed: %v", err)
+		logger.Score.Error("List failed: %v", err)
 		return nil, err
 	}
 
-	rows, ok := result.Rows.([]*models.Sheet)
+	rows, ok := result.Rows.([]*models.Score)
 	if !ok || len(rows) == 0 {
-		logger.Sheet.Warn("No sheets found for search=%s", form.Search)
+		logger.Score.Warn("No scores found for search=%s", form.Search)
 	}
 
 	return result, nil
 }
 
-// ProcessSheetStorage handles file persistence and thumbnail generation.
-// For Creation and Update (SafeSheetName will not be modified !!)
+// ProcessScoreStorage handles file persistence and thumbnail generation.
+// For Creation and Update (SafeScoreName will not be modified !!)
 // Behavior:
 // - Creates directories if needed
 // - Saves PDF file
 // - Removes old thumbnail
 // - Generates new thumbnail asynchronously
-func (s *SheetService) ProcessSheetStorage(sheet *models.Sheet, file *multipart.FileHeader) error {
+func (s *ScoreService) ProcessScoreStorage(score *models.Score, file *multipart.FileHeader) error {
 	if file == nil {
 		return nil
 	}
 
-	fullFilePath := s.paths.StorageAbsPath(sheet.FilePath)
-	fullThumbnailPath := s.paths.StorageAbsPath(sheet.ThumbnailPath)
+	fullFilePath := s.paths.StorageAbsPath(score.FilePath)
+	fullThumbnailPath := s.paths.StorageAbsPath(score.ThumbnailPath)
 
-	logger.Sheet.Debug("fullFilePath Absolute : %s", fullFilePath)
-	logger.Sheet.Debug("fullThumbnailPath Absolute : %s", fullThumbnailPath)
+	logger.Score.Debug("fullFilePath Absolute : %s", fullFilePath)
+	logger.Score.Debug("fullThumbnailPath Absolute : %s", fullThumbnailPath)
 
 	// Create file and full path directory
 	if err := filedir.SaveFile(file, fullFilePath); err != nil {
@@ -365,34 +365,34 @@ func (s *SheetService) ProcessSheetStorage(sheet *models.Sheet, file *multipart.
 
 	// Remove old thumbnail
 	if err := filedir.RemoveFileIfExists(fullThumbnailPath); err != nil {
-		logger.Sheet.Error("(ProcessComposerStorage Service) delete file failed: %v", err)
+		logger.Score.Error("(ProcessComposerStorage Service) delete file failed: %v", err)
 		return err
 	}
 
 	// Async thumbnail generation
 	go func() {
 		time.Sleep(100 * time.Millisecond)
-		pdf.RequestToPdfToImage(fullFilePath, fullThumbnailPath, logger.GetModuleLevel("sheet"))
+		pdf.RequestToPdfToImage(fullFilePath, fullThumbnailPath, logger.GetModuleLevel("score"))
 	}()
 
 	return nil
 }
 
-// deleteSheetOrchestrator handles full deletion lifecycle (files + DB + cleanup).
+// deleteScoreOrchestrator handles full deletion lifecycle (files + DB + cleanup).
 //
 // Priority of errors:
 // 1. File deletion error
 // 2. File not found
 // 3. Success
-func (s *SheetService) deleteSheetOrchestrator(sheet *models.Sheet) error {
+func (s *ScoreService) deleteScoreOrchestrator(score *models.Score) error {
 	var hasNotFound bool
 	var hasDeletionError bool
 
 	// Example :
-	// rel = sheets/uploaded-sheets/user-1/mozart/prelude.pdf
-	// return =  /home/christian/SkoreFlow_Project/SkoreFlow/backend/storage/sheets/uploaded-sheets/user-1/mozart/prelude.pdf
-	fullFilePath := s.paths.StorageAbsPath(sheet.FilePath)
-	fullThumbnailPath := s.paths.StorageAbsPath(sheet.ThumbnailPath)
+	// rel = scores/uploaded-scores/user-1/mozart/prelude.pdf
+	// return =  /home/christian/SkoreFlow_Project/SkoreFlow/backend/storage/scores/uploaded-scores/user-1/mozart/prelude.pdf
+	fullFilePath := s.paths.StorageAbsPath(score.FilePath)
+	fullThumbnailPath := s.paths.StorageAbsPath(score.ThumbnailPath)
 
 	paths := []string{fullFilePath, fullThumbnailPath}
 
@@ -407,17 +407,17 @@ func (s *SheetService) deleteSheetOrchestrator(sheet *models.Sheet) error {
 			switch {
 			case os.IsNotExist(err):
 				hasNotFound = true
-				logger.Sheet.Warn("File missing: %s", path)
+				logger.Score.Warn("File missing: %s", path)
 
 			default:
 				hasDeletionError = true
-				logger.Sheet.Error("Deletion failed: %s (%v)", path, err)
+				logger.Score.Error("Deletion failed: %s (%v)", path, err)
 			}
 		}
 	}
 
 	// 2. Delete DB record
-	rows, err := sheet.Delete(s.db)
+	rows, err := score.Delete(s.db)
 	if err != nil {
 		return err
 	}

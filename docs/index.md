@@ -23,7 +23,7 @@ Whether you're new to SkoreFlow or an experienced developer, this documentation 
 
 ### Backend Guides
 
-- [Architecure](./backend/architecture.md)
+- [Architecture](./backend/architecture.md)
 - [cors explanation](./backend/cors.md)
 - [go ans Docker paths](./backend/go.md)
 - [Installation](./backend/install.md)

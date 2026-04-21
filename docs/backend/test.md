@@ -40,7 +40,7 @@ List of manual tests:
 [smoke](./manual-tests/smoke-mtest.md)
 [register and login](./manual-tests/user-mtest.md)
 [composer](./manual-tests/composer-mtest.md)
-[sheet](./manual-tests/sheet-mtest.md)
+[score](./manual-tests/score-mtest.md)
 
 ## Autotests Coding
 
