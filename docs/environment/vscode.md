@@ -40,6 +40,7 @@ Open VS Code and install the following extensions:
 - Python (for Python scripts in the project)
 - Pylance (for Python linting and analysis)
 - Markdown All in One (for editing markdown files)
+- Code Spell Checker
 
 - npm IntelliSense for javascript
 - Auto Import, auto generate the javascript require
@@ -49,7 +50,7 @@ Open VS Code and install the following extensions:
 
 ### Go formatter (gofumpt)
 
-In VS Code, theire is a Go fallback to gofmt **_(installed with Go)_**
+In VS Code, there is a Go fallback to gofmt **_(installed with Go)_**
 However it is better to use gofumpt for stricter formatting.
 
 ```bash

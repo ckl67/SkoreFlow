@@ -15,6 +15,10 @@ To run the automated tests, you can use the following command from the root of t
 ```bash
 cd auto-test
 bash auto-test.sh --help
+
+# or with multi parameters !
+bash auto-test.sh --clean --users --composers
+
 ```
 
 This command will execute the test suite, which includes various test cases designed to validate the functionality of the backend.
@@ -35,6 +39,8 @@ Some manual testing commands are provided below, but you can also create your ow
 List of manual tests:
 [smoke](./manual-tests/smoke-mtest.md)
 [register and login](./manual-tests/user-mtest.md)
+[composer](./manual-tests/composer-mtest.md)
+[sheet](./manual-tests/sheet-mtest.md)
 
 ## Autotests Coding
 

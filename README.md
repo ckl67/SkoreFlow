@@ -3,15 +3,9 @@
 > **From upload to structured music data — cleanly processed.**
 
 SkoreFlow is a backend and frontend application designed to manage, process, and serve musical scores through a clean, scalable, and layered architecture.
+SkoreFlow is the result of several iterations on earlier experimental projects, redesigned with a focus on clean architecture, scalability, and maintainability.
 
-After several months of work, [SheetFlow](https://github.com/ckl67/SheetFlow) has been abandoned in favor of the new SkoreFlow project.
-Most reason was a major refactoring effort of the initiale project, which was not really maintainable and scalable.
-There was no point in keeping all the historical data.
-
-Second reason was that the name SheetFlow was not really catchy, and I wanted to give a more fun name to the project.
-SkoreFlow is a play on words between "score" and "flow", which represents the flow of data and processing in the application.
-
-So wellcome to SkoreFlow 🎉
+So welcome to SkoreFlow 🎉
 
 ---
 
@@ -23,6 +17,19 @@ SkoreFlow provides a structured pipeline to:
 - Organize scores, composers, and users
 - Process files (storage, thumbnails, normalization, score annotations)
 - Expose a robust REST API for frontend and integrations
+
+---
+
+## 🚧 Project Status
+
+SkoreFlow is actively under development.
+
+- Backend: ✅ Mostly ready
+  - currently finalizing and working on backend auto test
+- Frontend: 🚧 not yet started (React)
+- Features: evolving
+
+Contributions and feedback are welcome.
 
 ---
 
@@ -60,11 +67,12 @@ cd skoreflow
 
 ## 🌿 Contributions
 
-- See [CONTRIBUTING](./CONTRIBUTING.md)
+- To contribute, please use **Feature Branches** and submit a **Pull Request**. Direct pushes to the main branch are not permitted.
+- See [CONTRIBUTING](./CONTRIBUTING.md) or [CONTRIBUTING (more details)](./docs/general/fork.md)
 
 ## 📄 License
 
-- See [LICENCE](./LICENSE.md)
+- See [LICENSE](./LICENSE.md)
 
 ## ✅ Code of Conduct
 

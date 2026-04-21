@@ -24,6 +24,7 @@ import (
 	"backend/infrastructure/logger"
 	"backend/pkg/filedir"
 	"backend/pkg/format"
+	"backend/pkg/media"
 
 	"gorm.io/gorm"
 )
@@ -40,13 +41,6 @@ func NewComposerService(db *gorm.DB, paths *config.Paths) *ComposerService {
 		db:    db,
 		paths: paths,
 	}
-}
-
-var allowedImageExt = map[string]struct{}{
-	".jpg":  {},
-	".jpeg": {},
-	".png":  {},
-	".webp": {},
 }
 
 // CreateComposer
@@ -74,14 +68,14 @@ func (s *ComposerService) CreateComposer(uid uint32, userRole int, req forms.Cre
 		SafeName:    safeName,
 		Epoch:       req.Epoch,
 		ExternalURL: req.ExternalURL,
-		PicturePath: "default.png",
+		PicturePath: "composers/default.png",
 		IsVerified:  false,
 	}
 
 	if req.IsVerified {
 		if !isAdmin && !isModerator {
 			logger.Composer.Warn(
-				"Unauthorized composer validation : user=%d role=%d required=[%d,%d] name=%s",
+				"(CreateComposer Service): Unauthorized composer validation : user=%d role=%d required=[%d,%d] name=%s",
 				uid, userRole, config.RoleAdmin, config.RoleModerator, req.Name,
 			)
 			return apperrors.ErrAccessForbidden
@@ -214,13 +208,13 @@ func (s *ComposerService) ProcessComposerStorage(composer *models.Composer, file
 
 	logger.Composer.Debug("(ProcessComposerStorage Service) processing file: %s for composer: %s", file.Filename, composer.Name)
 
+	// Minimal tests on files required because service call be called from everywhere !!
 	ext := strings.ToLower(filepath.Ext(file.Filename))
 	if ext == "" {
 		return apperrors.ErrImageFormatInvalid
 	}
-	logger.Composer.Debug("(ProcessComposerStorage Service) extension: %s", ext)
 
-	if _, ok := allowedImageExt[ext]; !ok {
+	if _, ok := media.AllowedImageExt[ext]; !ok {
 		logger.Composer.Debug("(ProcessComposerStorage Service) invalid format: %s", ext)
 		return apperrors.ErrImageFormatInvalid
 	}
@@ -233,19 +227,13 @@ func (s *ComposerService) ProcessComposerStorage(composer *models.Composer, file
 	// Absolute path
 	fullPath := s.paths.StorageAbsPath(filePath)
 
-	if err := filedir.CreateDir(filepath.Dir(fullPath)); err != nil {
-		logger.Composer.Error("(ProcessComposerStorage Service) create dir failed: %v", err)
+	logger.Composer.Debug("(ProcessComposerStorage Service) File relative : %s File absolute %s", filePath, fullPath)
+
+	if err := filedir.SaveFile(file, fullPath); err != nil {
 		return err
 	}
 
-	src, err := file.Open()
-	if err != nil {
-		logger.Composer.Error("(ProcessComposerStorage Service) open file failed: %v", err)
-		return err
-	}
-	defer src.Close()
-
-	return filedir.SaveFileToDisk(fullPath, src)
+	return nil
 }
 
 // Deletes a composer and associated assets.

@@ -1,4 +1,6 @@
-# Setup Manual composer tests
+# Setup Manual sheet tests
+
+## List of all users
 
 ```shell
 
@@ -24,16 +26,22 @@ curl -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/me | jq
 
 ```
 
-// Create a composer
+## Create sheet
 
 ```shell
-curl -X POST "http://localhost:8080/api/composers/upload" \
+
+NAME="Sonate au Clair de Lune"
+COMPOSER="Ludwig Van Beethoven"
+FILE_PATH="resources/sheets/Ludwig Van Beethoven/Sonate No. 14 - Clair de lune.pdf"
+
+curl -X POST "http://localhost:8080/api/sheets/upload" \
   -H "Authorization: Bearer $TOKEN_USER2" \
-  -H "Content-Type: application/json" \
-  -d '{ \
-    "name": "Beethoven",\
-    "description": "Classical"\
-    "uploadFile": "@resources/composers/Beethoven.png"\
-  }'
+  -F "sheetName=$NAME" \
+  -F "composer=$COMPOSER" \
+  -F "releaseDate=1965-12-12T00:00:00Z" \
+  -F "categories=Classical,Romantic" \
+  -F "tags=Piano,Calm" \
+  -F "informationText=Automated test file for $COMPOSER" \
+  -F "uploadFile=@$FILE_PATH"
 
 ```

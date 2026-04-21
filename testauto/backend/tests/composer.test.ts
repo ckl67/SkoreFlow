@@ -23,12 +23,12 @@ async function run() {
   const composers = [
     {
       name: "Mozart3",
-      description: "Clasique",
+      description: "Classic",
       file: "",
     },
     {
       name: "Beethoven",
-      description: "du Vingtième Siècle ",
+      description: "Twenty century",
       file: "resources/composers/Beethoven.png",
     },
     {

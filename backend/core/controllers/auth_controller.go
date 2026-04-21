@@ -77,7 +77,7 @@ func (ctrl *AuthController) Register(c *gin.Context) {
 }
 
 // RequestRegistrationConfirmation
-// Resends a registration confirmation email.
+// re-sends a registration confirmation email.
 // Security:
 // - Always returns a generic response to prevent email enumeration
 func (ctrl *AuthController) RequestRegistrationConfirmation(c *gin.Context) {

@@ -70,10 +70,11 @@ func (p *Paths) UserAvatarStorageRel(userID uint32) string {
 
 // ComposerStorageRel constructs the relative storage path for composers.
 func (p *Paths) ComposerPicturePath(composerSafeName, ext string) string {
+	filename := composerSafeName + ext
 	return path.Join(
 		"composers",
 		composerSafeName,
-		ext,
+		filename,
 	)
 }
 

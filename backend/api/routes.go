@@ -128,7 +128,7 @@ func (server *Server) SetupRouter() {
 		//    → frontend calls POST /register/confirm {token}
 		//    → backend validates token and sets IsVerified=true
 		// 3. Optional: POST /register/request_confirmation {email}
-		//    → resends confirmation email if user did not receive it
+		//    → re-sends confirmation email if user did not receive it
 		//
 		// Login Flow:
 		// -----------

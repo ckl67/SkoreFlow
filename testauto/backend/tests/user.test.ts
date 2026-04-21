@@ -13,6 +13,10 @@ import { API_URL } from "../config.js";
 import { getResetToken } from "../helpers/reset.js";
 import { sleep } from "../helpers/common.js";
 
+// --------------------------------------------------------------------------------
+// TYPES
+// --------------------------------------------------------------------------------
+
 interface TestUser {
   email: string;
   role: number;

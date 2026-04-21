@@ -203,7 +203,6 @@ func (ctrl *UserController) UploadAvatar(c *gin.Context) {
 
 	logger.User.Debug("User %d attempts to upload file", uid)
 
-
 	var form forms.UploadAvatarRequest
 	if err := c.ShouldBind(&form); err != nil {
 

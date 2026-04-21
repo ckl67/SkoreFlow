@@ -46,6 +46,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	"backend/pkg/media"
+
 	_ "image/jpeg"
 	_ "image/png"
 
@@ -108,13 +110,8 @@ func (req *CreateComposerRequest) ValidateForm() error {
 
 		// 2. File extension validation (quick filter)
 		ext := strings.ToLower(filepath.Ext(req.File.Filename))
-		allowedExt := map[string]bool{
-			".jpg":  true,
-			".jpeg": true,
-			".png":  true,
-			".webp": true,
-		}
-		if !allowedExt[ext] {
+
+		if !media.AllowedImageExt[ext] {
 			return errors.New("only jpg, jpeg, png, webp files are allowed")
 		}
 

@@ -25,6 +25,7 @@ storage/composers/*
 # 4) Re-allow assets within
 !storage/users/admin.png
 !storage/users/default.png
+!storage/composers/default.png
 
 # Build output directory
 build/

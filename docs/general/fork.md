@@ -1,3 +1,36 @@
+# 🤝 How to Contribute to SkoreFlow
+
+## 👥 Mode Collaboration (Direct Access)
+
+Use this if you are a member of the core team.
+
+```bash
+# Clone the repository
+git clone https://github.com/ckl67/SkoreFlow.git
+cd SkoreFlow
+```
+
+🌿 2. Create a branch
+
+```bash
+git checkout -b <github-login>/dev
+```
+
+🔄 3. Workflow
+
+```mermaid
+flowchart LR
+    A[Clone] --> B[Branch]
+    B --> C[Commit]
+    C --> D[Push]
+    D --> E[Pull Request]
+    E --> F[Code Review / Tests]
+    F --> G[Merge to Main]
+```
+
+# Mode Fork
+
+Use this if you want to propose a change without direct write access.
 
 ## 🍴 1. Fork the repository
 
@@ -47,6 +80,7 @@ flowchart LR
 ## 💻 4. Development
 
 ```bash
+
 git status
 git add .
 git commit -m "feat: add PDF export"
@@ -57,15 +91,13 @@ git commit -m "feat: add PDF export"
 ## 🔁 5. Sync with upstream
 
 ```bash
+# Update your local main
 git fetch upstream
 git checkout main
 git merge upstream/main
-```
 
-Rebase:
-
-```bash
-git checkout <github-login>/feature/feature-name
+# Rebase your feature branch
+git checkout <your-branch>
 git rebase main
 ```
 
@@ -74,7 +106,8 @@ git rebase main
 ## 🚀 6. Push
 
 ```bash
-git push origin <github-login>/feature/feature-name
+git push origin <your-branch>
+# Then open a PR on GitHub
 ```
 
 ---
@@ -85,7 +118,6 @@ git push origin <github-login>/feature/feature-name
 - Explain what, why, how
 
 ---
-
 
 ## 🧪 8. Testing
 
@@ -102,7 +134,7 @@ All tests must pass.
 ## ✅ Checklist
 
 - [ ] Builds
-- [ ] Tests pass
+- [ ] Tests pass (./auto-test.sh is green).
 - [ ] Up to date
 - [ ] Clean commits
 - [ ] PR documented

@@ -6,13 +6,14 @@ package filedir
 // ======================================================================================
 
 import (
-	"backend/infrastructure/logger"
 	"errors"
 	"fmt"
 	"io"
 	"mime/multipart"
 	"os"
 	"path/filepath"
+
+	"backend/infrastructure/logger"
 )
 
 // RemoveFileIfExists deletes a file if it exists.
@@ -27,8 +28,8 @@ func RemoveFileIfExists(path string) error {
 	err := os.Remove(path)
 	if err != nil {
 		if os.IsNotExist(err) {
-			logger.Sheet.Warn("File not found: %s", path)
-			return err
+			logger.Sheet.Debug("File not found (nothing to delete): %s", path)
+			return nil
 		}
 		logger.Sheet.Warn("Failed to delete file %s: %v", path, err)
 		return err
@@ -50,7 +51,7 @@ func CreateDir(path string) error {
 
 // OsCreateFile writes a multipart file to disk without additional checks.
 func OsCreateFile(fullpath string, file multipart.File) error {
-	f, err := os.OpenFile(fullpath, os.O_WRONLY|os.O_CREATE, 0666)
+	f, err := os.OpenFile(fullpath, os.O_WRONLY|os.O_CREATE, 0o666)
 	if err != nil {
 		return err
 	}
@@ -107,6 +108,7 @@ func SaveFileToDisk(fullpath string, file multipart.File) error {
 
 // SaveFile saves a file from FileHeader to disk safely.
 // - Ensures directory exists
+// - otherwise will create the full path
 // - Validates file size (<2MB)
 // - Flushes content to disk
 func SaveFile(fileHeader *multipart.FileHeader, fullPath string) error {
@@ -118,7 +120,7 @@ func SaveFile(fileHeader *multipart.FileHeader, fullPath string) error {
 
 	dir := filepath.Dir(fullPath)
 	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
-		return err
+		return fmt.Errorf("unable to create directory tree %s: %v", fullPath, err)
 	}
 
 	if fileHeader.Size > 2<<20 { // 2MB
@@ -141,4 +143,17 @@ func SaveFile(fileHeader *multipart.FileHeader, fullPath string) error {
 	}
 
 	return dst.Close()
+}
+
+// CreateDirTree will create the full path
+// Example : CreateDirTree("data/users/exports/excel")
+// Will check if data exist, if not it will create it .. and so one
+func CreateDirTree(fullPath string) error {
+	dir := filepath.Dir(fullPath)
+
+	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
+		return fmt.Errorf("unable to create directory tree %s: %v", fullPath, err)
+	}
+
+	return nil
 }

@@ -39,3 +39,8 @@ Whether you're new to SkoreFlow or an experienced developer, this documentation 
 - [JavaScript Coding Style](./general/javascript_ecosystem.md)
 - [Architecture](./frontend/architecture.md)
 - [Installation](./frontend/install.md)
+
+### Contribution
+
+- To contribute, please use **Feature Branches** and submit a **Pull Request**. Direct pushes to the main branch are not permitted.
+- [github contribution](./general/fork.md)

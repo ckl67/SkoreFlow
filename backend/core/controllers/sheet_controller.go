@@ -52,13 +52,17 @@ func (ctrl *SheetController) CreateSheet(c *gin.Context) {
 	uid := c.GetUint32("user_id")
 	userRole := c.GetInt("user_role")
 
-	logger.Sheet.Debug("User ID: %d, User Role: %d\n", uid, userRole)
+	logger.Sheet.Debug("(CreateSheet): User ID: %d, User Role: %d will create a sheet\n", uid, userRole)
+
+	// logger.Sheet.Debug("(CreateSheet): Content-Type: %s", c.ContentType())
 
 	var form forms.CreateSheetRequest
 	if err := c.ShouldBind(&form); err != nil {
 		responses.ERROR(c, http.StatusBadRequest, err)
 		return
 	}
+
+	logger.Sheet.Debug("(CreateSheet): Form raw: %+v", c.Request.Form)
 
 	if err := form.ValidateForm(); err != nil {
 		responses.ERROR(c, http.StatusBadRequest, err)

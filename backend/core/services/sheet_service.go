@@ -64,7 +64,7 @@ func (s *SheetService) findOrCreateComposer(name string) (*models.Composer, erro
 		composer = models.Composer{
 			Name:        strings.TrimSpace(name),
 			SafeName:    safeName,
-			PicturePath: "default.webp", // default fallback
+			PicturePath: "composers/default.png", // default fallback
 		}
 
 		if err := composer.Create(s.db); err != nil {
@@ -78,17 +78,6 @@ func (s *SheetService) findOrCreateComposer(name string) (*models.Composer, erro
 }
 
 // CreateSheet orchestrates the full creation workflow of a sheet.
-//
-// Steps:
-// 1. Normalize input
-// 2. Resolve or create composer
-// 3. Check uniqueness (user + composer + sheet)
-// 4. Build storage paths
-// 5. Parse release date
-// 6. Build model
-// 7. Process file storage (PDF + thumbnail)
-// 8. Persist to database
-//
 // Storage mapping:
 //
 //	DB paths:
@@ -102,7 +91,7 @@ func (s *SheetService) CreateSheet(uid uint32, form forms.CreateSheetRequest, fi
 	// 1. Normalize sheet name
 	safeSheetName := format.SanitizeName(form.SheetName)
 
-	// 2. Resolve composer
+	// 2. Resolve composer or will create a new one
 	composer, err := s.findOrCreateComposer(form.Composer)
 	if err != nil {
 		return err
@@ -121,6 +110,9 @@ func (s *SheetService) CreateSheet(uid uint32, form forms.CreateSheetRequest, fi
 	// filePath = sheets/uploaded-sheets/user-1/mozart/prelude.pdf
 	filePath := s.paths.SheetPDFStorageRel(uid, composer.SafeName, safeSheetName)
 	thumbnailPath := s.paths.SheetThumbnailStorageRel(uid, composer.SafeName, safeSheetName)
+
+	logger.Sheet.Debug("(CreateSheet) filePath Relative %s", filePath)
+	logger.Sheet.Debug("(CreateSheet) thumbnailPath Relative %s", thumbnailPath)
 
 	// 5. Parse release date
 	releaseDate, err := createDate(form.ReleaseDate)
@@ -344,7 +336,7 @@ func (s *SheetService) GetSheetsPage(uid uint32, form forms.GetSheetsPageRequest
 }
 
 // ProcessSheetStorage handles file persistence and thumbnail generation.
-//
+// For Creation and Update (SafeSheetName will not be modified !!)
 // Behavior:
 // - Creates directories if needed
 // - Saves PDF file
@@ -355,32 +347,19 @@ func (s *SheetService) ProcessSheetStorage(sheet *models.Sheet, file *multipart.
 		return nil
 	}
 
-	// Example :
-	// rel = sheets/uploaded-sheets/user-1/mozart/prelude.pdf
-	// return =  /home/christian/SkoreFlow_Project/SkoreFlow/backend/storage/sheets/uploaded-sheets/user-1/mozart/prelude.pdf
 	fullFilePath := s.paths.StorageAbsPath(sheet.FilePath)
 	fullThumbnailPath := s.paths.StorageAbsPath(sheet.ThumbnailPath)
 
-	// Création du dossier pour le fichier principal
-	if err := filedir.CreateDir(filepath.Dir(fullFilePath)); err != nil {
-		logger.Sheet.Error("(ProcessComposerStorage Service) create dir failed: %v", err)
+	logger.Sheet.Debug("fullFilePath Absolute : %s", fullFilePath)
+	logger.Sheet.Debug("fullThumbnailPath Absolute : %s", fullThumbnailPath)
+
+	// Create file and full path directory
+	if err := filedir.SaveFile(file, fullFilePath); err != nil {
 		return err
 	}
 
-	// Création du dossier pour la miniature
-	if err := filedir.CreateDir(filepath.Dir(fullThumbnailPath)); err != nil {
-		logger.Sheet.Error("(ProcessComposerStorage Service) create dir failed: %v", err)
-		return err
-	}
-
-	// Save file
-	src, err := file.Open()
-	if err != nil {
-		return err
-	}
-	defer src.Close()
-
-	if err := filedir.SaveFileToDisk(fullFilePath, src); err != nil {
+	// Create the thumbnail directory : full path
+	if err := filedir.CreateDirTree(fullThumbnailPath); err != nil {
 		return err
 	}
 

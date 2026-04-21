@@ -23,6 +23,7 @@ import (
 	"backend/infrastructure/logger"
 	"backend/pkg/filedir"
 	"backend/pkg/format"
+	"backend/pkg/media"
 	"backend/pkg/security"
 
 	"gorm.io/gorm"
@@ -210,6 +211,17 @@ func (s *UserService) UploadAvatar(uid uint32, file *multipart.FileHeader) (*mod
 
 	if err := user.FindByID(s.db, uid); err != nil {
 		return nil, apperrors.ErrUserNotFound
+	}
+
+	// Minimal tests on files required because service call be called from everywhere !!
+	ext := strings.ToLower(filepath.Ext(file.Filename))
+	if ext == "" {
+		return nil, apperrors.ErrImageFormatInvalid
+	}
+
+	if _, ok := media.AllowedImageExt[ext]; !ok {
+		logger.Composer.Debug("(UploadAvatar) invalid format: %s", ext)
+		return nil, apperrors.ErrImageFormatInvalid
 	}
 
 	// Relative Path (stored in DB)

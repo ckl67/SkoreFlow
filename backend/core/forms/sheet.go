@@ -66,9 +66,9 @@ type GetSheetsPageRequest struct {
 
 // CreateSheetRequest defines the payload for creating a new sheet.
 type CreateSheetRequest struct {
-	File            *multipart.FileHeader `form:"uploadFile"`
+	File            *multipart.FileHeader `form:"uploadFile" binding:"required"`
 	Composer        string                `form:"composer"`
-	SheetName       string                `form:"sheetName"`
+	SheetName       string                `form:"sheetName" binding:"required"`
 	ReleaseDate     string                `form:"releaseDate"`
 	Categories      string                `form:"categories"`
 	Tags            string                `form:"tags"`
