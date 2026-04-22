@@ -1,5 +1,6 @@
 # Custom Dictionary Words
 backend
+  autotests
   apperrors
   createuser
   esbenp
@@ -24,3 +25,5 @@ backend
   sonate
   Supertramp
   testauto
+  sqlitebrowser
+  typestrict

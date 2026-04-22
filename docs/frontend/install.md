@@ -1,10 +1,10 @@
 
 # Contributing Guide
 
-This document explains the step by step to set up the development environment and follow the contribution workflow for the SkoreFlow frontend project.
+This document explains the step by step to set up the development environment
+and follow the contribution workflow for the SkoreFlow frontend project.
 
 ---
-
 
 ## 1. Clone the Repository
 
@@ -20,7 +20,6 @@ cd skoreflow
 Make sure you have the following installed:
 
 - Node.js and npm (for frontend development)
-
 
 ## 6. Frontend Setup (React)
 

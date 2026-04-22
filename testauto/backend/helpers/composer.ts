@@ -4,10 +4,10 @@
 
 import { API_URL } from "../config.js";
 
-import { assertStatus } from "./assert.js";
 import { createReadStream } from "node:fs";
 import FormData from "form-data";
 import { request } from "./api.js";
+import { assertStatus, type HttpResponse } from "../helpers/assert.js";
 
 // --------------------------------------------------------------------------------
 // createComposer
@@ -56,7 +56,7 @@ async function createComposer(
   { name, externalURL, epoch, uploadFile, isVerified }: RequestOptions,
   token: string,
   expected = 201,
-) {
+): Promise<HttpResponse<any>> {
   const form = new FormData();
 
   if (name) form.append("name", name);
@@ -74,6 +74,8 @@ async function createComposer(
   });
 
   assertStatus(`Create Composer: ${name}`, res, expected);
+
+  return res;
 }
 
 // --------------------------------------------------------------------------------
