@@ -44,7 +44,23 @@ Contributions and feedback are welcome.
 
 ```
 
----
+⚠️ Important (VS Code users)
+
+This project uses a multi-folder setup.
+To properly access development tools (especially test scripts and task runners), you must open the workspace file:
+
+```bash
+my-project.code-workspace
+```
+
+Opening only a subfolder (e.g. backend/ or testauto/backend/) will prevent:
+
+- NPM scripts from appearing in the sidebar
+- Task configurations from working correctly
+- Proper multi-project navigation
+
+👉 In VS Code:
+File → Open Workspace from File...
 
 ## 🚀 Getting Started
 
@@ -77,5 +93,3 @@ cd skoreflow
 ## ✅ Code of Conduct
 
 - See [CODE_OF_CONDUCT](./CODE_OF_CONDUCT.md)
-
-Test de Pull Request le 22/04/2026

@@ -1,6 +1,8 @@
 # VS Code Setup Guide for Skoreflow (Linux)
 
-This guide walks you through installing Visual Studio Code on Linux and configuring it to match the development standards used in the Skoreflow project.
+This guide walks you through installing Visual Studio Code on Linux and
+configuring it to match the development standards used in the Skoreflow
+project.
 
 ---
 
@@ -46,6 +48,7 @@ Open VS Code and install the following extensions:
 - npm IntelliSense for javascript
 - Auto Import, auto generate the javascript require
 - Error Lens: Highlights errors directly at the end of the line (saves time).
+- Vitest extension for Visual Studio Code. Available on Visual Studio Marketplace.
 
 ## 3. Install Required System Tools
 
@@ -70,7 +73,8 @@ export PATH=$PATH:$(go env GOPATH)/bin
 ### Shell formatting tools
 
 shfmt is a shell formatter written in Go.
-In this project, we install it using go install to ensure consistent versions across contributors and avoid relying on outdated system packages
+In this project, we install it using go install to ensure consistent versions
+across contributors and avoid relying on outdated system packages
 
 ```bash
 sudo snap install shellcheck -y
@@ -96,7 +100,8 @@ shellcheck --version
 These settings are intentionally not versioned to allow flexibility per developer
 However, contributors are strongly encouraged to follow this setup to maintain consistency
 
-These files are NOT committed to the repository by default. You must create them locally.
+These files are NOT committed to the repository by default.
+You must create them locally.
 
 ### Create the folder
 
@@ -115,9 +120,28 @@ SkoreFlow/
 mkdir -p .vscode
 ```
 
+## 5. code-workspace
+
+This project uses a multi-folder setup.
+To properly access development tools (especially test scripts and task runners),
+you must open the workspace file:
+
+```bash
+my-project.code-workspace
+```
+
+Opening only a subfolder (e.g. backend/ or testauto/backend/) will prevent:
+
+- NPM scripts from appearing in the sidebar
+- Task configurations from working correctly
+- Proper multi-project navigation
+
+👉 In VS Code:
+File → Open Workspace from File...
+
 ---
 
-## 5. Configure Debugging (launch.json)
+## 6. Configure Debugging (launch.json)
 
 Create `.vscode/launch.json`:
 
@@ -172,7 +196,7 @@ Create `.vscode/launch.json`:
 
 ---
 
-## 6. Configure Editor Settings (settings.json)
+## 7. Configure Editor Settings (settings.json)
 
 Create `.vscode/settings.json`:
 
@@ -191,6 +215,9 @@ Create `.vscode/settings.json`:
   "files.autoSave": "onFocusChange",
   "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,
+
+  "npm.enableScriptExplorer": true,
+
 
   // --- EMMET & REACT ---
   "emmet.includeLanguages": {
@@ -242,7 +269,7 @@ Create `.vscode/settings.json`:
 
 ---
 
-## 7. Configuration Philosophy
+## 8. Configuration Philosophy
 
 ### Backend (Go)
 
@@ -263,7 +290,7 @@ Create `.vscode/settings.json`:
 
 ---
 
-## 8. Expected Behavior
+## 9. Expected Behavior
 
 Once configured:
 
@@ -275,13 +302,13 @@ Once configured:
 
 ---
 
-## 9. Notes
+## 10. Notes
 
 - Any deviation may result in formatting conflicts in pull requests
 
 ---
 
-## 10. Optional Improvements
+## 11. Optional Improvements
 
 You may also:
 

@@ -65,7 +65,8 @@ function assertStatus<T = unknown>(
     }
 
     console.error(`🛑 Aborting tests due to failure in: ${label}`);
-    process.exit(1);
+    throw new Error(`Assertion Failed: Expected ${expected} but got ${status}`);
+    //process.exit(1);
   }
 }
 
