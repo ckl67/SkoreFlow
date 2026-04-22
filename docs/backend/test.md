@@ -5,7 +5,7 @@ Automated testing is crucial for ensuring the reliability and stability of the a
 
 This part will also address some manual tests
 
-In order to access the database, you can use slicebrowser, a graphical tool that allows you to interact with SQLite databases. It provides an intuitive interface for browsing, querying, and managing your SQLite databases without needing to use command-line tools.
+In order to access the database, you can use sqlitebrowser, a graphical tool that allows you to interact with SQLite databases. It provides an intuitive interface for browsing, querying, and managing your SQLite databases without needing to use command-line tools.
 For more information on how to install and use sqlitebrowser, please refer to the [sqlitebrowser guide](./sqlite.md).
 
 ## Running Tests
