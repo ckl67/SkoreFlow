@@ -47,3 +47,7 @@ curl -X POST "http://localhost:8080/api/scores/upload" \
   -F "uploadFile=@$FILE_PATH"
 
 ```
+
+## List score
+
+curl -X GET "http://localhost:8080/api/scores" \

@@ -1,12 +1,16 @@
 {
   "folders": [
     { "path": ".", "name": "root" },
-    { "path": "backend", "name": "backend" },
-    { "path": "frontend", "name": "frontend" },
+
+    { "path": "backend" },
+    { "path": "frontend" },
+
     { "path": "testauto/backend", "name": "tests-backend" },
-    { "path": "docs" },
+    { "path": "testauto/frontend", "name": "tests-frontend" },
+
+    { "path": "docs" }
   ],
   "settings": {
-    "markdownlint.run": "onType",
-  },
+    "markdownlint.run": "onType"
+  }
 }

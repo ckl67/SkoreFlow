@@ -1,14 +1,9 @@
-# VS Code Setup Guide for Skoreflow (Linux)
+VS Code Setup Guide for Skoreflow (Linux)
 
-This guide walks you through installing Visual Studio Code on Linux and
-configuring it to match the development standards used in the Skoreflow
-project.
+This guide explains how to install and configure Visual Studio Code for the Skoreflow monorepo using a consistent development setup across backend, frontend, and test environments.
 
----
-
-## 1. Install Visual Studio Code on Ubuntu
-
-### Using Snap (recommended)
+#1. Install Visual Studio Code on Ubuntu
+Using Snap (recommended)
 
 ```bash
 sudo snap install code --classic
@@ -16,306 +11,172 @@ sudo snap install code --classic
 
 Launch VS Code:
 
-```bash
-code
-```
+# 2. Install Required Extensions
 
----
+Open VS Code and install the following extensions.
 
-## 2. Install Required Extensions
+🧠 Core Development
+-Go (official Go extension)
+-Prettier
+-ESLint
+-Vitest extension (test runner integration)
+-npm IntelliSense
+-Error Lens
 
-Open VS Code and install the following extensions:
-
-### Core Extensions
-
-- Go (official Go extension)
-- Prettier - Code formatter
-- ESLint
-- ShellCheck
-- shfmt (Martin Kühl)
+⚛️ Frontend (React / TypeScript)
 - ES7+ React/Redux Snippets
-- github.copilot (optional, for AI code suggestions)
-- EditorConfig for VS Code (optional, for cross-editor consistency)
-- gitgraph (for visualizing git history)
-- github pull requests and issues (for managing PRs directly from VS Code)
-- Makefile Tools (optional, for better Makefile support)
-- Python (for Python scripts in the project)
-- Pylance (for Python linting and analysis)
-- Markdown All in One (for editing markdown files)
+- GitHub Copilot (optional AI assistant)
+
+🐍 Python (optional / legacy tools)
+- Pylance (Python language server)
+- Python extension (if Python is used in tooling)
+
+📝 Documentation
+- Markdown All in One
 - Code Spell Checker
-- markdownlint rules to encourage standards and consistency for Markdown files.
 
-- npm IntelliSense for javascript
-- Auto Import, auto generate the javascript require
-- Error Lens: Highlights errors directly at the end of the line (saves time).
-- Vitest extension for Visual Studio Code. Available on Visual Studio Marketplace.
+🔧 System / Shell
+- ShellCheck
+- shfmt
 
-## 3. Install Required System Tools
+📊 Git tools
+- GitLens (recommended replacement for gitgraph)
+- GitHub Pull Requests & Issues
 
-### Go formatter (gofumpt)
+# 3. Install Required System Tools
 
-In VS Code, there is a Go fallback to gofmt **_(installed with Go)_**
-However it is better to use gofumpt for stricter formatting.
-
-```bash
+```shell
+Go formatting (gofumpt)
 go install mvdan.cc/gofumpt@latest
+
 ```
+Ensure Go binaries are in PATH:
+```shell
 
-Ensure Go binaries are in your PATH:
-(Go tools are typically installed in $GOPATH/bin, which is often ~/go/bin)
-
-```bash
 export PATH=$PATH:$(go env GOPATH)/bin
 ```
 
----
+Shell tools
 
-### Shell formatting tools
-
-shfmt is a shell formatter written in Go.
-In this project, we install it using go install to ensure consistent versions
-across contributors and avoid relying on outdated system packages
-
-```bash
+```shell
 sudo snap install shellcheck -y
-
 go install mvdan.cc/sh/v3/cmd/shfmt@latest
-```
 
-```bash
+# Move shfmt if needed:
+
 sudo mv ~/go/bin/shfmt /usr/local/bin/
-```
 
-Verify:
+# Verify:
 
-```bash
 shfmt --version
 shellcheck --version
 ```
 
----
 
-## 4. Project VS Code Configuration
+4# . Project Structure (IMPORTANT)
 
-These settings are intentionally not versioned to allow flexibility per developer
-However, contributors are strongly encouraged to follow this setup to maintain consistency
+This project is a multi-root workspace (monorepo):
 
-These files are NOT committed to the repository by default.
-You must create them locally.
-
-### Create the folder
-
-On the root of the project, create the `.vscode` folder if it doesn't exist:
-
-```text
 SkoreFlow/
 ├── backend/
 ├── frontend/
 ├── testauto/
 ├── docs/
 ├── .vscode/
-```
+├── package.json (root)
 
-```bash
-mkdir -p .vscode
-```
+👉 You MUST open the workspace file:
 
-## 5. code-workspace
+SkoreFlow.code-workspace
+Why this matters
 
-This project uses a multi-folder setup.
-To properly access development tools (especially test scripts and task runners),
-you must open the workspace file:
+Opening only a subfolder breaks:
 
-```bash
-my-project.code-workspace
-```
+- npm scripts visibility
+- workspace-wide search
+- debugging context
+- monorepo tooling
 
-Opening only a subfolder (e.g. backend/ or testauto/backend/) will prevent:
+# 5. VS Code Workspace Setup
 
-- NPM scripts from appearing in the sidebar
-- Task configurations from working correctly
-- Proper multi-project navigation
+In VS Code:
 
-👉 In VS Code:
 File → Open Workspace from File...
 
----
+Use:
 
-## 6. Configure Debugging (launch.json)
+SkoreFlow.code-workspace
 
-Create `.vscode/launch.json`:
+Recommended workspace structure:
 
-```json
 {
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "name": "Debug Server",
-      "type": "go",
-      "request": "launch",
-      "mode": "debug",
-      "program": "${workspaceFolder}/backend/cmd/server",
-      "cwd": "${workspaceFolder}/backend"
-    },
-
-    {
-      "name": "Debug CLI (no args)",
-      "type": "go",
-      "request": "launch",
-      "mode": "debug",
-      "program": "${workspaceFolder}/backend/cmd/cli",
-      "cwd": "${workspaceFolder}/backend"
-    },
-
-    {
-      "name": "Debug CLI (list users)",
-      "type": "go",
-      "request": "launch",
-      "mode": "debug",
-      "program": "${workspaceFolder}/backend/cmd/cli",
-      "cwd": "${workspaceFolder}/backend",
-      "args": ["-list-users"]
-    },
-
-    {
-      "name": "Debug JS Test Auto",
-      "type": "node",
-      "request": "launch",
-      "program": "${file}",
-      "skipFiles": ["<node_internals>/**"]
-    }
+  "folders": [
+    { "path": "." },
+    { "path": "backend" },
+    { "path": "frontend" },
+    { "path": "testauto/backend", "name": "tests-backend" },
+    { "path": "testauto/frontend", "name": "tests-frontend" },
+    { "path": "docs" }
   ]
 }
-```
 
-### Explanation
+# 6. Editor Configuration Philosophy
 
-- Launches the current Go package
-- Automatically detects execution mode
-- Useful for quickly debugging API or services
+This project enforces a strict separation of responsibilities:
 
----
+🎨 Formatting
+- Prettier is the ONLY formatter
+- Format on save enabled globally
+🧹 Linting
+- ESLint is used only for code quality
+- No formatting rules in ESLint
+🧪 Testing
+- Vitest handles all JavaScript/TypeScript tests
 
-## 7. Configure Editor Settings (settings.json)
+# 7. Expected Behavior
 
-Create `.vscode/settings.json`:
+Once correctly configured:
 
-```json
-{
-  // --- GENERAL ---
-  // Internal VSC Javascript motor correction
-  // checkJs not used
-  // we will use eslint.config.mjs (ESLint) and tsconfig.json (TypeScript)
-  "js/ts.implicitProjectConfig.checkJs": false,
+Code is formatted automatically on save (Prettier)
+ESLint shows only logic issues (no formatting conflicts)
+Imports are clean (Go + TS)
+Tests run consistently via Vitest
+Shell scripts are formatted with shfmt
+Errors are highlighted inline (Error Lens)
 
-  "editor.formatOnSave": true,
-  "editor.tabSize": 2,
-  "editor.detectIndentation": false,
-  "editor.snippetSuggestions": "top",
-  "files.autoSave": "onFocusChange",
-  "files.trimTrailingWhitespace": true,
-  "files.insertFinalNewline": true,
+# 8. Backend (Go)
 
-  "npm.enableScriptExplorer": true,
+Strict formatting with gofumpt
+Automatic import organization
+Clean compilation rules
 
+# 9. Frontend (React / TypeScript)
+Prettier for formatting
+ESLint for code validation
+Emmet enabled for JSX productivity
+# 10. Shell Scripts
+shfmt formats scripts
+ShellCheck validates correctness
+# 11. Configuration Principle
 
-  // --- EMMET & REACT ---
-  "emmet.includeLanguages": {
-    "javascript": "javascriptreact",
-    "typescript": "typescriptreact"
-  },
-  "emmet.triggerExpansionOnTab": true,
+🔴 One tool = one responsibility
 
-  // --- FORMATTING DEFAULT(PRETTIER) ---
-  "[javascript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
-  "[javascriptreact]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
-  "[typescript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
-  "[typescriptreact]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
-  "[markdown]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+Concern	Tool
+Format	Prettier
+Lint	ESLint
+Test	Vitest
+Shell format	shfmt
+Shell lint	ShellCheck
 
-  // --- GO ---
-  "[go]": {
-    "editor.defaultFormatter": "golang.go",
-    "editor.codeActionsOnSave": {
-      "source.organizeImports": "explicit"
-    }
-  },
-  "go.formatTool": "gofumpt",
-  "go.lintTool": "golangci-lint",
+# 12. Optional Improvements
 
-  // --- PYTHON (Ruff) ---
-  "[python]": {
-    "editor.defaultFormatter": "ms-python.python",
-    "editor.codeActionsOnSave": {
-      "source.organizeImports": "explicit"
-    }
-  },
+You may enhance the setup with:
 
-  // --- SHELL ---
-  "shellcheck.enable": true,
-  "[shellscript]": {
-    "editor.defaultFormatter": "mkhl.shfmt",
-    "editor.tabSize": 4
-  },
-  "shfmt.flags": ["-i", "4", "-ci"],
+GitHub Copilot (AI assistance)
+.editorconfig for cross-editor consistency
+Husky + lint-staged (pre-commit validation)
+CI pipeline (GitHub Actions)
 
-  // --- LINTERS & ACTIONS ---
-  "eslint.enable": true,
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
-  }
-}
-```
+End of Guide
 
----
-
-## 8. Configuration Philosophy
-
-### Backend (Go)
-
-- Strict formatting with `gofumpt`
-- Automatic import cleanup
-- Clean and consistent codebase
-
-### Frontend (React / TypeScript)
-
-- Prettier for formatting
-- ESLint for code quality
-- Emmet enabled for faster JSX writing
-
-### Shell Scripts
-
-- `shfmt` for formatting
-- `ShellCheck` for linting
-
----
-
-## 9. Expected Behavior
-
-Once configured:
-
-- Code is automatically formatted on save
-- Imports are cleaned automatically (Go)
-- Linting runs on save (ESLint)
-- Shell scripts are formatted consistently
-- Indentation is enforced (2 spaces globally, 4 for shell)
-
----
-
-## 10. Notes
-
-- Any deviation may result in formatting conflicts in pull requests
-
----
-
-## 11. Optional Improvements
-
-You may also:
-
-- Enable GitHub Copilot or inline suggestions
-- Configure workspace-specific settings instead of global ones
-- Add `.editorconfig` for cross-editor consistency
-
----
-
-End of guide.
+This setup ensures a consistent, scalable, and conflict-free development environment for the Skoreflow monorepo.

@@ -5,7 +5,7 @@ export default mergeConfig(
   base,
   defineConfig({
     test: {
-      environment: "node",
+      environment: "jsdom", // ⚠️ Mandatory for React
       include: ["tests/**/*.test.ts"],
     },
   }),

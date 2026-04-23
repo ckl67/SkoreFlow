@@ -2,12 +2,12 @@
 // HELPERS
 // --------------------------------------------------------------------------------
 
-import { API_URL } from "../config.js";
+import { API_URL } from '../config.js';
 
-import { assertStatus } from "./assert.js";
-import { createReadStream } from "node:fs";
-import FormData from "form-data";
-import { request } from "./api.js";
+import { assertStatus } from './assert.js';
+import { createReadStream } from 'node:fs';
+import FormData from 'form-data';
+import { request } from './api.js';
 
 // --------------------------------------------------------------------------------
 // createScore
@@ -64,19 +64,17 @@ async function createScore(
 ) {
   const form = new FormData();
 
-  if (scoreName) form.append("scoreName", scoreName);
-  if (releaseDate) form.append("releaseDate", releaseDate);
-  if (categories) form.append("categories", categories);
-  if (tags) form.append("tags", tags);
-  if (informationText) form.append("informationText", informationText);
-  if (composer) form.append("composer", composer);
-  if (uploadFile) form.append("uploadFile", createReadStream(uploadFile));
+  if (scoreName) form.append('scoreName', scoreName);
+  if (releaseDate) form.append('releaseDate', releaseDate);
+  if (categories) form.append('categories', categories);
+  if (tags) form.append('tags', tags);
+  if (informationText) form.append('informationText', informationText);
+  if (composer) form.append('composer', composer);
+  if (uploadFile) form.append('uploadFile', createReadStream(uploadFile));
 
-  console.log(
-    `\n Creating score: ${scoreName} (File: ${uploadFile || "None"})`,
-  );
+  console.log(`\n Creating score: ${scoreName} (File: ${uploadFile || 'None'})`);
 
-  const res = await request("POST", `${API_URL}/scores/upload`, {
+  const res = await request('POST', `${API_URL}/scores/upload`, {
     token,
     data: form,
     headers: form.getHeaders(),

@@ -1,29 +1,32 @@
 # Custom Dictionary Words
+apperrors
+autotests
+backen
 backend
-  autotests
-  apperrors
-  createuser
-  esbenp
-  frontend
-  gitgraph
-  gofmt
-  gofumpt
-  golangci
-  gonic
-  gopath
-  gopher
-  gorm
-  kubernetes
-  kühl
-  microservice
-  mkhl
-  mvdan
-  rqconfirm
-  shellcheck
-  shfmt
-  Skoreflow
-  sonate
-  Supertramp
-  testauto
-  sqlitebrowser
-  typestrict
+createuser
+esbenp
+frontend
+gitgraph
+gofmt
+gofumpt
+golangci
+gonic
+gopath
+gopher
+gorm
+kubernetes
+kühl
+microservice
+mkhl
+mvdan
+rqconfirm
+shellcheck
+shfmt
+Skoreflow
+sonate
+sqlitebrowser
+Supertramp
+testauto
+typestrict
+fuser
+pwreset

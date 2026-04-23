@@ -1,0 +1,13 @@
+
+{
+  // Go formatting
+  "[go]": {
+    "editor.defaultFormatter": "golang.go",
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    }
+  },
+
+  "go.formatTool": "gofumpt",
+  "go.lintTool": "golangci-lint"
+}

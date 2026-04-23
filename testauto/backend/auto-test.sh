@@ -24,7 +24,7 @@
 HelpTXT="
 bash auto-test.sh		: Standard Run - We Keep the FORMER Database and Storage - No cleaning just smoke tests - Afterwards Server is Running
 
-bash auto-test.sh --kill	: Kill The process to be sure that there is no Background process - Usefull to run the server manually or for Air
+bash auto-test.sh --kill	: Kill The process to be sure that there is no Background process - Useful to run the server manually or for Air
 bash auto-test.sh --clean	: Clean the Database and Storage before running tests (Use with --scores or --composers to have a full clean)
 
 bash auto-test.sh --all		: Run everything (Smoke, Users, Scores, Composers) without including SMTP/Google password reset tests
@@ -203,8 +203,8 @@ if [ "$CLEAN_DB_FILES" = true ]; then
 	echo "  ---> We have now a NEW Database and Storage Files !!"
 else
 	echo "  ---> We Keep the FORMER Database and Storage Files !!"
+	# Wait for background server process
+	wait $BACKEND_PID
 fi
 echo "########################################################"
 
-# Wait for background server process
-wait $BACKEND_PID

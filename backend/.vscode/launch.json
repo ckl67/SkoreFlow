@@ -1,0 +1,33 @@
+// ${workspaceFolder} = Workspace Folder
+// ${fileDirname} = Current file 
+
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug Server",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "program": "${workspaceFolder}/cmd/server",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "Debug CLI (no args)",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "program": "${workspaceFolder}/cmd/cli",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "Debug CLI (list users)",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "program": "${workspaceFolder}/cmd/cli",
+      "cwd": "${workspaceFolder}",
+      "args": ["-list-users"]
+    }
+  ]
+}

@@ -5,9 +5,6 @@
     "node_modules/**",
     "vendor/**",
     ".git/**",
-    "node_modules/**",
-    "vendor/**",
-    ".git/**",
     ".vscode/**",
     ".gitignore", // specific file
     "**/.*" // ignore ghost files
