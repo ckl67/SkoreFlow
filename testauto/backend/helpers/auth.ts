@@ -5,8 +5,8 @@
 
 // --------------------------------------------------------------------------------
 
-import { request } from "./api.js";
-import { API_URL } from "../config.js";
+import { request } from './api.js';
+import { API_URL } from '../config.js';
 
 // --------------------------------------------------------------------------------
 // login(email, password)
@@ -32,7 +32,7 @@ import { API_URL } from "../config.js";
 // --------------------------------------------------------------------------------
 
 async function login(email: string, password: string) {
-  const res = await request("POST", `${API_URL}/login`, {
+  const res = await request('POST', `${API_URL}/login`, {
     // Normaly written
     // data: { "email": email, "password": password },
     // But equivalent in javascrit as

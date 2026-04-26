@@ -138,7 +138,7 @@ export default defineConfig({
     globals: true,
     environment: 'node',
     // Looks for files ending in .test.ts or .spec.ts
-    include: ['**/*.{test,spec}.ts'], 
+    include: ['**/*.{test,spec}.ts'],
   },
 })
 
@@ -158,13 +158,12 @@ To test effectively, you should use a "Two-Speed" workflow:
 
 ### Step 1: Infrastructure (The Shell Script)
 
-Before running Vitest, your backend must be running. 
+Before running Vitest, your backend must be running.
 Use your Terminal or NPM script to launch the environment:
-
 
 ```Bash
 
-    #Action: Run 
+    #Action: Run
     bash auto-test.sh --all --clean
 
     # Result: Database is wiped, storage is cleared, and the Go server starts.
@@ -180,23 +179,24 @@ Once the server is "UP", stay in your TypeScript files:
 - Execute: Click "Play" in the Vitest "Vial" tab.
 - Benefit: Tests run in seconds because you don't need to restart the Go server or wipe the database every time.
 
-###  Writing Tests
+### Writing Tests
 
 Ensure your helper functions (like createComposer) return the response object and use standard assertions:
 
-``` TypeScript
+```TypeScript
 
 import { it, expect } from 'vitest';
 
 it('should create a composer and return 201', async () => {
   const res = await createComposer({ name: "Bach" }, token);
-  
+
   // Vitest assertion
   expect(res.status).toBe(201);
   expect(res.data.name).toBe("Bach");
 });
 
-``` 
+```
+
 ### Summary of Tools:
 
 - Shell Script (auto-test.sh): Manages the server life cycle and database state.

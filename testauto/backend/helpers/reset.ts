@@ -2,8 +2,8 @@
 // HELPERS
 // --------------------------------------------------------------------------------
 
-import { request } from "./api.js";
-import { API_URL } from "../config.js";
+import { request } from './api.js';
+import { API_URL } from '../config.js';
 
 // --------------------------------------------------------------------------------
 // getResetToken
@@ -15,12 +15,12 @@ import { API_URL } from "../config.js";
 
 // --------------------------------------------------------------------------------
 async function getResetToken(email: string, adminToken: string) {
-  const res = await request("GET", `${API_URL}/test/reset-token/${email}`, {
+  const res = await request('GET', `${API_URL}/test/reset-token/${email}`, {
     token: adminToken,
   });
 
   if (!res.data?.token) {
-    throw new Error("Reset token not found");
+    throw new Error('Reset token not found');
   }
 
   return res.data.token;

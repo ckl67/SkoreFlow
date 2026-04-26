@@ -2,12 +2,12 @@
 // HELPERS
 // --------------------------------------------------------------------------------
 
-import { request } from "./api.js";
-import { assertStatus } from "./assert.js";
-import { createReadStream } from "node:fs";
-import FormData from "form-data";
+import { request } from './api.js';
+import { assertStatus } from './assert.js';
+import { createReadStream } from 'node:fs';
+import FormData from 'form-data';
 
-import { API_URL } from "../config.js";
+import { API_URL } from '../config.js';
 
 // --------------------------------------------------------------------------------
 // createUser
@@ -49,20 +49,16 @@ interface User {
   isVerified?: boolean;
 }
 
-async function createUser(
-  { email, password }: RequestOptions,
-  token: string,
-  expected = 201,
-) {
+async function createUser({ email, password }: RequestOptions, token: string, expected = 201) {
   if (!email) {
-    throw new Error("email mandatory username.");
+    throw new Error('email mandatory username.');
   }
 
-  const username = email.split("@")[0];
+  const username = email.split('@')[0];
 
   console.log(`\n Creating User: ${username} (${email})`);
 
-  const res = await request("POST", `${API_URL}/admin/createuser`, {
+  const res = await request('POST', `${API_URL}/admin/createuser`, {
     token,
     data: {
       username: username,
@@ -98,7 +94,7 @@ async function updateUser(
 ) {
   console.log(`\n updateUser User: ${username} `);
 
-  const res = await request("PUT", `${API_URL}/admin/users/${userId}`, {
+  const res = await request('PUT', `${API_URL}/admin/users/${userId}`, {
     token,
     data: {
       username: username,
@@ -117,7 +113,7 @@ async function updateUser(
 // --------------------------------------------------------------------------------
 
 async function getUserIdByEmail(email: string, token: string) {
-  const res = await request("GET", `${API_URL}/admin/users`, {
+  const res = await request('GET', `${API_URL}/admin/users`, {
     token,
   });
 
@@ -135,18 +131,14 @@ async function getUserIdByEmail(email: string, token: string) {
 // --------------------------------------------------------------------------------
 // createComposer
 // --------------------------------------------------------------------------------
-async function userLoadAvatar(
-  uploadFile: string,
-  token: string,
-  expected = 200,
-) {
+async function userLoadAvatar(uploadFile: string, token: string, expected = 200) {
   const form = new FormData();
 
-  if (uploadFile) form.append("uploadFile", createReadStream(uploadFile));
+  if (uploadFile) form.append('uploadFile', createReadStream(uploadFile));
 
-  console.log(`\n Upload Avatar for User  (File: ${uploadFile || "None"})`);
+  console.log(`\n Upload Avatar for User  (File: ${uploadFile || 'None'})`);
 
-  const res = await request("POST", `${API_URL}/me/avatar`, {
+  const res = await request('POST', `${API_URL}/me/avatar`, {
     token,
     data: form,
     headers: form.getHeaders(),

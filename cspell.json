@@ -3,6 +3,7 @@
   "language": "en",
   "ignorePaths": [
     "node_modules/**",
+    ".cspell/custom-dictionary.txt",
     "vendor/**",
     ".git/**",
     ".vscode/**",
@@ -13,7 +14,7 @@
   "dictionaryDefinitions": [
     {
       "name": "custom-dictionary",
-      "path": "./.cspell/custom-dictionary.txt",
+      "path": ".cspell/custom-dictionary.txt",
       "addWords": true
     }
   ]

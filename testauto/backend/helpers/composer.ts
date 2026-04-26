@@ -2,12 +2,12 @@
 // HELPERS
 // --------------------------------------------------------------------------------
 
-import { API_URL } from "../config.js";
+import { API_URL } from '../config.js';
 
-import { createReadStream } from "node:fs";
-import FormData from "form-data";
-import { request } from "./api.js";
-import { assertStatus, type HttpResponse } from "../helpers/assert.js";
+import { createReadStream } from 'node:fs';
+import FormData from 'form-data';
+import { request } from './api.js';
+import { assertStatus, type HttpResponse } from '../helpers/assert.js';
 
 // --------------------------------------------------------------------------------
 // createComposer
@@ -59,15 +59,15 @@ async function createComposer(
 ): Promise<HttpResponse<any>> {
   const form = new FormData();
 
-  if (name) form.append("name", name);
-  if (externalURL) form.append("externalURL", externalURL);
-  if (epoch) form.append("epoch", epoch);
-  if (isVerified !== undefined) form.append("isVerified", String(isVerified));
-  if (uploadFile) form.append("uploadFile", createReadStream(uploadFile));
+  if (name) form.append('name', name);
+  if (externalURL) form.append('externalURL', externalURL);
+  if (epoch) form.append('epoch', epoch);
+  if (isVerified !== undefined) form.append('isVerified', String(isVerified));
+  if (uploadFile) form.append('uploadFile', createReadStream(uploadFile));
 
-  console.log(`\n Creating Composer: ${name} (File: ${uploadFile || "None"})`);
+  console.log(`\n Creating Composer: ${name} (File: ${uploadFile || 'None'})`);
 
-  const res = await request("POST", `${API_URL}/composers/upload`, {
+  const res = await request('POST', `${API_URL}/composers/upload`, {
     token,
     data: form,
     headers: form.getHeaders(),

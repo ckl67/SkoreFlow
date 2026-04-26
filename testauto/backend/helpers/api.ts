@@ -1,4 +1,4 @@
-import axios, { AxiosError } from "axios";
+import axios, { AxiosError } from 'axios';
 
 // --------------------------------------------------------------------------------
 // MAIN HELPERS
@@ -57,11 +57,7 @@ interface RequestOptions {
 // request
 // --------------------------------------------------------------------------------
 
-async function request(
-  method: string,
-  url: string,
-  { token, data, headers }: RequestOptions = {},
-) {
+async function request(method: string, url: string, { token, data, headers }: RequestOptions = {}) {
   try {
     const res = await axios({
       method,

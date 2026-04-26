@@ -1,0 +1,68 @@
+{
+  // =========================================================
+  // 🧠 GENERAL
+  // =========================================================
+  "editor.tabSize": 2,
+  "editor.detectIndentation": false,
+  "editor.snippetSuggestions": "top",
+
+  "editor.formatOnSave": true,
+  "editor.formatOnSaveMode": "file",
+
+  // =========================================================
+  // 📁 FILES
+  // =========================================================
+  "files.autoSave": "off",
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+
+  // =========================================================
+  // 🔍 SPELL CHECK
+  // =========================================================
+  "cSpell.enabled": true,
+
+  // =========================================================
+  // 🧹 PRETTIER
+  // =========================================================
+  "prettier.requireConfig": true,
+
+  // =========================================================
+  // 🧹 LANGUAGE FORMATTERS
+  // =========================================================
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+
+  // =========================================================
+  // 🧹 ESLINT (ANALYSE ONLY)
+  // =========================================================
+  "eslint.useFlatConfig": true,
+  "eslint.validate": ["javascript", "typescript", "javascriptreact", "typescriptreact"],
+  "eslint.workingDirectories": [{ "mode": "auto" }],
+
+  "eslint.format.enable": false,
+
+  // =========================================================
+  // 🧹 MARKDOWNLINT (OPTIONNEL)
+  // =========================================================
+  "markdownlint.run": "onSave"
+}

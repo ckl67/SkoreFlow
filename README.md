@@ -62,6 +62,72 @@ Opening only a subfolder (e.g. backend/ or testauto/backend/) will prevent:
 👉 In VS Code:
 File → Open Workspace from File...
 
+## 📦 Monorepo Architecture
+
+This project uses a **npm workspaces monorepo**.
+
+All JavaScript/TypeScript dependencies are managed **centrally at the root level**, using a single `node_modules` directory.
+
+### Key Principles
+
+- A **single root `node_modules/`**
+- Multiple isolated projects (workspaces)
+- Shared tooling (TypeScript, ESLint, Prettier, Vitest)
+
+### Workspaces
+
+```bash
+
+SkoreFlow/
+├── node_modules/ ✅ unique
+├── package.json ✅ workspaces
+├── backend/              # Go backend
+├── frontend/             # React (Vite)
+│ └── package.json
+├── testauto/
+│ ├── backend/
+│ │ └── package.json
+│ └── frontend/
+│ └── package.json
+├── docs/
+
+```
+
+### ✅ Correct Usage
+
+- Install a dependency in a workspace:
+
+```bash
+npm install react-router-dom -w frontend
+npm install axios -w testauto/backend
+```
+
+- Install common tools on root
+
+```bash
+npm install --save-dev prettier eslint @eslint/js typescript
+```
+
+- Incorrect Usage
+
+Do NOT run npm install inside subfolders without **_ -w _**
+
+```bash
+cd frontend
+npm install   #  This will break the monorepo setup ❌
+
+```
+
+📌 Rules to Follow
+
+- Always run npm install from the root
+- Always specify the workspace using -w
+- Never create a local node_modules/ inside subprojects !
+- Common tools must be installed on the root
+  - Prettier / ESLint → root
+  - Vitest → testauto/backend
+  - React → frontend
+
 ## 🚀 Getting Started
 
 ### Clone repository
@@ -69,6 +135,8 @@ File → Open Workspace from File...
 ```bash
 git clone https://github.com/ckl67/skoreflow.git
 cd skoreflow
+```
+
 ```
 
 ### Documentation
@@ -93,3 +161,4 @@ cd skoreflow
 ## ✅ Code of Conduct
 
 - See [CODE_OF_CONDUCT](./CODE_OF_CONDUCT.md)
+```

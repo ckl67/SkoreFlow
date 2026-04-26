@@ -6,6 +6,7 @@ backend
 createuser
 esbenp
 frontend
+fuser
 gitgraph
 gofmt
 gofumpt
@@ -19,14 +20,14 @@ kühl
 microservice
 mkhl
 mvdan
+pwreset
 rqconfirm
 shellcheck
 shfmt
 Skoreflow
 sonate
 sqlitebrowser
+subfolders
 Supertramp
 testauto
 typestrict
-fuser
-pwreset

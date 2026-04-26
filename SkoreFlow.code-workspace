@@ -8,9 +8,9 @@
     { "path": "testauto/backend", "name": "tests-backend" },
     { "path": "testauto/frontend", "name": "tests-frontend" },
 
-    { "path": "docs" }
+    { "path": "docs" },
   ],
   "settings": {
-    "markdownlint.run": "onType"
-  }
+    "markdownlint.run": "onType",
+  },
 }

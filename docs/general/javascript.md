@@ -47,7 +47,7 @@ When {} appears on the left-hand side of an assignment, it performs destructurin
 
 ```js
 // Examples
-const user = { email: "test@example.com", password: "1234" };
+const user = { email: 'test@example.com', password: '1234' };
 
 // Extract properties into variables
 const { email, password } = user;
@@ -58,7 +58,7 @@ const { email: userEmail } = user;
 // --> userEmail = "test@example.com"
 
 // Default values
-const { email = "default@example.com" } = user;
+const { email = 'default@example.com' } = user;
 ```
 
 ## Function Parameters: Destructuring vs Object Passing

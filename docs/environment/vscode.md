@@ -1,4 +1,4 @@
-VS Code Setup Guide for Skoreflow (Linux)
+# 1. VS Code Setup Guide for Skoreflow (Linux)
 
 This guide explains how to install and configure Visual Studio Code for the Skoreflow monorepo using a consistent development setup across backend, frontend, and test environments.
 
@@ -24,22 +24,27 @@ Open VS Code and install the following extensions.
 -Error Lens
 
 ⚛️ Frontend (React / TypeScript)
+
 - ES7+ React/Redux Snippets
 - GitHub Copilot (optional AI assistant)
 
 🐍 Python (optional / legacy tools)
+
 - Pylance (Python language server)
 - Python extension (if Python is used in tooling)
 
 📝 Documentation
+
 - Markdown All in One
 - Code Spell Checker
 
 🔧 System / Shell
+
 - ShellCheck
 - shfmt
 
 📊 Git tools
+
 - GitLens (recommended replacement for gitgraph)
 - GitHub Pull Requests & Issues
 
@@ -50,7 +55,9 @@ Go formatting (gofumpt)
 go install mvdan.cc/gofumpt@latest
 
 ```
+
 Ensure Go binaries are in PATH:
+
 ```shell
 
 export PATH=$PATH:$(go env GOPATH)/bin
@@ -72,8 +79,7 @@ shfmt --version
 shellcheck --version
 ```
 
-
-4# . Project Structure (IMPORTANT)
+# 4 . Project Structure (IMPORTANT)
 
 This project is a multi-root workspace (monorepo):
 
@@ -109,6 +115,7 @@ SkoreFlow.code-workspace
 
 Recommended workspace structure:
 
+```json
 {
   "folders": [
     { "path": "." },
@@ -119,18 +126,20 @@ Recommended workspace structure:
     { "path": "docs" }
   ]
 }
+```
 
 # 6. Editor Configuration Philosophy
 
 This project enforces a strict separation of responsibilities:
 
 🎨 Formatting
+
 - Prettier is the ONLY formatter
 - Format on save enabled globally
-🧹 Linting
+  🧹 Linting
 - ESLint is used only for code quality
 - No formatting rules in ESLint
-🧪 Testing
+  🧪 Testing
 - Vitest handles all JavaScript/TypeScript tests
 
 # 7. Expected Behavior
@@ -151,32 +160,93 @@ Automatic import organization
 Clean compilation rules
 
 # 9. Frontend (React / TypeScript)
+
 Prettier for formatting
 ESLint for code validation
 Emmet enabled for JSX productivity
+
 # 10. Shell Scripts
+
 shfmt formats scripts
 ShellCheck validates correctness
+
 # 11. Configuration Principle
 
 🔴 One tool = one responsibility
 
-Concern	Tool
-Format	Prettier
-Lint	ESLint
-Test	Vitest
-Shell format	shfmt
-Shell lint	ShellCheck
+Concern Tool
+Format Prettier
+Lint ESLint
+Test Vitest
+Shell format shfmt
+Shell lint ShellCheck
 
-# 12. Optional Improvements
-
-You may enhance the setup with:
-
-GitHub Copilot (AI assistance)
-.editorconfig for cross-editor consistency
-Husky + lint-staged (pre-commit validation)
-CI pipeline (GitHub Actions)
-
-End of Guide
+# 12. Monorepo Architecture
 
 This setup ensures a consistent, scalable, and conflict-free development environment for the Skoreflow monorepo.
+
+This project uses a **npm workspaces monorepo**.
+
+All JavaScript/TypeScript dependencies are managed **centrally at the root level**, using a single `node_modules` directory.
+
+### Key Principles
+
+- A **single root `node_modules/`**
+- Multiple isolated projects (workspaces)
+- Shared tooling (TypeScript, ESLint, Prettier, Vitest)
+
+### Workspaces
+
+```bash
+
+SkoreFlow/
+├── node_modules/ ✅ unique
+├── package.json ✅ workspaces
+├── backend/              # Go backend
+├── frontend/             # React (Vite)
+│ └── package.json
+├── testauto/
+│ ├── backend/
+│ │ └── package.json
+│ └── frontend/
+│ └── package.json
+├── docs/
+
+```
+
+### ✅ Correct Usage
+
+- Install a dependency in a workspace:
+
+```bash
+npm install react-router-dom -w frontend
+npm install axios -w testauto/backend
+```
+
+- Install common tools on root
+
+```bash
+npm install --save-dev prettier eslint @eslint/js typescript
+```
+
+- Incorrect Usage
+
+Do NOT run npm install inside subfolders without **_ -w _**
+
+```bash
+cd frontend
+npm install   #  This will break the monorepo setup ❌
+
+```
+
+📌 Rules to Follow
+
+- Always run npm install from the root
+- Always specify the workspace using -w
+- Never create a local node_modules/ inside subprojects !
+- Common tools must be installed on the root
+  - Prettier / ESLint → root
+  - Vitest → testauto/backend
+  - React → frontend
+
+End of Guide

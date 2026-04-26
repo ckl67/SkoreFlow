@@ -10,10 +10,10 @@ Open your terminal and install it using go install:
 Make sure that your $GOPATH/bin directory is included in your PATH so you can run the air command from anywhere.
 See [backend installation guide](install.md) for instructions on how to add Go binaries to your PATH.
 
-
 ```shell
 go install github.com/air-verse/air@latest
 ```
+
 ## 2. Configuration
 
 Navigate to the root of your backend project and initialize Air:

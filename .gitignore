@@ -1,7 +1,7 @@
 # gitignore project root
 
 # Editor / OS
-.vscode/*
+# .vscode/*
 .idea
 .DS_Store
 *.suo
@@ -10,7 +10,5 @@
 *.sln
 *.sw?
 
-# Dictionary
-!c.spell.json
 
 node_modules/

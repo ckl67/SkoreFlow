@@ -28,7 +28,7 @@ function prettyPrint(data: unknown) {
   if (!data) return;
 
   try {
-    if (typeof data === "object") {
+    if (typeof data === 'object') {
       console.log(JSON.stringify(data, null, 2));
     } else {
       console.log(data);
@@ -42,11 +42,7 @@ function prettyPrint(data: unknown) {
 // assertStatus
 // --------------------------------------------------------------------------------
 
-function assertStatus<T = unknown>(
-  label: string,
-  res: HttpResponse<T>,
-  expected: number,
-): void {
+function assertStatus<T = unknown>(label: string, res: HttpResponse<T>, expected: number): void {
   const { status, data: body } = res;
 
   if (status === expected) {
@@ -60,7 +56,7 @@ function assertStatus<T = unknown>(
     console.error(`   Expected: ${expected} | Received: ${status}`);
 
     if (body !== undefined && body !== null) {
-      console.error("   Error Details:");
+      console.error('   Error Details:');
       prettyPrint(body);
     }
 
