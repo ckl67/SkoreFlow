@@ -33,4 +33,4 @@ yarn.lock
 # 🧹 Docs exclusions (optional if you want strict control)
 # =========================================================
 # Uncomment ONLY if you want to exclude generated docs
-# docs/generated/
+docs/generated/

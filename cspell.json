@@ -7,8 +7,8 @@
     "vendor/**",
     ".git/**",
     ".vscode/**",
-    ".gitignore", // specific file
-    "**/.*" // ignore ghost files
+    ".gitignore",
+    "**/.*"
   ],
   "dictionaries": ["custom-dictionary"],
   "dictionaryDefinitions": [

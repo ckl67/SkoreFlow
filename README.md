@@ -44,24 +44,6 @@ Contributions and feedback are welcome.
 
 ```
 
-⚠️ Important (VS Code users)
-
-This project uses a multi-folder setup.
-To properly access development tools (especially test scripts and task runners), you must open the workspace file:
-
-```bash
-my-project.code-workspace
-```
-
-Opening only a subfolder (e.g. backend/ or testauto/backend/) will prevent:
-
-- NPM scripts from appearing in the sidebar
-- Task configurations from working correctly
-- Proper multi-project navigation
-
-👉 In VS Code:
-File → Open Workspace from File...
-
 ## 📦 Monorepo Architecture
 
 This project uses a **npm workspaces monorepo**.
@@ -93,31 +75,6 @@ SkoreFlow/
 
 ```
 
-### ✅ Correct Usage
-
-- Install a dependency in a workspace:
-
-```bash
-npm install react-router-dom -w frontend
-npm install axios -w testauto/backend
-```
-
-- Install common tools on root
-
-```bash
-npm install --save-dev prettier eslint @eslint/js typescript
-```
-
-- Incorrect Usage
-
-Do NOT run npm install inside subfolders without **_ -w _**
-
-```bash
-cd frontend
-npm install   #  This will break the monorepo setup ❌
-
-```
-
 📌 Rules to Follow
 
 - Always run npm install from the root
@@ -135,8 +92,6 @@ npm install   #  This will break the monorepo setup ❌
 ```bash
 git clone https://github.com/ckl67/skoreflow.git
 cd skoreflow
-```
-
 ```
 
 ### Documentation
@@ -161,4 +116,3 @@ cd skoreflow
 ## ✅ Code of Conduct
 
 - See [CODE_OF_CONDUCT](./CODE_OF_CONDUCT.md)
-```

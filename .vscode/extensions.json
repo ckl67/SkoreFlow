@@ -27,14 +27,14 @@
     // =========================================================
 
     "ms-python.python",
-    "ms-python.vscode-pylance",
+    //"ms-python.vscode-pylance",
 
     // =========================================================
     // 📝 MARKDOWN / DOCS
     // =========================================================
 
-    //"yzhang.markdown-all-in-one",
-    //"davidanson.vscode-markdownlint",
+    "yzhang.markdown-all-in-one",
+    "davidanson.vscode-markdownlint",
 
     // =========================================================
     // 🔤 QUALITY / SPELLING
