@@ -30,11 +30,12 @@
     //"ms-python.vscode-pylance",
 
     // =========================================================
-    // 📝 MARKDOWN / DOCS
+    // 📝 MARKDOWN / DOCS / Drawing
     // =========================================================
 
     "yzhang.markdown-all-in-one",
     "davidanson.vscode-markdownlint",
+    "hediet.vscode-drawio",
 
     // =========================================================
     // 🔤 QUALITY / SPELLING

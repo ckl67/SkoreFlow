@@ -106,6 +106,7 @@ func (s *ComposerService) CreateComposer(uid uint32, userRole int, req forms.Cre
 // GetComposersPage
 // Retrieves a paginated list of composers based on search criteria.
 func (s *ComposerService) GetComposersPage(uid uint32, form forms.GetComposersPageRequest) (*models.Pagination, error) {
+
 	if form.Page <= 0 {
 		form.Page = 1
 	}
@@ -125,14 +126,14 @@ func (s *ComposerService) GetComposersPage(uid uint32, form forms.GetComposersPa
 
 	var composer models.Composer
 
-	result, err := composer.List(s.db, &pagination, form.Search, uid)
+	result, err := composer.List(s.db, &pagination, form.Search, form.IsVerified, uid)
 	if err != nil {
 		logger.Composer.Error("Failed to list composers: %v", err)
 		return nil, err
 	}
 
 	if result == nil || len(result.Rows.([]*models.Composer)) == 0 {
-		logger.Composer.Warn("No composers found for search: %s", form.Search)
+		logger.Composer.Warn("No composers found for search: %s", *form.Search)
 	}
 
 	return result, err
@@ -192,6 +193,101 @@ func (s *ComposerService) UpdateComposer(uid uint32, userRole int, ComposerID ui
 	}
 
 	return composer, nil
+}
+
+func (s *ComposerService) MergeComposers(uid uint32, userRole int, sourceID uint, targetID uint) error {
+
+	// Authorizations
+	isAdmin := userRole == config.RoleAdmin
+	isModerator := userRole == config.RoleModerator
+
+	if !isAdmin && !isModerator {
+		logger.Composer.Warn("Unauthorized Merge attempt: user=%d role=%d", uid, userRole)
+		return apperrors.ErrAccessForbidden
+	}
+
+	// Not the same
+	if sourceID == targetID {
+		return nil
+	}
+
+	// Backup
+	// This will just open the transactions , and prepare the commands
+	// Once all is complete, than will address all
+	// example :
+	// 		UPDATE scores SET composer_id = target WHERE composer_id = source;
+	//		DELETE FROM composers WHERE id = source;
+
+	tx := s.db.Begin()
+
+	// Security if Panic !
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	// Verify target
+	target, err := models.FindComposerByID(tx, targetID)
+	if err != nil {
+		tx.Rollback()
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return apperrors.ErrComposerNotFound
+		}
+		return err
+	}
+
+	if !target.IsVerified {
+		tx.Rollback()
+		return apperrors.ErrComposerMerging
+	}
+
+	// Reassign composer in scores
+	if err := models.ReassignComposerInScores(tx, sourceID, targetID); err != nil {
+		tx.Rollback()
+		return apperrors.ErrComposerMerging
+	}
+
+	// Delete source
+	composer, err := models.FindComposerByID(tx, sourceID)
+	if err != nil {
+		tx.Rollback()
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return apperrors.ErrComposerNotFound
+		}
+		return err
+	}
+
+	rows, err := composer.Delete(tx)
+	if err != nil {
+		tx.Rollback()
+		return apperrors.ErrComposerDeletion
+	}
+	if rows == 0 {
+		tx.Rollback()
+		return apperrors.ErrComposerNotFound
+	}
+
+	// Last Check
+	var count int64
+	count, err = models.CountScoreByComposerId(tx, sourceID)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if count > 0 {
+		tx.Rollback()
+		logger.Composer.Error("merge incomplete: scores still reference source composer")
+		return apperrors.ErrComposerDeletion
+	}
+
+	// Commit
+	if err := tx.Commit().Error; err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // ProcessComposerStorage

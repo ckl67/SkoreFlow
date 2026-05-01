@@ -27,7 +27,7 @@ package forms
 // ===============================================================================================
 
 // ===============================================================================================
-// Black Import !
+// Blank Import !
 // ===============================================================================================
 // Blank imports like _ "image/jpeg" follow the "Registration Pattern".
 // 1. It imports the package solely for its side effects.
@@ -64,7 +64,14 @@ import (
 // GetComposersPageRequest defines pagination and filtering for composers listing.
 type GetComposersPageRequest struct {
 	PaginatedRequest
-	Search string `form:"search" json:"search"`
+	Search     *string `form:"search" json:"search"`
+	IsVerified *bool   `form:"isVerified" json:"isVerified"`
+}
+
+// For merging
+type GetComposersMergeRequest struct {
+	SourceID uint `json:"source_id" binding:"required"`
+	TargetID uint `json:"target_id" binding:"required"`
 }
 
 // CreateComposerRequest defines the payload for creating a composer.

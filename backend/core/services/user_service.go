@@ -189,7 +189,6 @@ func (s *UserService) UpdateProfile(uid uint32, input forms.UpdateUserRequest) (
 	}
 
 	// 2. Apply updates (partial update)
-
 	if input.Username != nil {
 		user.Username = *input.Username
 	}

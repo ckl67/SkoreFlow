@@ -54,9 +54,11 @@ var (
 
 	// Composer
 	ErrComposerMandatory     = errors.New("composer is mandatory !")
-	ErrComposerInvalidID     = errors.New("invalid compoer ID")
+	ErrComposerInvalidID     = errors.New("invalid composer ID")
+	ErrComposerDeletion      = errors.New("composer deletion issue")
 	ErrComposerNotFound      = errors.New("composer not found")
 	ErrComposerAlreadyExists = errors.New("Composer already exists")
+	ErrComposerMerging       = errors.New("Composer merging issue")
 
 	// Image
 	ErrImageFormatInvalid = errors.New("Image Format not allowed !")

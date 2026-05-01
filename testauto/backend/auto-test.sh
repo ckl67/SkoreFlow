@@ -204,7 +204,7 @@ if [ "$CLEAN_DB_FILES" = true ]; then
 else
 	echo "  ---> We Keep the FORMER Database and Storage Files !!"
 	# Wait for background server process
-	wait $BACKEND_PID
 fi
 echo "########################################################"
 
+wait $BACKEND_PID

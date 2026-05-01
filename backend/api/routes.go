@@ -202,6 +202,8 @@ func (server *Server) SetupRouter() {
 			protected.PUT("/composers/:id", composerCtrl.UpdateComposer)
 			protected.DELETE("/composers/:id", composerCtrl.DeleteComposer)
 
+			protected.PUT("/composers/merge", composerCtrl.MergeComposers)
+
 			// -----------------------------------------------------------------------------------
 			// ADMIN ROUTES (restricted)
 			// -----------------------------------------------------------------------------------

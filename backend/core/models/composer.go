@@ -64,18 +64,22 @@ func (c *Composer) Delete(db *gorm.DB) (int64, error) {
 //
 // Filters:
 // - search: matches name or safe name
-func (c *Composer) List(db *gorm.DB, pagination *Pagination, search string, userID uint32) (*Pagination, error) {
+func (c *Composer) List(db *gorm.DB, pagination *Pagination, search *string, isVerified *bool, userID uint32) (*Pagination, error) {
 	var composers []*Composer
 
 	// Base query
 	query := db.Model(&Composer{})
 
 	// Search filter
-	if search != "" {
-		searchTerm := "%" + search + "%"
+	if search != nil && *search != "" {
+		// % est un wildcard SQL (joker) used by LIKE  --> WHERE name LIKE '%beethoven%'
+		searchTerm := "%" + *search + "%"
 		query = query.Where("(name LIKE ? OR safe_name LIKE ?)", searchTerm, searchTerm)
 	}
 
+	if isVerified != nil {
+		query = query.Where("is_verified = ?", *isVerified)
+	}
 	// Execute query with pagination
 	err := query.Scopes(paginate(pagination, query)).Find(&composers).Error
 	if err != nil {

@@ -26,6 +26,20 @@ curl -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/me | jq
 
 ```
 
+## List of Composers
+
+```shell
+# All Composers
+curl -H "Authorization: Bearer $TOKEN_USER2" "http://localhost:8080/api/composers?page=1&limit=5" | jq
+
+# Verified
+curl -H "Authorization: Bearer $TOKEN_USER2" "http://localhost:8080/api/composers?isVerified=true&page=1&limit=5&" | jq
+
+# Not Verified
+curl -H "Authorization: Bearer $TOKEN_USER2" "http://localhost:8080/api/composers?isVerified=false&page=1&limit=5&" | jq
+
+```
+
 ## Create score
 
 ```shell
@@ -46,8 +60,34 @@ curl -X POST "http://localhost:8080/api/scores/upload" \
   -F "informationText=Automated test file for $COMPOSER" \
   -F "uploadFile=@$FILE_PATH"
 
+COMPOSER="Beethoven"
+
 ```
 
-## List score
+## List of Scores
 
-curl -X GET "http://localhost:8080/api/scores" \
+```shell
+
+curl -H "Authorization: Bearer $TOKEN_USER2" "http://localhost:8080/api/scores?page=1&limit=5" | jq
+
+```
+
+## List of a specific score
+
+```shell
+curl -H "Authorization: Bearer $TOKEN_USER2" "http://localhost:8080/api/scores/1" | jq
+
+
+```
+
+## Merge composer
+
+```shell
+curl -X PUT \
+  -H "Authorization: Bearer $TOKEN_USER2" \
+  -H "Content-Type: application/json" \
+  -d '{"source_id":2,"target_id":1}' \
+  http://localhost:8080/api/composers/merge | jq
+
+
+```

@@ -1,7 +1,7 @@
 # JS Ecosystem : From Vanilla to React
 
 This guide summarizes the evolution of JavaScript technologies and their syntax styles.
-In SkoreFlow project we will privilige TS and JSX
+In SkoreFlow project we will privilege TS and JSX
 
 ## Core Technologies
 
@@ -11,6 +11,26 @@ In SkoreFlow project we will privilige TS and JSX
 | TypeScript (TS)                      | A superset of JS that adds static types. | Catches errors during development (like Go). |
 | JSX Syntax extension for JavaScript. | Allows writing HTML-like                 | code inside JS.                              |
 | React                                | A UI Library.                            | Uses Components to build user interfaces.    |
+
+## compilation
+
+There is not only one Typescript !
+There are different modes to compile TS → JS
+
+These modes are controlled by :
+
+- module
+  - define how to handle javascript
+- moduleResolution
+  - define how to find the import
+- runtime (Node / bundler / tsx)
+
+| module   | moduleResolution | usage                   |
+| -------- | ---------------- | ----------------------- |
+| CommonJS | Node             | Old                     |
+| ESNext   | Bundler          | frontend (Vite/Webpack) |
+| Node16   | Node16           | Node moderne strict     |
+| NodeNext | NodeNext         | Node ESM pur strict     |
 
 ### Evolution of Syntax Styles
 
@@ -79,3 +99,20 @@ return (
   - Focus: Visual layout, User events (clicks), State.
   - Extension: .tsx
   - Analogy to Go: Like a combination of a template engine and a controller.
+
+## JS / TypeScript Ecosystem — Mental Model Guide
+
+We are using:
+
+- tsx → runtime execution
+- Node.js → backend environment
+- Vitest → tests
+- ESLint → linting
+
+Therefore we DO NOT need:
+
+- NodeNext strict mode
+  -Complex ESM configuration
+- Bundler-style resolution 13. Golden Rule
+
+The more you rely on tsx, the less you should try to mimic strict Node.js module behavior.

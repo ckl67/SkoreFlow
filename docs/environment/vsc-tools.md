@@ -88,12 +88,31 @@ This project uses **TypeScript** mainly for test automation (`testauto/`) and sc
 From the root:
 
 ```bash
-npm install --save-dev typescript ts-node @types/node
+npm install --save-dev typescript ts-node @types/node typescript-eslint
 ```
 
 - `typescript` → compiler
 - `ts-node` → run `.ts` files directly
 - `@types/node` → Node.js types
+
+typescript-eslint contents :
+
+- parser (@typescript-eslint/parser)
+- plugin (@typescript-eslint/eslint-plugin)
+- configs (recommended, etc.)
+
+In each directory we can specify the packages which are needed
+
+```json
+// example : tsconfig.json
+{
+  "extends": "../../config/typescript/tsconfig.base.json",
+  "compilerOptions": {
+    "types": ["node"]
+  },
+  "include": ["**/*.ts"]
+}
+```
 
 ---
 

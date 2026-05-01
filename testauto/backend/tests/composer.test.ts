@@ -37,7 +37,7 @@ async function run() {
       name: 'SuperTramp',
       description: 'Moderne',
       file: 'resources/composers/Supertramp.png',
-      verified: true,
+      verified: false,
     },
   ];
 

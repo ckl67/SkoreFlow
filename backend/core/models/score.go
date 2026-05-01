@@ -114,7 +114,11 @@ func (s *Score) List(
 	var scores []*Score
 
 	// Base query (scoped to user)
-	query := db.Model(&Score{}).Where("uploader_id = ?", userID)
+	query := db.Model(&Score{}).
+		Preload("Composer").
+		Where("uploader_id = ?", userID)
+
+	//query := db.Model(&Score{}).Where("uploader_id = ?", userID)
 
 	// Search filter
 	if search != "" {
@@ -149,6 +153,35 @@ func (s *Score) List(
 // FindScoreByID retrieves a score by its unique identifier.
 func FindScoreByID(db *gorm.DB, id uint) (*Score, error) {
 	var score Score
-	err := db.First(&score, id).Error
+	err := db.Preload("Composer").First(&score, id).Error
+	// err := db.First(&score, id).Error
 	return &score, err
+}
+
+// Return the number of scores for a specific composerID i
+func CountScoreByComposerId(db *gorm.DB, composerID uint) (int64, error) {
+
+	var count int64
+	err := db.Model(&Score{}).
+		Where("composer_id = ?", composerID).
+		Count(&count).Error
+
+	return count, err
+}
+
+// Replace all Composer ID from Source to Target
+func ReassignComposerInScores(db *gorm.DB, sourceID, targetID uint) error {
+	if sourceID == targetID {
+		return nil
+	}
+	// Will do for the whole data base score
+	result := db.Model(&Score{}).
+		Where("composer_id = ?", sourceID).
+		Update("composer_id", targetID)
+
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
 }

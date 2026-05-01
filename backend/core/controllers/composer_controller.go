@@ -92,8 +92,8 @@ func (ctrl *ComposerController) GetComposersPage(c *gin.Context) {
 		return
 	}
 
-	logger.Score.Debug("(Controller GetComposersPage) : User: %d | Search: %s | Page: %d | PageSize: %d | SortBy: %s",
-		uid, form.Search, form.Page, form.Limit, form.SortBy)
+	logger.Score.Debug("(Controller GetComposersPage) : User: %d | Search: %v (IsVerified = %v) | Page: %d | PageSize: %d | SortBy: %s",
+		uid, form.Search, form.IsVerified, form.Page, form.Limit, form.SortBy)
 
 	pageData, err := ctrl.service.GetComposersPage(uid, form)
 	if err != nil {
@@ -125,6 +125,38 @@ func (ctrl *ComposerController) GetComposer(c *gin.Context) {
 	}
 
 	responses.JSON(c, http.StatusOK, composer)
+}
+
+// Merge Composer from source to target in all the scores
+// --> Replace composers in the scores then delete Composers
+func (ctrl *ComposerController) MergeComposers(c *gin.Context) {
+	uid := c.GetUint32("user_id")
+	userRole := c.GetInt("user_role")
+
+	var form forms.GetComposersMergeRequest
+	if err := c.ShouldBindJSON(&form); err != nil {
+		responses.ERROR(c, http.StatusBadRequest, err)
+		return
+	}
+
+	logger.Score.Debug("(Controller MergeComposers) : User: %d with role : %d will merge Composer ID %d to %d| ",
+		uid, userRole, form.SourceID, form.TargetID)
+
+	err := ctrl.service.MergeComposers(uid, userRole, form.SourceID, form.TargetID)
+	if err != nil {
+		switch err {
+		case apperrors.ErrComposerMerging:
+			responses.ERROR(c, http.StatusBadRequest, err)
+		case apperrors.ErrComposerNotFound:
+			responses.ERROR(c, http.StatusNotFound, err)
+		default:
+			responses.ERROR(c, http.StatusInternalServerError, err)
+		}
+		return
+	}
+
+	responses.JSON(c, http.StatusOK, gin.H{"message": "Composer merging successfully"})
+
 }
 
 // UpdateComposer updates an existing composer (metadata and optional file)
