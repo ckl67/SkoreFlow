@@ -60,6 +60,11 @@ import (
 // Update → pointers
 // -----------------------
 
+// GetUsersPageRequest defines pagination and filtering for composers listing.
+type GetUsersPageRequest struct {
+	PaginatedRequest
+}
+
 // CreateUserRequest defines the payload for user creation.
 type AdmCreateUserRequest struct {
 	Username string `json:"username" binding:"omitempty,min=3,max=100"`

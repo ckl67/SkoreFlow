@@ -4,7 +4,6 @@
 
 import { API_URL } from '../config.js';
 
-import { assertStatus } from './assert.js';
 import { createReadStream } from 'node:fs';
 import FormData from 'form-data';
 import { request } from './api.js';
@@ -46,6 +45,9 @@ interface RequestOptions {
   informationText?: string;
 }
 
+interface ApiMessage {
+  message: string;
+}
 // --------------------------------------------------------------------------------
 // createScore
 // --------------------------------------------------------------------------------
@@ -60,11 +62,14 @@ async function createScore(
     composer,
   }: RequestOptions,
   token: string,
-  expected = 201,
 ) {
   const form = new FormData();
 
-  if (scoreName) form.append('scoreName', scoreName);
+  if (!uploadFile) {
+    throw new Error('uploadFile is required');
+  }
+  // scoreName Mandatory !
+  form.append('scoreName', scoreName);
   if (releaseDate) form.append('releaseDate', releaseDate);
   if (categories) form.append('categories', categories);
   if (tags) form.append('tags', tags);
@@ -74,13 +79,12 @@ async function createScore(
 
   console.log(`\n Creating score: ${scoreName} (File: ${uploadFile || 'None'})`);
 
-  const res = await request('POST', `${API_URL}/scores/upload`, {
+  const res = await request<ApiMessage>('POST', `${API_URL}/scores/upload`, {
     token,
     data: form,
     headers: form.getHeaders(),
   });
-
-  assertStatus(`Create score: ${scoreName}`, res, expected);
+  return res;
 }
 
 // --------------------------------------------------------------------------------

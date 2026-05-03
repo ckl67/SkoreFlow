@@ -15,9 +15,9 @@ ADMIN_EMAIL="admin@admin.com"
 ADMIN_PASSWORD="skoreflow"
 ```
 
-⚠️ Be care, the commande below must be run in the backend directory, otherwise the DB_PATH variable will not be correct.
+⚠️ Be care, the command below must be run in the backend directory, otherwise the DB_PATH variable will not be correct.
 
-# From the User perspective
+## From the User perspective
 
 from the user perspective, we will test the following functionalities:
 
@@ -34,7 +34,7 @@ from the user perspective, we will test the following functionalities:
 User POSTs /register {username, email, password}
 
 - creates user with IsVerified=false
-- backend sends confirmation email with frontend link: https://frontend/register/confirm?token=abc123
+- backend sends confirmation email with frontend link: "https://frontend/register/confirm?token=abc123"
   User clicks frontend link
 - frontend calls POST /register/confirm {token}
 - backend validates token and sets IsVerified=true
@@ -198,9 +198,9 @@ curl -X PUT http://localhost:8080/api/me  \
 
 ```
 
-# From the Admin perscpective
+## From the Admin perspective
 
-## Login
+### Login Admin
 
 from the admin perspective, you can log in with the following
 
@@ -253,7 +253,7 @@ curl -i -X POST http://localhost:8080/api/admin/createuser \
 To list all users as an admin, you can use the following command:
 
 ```shell
-curl -H "Authorization: Bearer $TOKEN_ADMIN" http://localhost:8080/api/admin/users | jq
+curl -H "Authorization: Bearer $TOKEN_ADMIN" http://localhost:8080/api/admin/users/all | jq
 ```
 
 ## User details by admin
@@ -299,4 +299,18 @@ TEST_AVATAR="/home/christian/SkoreFlow_Project/SkoreFlow/backend/storage/users/t
 touch "$TEST_AVATAR"
 # After the test, delete the test avatar file
 go run cmd/cli/main.go -cleanup-avatars
+```
+
+## List
+
+```shell
+
+curl -H "Authorization: Bearer $TOKEN_ADMIN" "http://localhost:8080/api/admin/users" | jq
+
+curl -H "Authorization: Bearer $TOKEN_ADMIN" "http://localhost:8080/api/admin/userspage?page=1&limit=10" | jq
+
+curl -H "Authorization: Bearer $TOKEN_ADMIN" "http://localhost:8080/api/admin/userspage?page=1&limit=2" | jq
+curl -H "Authorization: Bearer $TOKEN_ADMIN" "http://localhost:8080/api/admin/userspage?page=2&limit=2" | jq
+
+
 ```

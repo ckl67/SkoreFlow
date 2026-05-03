@@ -140,7 +140,6 @@ func (s *ComposerService) GetComposersPage(uid uint32, form forms.GetComposersPa
 }
 
 // GetComposer
-
 // Retrieves a composer by its ID.
 // No authorization required (public access).
 func (s *ComposerService) GetComposer(ComposerID uint) (*models.Composer, error) {

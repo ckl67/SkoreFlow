@@ -320,3 +320,38 @@ func (s *UserService) GetResetToken(vemail string) (string, error) {
 
 	return user.PasswordReset, nil
 }
+
+// Retrieves a paginated list of users
+func (s *UserService) GetUsersPage(uid uint32, form forms.GetUsersPageRequest) (*models.Pagination, error) {
+
+	if form.Page <= 0 {
+		form.Page = 1
+	}
+	if form.Limit <= 0 {
+		form.Limit = 10
+	}
+
+	pagination := models.Pagination{
+		Sort:  form.SortBy,
+		Limit: form.Limit,
+		Page:  form.Page,
+	}
+
+	pagination.Sort = pagination.GetSort()
+
+	logger.User.Debug("(Service - GetUsersPage): sort=%s", pagination.Sort)
+
+	var user models.User
+
+	result, err := user.List(s.db, &pagination, uid)
+	if err != nil {
+		logger.User.Error("Failed to list users: %v", err)
+		return nil, err
+	}
+
+	if result == nil || len(result.Rows.([]*models.User)) == 0 {
+		logger.User.Warn("No users found ")
+	}
+
+	return result, err
+}

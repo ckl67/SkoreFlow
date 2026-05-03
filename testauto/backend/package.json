@@ -6,12 +6,12 @@
     "form-data": "^4.0.5"
   },
   "scripts": {
-    "run:basics": "bash auto-test.sh",
-    "run:clean": "bash auto-test.sh --clean",
-    "run:all": "bash auto-test.sh --clean --all",
-    "run:kill": "bash auto-test.sh --kill",
-    "test": "vitest",
-    "test:run": "vitest run",
-    "test:watch": "vitest"
+    "test:smoke": "vitest run tests/basic.test.ts",
+    "test:users": "vitest run tests/user.test.ts",
+    "test:composers": "vitest run tests/composer.test.ts",
+    "test:scores": "vitest run tests/score.test.ts",
+    "e2e": "bash auto-test.sh --all",
+    "e2e:clean": "bash auto-test.sh --clean --all",
+    "e2e:kill": "bash auto-test.sh --kill"
   }
 }

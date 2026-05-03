@@ -22,9 +22,9 @@ async function run() {
 
   const composers = [
     {
-      name: 'Mozart3',
+      name: 'Mozart',
       description: 'Classic',
-      file: '',
+      file: 'resources/composers/Mozart.png',
       verified: true,
     },
     {

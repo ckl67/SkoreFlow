@@ -23,6 +23,7 @@ import (
 
 	"backend/core/apperrors"
 	"backend/core/forms"
+	"backend/core/models"
 	"backend/core/services"
 	"backend/infrastructure/logger"
 	"backend/pkg/responses"
@@ -40,11 +41,13 @@ func NewUserController(s *services.UserService) *UserController {
 	return &UserController{userService: s}
 }
 
+// --- DTO - Data Transfer Object ---
 // Lightweight response DTO to avoid exposing sensitive/internal fields.
 type UserResponse struct {
 	ID         uint32 `json:"id"`
 	Username   string `json:"username"`
 	Email      string `json:"email"`
+	Avatar     string `json:"avatar"`
 	Role       int    `json:"role"`
 	IsVerified bool   `json:"isVerified"`
 }
@@ -104,6 +107,28 @@ func (ctrl *UserController) AdmGetUsers(c *gin.Context) {
 	responses.JSON(c, http.StatusOK, users)
 }
 
+// GetUsersPage fetches a paginated list of composers with optional search filters
+func (ctrl *UserController) AdmGetUsersPage(c *gin.Context) {
+	uid := c.GetUint32("user_id")
+
+	var form forms.GetUsersPageRequest
+	if err := c.ShouldBind(&form); err != nil {
+		responses.ERROR(c, http.StatusBadRequest, err)
+		return
+	}
+
+	logger.Score.Debug("(Controller AdmGetUsersPage) : User: %d | Page: %d | PageSize: %d | SortBy: %s",
+		uid, form.Page, form.Limit, form.SortBy)
+
+	pageData, err := ctrl.userService.GetUsersPage(uid, form)
+	if err != nil {
+		responses.ERROR(c, http.StatusInternalServerError, err)
+		return
+	}
+
+	responses.JSON(c, http.StatusOK, pageData)
+}
+
 // Creates a new user.
 // - Validates JSON input via Gin binding
 // - Delegates creation logic to service
@@ -157,13 +182,17 @@ func (ctrl *UserController) AdmGetUser(c *gin.Context) {
 		return
 	}
 
-	responses.JSON(c, http.StatusOK, UserResponse{
+	response := UserResponse{
 		ID:         userGotten.ID,
 		Username:   userGotten.Username,
 		Email:      userGotten.Email,
+		Avatar:     userGotten.Avatar,
 		Role:       userGotten.Role,
 		IsVerified: userGotten.IsVerified,
-	})
+	}
+
+	responses.JSON(c, http.StatusOK, response)
+
 }
 
 // Updates user data (PATCH-style).
@@ -172,8 +201,12 @@ func (ctrl *UserController) AdmUpdateUser(c *gin.Context) {
 	userID := c.GetUint32("user_id")
 	userRole := c.GetInt("user_role")
 
+	var err error
+	var uid uint64
+	var updatedUser *models.User
+
 	uidString := c.Param("id")
-	uid, err := strconv.ParseUint(uidString, 10, 32)
+	uid, err = strconv.ParseUint(uidString, 10, 32)
 	if err != nil || uid <= 0 {
 		responses.ERROR(c, http.StatusBadRequest, fmt.Errorf("invalid user id"))
 		return
@@ -182,18 +215,27 @@ func (ctrl *UserController) AdmUpdateUser(c *gin.Context) {
 	logger.User.Info("User %d (role %d) attempts to update user %d", userID, userRole, uid)
 
 	var input forms.AdmUpdateUserRequest
-	if err := c.ShouldBindJSON(&input); err != nil {
+	if err = c.ShouldBindJSON(&input); err != nil {
 		responses.VALIDATION_ERROR(c, err)
 		return
 	}
 
-	updatedUser, err := ctrl.userService.UpdateUser(uint32(uid), input)
+	updatedUser, err = ctrl.userService.UpdateUser(uint32(uid), input)
 	if err != nil {
 		responses.ERROR(c, http.StatusInternalServerError, err)
 		return
 	}
 
-	responses.JSON(c, http.StatusOK, updatedUser)
+	response := UserResponse{
+		ID:         updatedUser.ID,
+		Username:   updatedUser.Username,
+		Email:      updatedUser.Email,
+		Avatar:     updatedUser.Avatar,
+		Role:       updatedUser.Role,
+		IsVerified: updatedUser.IsVerified,
+	}
+
+	responses.JSON(c, http.StatusOK, response)
 }
 
 // Handles avatar upload (multipart/form-data).

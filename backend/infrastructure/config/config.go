@@ -55,7 +55,7 @@ type MicroServiceConfig struct {
 	MsRoot string `env:"MS_ROOT"`
 }
 
-// Fronten Configuration
+// Frontend Configuration
 type FrontendConfig struct {
 	Origin              string `env:"FRONTEND_ORIGIN"`                // e.g. http://localhost:3000
 	ResetPasswordPath   string `env:"FRONTEND_RESET_PASSWORD_PATH"`   // e.g. /reset-password

@@ -58,6 +58,7 @@ var (
 	ErrComposerDeletion      = errors.New("composer deletion issue")
 	ErrComposerNotFound      = errors.New("composer not found")
 	ErrComposerAlreadyExists = errors.New("Composer already exists")
+	ErrComposerCreation      = errors.New("Composer Error in Creation Process")
 	ErrComposerMerging       = errors.New("Composer merging issue")
 
 	// Image

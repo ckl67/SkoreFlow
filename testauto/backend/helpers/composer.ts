@@ -7,7 +7,6 @@ import { API_URL } from '../config.js';
 import { createReadStream } from 'node:fs';
 import FormData from 'form-data';
 import { request } from './api.js';
-import { assertStatus, type HttpResponse } from '../helpers/assert.js';
 
 // --------------------------------------------------------------------------------
 // createComposer
@@ -49,14 +48,19 @@ interface RequestOptions {
   isVerified?: boolean;
 }
 
+interface ApiMessage {
+  message: string;
+}
+
 // --------------------------------------------------------------------------------
 // createComposer
+// Vitest
+// expect(res.data?.message).toBe('Composer created successfully');
 // --------------------------------------------------------------------------------
 async function createComposer(
   { name, externalURL, epoch, uploadFile, isVerified }: RequestOptions,
   token: string,
-  expected = 201,
-): Promise<HttpResponse<any>> {
+) {
   const form = new FormData();
 
   if (name) form.append('name', name);
@@ -65,15 +69,13 @@ async function createComposer(
   if (isVerified !== undefined) form.append('isVerified', String(isVerified));
   if (uploadFile) form.append('uploadFile', createReadStream(uploadFile));
 
-  console.log(`\n Creating Composer: ${name} (File: ${uploadFile || 'None'})`);
+  //console.log(`\n Creating Composer: ${name} (File: ${uploadFile || 'None'})`);
 
-  const res = await request('POST', `${API_URL}/composers/upload`, {
+  const res = await request<ApiMessage>('POST', `${API_URL}/composers/upload`, {
     token,
     data: form,
     headers: form.getHeaders(),
   });
-
-  assertStatus(`Create Composer: ${name}`, res, expected);
 
   return res;
 }

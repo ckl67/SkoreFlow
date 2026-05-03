@@ -50,6 +50,17 @@ This project uses a **npm workspaces monorepo**.
 
 All JavaScript/TypeScript dependencies are managed **centrally at the root level**, using a single `node_modules` directory.
 
+You can use command
+
+```shell
+
+tree -I 'node_modules' -L 2
+
+# And take a look in file
+package.json
+
+```
+
 ### Key Principles
 
 - A **single root `node_modules/`**

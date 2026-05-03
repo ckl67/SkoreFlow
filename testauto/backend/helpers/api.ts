@@ -1,4 +1,4 @@
-import axios, { AxiosError } from 'axios';
+import axios, { Method } from 'axios';
 
 // --------------------------------------------------------------------------------
 // MAIN HELPERS
@@ -47,42 +47,80 @@ import axios, { AxiosError } from 'axios';
 // --------------------------------------------------------------------------------
 // TYPES
 // --------------------------------------------------------------------------------
-interface RequestOptions {
+
+// 1. THE CONTRACT (Interface)
+// <T = unknown> is a generic placeholder.
+// It says: "This object will handle some data of type T."
+// By defaulting to 'unknown', we prevent accidental use of 'any'.
+// Example :
+// res = await request<LoginResponse>('POST', `${API_URL}/login`, { data: {email,password }
+interface RequestOptions<T = unknown> {
   token?: string;
-  data?: any;
+  data?: T; // If you send data, it should match the type T
   headers?: Record<string, string>;
+}
+
+// THE WRAPPER (Response structure)
+// This ensures every API call returns a consistent object shape.
+//The 'data' property will hold the actual server response, typed as T.
+interface HttpResponse<T = unknown> {
+  status: number;
+  data: T | null; // in case of { "message": "invalid credentials" }
 }
 
 // --------------------------------------------------------------------------------
 // request
 // --------------------------------------------------------------------------------
 
-async function request(method: string, url: string, { token, data, headers }: RequestOptions = {}) {
+/**
+ * The <T = unknown> here is the "bridge" between the API and your logic.
+ * @param method - HTTP Verb (GET, POST, etc.)
+ * @param url - API Endpoint
+ * @param options - Includes the payload (data) and auth (token)
+ *
+ * FLOW EXPLANATION:
+ * When you call request<LoginResponse>(...), T becomes 'LoginResponse'.
+ * Consequently:
+ * - RequestOptions uses T for the 'data' sent (input)
+ * - Promise<HttpResponse<T>> ensures the returned 'data' is LoginResponse (output)
+ */
+async function request<T = unknown>(
+  method: Method,
+  url: string,
+  { token, data, headers }: RequestOptions = {},
+): Promise<HttpResponse<T>> {
   try {
     const res = await axios({
       method,
       url,
       data,
       headers: {
+        // Conditional spread: adds Authorization header only if token exists
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
         ...(headers || {}),
       },
     });
 
+    // 4. THE DELIVERY
+    // Here, res.data is returned and automatically cast to type T
     return {
       status: res.status,
       data: res.data,
     };
   } catch (err) {
     if (axios.isAxiosError(err)) {
-      // axios error
       return {
+        // Returns the error status or defaults to 500 (Internal Server Error)
         status: err.response?.status ?? 500,
+        // Using 'as T' here is a common pattern to handle error bodies
+        // But it is not always T ! { "message": "invalid credentials" }
+        //data: (err.response?.data ?? null) as T,
         data: err.response?.data ?? null,
       };
     }
 
-    throw err; // real issue (network, config, etc.)
+    // Rethrow if it's a programming error or a total network failure
+    throw err;
   }
 }
 
@@ -91,3 +129,4 @@ async function request(method: string, url: string, { token, data, headers }: Re
 // --------------------------------------------------------------------------------
 
 export { request };
+export type { HttpResponse };

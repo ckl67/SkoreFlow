@@ -1,6 +1,6 @@
 # Installation
 
-# In each directory Backend and Front End
+In each directory Backend and Front End
 
 testauto/backend and testauto/frontend
 

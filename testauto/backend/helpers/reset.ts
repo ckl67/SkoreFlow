@@ -6,6 +6,14 @@ import { request } from './api.js';
 import { API_URL } from '../config.js';
 
 // --------------------------------------------------------------------------------
+// TYPES
+// --------------------------------------------------------------------------------
+
+interface ResetTokenResponse {
+  token: string;
+}
+
+// --------------------------------------------------------------------------------
 // getResetToken
 // THIS SERVICE CAN ONLY BE USED FOR TEST PERSPECTIVE !!
 // --------------------------------------------------------------------------------
@@ -15,7 +23,7 @@ import { API_URL } from '../config.js';
 
 // --------------------------------------------------------------------------------
 async function getResetToken(email: string, adminToken: string) {
-  const res = await request('GET', `${API_URL}/test/reset-token/${email}`, {
+  const res = await request<ResetTokenResponse>('GET', `${API_URL}/test/reset-token/${email}`, {
     token: adminToken,
   });
 

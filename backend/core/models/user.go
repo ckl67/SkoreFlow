@@ -22,8 +22,8 @@ type User struct {
 	Username            string    `gorm:"size:100;not null;uniqueIndex" json:"username"`
 	Email               string    `gorm:"size:100;not null;uniqueIndex" json:"email"`
 	Password            string    `gorm:"size:255;not null" json:"-"` // Excluded from JSON output
-	PasswordReset       string    `gorm:"size:255" json:"-"`          // Password reset token
-	PasswordResetExpire time.Time `json:"-"`                          // Token expiration time
+	PasswordReset       string    `gorm:"size:255" json:"-"`          // Password reset token Excluded too !
+	PasswordResetExpire time.Time `json:"-"`                          // Token expiration time Excluded !
 	Avatar              string    `gorm:"size:255" json:"avatar"`
 	Role                int       `gorm:"default:0" json:"role"` // 0 = standard user
 	IsVerified          bool      `gorm:"default:false" json:"isVerified"`
@@ -61,8 +61,6 @@ func (u *User) ExistsByUserName(db *gorm.DB, username string) (bool, error) {
 	err := db.Model(&User{}).Where("username = ?", username).Count(&count).Error
 	return count > 0, err
 }
-
-
 
 // FindByID retrieves a user by their unique identifier.
 func (u *User) FindByID(db *gorm.DB, id uint32) error {
@@ -115,4 +113,21 @@ func GetAllUsers(db *gorm.DB) ([]User, error) {
 	var users []User
 	err := db.Limit(100).Find(&users).Error
 	return users, err
+}
+
+// List retrieves users with pagination
+func (c *User) List(db *gorm.DB, pagination *Pagination, userID uint32) (*Pagination, error) {
+	var users []*User
+
+	// Base query
+	query := db.Model(&User{})
+
+	// Execute query with pagination
+	err := query.Scopes(paginate(pagination, query)).Find(&users).Error
+	if err != nil {
+		return nil, err
+	}
+
+	pagination.Rows = users
+	return pagination, nil
 }

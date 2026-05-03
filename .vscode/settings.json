@@ -8,11 +8,12 @@
 
   "editor.formatOnSave": true,
   "editor.formatOnSaveMode": "file",
+  "editor.renderWhitespace": "selection",
 
   // =========================================================
   // 📁 FILES
   // =========================================================
-  "files.autoSave": "off",
+  "files.autoSave": "onFocusChange",
   "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,
 

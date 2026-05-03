@@ -40,6 +40,19 @@ npm install
 
 ---
 
+## npm update
+
+In some case, you can upgrade node packet manager
+
+```shell
+
+npm install -g npm@11
+
+rm -rf node_modules package-lock.json
+npm install
+
+```
+
 ## 1.2. Formatting & Linting
 
 ### 1.2.1. Formatting

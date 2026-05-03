@@ -68,6 +68,7 @@ type GetScoresPageRequest struct {
 type CreateScoreRequest struct {
 	File            *multipart.FileHeader `form:"uploadFile" binding:"required"`
 	Composer        string                `form:"composer"`
+	ComposerId      *uint                 `form:"composerId"`
 	ScoreName       string                `form:"scoreName" binding:"required"`
 	ReleaseDate     string                `form:"releaseDate"`
 	Categories      string                `form:"categories"`

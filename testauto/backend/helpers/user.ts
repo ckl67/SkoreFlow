@@ -3,12 +3,11 @@
 // --------------------------------------------------------------------------------
 
 import { request } from './api.js';
-import { assertStatus } from './assert.js';
 import { createReadStream } from 'node:fs';
 import FormData from 'form-data';
 
 import { API_URL } from '../config.js';
-
+import { PaginatedResponse } from './paginate.js';
 // --------------------------------------------------------------------------------
 // createUser
 // --------------------------------------------------------------------------------
@@ -43,22 +42,36 @@ interface RequestOptions {
 // Sent back from the api
 interface User {
   id: number;
-  email: string;
   username: string;
+  email: string;
+  avatar?: string;
   role?: number;
-  isVerified?: boolean;
+  isVerified: boolean;
 }
 
-async function createUser({ email, password }: RequestOptions, token: string, expected = 201) {
-  if (!email) {
-    throw new Error('email mandatory username.');
+interface GetUsersPageOptions {
+  page?: number;
+  limit?: number;
+  sort?: string;
+}
+
+// --------------------------------------------------------------------------------
+// Create User
+// Usage in Vitest
+// const res = await createUser(...)
+//      expect(res.status).toBe(201)
+//      expect(res.data.email).toBe(...)
+// --------------------------------------------------------------------------------
+async function createUser({ email, password }: RequestOptions, token: string) {
+  if (!email || !password) {
+    throw new Error('email and password are required');
   }
 
   const username = email.split('@')[0];
 
-  console.log(`\n Creating User: ${username} (${email})`);
+  //console.log(`\n Creating User: ${username} (${email})`);
 
-  const res = await request('POST', `${API_URL}/admin/createuser`, {
+  const res = await request<User>('POST', `${API_URL}/admin/createuser`, {
     token,
     data: {
       username: username,
@@ -67,9 +80,7 @@ async function createUser({ email, password }: RequestOptions, token: string, ex
     },
   });
 
-  assertStatus(`Create User: ${username}`, res, expected);
-
-  return res.data;
+  return res;
 }
 
 // --------------------------------------------------------------------------------
@@ -90,20 +101,20 @@ async function updateUser(
   userId: number,
   { username, password, role, isVerified }: RequestOptions,
   token: string,
-  expected = 200,
 ) {
   console.log(`\n updateUser User: ${username} `);
 
-  const res = await request('PUT', `${API_URL}/admin/users/${userId}`, {
+  const res = await request<User>('PUT', `${API_URL}/admin/users/${userId}`, {
     token,
     data: {
       username: username,
+      password: password,
       role: role,
       isVerified: isVerified,
     },
   });
 
-  assertStatus(`Update Role (ID: ${userId})`, res, 200);
+  return res;
 }
 
 // --------------------------------------------------------------------------------
@@ -113,16 +124,18 @@ async function updateUser(
 // --------------------------------------------------------------------------------
 
 async function getUserIdByEmail(email: string, token: string) {
-  const res = await request('GET', `${API_URL}/admin/users`, {
+  const res = await request<User[]>('GET', `${API_URL}/admin/users`, {
     token,
   });
 
-  const users: User[] = res.data;
-  const user = users.find((u) => u.email === email);
+  if (!res.data) {
+    throw new Error('Failed to fetch users');
+  }
+
+  const user = res.data.find((u) => u.email === email);
 
   if (!user) {
-    console.error(`❌ User not found: ${email}`);
-    process.exit(1);
+    throw new Error(`User not found: ${email}`);
   }
 
   return user.id;
@@ -131,12 +144,13 @@ async function getUserIdByEmail(email: string, token: string) {
 // --------------------------------------------------------------------------------
 // createComposer
 // --------------------------------------------------------------------------------
-async function userLoadAvatar(uploadFile: string, token: string, expected = 200) {
+
+async function userLoadAvatar(uploadFile: string, token: string) {
   const form = new FormData();
 
-  if (uploadFile) form.append('uploadFile', createReadStream(uploadFile));
-
-  console.log(`\n Upload Avatar for User  (File: ${uploadFile || 'None'})`);
+  if (uploadFile) {
+    form.append('uploadFile', createReadStream(uploadFile));
+  }
 
   const res = await request('POST', `${API_URL}/me/avatar`, {
     token,
@@ -144,11 +158,30 @@ async function userLoadAvatar(uploadFile: string, token: string, expected = 200)
     headers: form.getHeaders(),
   });
 
-  assertStatus(`Upload Avatar : ${uploadFile}`, res, expected);
+  return res;
 }
 
+// --------------------------------------------------------------------------------
+// createComposer
+// --------------------------------------------------------------------------------
+
+async function getUsersPage({ page = 1, limit = 10, sort }: GetUsersPageOptions, token: string) {
+  const params = new URLSearchParams();
+
+  params.append('page', String(page));
+  params.append('limit', String(limit));
+  if (sort) params.append('sort', sort);
+
+  const res = await request<PaginatedResponse<User>>(
+    'GET',
+    `${API_URL}/admin/userspage?${params.toString()}`,
+    { token },
+  );
+
+  return res;
+}
 // --------------------------------------------------------------------------------
 // EXPORT (ESM)
 // --------------------------------------------------------------------------------
 
-export { createUser, updateUser, getUserIdByEmail, userLoadAvatar };
+export { createUser, updateUser, getUserIdByEmail, userLoadAvatar, getUsersPage };

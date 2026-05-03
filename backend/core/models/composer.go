@@ -27,8 +27,8 @@ import (
 
 type Composer struct {
 	ID          uint      `gorm:"primaryKey;autoIncrement" json:"id"`
-	SafeName    string    `gorm:"size:255;uniqueIndex" json:"safe_name"`
 	Name        string    `gorm:"size:255;not null" json:"name"`
+	SafeName    string    `gorm:"size:255;uniqueIndex" json:"safe_name"`
 	PicturePath string    `gorm:"column:thumbnail_path;not null" json:"picture_path"`
 	ExternalURL string    `gorm:"size:255" json:"external_url"`
 	Epoch       string    `gorm:"size:255" json:"epoch"`
@@ -94,5 +94,14 @@ func (c *Composer) List(db *gorm.DB, pagination *Pagination, search *string, isV
 func FindComposerByID(db *gorm.DB, id uint) (*Composer, error) {
 	var composer Composer
 	err := db.First(&composer, id).Error
+	return &composer, err
+}
+
+// FindComposerBySafeName retrieves a composer by its safeName
+func FindComposerBySafeName(db *gorm.DB, safeName string) (*Composer, error) {
+	var composer Composer
+
+	// 1. Try to find existing composer
+	err := db.Where("safe_name = ?", safeName).First(&composer).Error
 	return &composer, err
 }

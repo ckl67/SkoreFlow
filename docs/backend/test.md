@@ -1,5 +1,7 @@
 # Auto testing
 
+-- CKL - TO MODIFY --
+
 This page provides instructions on how to run automated tests for the SkoreFlow backend.
 Automated testing is crucial for ensuring the reliability and stability of the application as it evolves.
 
@@ -197,7 +199,7 @@ it('should create a composer and return 201', async () => {
 
 ```
 
-### Summary of Tools:
+### Summary of Tools
 
 - Shell Script (auto-test.sh): Manages the server life cycle and database state.
 - Vitest: Executes granular API logic tests with fast feedback.

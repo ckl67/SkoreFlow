@@ -210,6 +210,7 @@ func (server *Server) SetupRouter() {
 			adminRoutes := protected.Group("/")
 			adminRoutes.Use(middlewares.AdminOnlyMiddleware())
 			{
+				adminRoutes.GET("/admin/userspage", userCtrl.AdmGetUsersPage)  // MOK
 				adminRoutes.GET("/admin/users", userCtrl.AdmGetUsers)          // MOK
 				adminRoutes.GET("/admin/users/:id", userCtrl.AdmGetUser)       // MOK
 				adminRoutes.POST("/admin/createuser", userCtrl.AdmCreateUser)  // MOK

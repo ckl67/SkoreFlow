@@ -1,30 +1,35 @@
+import { describe, it, expect, beforeAll } from 'vitest';
 import { request } from '../helpers/api.js';
-import { assertStatus } from '../helpers/assert.js';
+
+import { BASE_URL } from '../config.js';
 
 // --------------------------------------------------------------------------------
 // BASIC SMOKE TESTS
 // --------------------------------------------------------------------------------
 
-async function run() {
-  console.log('\n--- [MODULE: BASICS / SMOKE TESTS] ---');
+describe('🚦 Smoke Tests - API Basics', () => {
+  beforeAll(() => {
+    console.log('⚠️ Server must be RUN ! ');
+  });
 
-  // 1. Health Check
-  let res = await request('GET', 'http://localhost:8080/health');
+  it('should pass health check', async () => {
+    const res = await request('GET', `${BASE_URL}/health`);
 
-  assertStatus('Server Health Check', res, 200);
+    expect(res.status).toBe(200);
+    expect(res.data).toBeTruthy();
+  });
 
-  // 2. Version Check
-  res = await request('GET', 'http://localhost:8080/version');
-  assertStatus('Server Version Info', res, 200);
+  it('should return version info', async () => {
+    const res = await request('GET', `${BASE_URL}/version`);
 
-  // 3. API Root Check
-  res = await request('GET', 'http://localhost:8080/api');
-  assertStatus('API Base Endpoint', res, 200);
+    expect(res.status).toBe(200);
+    expect(res.data).toBeTruthy();
+  });
 
-  console.log('✨ Basics verified. Environment is healthy.');
-}
+  it('should access API root', async () => {
+    const res = await request('GET', `${BASE_URL}/api`);
 
-run().catch((err) => {
-  console.error('💥 ERROR:', err.message);
-  process.exit(1);
+    expect(res.status).toBe(200);
+    expect(res.data).toBeTruthy();
+  });
 });

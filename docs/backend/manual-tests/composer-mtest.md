@@ -12,7 +12,11 @@ TOKEN_ADMIN=$(curl -s -X POST http://localhost:8080/api/login \
   }" | jq -r '.token')
 
 
-curl -H "Authorization: Bearer $TOKEN_ADMIN" http://localhost:8080/api/admin/users | jq
+curl -H "Authorization: Bearer $TOKEN_ADMIN" "http://localhost:8080/api/admin/users" | jq
+
+curl -H "Authorization: Bearer $TOKEN_ADMIN" "http://localhost:8080/api/admin/userspage?page=1&limit=10" | jq
+
+
 
 TOKEN_USER2=$(curl -X POST http://localhost:8080/api/login \
  -H "Content-Type: application/json" \
@@ -24,7 +28,7 @@ curl -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/me | jq
 
 ```
 
-// Create a composer
+## Create a composer
 
 ```shell
 curl -X POST "http://localhost:8080/api/composers/upload" \

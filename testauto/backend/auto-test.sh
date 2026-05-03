@@ -19,23 +19,37 @@
 # 4. Quoting: Always use echo "$variable" to preserve newlines and indentation in JSON responses.
 # ---------------------------------------------------------------------------------------------------------------
 
+# ---------------------------------------------------------------------------------------------------------------
+# OPEN QUESTIONS
+# ---------------------------------------------------------------------------------------------------------------
+# Should write the orchestration in javascript or Go to have better control over processes, signals, and parallelism?
+# Answer is no ! =>
+#		Shell scripting is sufficient for our needs and keeps the setup simple without adding extra dependencies or complexity.
+# 	We can manage processes, signals, and parallelism effectively with bash, especially since our testing workflow is mostly sequential
+#		and doesn't require complex orchestration features that a full programming language might offer.
+#
+#		bash = orchestration system
+# 	Vitest = tests
+# 	npm = overview
+
 # --------- HELP ---------
 
 HelpTXT="
-bash auto-test.sh		: Standard Run - We Keep the FORMER Database and Storage - No cleaning just smoke tests - Afterwards Server is Running
+Usage:
+ bash
+  ./auto-test.sh                Run smoke tests only - We Keep the FORMER Database and Storage
+  ./auto-test.sh --all          Run all tests (Smoke, Users, Composers, Scores)
+  ./auto-test.sh --users        Include user tests
+  ./auto-test.sh --scores       Include score tests
+  ./auto-test.sh --composers    Include composer tests
 
-bash auto-test.sh --kill	: Kill The process to be sure that there is no Background process - Useful to run the server manually or for Air
-bash auto-test.sh --clean	: Clean the Database and Storage before running tests (Use with --scores or --composers to have a full clean)
+ Options
+  --kill                        Kill The process to be sure that there is no Background process
+  --clean                       Clean DB and Storage files before running
+  --pwreset                     Include SMTP/Google password reset tests
+  --nbg                         Stop server after script
 
-bash auto-test.sh --all		: Run everything (Smoke, Users, Scores, Composers) without including SMTP/Google password reset tests
-
-Otherwise Can be combined with:
-bash auto-test.sh --users	: Run Smoke tests + User tests
-bash auto-test.sh --scores	: Run Smoke tests + Score tests
-bash auto-test.sh --composers	: Run Smoke tests + Composer tests
-bash auto-test.sh --pwreset	: Include SMTP/Google password reset tests
-
-bash auto-test.sh --help	: Help
+  --help                        Help
 
 "
 
@@ -49,6 +63,7 @@ export RUN_COMPOSERS=false
 export KILL_PROCESS=false
 
 export CLEAN_DB_FILES=false
+export FORCE_BACKGROUND=true
 
 export ROLE_USER=0
 export ROLE_MODERATOR=1
@@ -62,6 +77,7 @@ for arg in "$@"; do
 	--users) export RUN_USERS=true ;;
 	--scores) export RUN_SCORES=true ;;
 	--composers) export RUN_COMPOSERS=true ;;
+	--nbg) export FORCE_BACKGROUND=false ;;
 	--kill) export KILL_PROCESS=true ;;
 	--all)
 		export RUN_USERS=true
@@ -161,32 +177,40 @@ cd "$SCRIPT_DIR" || exit
 
 # ---------------------------------------------------------------------------------------------------------------
 # MODULE EXECUTION
+# Externalize  the running "npx tsx" or vitest
 # ---------------------------------------------------------------------------------------------------------------
 
 # 1. Basic Health and Sanity tests
-echo "Running basic tests (Node.js TypeScript)..."
-npx tsx tests/basic.test.ts || exit 1 # Exit immediately if basic tests fail, as they indicate fundamental issues with the server setup
+echo "Running smoke tests..."
+# npx tsx tests/basic.test.ts || exit 1
+npm run test:smoke || exit 1
 
 # 2. User Management (MANDATORY: Generates tokens for other tests)
 if [ "$RUN_USERS" = true ]; then
-	echo "Running user tests (Node.js TypeScript)..."
-	npx tsx tests/user.test.ts || exit 1 # Exit immediately if user tests fail, since they are critical for subsequent tests
+	echo "Running user tests..."
+	# npx tsx tests/user.test.ts || exit 1
+	npm run test:users || exit 1
 else
-	echo "⏩ Skipping User tests (use --users or --all to include)"
+	echo "⏩ Skipping User tests"
 fi
 
-# 3. Conditional: Score Management
-if [ "$RUN_SCORES" = true ]; then
-	npx tsx tests/score.test.js || exit 1
-else
-	echo "⏩ Skipping Score tests (use --scores or --all to include)"
-fi
-
-# 4. Conditional: Composer Management
+# 3. Conditional: Composer Management
 if [ "$RUN_COMPOSERS" = true ]; then
-	npx tsx tests/composer.test.js || exit 1
+	echo "Running composer tests..."
+	# npx tsx tests/composers.tst.ts
+	npm run test:composers || exit 1
 else
-	echo "⏩ Skipping Composer tests (use --composers or --all to include)"
+	echo "⏩ Skipping Composer tests"
+fi
+
+# 4. Conditional: Score Management
+if [ "$RUN_SCORES" = true ]; then
+	echo "Running score tests..."
+	# npx tsx tests/score.test.js || exit 1
+	npm run test:scores || exit 1
+
+else
+	echo "⏩ Skipping Score tests"
 fi
 
 # ---------------------------------------------------------------------------------------------------------------
@@ -196,15 +220,23 @@ fi
 echo " "
 echo "########################################################"
 echo "  TEST SUITE FINISHED"
-echo "  Backend PID: $BACKEND_PID"
-echo "  Environment is ready for manual testing."
-echo "  Press Ctrl+C to stop the server."
+echo "########################################################"
+
 if [ "$CLEAN_DB_FILES" = true ]; then
 	echo "  ---> We have now a NEW Database and Storage Files !!"
 else
 	echo "  ---> We Keep the FORMER Database and Storage Files !!"
-	# Wait for background server process
 fi
 echo "########################################################"
 
-wait $BACKEND_PID
+if [ "$FORCE_BACKGROUND" = true ]; then
+	echo "  ---> Running in Background !!"
+	echo "  Backend PID: $BACKEND_PID"
+	echo "  Environment is ready for manual testing."
+	echo "  Press Ctrl+C to stop the server."
+	wait $BACKEND_PID
+else
+	echo " Process - Exit"
+fi
+
+echo "########################################################"

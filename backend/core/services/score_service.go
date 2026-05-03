@@ -45,23 +45,21 @@ func NewScoreService(db *gorm.DB, paths *config.Paths) *ScoreService {
 
 // findOrCreateComposer retrieves an existing composer by safe name,
 // or creates a new one if it does not exist.
-//
-// Behavior:
-// - Uses sanitized name for lookup
-// - Creates a minimal composer if not found
 func (s *ScoreService) findOrCreateComposer(name string) (*models.Composer, error) {
 	safeName := format.SanitizeName(name)
-	var composer models.Composer
+
+	var composer *models.Composer
+	var err error
 
 	// 1. Try to find existing composer
-	err := s.db.Where("safe_name = ?", safeName).First(&composer).Error
+	composer, err = models.FindComposerBySafeName(s.db, safeName)
 	if err == nil {
-		return &composer, nil
+		return composer, nil
 	}
 
 	// 2. If not found → create
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		composer = models.Composer{
+		composer = &models.Composer{
 			Name:        strings.TrimSpace(name),
 			SafeName:    safeName,
 			PicturePath: "composers/default.png", // default fallback
@@ -71,7 +69,7 @@ func (s *ScoreService) findOrCreateComposer(name string) (*models.Composer, erro
 			return nil, err
 		}
 
-		return &composer, nil
+		return composer, nil
 	}
 
 	return nil, err
@@ -91,11 +89,29 @@ func (s *ScoreService) CreateScore(uid uint32, form forms.CreateScoreRequest, fi
 	// 1. Normalize score name
 	safeScoreName := format.SanitizeName(form.ScoreName)
 
-	// 2. Resolve composer or will create a new one
-	composer, err := s.findOrCreateComposer(form.Composer)
-	if err != nil {
-		return err
+	// Pointer because we will recover the db value !
+	var composer *models.Composer
+	var err error
+
+	// 1. Priority ID provided
+	if form.ComposerId != nil && *form.ComposerId > 0 {
+		composer, err = models.FindComposerByID(s.db, *form.ComposerId)
+		if err != nil {
+			return apperrors.ErrComposerNotFound
+		}
+	} else if form.Composer != "" {
+		// 2. Otherwise we search or Create
+		composer, err = s.findOrCreateComposer(form.Composer)
+		if err != nil {
+			return apperrors.ErrComposerCreation
+		}
+
+	} else {
+		// No One is provided
+		return apperrors.ErrComposerMandatory
 	}
+
+	// At this level, Composer contains  our object
 
 	// 3. Uniqueness check
 	exists, err := models.ScoreExists(s.db, safeScoreName, composer.ID, uid)

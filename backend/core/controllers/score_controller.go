@@ -42,12 +42,6 @@ func NewScoreController(s *services.ScoreService) *ScoreController {
 
 // CreateScore
 // Handles the upload of a new music score.
-// Workflow:
-// 1. Extract user context (auth middleware)
-// 2. Bind multipart form (metadata + file)
-// 3. Run custom validation
-// 4. Delegate creation to service layer
-// 5. Return HTTP response
 func (ctrl *ScoreController) CreateScore(c *gin.Context) {
 	uid := c.GetUint32("user_id")
 	userRole := c.GetInt("user_role")
