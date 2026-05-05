@@ -67,17 +67,17 @@ type FrontendConfig struct {
 // Global Server Configuration
 // Central struct holding ALL configuration used across the app
 type ServerConfig struct {
-	Backend_Dev_Mode bool `env:"BACKEND_DEV_MODE"`
+	AppEnv string `env:"APP_ENV"` // development, production, test
 
 	// Paths
-	AppRoot     string `env:"APP_ROOT"`     //	APP_ROOT=/app or APP_ROOT=/home/<linuxuser>/SkoreFlow_Project/SkoreFlow/backend
+	AppRoot     string `env:"APP_ROOT"`     //	APP_ROOT=/app or APP_ROOT=/home/<linux user>/SkoreFlow_Project/SkoreFlow/backend
 	StoragePath string `env:"STORAGE_PATH"` // STORAGE_PATH=storage
 
 	// Admin Email
 	AdminEmail    string `env:"ADMIN_EMAIL"`
 	AdminPassword string `env:"ADMIN_PASSWORD"`
 
-	// Authentification
+	// Authentication
 	ApiSecret string `env:"API_SECRET"`
 
 	// Access
@@ -117,9 +117,10 @@ var (
 func (c ServerConfig) LogSafe() {
 	fmt.Println("------ SERVER CONFIG ------")
 
-	if c.Backend_Dev_Mode {
+	if c.AppEnv == "test" || c.AppEnv == "dev" {
 
-		fmt.Printf("BACKEND_DEV_MODE :%t\n", c.Backend_Dev_Mode)
+		fmt.Printf("Application Environment\n")
+		fmt.Printf("   appEnv :%s\n", c.AppEnv)
 
 		fmt.Println("Paths:")
 		fmt.Printf("  StoragePath: %s\n", c.StoragePath)
@@ -130,7 +131,7 @@ func (c ServerConfig) LogSafe() {
 		fmt.Printf("  AdminEmail: %s\n", c.AdminEmail)
 		fmt.Printf("  AdminPassword: %s\n", c.AdminPassword) // ❌ sensitive
 
-		fmt.Println("Authentification:")
+		fmt.Println("Authentication:")
 		fmt.Printf("  ApiSecret: %s\n", c.ApiSecret) // ❌ sensitive
 
 		fmt.Println("Backend Access:")
@@ -255,7 +256,7 @@ func (b configBuilder) Build() ServerConfig {
 // Provides fallback values when nothing is defined
 func NewConfig() ServerConfig {
 	return ServerConfig{
-		Backend_Dev_Mode: false,
+		AppEnv: "",
 
 		AppRoot:     "",
 		StoragePath: "",

@@ -11,7 +11,7 @@ import (
 func Start(version string) {
 	// Log configuration details (redacted/safe version)
 	cfg := config.Config()
-	if cfg.Backend_Dev_Mode {
+	if cfg.AppEnv == "test" || cfg.AppEnv == "development" {
 		cfg.LogSafe()
 	}
 

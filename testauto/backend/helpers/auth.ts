@@ -12,6 +12,31 @@ import { API_URL } from '../config.js';
 // TYPES
 // --------------------------------------------------------------------------------
 
+interface RegisterRequestOptions {
+  username: string;
+  email: string;
+  password: string;
+}
+
+interface RegisterResponse {
+  message: string;
+  user_id: number;
+  token?: string; // Optional without test
+}
+
+// -------------------
+
+interface ConfirmRegistrationRequest {
+  token: string;
+}
+
+interface ConfirmationResponse {
+  message: string;
+  user_id: number;
+}
+
+// -------------------
+
 interface User {
   id: number;
   username: string;
@@ -21,6 +46,7 @@ interface User {
   isVerified: boolean;
   createdAt: string;
   updatedAt: string;
+  token: string;
 }
 
 interface LoginResponse {
@@ -79,4 +105,49 @@ async function login(email: string, password: string) {
   return res.data.token;
 }
 
-export { login };
+// --------------------------------------------------------------------------------
+// Register User
+// --------------------------------------------------------------------------------
+async function registerUser(data: RegisterRequestOptions) {
+  // TypeScript exists only on compilation, it is a security to keep this check
+  if (!data.username || !data.email || !data.password) {
+    throw new Error('Missing required fields: username, email, password');
+  }
+
+  const res = await request<RegisterResponse>('POST', `${API_URL}/auth/register`, {
+    data,
+  });
+
+  console.log('\n Register User response:', res.status, res.data);
+
+  return res;
+}
+
+// --------------------------------------------------------------------------------
+// Confirm Registration
+// --------------------------------------------------------------------------------
+async function confirmRegistration(data: ConfirmRegistrationRequest) {
+  const res = await request<ConfirmationResponse>('POST', `${API_URL}/auth/register/confirm`, {
+    data,
+  });
+
+  console.log('\n Confirm Registration response:', res.status, res.data);
+
+  return res;
+}
+
+// --------------------------------------------------------------------------------
+// Set Expire token time
+// --------------------------------------------------------------------------------
+
+async function expireToken(email: string) {
+  const res = await request('POST', `${API_URL}/test/expire-token`, {
+    data: { email },
+  });
+
+  console.log('\n Set Expire Time Token :', res.status, res.data);
+
+  return res;
+}
+
+export { registerUser, confirmRegistration, expireToken, login };

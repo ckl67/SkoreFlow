@@ -11,6 +11,7 @@ gitgraph
 gofmt
 gofumpt
 golangci
+golobby
 gonic
 gopath
 gopher

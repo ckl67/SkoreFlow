@@ -304,23 +304,6 @@ func (s *UserService) DeleteAvatarFile(userID uint32) error {
 	return nil
 }
 
-// GetResetToken
-func (s *UserService) GetResetToken(vemail string) (string, error) {
-	var user models.User
-
-	email := format.SanitizeUserEmail(vemail)
-
-	exists, err := new(models.User).ExistsByEmail(s.db, email)
-	if err != nil {
-		return "", nil
-	}
-	if exists {
-		return "", apperrors.ErrUserEmailAlreadyUsed
-	}
-
-	return user.PasswordReset, nil
-}
-
 // Retrieves a paginated list of users
 func (s *UserService) GetUsersPage(uid uint32, form forms.GetUsersPageRequest) (*models.Pagination, error) {
 

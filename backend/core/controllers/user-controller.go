@@ -60,11 +60,11 @@ func (ctrl *UserController) GetProfile(c *gin.Context) {
 
 	userGotten, err := ctrl.userService.GetProfileByID(userID)
 	if err != nil {
-		responses.ERROR(c, http.StatusNotFound, fmt.Errorf("user not found"))
+		responses.FAIL(c, http.StatusNotFound, fmt.Errorf("user not found"))
 		return
 	}
 
-	responses.JSON(c, http.StatusOK, userGotten)
+	responses.SUCCESS(c, http.StatusOK, userGotten)
 }
 
 // Updates user data (PATCH-style).
@@ -83,11 +83,11 @@ func (ctrl *UserController) UpdateProfile(c *gin.Context) {
 
 	updatedUser, err := ctrl.userService.UpdateProfile(uint32(userID), input)
 	if err != nil {
-		responses.ERROR(c, http.StatusInternalServerError, err)
+		responses.FAIL(c, http.StatusInternalServerError, err)
 		return
 	}
 
-	responses.JSON(c, http.StatusOK, updatedUser)
+	responses.SUCCESS(c, http.StatusOK, updatedUser)
 }
 
 // Returns the full list of users.
@@ -100,11 +100,11 @@ func (ctrl *UserController) AdmGetUsers(c *gin.Context) {
 
 	users, err := ctrl.userService.GetAllUsers()
 	if err != nil {
-		responses.ERROR(c, http.StatusInternalServerError, err)
+		responses.FAIL(c, http.StatusInternalServerError, err)
 		return
 	}
 
-	responses.JSON(c, http.StatusOK, users)
+	responses.SUCCESS(c, http.StatusOK, users)
 }
 
 // GetUsersPage fetches a paginated list of composers with optional search filters
@@ -113,7 +113,7 @@ func (ctrl *UserController) AdmGetUsersPage(c *gin.Context) {
 
 	var form forms.GetUsersPageRequest
 	if err := c.ShouldBind(&form); err != nil {
-		responses.ERROR(c, http.StatusBadRequest, err)
+		responses.FAIL(c, http.StatusBadRequest, err)
 		return
 	}
 
@@ -122,11 +122,11 @@ func (ctrl *UserController) AdmGetUsersPage(c *gin.Context) {
 
 	pageData, err := ctrl.userService.GetUsersPage(uid, form)
 	if err != nil {
-		responses.ERROR(c, http.StatusInternalServerError, err)
+		responses.FAIL(c, http.StatusInternalServerError, err)
 		return
 	}
 
-	responses.JSON(c, http.StatusOK, pageData)
+	responses.SUCCESS(c, http.StatusOK, pageData)
 }
 
 // Creates a new user.
@@ -141,20 +141,20 @@ func (ctrl *UserController) AdmCreateUser(c *gin.Context) {
 
 	var input forms.AdmCreateUserRequest
 	if err := c.ShouldBindJSON(&input); err != nil {
-		responses.ERROR(c, http.StatusUnprocessableEntity, err)
+		responses.FAIL(c, http.StatusUnprocessableEntity, err)
 		return
 	}
 
 	userCreated, err := ctrl.userService.CreateUser(input)
 	if err != nil {
-		responses.ERROR(c, http.StatusUnprocessableEntity, err)
+		responses.FAIL(c, http.StatusUnprocessableEntity, err)
 		return
 	}
 
 	location := fmt.Sprintf("%s%s/%d", c.Request.Host, c.Request.URL.Path, userCreated.ID)
 	c.Header("Location", location)
 
-	responses.JSON(c, http.StatusCreated, userCreated)
+	responses.SUCCESS(c, http.StatusCreated, userCreated)
 }
 
 // Retrieves a specific user by ID.
@@ -166,7 +166,7 @@ func (ctrl *UserController) AdmGetUser(c *gin.Context) {
 	uidString := c.Param("id")
 	uid, err := strconv.ParseUint(uidString, 10, 32)
 	if err != nil || uid <= 0 {
-		responses.ERROR(c, http.StatusBadRequest, fmt.Errorf("invalid user id"))
+		responses.FAIL(c, http.StatusBadRequest, fmt.Errorf("invalid user id"))
 		return
 	}
 
@@ -175,10 +175,10 @@ func (ctrl *UserController) AdmGetUser(c *gin.Context) {
 	userGotten, err := ctrl.userService.GetUserByID(uint32(uid))
 	if err != nil {
 		if errors.Is(err, apperrors.ErrUserNotFound) {
-			responses.ERROR(c, http.StatusNotFound, err)
+			responses.FAIL(c, http.StatusNotFound, err)
 			return
 		}
-		responses.ERROR(c, http.StatusInternalServerError, err)
+		responses.FAIL(c, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -191,7 +191,7 @@ func (ctrl *UserController) AdmGetUser(c *gin.Context) {
 		IsVerified: userGotten.IsVerified,
 	}
 
-	responses.JSON(c, http.StatusOK, response)
+	responses.SUCCESS(c, http.StatusOK, response)
 
 }
 
@@ -208,7 +208,7 @@ func (ctrl *UserController) AdmUpdateUser(c *gin.Context) {
 	uidString := c.Param("id")
 	uid, err = strconv.ParseUint(uidString, 10, 32)
 	if err != nil || uid <= 0 {
-		responses.ERROR(c, http.StatusBadRequest, fmt.Errorf("invalid user id"))
+		responses.FAIL(c, http.StatusBadRequest, fmt.Errorf("invalid user id"))
 		return
 	}
 
@@ -222,7 +222,7 @@ func (ctrl *UserController) AdmUpdateUser(c *gin.Context) {
 
 	updatedUser, err = ctrl.userService.UpdateUser(uint32(uid), input)
 	if err != nil {
-		responses.ERROR(c, http.StatusInternalServerError, err)
+		responses.FAIL(c, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -235,7 +235,7 @@ func (ctrl *UserController) AdmUpdateUser(c *gin.Context) {
 		IsVerified: updatedUser.IsVerified,
 	}
 
-	responses.JSON(c, http.StatusOK, response)
+	responses.SUCCESS(c, http.StatusOK, response)
 }
 
 // Handles avatar upload (multipart/form-data).
@@ -254,7 +254,7 @@ func (ctrl *UserController) UploadAvatar(c *gin.Context) {
 
 	// 3. Validation
 	if err := form.ValidateForm(); err != nil {
-		responses.ERROR(c, http.StatusBadRequest, err)
+		responses.FAIL(c, http.StatusBadRequest, err)
 		return
 	}
 
@@ -262,11 +262,11 @@ func (ctrl *UserController) UploadAvatar(c *gin.Context) {
 
 	user, err := ctrl.userService.UploadAvatar(uid, form.File)
 	if err != nil {
-		responses.ERROR(c, http.StatusInternalServerError, err)
+		responses.FAIL(c, http.StatusInternalServerError, err)
 		return
 	}
 
-	responses.JSON(c, http.StatusOK, user)
+	responses.SUCCESS(c, http.StatusOK, user)
 }
 
 // Deletes a user from the system.
@@ -280,7 +280,7 @@ func (ctrl *UserController) AdmDeleteUser(c *gin.Context) {
 	uidString := c.Param("id")
 	uid, err := strconv.ParseUint(uidString, 10, 32)
 	if err != nil {
-		responses.ERROR(c, http.StatusBadRequest, fmt.Errorf("invalid ID format"))
+		responses.FAIL(c, http.StatusBadRequest, fmt.Errorf("invalid ID format"))
 		return
 	}
 
@@ -290,15 +290,15 @@ func (ctrl *UserController) AdmDeleteUser(c *gin.Context) {
 	err = ctrl.userService.DeleteUser(targetUID, adminID)
 	if err != nil {
 		if strings.Contains(err.Error(), "SECURITY_ERR") {
-			responses.ERROR(c, http.StatusBadRequest, fmt.Errorf("Security: an administrator cannot delete their own account"))
+			responses.FAIL(c, http.StatusBadRequest, fmt.Errorf("Security: an administrator cannot delete their own account"))
 			return
 		}
 
-		responses.ERROR(c, http.StatusInternalServerError, fmt.Errorf("error while deleting user"))
+		responses.FAIL(c, http.StatusInternalServerError, fmt.Errorf("error while deleting user"))
 		return
 	}
 
-	responses.JSON(c, http.StatusOK, gin.H{
+	responses.SUCCESS(c, http.StatusOK, gin.H{
 		"message": fmt.Sprintf("User %d successfully deleted", targetUID),
 	})
 }
@@ -309,27 +309,9 @@ func (ctrl *UserController) DeleteAvatar(c *gin.Context) {
 
 	err := ctrl.userService.DeleteAvatarFile(uid)
 	if err != nil {
-		responses.ERROR(c, http.StatusInternalServerError, err)
+		responses.FAIL(c, http.StatusInternalServerError, err)
 		return
 	}
 
-	responses.JSON(c, http.StatusOK, err)
-}
-
-// AdmGetResetToken
-func (ctrl *UserController) AdmGetResetToken(c *gin.Context) {
-	adminID := c.GetUint32("user_id")
-	email := c.Param("email")
-
-	logger.User.Warn("Admin %d requested reset token for %s", adminID, email)
-
-	token, err := ctrl.userService.GetResetToken(email)
-	if err != nil {
-		responses.ERROR(c, http.StatusNotFound, err)
-		return
-	}
-
-	responses.JSON(c, http.StatusOK, gin.H{
-		"token": token,
-	})
+	responses.SUCCESS(c, http.StatusOK, err)
 }

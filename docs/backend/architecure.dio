@@ -1,0 +1,196 @@
+<mxfile host="65bd71144e">
+    <diagram id="3xDQYAC0QjJy17-5WhtZ" name="User">
+        <mxGraphModel dx="4285" dy="1455" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2336" pageHeight="1654" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="7" style="edgeStyle=none;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" parent="1" source="2" target="6" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="2" value="&lt;div&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;Register User&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(192, 192, 192), rgb(204, 0, 0));&quot;&gt;/auth/register&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="-2030" y="320" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="-LPKLOolhMpLLHFIRt2M-21" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;" parent="1" source="6" target="-LPKLOolhMpLLHFIRt2M-20" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="6" value="&lt;b&gt;For&lt;font style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;m&lt;/font&gt;&lt;/b&gt;&lt;div&gt;&lt;br&gt;&lt;div style=&quot;color: rgb(192, 192, 192); scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;&lt;font style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;username&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;color: rgb(192, 192, 192); scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;&lt;font style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;mail&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;color: rgb(192, 192, 192); scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;&lt;font style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;password&lt;br style=&quot;color: rgb(192, 192, 192); scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;&lt;/font&gt;&lt;div style=&quot;color: rgb(192, 192, 192); scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;&lt;br style=&quot;color: rgb(192, 192, 192); scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;" parent="1" vertex="1">
+                    <mxGeometry x="-2030" y="410" width="120" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="-LPKLOolhMpLLHFIRt2M-17" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="-LPKLOolhMpLLHFIRt2M-9" target="-LPKLOolhMpLLHFIRt2M-11" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="-2130" y="870" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="-LPKLOolhMpLLHFIRt2M-24" value="true" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="-LPKLOolhMpLLHFIRt2M-17" vertex="1" connectable="0">
+                    <mxGeometry x="-0.3833" y="1" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="-LPKLOolhMpLLHFIRt2M-25" value="&amp;nbsp;Text&amp;nbsp;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="-LPKLOolhMpLLHFIRt2M-17" vertex="1" connectable="0">
+                    <mxGeometry x="-0.4" y="2" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="-LPKLOolhMpLLHFIRt2M-29" value="&amp;nbsp;True&amp;nbsp;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="-LPKLOolhMpLLHFIRt2M-17" vertex="1" connectable="0">
+                    <mxGeometry x="-0.408" y="2" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="-LPKLOolhMpLLHFIRt2M-26" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="-LPKLOolhMpLLHFIRt2M-9" target="-LPKLOolhMpLLHFIRt2M-19" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="-LPKLOolhMpLLHFIRt2M-27" value="&amp;nbsp;false&amp;nbsp;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="-LPKLOolhMpLLHFIRt2M-26" vertex="1" connectable="0">
+                    <mxGeometry x="-0.5" y="-3" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="-LPKLOolhMpLLHFIRt2M-9" value="SMTP_ENABLE" style="rhombus;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="-2055" y="830" width="170" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="-LPKLOolhMpLLHFIRt2M-39" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="-LPKLOolhMpLLHFIRt2M-11" target="-LPKLOolhMpLLHFIRt2M-38" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="-LPKLOolhMpLLHFIRt2M-11" value="Send email" style="rounded=1;whiteSpace=wrap;html=1;shadow=1;" parent="1" vertex="1">
+                    <mxGeometry x="-2180" y="930" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="-LPKLOolhMpLLHFIRt2M-40" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="-LPKLOolhMpLLHFIRt2M-19" target="-LPKLOolhMpLLHFIRt2M-38" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="-LPKLOolhMpLLHFIRt2M-19" value="Skip email&lt;div&gt;wihout error&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="-1880" y="930" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="-LPKLOolhMpLLHFIRt2M-23" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;" parent="1" source="-LPKLOolhMpLLHFIRt2M-20" target="-LPKLOolhMpLLHFIRt2M-22" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="-LPKLOolhMpLLHFIRt2M-20" value="Create User&lt;div&gt;&lt;font color=&quot;#ffffff&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;font&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(192, 192, 192));&quot;&gt;Username,&lt;/font&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(192, 192, 192));&quot;&gt;&lt;font&gt;&amp;nbsp;&lt;/font&gt;&lt;span style=&quot;background-color: transparent; color: rgb(192, 192, 192);&quot;&gt;&lt;font&gt;email,&amp;nbsp;&lt;/font&gt;&lt;/span&gt;&lt;/font&gt;&lt;span style=&quot;background-color: transparent; color: rgb(192, 192, 192);&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&lt;font&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(192, 192, 192));&quot;&gt;hashedPassword,&lt;/font&gt;&lt;/font&gt;&lt;/font&gt;&lt;/span&gt;&lt;/font&gt;&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;Avatar:&amp;nbsp; --&amp;gt; &quot;users/default.png&quot;,&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(192, 192, 192));&quot;&gt;RoleUser,...&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&amp;nbsp;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 179, 102));&quot;&gt;IsVerified = false&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="-2085" y="560" width="230" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="-LPKLOolhMpLLHFIRt2M-28" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="-LPKLOolhMpLLHFIRt2M-22" target="-LPKLOolhMpLLHFIRt2M-9" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="-LPKLOolhMpLLHFIRt2M-22" value="&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;div style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30); color: rgb(192, 192, 192);&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;Generat token&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30); text-align: left; color: rgb(192, 192, 192);&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;PasswordReset = token&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;color: rgb(192, 192, 192); scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30); text-align: left;&quot;&gt;&lt;br style=&quot;color: rgb(192, 192, 192); scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;&lt;/div&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="-2070" y="720" width="200" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="-LPKLOolhMpLLHFIRt2M-30" value="api answer&lt;div style=&quot;text-align: left;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;user_id&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;message&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="-2170" y="1140" width="120" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="-LPKLOolhMpLLHFIRt2M-42" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="-LPKLOolhMpLLHFIRt2M-38" target="-LPKLOolhMpLLHFIRt2M-30" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="9" value="&amp;nbsp;Prod&amp;nbsp;&lt;br&gt;or&lt;br&gt;Dev" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="-LPKLOolhMpLLHFIRt2M-42">
+                    <mxGeometry x="-0.4095" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="-LPKLOolhMpLLHFIRt2M-43" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="-LPKLOolhMpLLHFIRt2M-38" target="-LPKLOolhMpLLHFIRt2M-41" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="8" value="&amp;nbsp;Test&amp;nbsp;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="-LPKLOolhMpLLHFIRt2M-43">
+                    <mxGeometry x="-0.555" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="-LPKLOolhMpLLHFIRt2M-38" value="APP_ENV" style="rhombus;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="-2040" y="1040" width="150" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="-LPKLOolhMpLLHFIRt2M-41" value="api answer&lt;div style=&quot;text-align: left;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;user_id&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;message&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(204, 0, 0));&quot;&gt;token&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="-1900" y="1140" width="120" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="19" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;Registration Flow&lt;/font&gt;&lt;/h1&gt;&lt;p&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;span style=&quot;background-color: transparent; color: rgb(192, 192, 192);&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;User POSTs /register {username, email, password}&lt;/font&gt;&lt;/span&gt;&lt;/li&gt;&lt;ul&gt;&lt;li&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;creates user with IsVerified=false&lt;/font&gt;&lt;/li&gt;&lt;li&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;backend sends confirmation email with frontend link:&lt;/font&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 255));&quot;&gt;https://frontend/register/confirm?token=abc123&lt;/font&gt;&lt;/li&gt;&lt;/ul&gt;&lt;li&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;User clicks frontend link&lt;/font&gt;&lt;/li&gt;&lt;ul&gt;&lt;li&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;frontend calls POST /register/confirm {token}&lt;/font&gt;&lt;/li&gt;&lt;li&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;backend validates token and sets IsVerified=true&lt;/font&gt;&lt;/li&gt;&lt;/ul&gt;&lt;li&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;Optional: POST /register/request_confirmation {email}&lt;/font&gt;&lt;/li&gt;&lt;ul&gt;&lt;li&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;re-sends confirmation email if user did not receive it&lt;/font&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/ul&gt;&lt;p&gt;&lt;/p&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry x="-1780" y="30" width="400" height="240" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+    <diagram id="yHOX4tz7DHjwfyBpmQtD" name="Composer">
+        <mxGraphModel dx="1072" dy="471" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2336" pageHeight="1654" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="h811QaRlDkrdwX6mj0lS-1" value="" style="edgeStyle=none;html=1;" parent="1" source="h811QaRlDkrdwX6mj0lS-2" target="h811QaRlDkrdwX6mj0lS-22" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="h811QaRlDkrdwX6mj0lS-2" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&lt;b style=&quot;&quot;&gt;Composer&lt;/b&gt;&lt;br&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;ID&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;&amp;nbsp;&lt;/div&gt;&lt;div&gt;Name&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;&amp;nbsp;&lt;/div&gt;&lt;div&gt;SafeName&amp;nbsp; &amp;nbsp;&amp;nbsp;&lt;/div&gt;&lt;div&gt;PicturePath&amp;nbsp;&lt;/div&gt;&lt;div&gt;ExternalURL&amp;nbsp;&lt;/div&gt;&lt;div&gt;Epoch&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;&lt;/div&gt;&lt;div&gt;IsVerified&amp;nbsp;&amp;nbsp;&lt;/div&gt;&lt;div&gt;CreatedAt&amp;nbsp; &amp;nbsp;&lt;/div&gt;&lt;div&gt;UpdatedAt&lt;/div&gt;&lt;/div&gt;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#bac8d3;strokeColor=#23445d;" parent="1" vertex="1">
+                    <mxGeometry x="282.5" y="610" width="170" height="200" as="geometry"/>
+                </mxCell>
+                <mxCell id="h811QaRlDkrdwX6mj0lS-3" style="edgeStyle=none;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="h811QaRlDkrdwX6mj0lS-4" target="h811QaRlDkrdwX6mj0lS-17" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="h811QaRlDkrdwX6mj0lS-4" value="Create" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#b0e3e6;strokeColor=#0e8088;" parent="1" vertex="1">
+                    <mxGeometry x="307.5" y="130" width="120" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="h811QaRlDkrdwX6mj0lS-5" style="edgeStyle=none;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.719;entryY=0.002;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="h811QaRlDkrdwX6mj0lS-6" target="h811QaRlDkrdwX6mj0lS-2" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="h811QaRlDkrdwX6mj0lS-6" value="&lt;div&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;IsVerified = &lt;/span&gt;&lt;b style=&quot;background-color: transparent;&quot;&gt;False&lt;/b&gt;&lt;/div&gt;" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#b1ddf0;strokeColor=#10739e;" parent="1" vertex="1">
+                    <mxGeometry x="430" y="470" width="135" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="h811QaRlDkrdwX6mj0lS-7" value="" style="edgeStyle=none;html=1;" parent="1" source="h811QaRlDkrdwX6mj0lS-9" target="h811QaRlDkrdwX6mj0lS-11" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="h811QaRlDkrdwX6mj0lS-8" value="" style="edgeStyle=none;html=1;" parent="1" source="h811QaRlDkrdwX6mj0lS-9" target="h811QaRlDkrdwX6mj0lS-13" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="h811QaRlDkrdwX6mj0lS-9" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;Moderator &lt;br&gt;or&lt;br&gt;Admin&amp;nbsp;" style="rhombus;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=#f8cecc;gradientColor=none;strokeColor=#b85450;" parent="1" vertex="1">
+                    <mxGeometry x="295" y="380" width="145" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="h811QaRlDkrdwX6mj0lS-10" style="edgeStyle=none;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="h811QaRlDkrdwX6mj0lS-11" target="h811QaRlDkrdwX6mj0lS-15" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="h811QaRlDkrdwX6mj0lS-11" value="Yes" style="whiteSpace=wrap;html=1;verticalAlign=top;fillColor=#f8cecc;strokeColor=#b85450;gradientColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="195" y="412.5" width="70" height="25" as="geometry"/>
+                </mxCell>
+                <mxCell id="h811QaRlDkrdwX6mj0lS-12" style="edgeStyle=none;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="h811QaRlDkrdwX6mj0lS-13" target="h811QaRlDkrdwX6mj0lS-6" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="h811QaRlDkrdwX6mj0lS-13" value="No" style="whiteSpace=wrap;html=1;verticalAlign=top;fillColor=#f8cecc;strokeColor=#b85450;gradientColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="462.5" y="412.5" width="70" height="27.5" as="geometry"/>
+                </mxCell>
+                <mxCell id="h811QaRlDkrdwX6mj0lS-14" style="edgeStyle=none;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;" parent="1" source="h811QaRlDkrdwX6mj0lS-15" target="h811QaRlDkrdwX6mj0lS-2" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="375" y="610" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="h811QaRlDkrdwX6mj0lS-15" value="&lt;div&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;IsVerified = True or&amp;nbsp;&lt;/span&gt;&lt;b style=&quot;background-color: transparent;&quot;&gt;False&lt;/b&gt;&lt;/div&gt;" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#b1ddf0;strokeColor=#10739e;" parent="1" vertex="1">
+                    <mxGeometry x="160" y="470" width="135" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="h811QaRlDkrdwX6mj0lS-16" style="edgeStyle=none;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="h811QaRlDkrdwX6mj0lS-17" target="h811QaRlDkrdwX6mj0lS-9" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="h811QaRlDkrdwX6mj0lS-17" value="&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;Name&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;ExternalURL&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;Epoch&amp;nbsp;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;File&amp;nbsp;&lt;/font&gt;&lt;/div&gt;" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#b1ddf0;strokeColor=#10739e;" parent="1" vertex="1">
+                    <mxGeometry x="300" y="250" width="135" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="h811QaRlDkrdwX6mj0lS-18" value="Picture" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+                    <mxGeometry x="215" y="1090" width="80" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="h811QaRlDkrdwX6mj0lS-19" value="" style="edgeStyle=none;html=1;" parent="1" source="h811QaRlDkrdwX6mj0lS-22" target="h811QaRlDkrdwX6mj0lS-23" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="h811QaRlDkrdwX6mj0lS-20" value="" style="edgeStyle=none;html=1;" parent="1" source="h811QaRlDkrdwX6mj0lS-22" target="h811QaRlDkrdwX6mj0lS-23" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="h811QaRlDkrdwX6mj0lS-21" value="" style="edgeStyle=none;html=1;" parent="1" source="h811QaRlDkrdwX6mj0lS-22" target="h811QaRlDkrdwX6mj0lS-24" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="h811QaRlDkrdwX6mj0lS-22" value="/app/storage" style="whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;rounded=1;" parent="1" vertex="1">
+                    <mxGeometry x="307.5" y="850" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="h811QaRlDkrdwX6mj0lS-23" value="Composer1" style="whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;rounded=1;" parent="1" vertex="1">
+                    <mxGeometry x="195" y="990" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="h811QaRlDkrdwX6mj0lS-24" value="Composer2" style="whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;rounded=1;" parent="1" vertex="1">
+                    <mxGeometry x="342.5" y="990" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="h811QaRlDkrdwX6mj0lS-25" value="Picture" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+                    <mxGeometry x="362.5" y="1090" width="80" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="h811QaRlDkrdwX6mj0lS-26" style="edgeStyle=none;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="h811QaRlDkrdwX6mj0lS-23" target="h811QaRlDkrdwX6mj0lS-18" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="h811QaRlDkrdwX6mj0lS-27" style="edgeStyle=none;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="h811QaRlDkrdwX6mj0lS-24" target="h811QaRlDkrdwX6mj0lS-25" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

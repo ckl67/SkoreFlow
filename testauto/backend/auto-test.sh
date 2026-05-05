@@ -53,8 +53,12 @@ Usage:
 
 "
 
-# --- GLOBAL VARIABLES ---
-export TEST_PASSWORD_RESET=false
+# --- BACKEND ENVIRONNEMENT VARIABLES ---
+
+export APP_ENV=test
+export SMTP_ENABLED=false
+
+# --- SHELL GLOBAL VARIABLES ---
 
 export RUN_USERS=false
 export RUN_SCORES=false
@@ -72,7 +76,7 @@ export ROLE_ADMINISTRATOR=2
 # --- ARGUMENT PARSING ---
 for arg in "$@"; do
 	case $arg in
-	--pwreset) export TEST_PASSWORD_RESET=true ;;
+	--pwreset) export SMTP_ENABLED=true ;;
 	--clean) export CLEAN_DB_FILES=true ;;
 	--users) export RUN_USERS=true ;;
 	--scores) export RUN_SCORES=true ;;

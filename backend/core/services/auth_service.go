@@ -137,7 +137,7 @@ func (s *AuthService) ConfirmRegistration(token string) (*models.User, error) {
 
 	// 1. Retrieve user by token
 	if err := user.FindByToken(s.db, token); err != nil {
-		return nil, apperrors.ErrAuthInvalideToken
+		return nil, apperrors.ErrAuthInvalidToken
 	}
 
 	// 2. Validate expiration
@@ -158,29 +158,32 @@ func (s *AuthService) ConfirmRegistration(token string) (*models.User, error) {
 }
 
 // RequestRegistrationConfirmation
-// Sends a registration confirmation email.
+// Send a registration confirmation email.
 // Note:
 // - Silent failure if user not found (security best practice)
-func (s *AuthService) RequestRegistrationConfirmation(email string) error {
+func (s *AuthService) RequestRegistrationConfirmation(email string) (string, error) {
 	var user models.User
 	email = format.SanitizeUserEmail(email)
 
 	if err := user.FindByEmail(s.db, email); err != nil {
 		logger.Login.Warn("User not found %s", email)
-		return nil
+		return "", nil
 	}
 
 	if err := user.GeneratePasswordResetToken(); err != nil {
-		return nil
+		return "", nil
 	}
 
 	if err := user.Update(s.db); err != nil {
-		return err
+		return "", err
 	}
 
 	cfg := config.Config()
+
 	if !cfg.Smtp.Enabled {
-		return apperrors.ErrSmtpNotConfigured
+		// In order to authorize Register without to sent email
+		logger.Login.Info("SMTP disabled, skipping email send for %s", email)
+		return user.PasswordReset, nil
 	}
 
 	htmlBody := s.buildRegistrationConfirmationBodyHTML(
@@ -190,10 +193,10 @@ func (s *AuthService) RequestRegistrationConfirmation(email string) error {
 	)
 
 	if err := mail.SendHTMLMail(email, "Confirm Your SkoreFlow Registration", htmlBody); err != nil {
-		return apperrors.ErrSmtpFailed
+		return user.PasswordReset, apperrors.ErrSmtpFailed
 	}
 
-	return nil
+	return user.PasswordReset, nil
 }
 
 // ForgotPassword
@@ -247,7 +250,7 @@ func (s *AuthService) ResetPassword(token string, newPassword string) (*models.U
 	// 1. Retrieve user by token
 	if err := user.FindByToken(s.db, token); err != nil {
 		logger.Login.Warn("Invalid reset token")
-		return nil, apperrors.ErrAuthInvalideToken
+		return nil, apperrors.ErrAuthInvalidToken
 	}
 
 	// 2. Validate expiration
@@ -279,7 +282,7 @@ func (s *AuthService) ValidateResetToken(token string) error {
 
 	if err := user.FindByToken(s.db, token); err != nil {
 		logger.Login.Warn("ValidateResetToken: invalid token")
-		return apperrors.ErrAuthInvalideToken
+		return apperrors.ErrAuthInvalidToken
 	}
 
 	if time.Now().After(user.PasswordResetExpire) {
@@ -315,4 +318,40 @@ func (s *AuthService) buildRegistrationConfirmationBodyHTML(token string, Fronte
 		"<p>Click to validate your registration (link expires in 1 hour): <a href='%s'>Confirm</a></p>",
 		link,
 	)
+}
+
+// GetResetToken
+func (s *AuthService) GetResetToken(val_email string) (string, error) {
+	var user models.User
+
+	email := format.SanitizeUserEmail(val_email)
+
+	exists, err := new(models.User).ExistsByEmail(s.db, email)
+	if err != nil {
+		return "", nil
+	}
+	if exists {
+		return "", apperrors.ErrUserEmailAlreadyUsed
+	}
+
+	return user.PasswordReset, nil
+}
+
+// SetExpireToken
+func (s *AuthService) SetExpireToken(val_email string) error {
+
+	var user models.User
+
+	email := format.SanitizeUserEmail(val_email)
+
+	if err := user.FindByEmail(s.db, email); err != nil {
+		logger.Login.Warn("User not found %s", email)
+		return err
+	}
+
+	s.db.Model(&models.User{}).
+		Where("email = ?", email).
+		Update("password_reset_expire", time.Now().Add(-24*time.Hour))
+
+	return nil
 }

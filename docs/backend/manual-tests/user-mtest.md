@@ -27,14 +27,12 @@ from the user perspective, we will test the following functionalities:
 - Profile
 - Avatar
 
-## Variables in API Calls
-
-## Registration
+### Registration
 
 User POSTs /register {username, email, password}
 
 - creates user with IsVerified=false
-- backend sends confirmation email with frontend link: "https://frontend/register/confirm?token=abc123"
+- backend sends confirmation email with frontend link: <https://frontend/register/confirm?token=abc123>
   User clicks frontend link
 - frontend calls POST /register/confirm {token}
 - backend validates token and sets IsVerified=true
@@ -73,7 +71,7 @@ curl -X POST http://localhost:8080/api/register/rqconfirm \
   }" | jq
 ```
 
-## Login
+### Login
 
 To log in and obtain a JWT token for authenticated requests, you can use the following command:
 
@@ -104,7 +102,7 @@ To decode the payload of a JWT token, you can use the following command:
 echo "$TOKEN_USER" | cut -d '.' -f2 | base64 -d 2>/dev/null | jq
 ```
 
-## Password Reset
+### Password Reset
 
 To request a password reset, you can use the following command:
 
@@ -148,7 +146,7 @@ TOKEN_USER=$(curl -s -X POST http://localhost:8080/api/login \
 echo "JWT Token: $TOKEN_USER"
 ```
 
-## Profile
+### Profile
 
 To access the user's profile information, you can use the following command with the JWT token obtained from the login step:
 
@@ -156,7 +154,7 @@ To access the user's profile information, you can use the following command with
 curl -H "Authorization: Bearer $TOKEN_USER" http://localhost:8080/api/me | jq
 ```
 
-## Avatar
+### Avatar
 
 To upload an avatar for the user, you can use the following command:
 
@@ -169,7 +167,7 @@ curl -X POST http://localhost:8080/api/me/avatar \
  -F "avatar=@$AVATAR_FILE" | jq
 ```
 
-## user update profile
+### user update profile
 
 To update the user's profile information, you can use the following command with the JWT token obtained from the login step:
 
@@ -223,7 +221,7 @@ echo "JWT Token: $TOKEN_ADMIN"
 
 ```
 
-## User creation by admin
+### User creation by admin
 
 To create a new user as an admin, you can use the following command:
 
@@ -248,7 +246,7 @@ curl -i -X POST http://localhost:8080/api/admin/createuser \
 
 ```
 
-## User listing by admin
+### User listing by admin
 
 To list all users as an admin, you can use the following command:
 
@@ -256,7 +254,7 @@ To list all users as an admin, you can use the following command:
 curl -H "Authorization: Bearer $TOKEN_ADMIN" http://localhost:8080/api/admin/users/all | jq
 ```
 
-## User details by admin
+### User details by admin
 
 To get the details of a specific user as an admin, you can use the following command, replacing `<USER_ID>` with the actual ID of the user you want to retrieve:
 
@@ -264,7 +262,7 @@ To get the details of a specific user as an admin, you can use the following com
 curl -H "Authorization: Bearer $TOKEN_ADMIN" http://localhost:8080/api/admin/users/2 | jq
 ```
 
-## User update by admin
+### User update by admin
 
 To update a user's information as an admin, you can use the following command, replacing `<USER_ID>` with the actual ID of the user you want to update:
 
@@ -280,7 +278,7 @@ curl -X PUT \
 http://localhost:8080/api/admin/users/4 | jq
 ```
 
-## User deletion by admin
+### User deletion by admin
 
 To delete a user as an admin, you can use the following command, replacing `<USER_ID>` with the actual ID of the user you want to delete:
 
@@ -305,12 +303,23 @@ go run cmd/cli/main.go -cleanup-avatars
 
 ```shell
 
+
+ADMIN_EMAIL="admin@admin.com"
+ADMIN_PASSWORD="skoreflow"
+TOKEN_ADMIN=$(curl -s -X POST http://localhost:8080/api/login \
+ -H "Content-Type: application/json" \
+ -d "{
+    \"email\":\"${ADMIN_EMAIL}\",
+    \"password\":\"${ADMIN_PASSWORD}\"
+  }" | jq -r '.token')
+
+
 curl -H "Authorization: Bearer $TOKEN_ADMIN" "http://localhost:8080/api/admin/users" | jq
 
-curl -H "Authorization: Bearer $TOKEN_ADMIN" "http://localhost:8080/api/admin/userspage?page=1&limit=10" | jq
+curl -H "Authorization: Bearer $TOKEN_ADMIN" "http://localhost:8080/api/admin/users?page=1&limit=4" | jq
 
-curl -H "Authorization: Bearer $TOKEN_ADMIN" "http://localhost:8080/api/admin/userspage?page=1&limit=2" | jq
-curl -H "Authorization: Bearer $TOKEN_ADMIN" "http://localhost:8080/api/admin/userspage?page=2&limit=2" | jq
+curl -H "Authorization: Bearer $TOKEN_ADMIN" "http://localhost:8080/api/admin/users?page=1&limit=2" | jq
+curl -H "Authorization: Bearer $TOKEN_ADMIN" "http://localhost:8080/api/admin/users?page=2&limit=2" | jq
 
 
 ```

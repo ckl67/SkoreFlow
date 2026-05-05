@@ -25,7 +25,7 @@ var (
 	// Auth
 	ErrAuthInvalidCredentials  = errors.New("Invalid Credential")
 	ErrMissingToken            = errors.New("Missing Token")
-	ErrAuthInvalideToken       = errors.New("Invalid Token")
+	ErrAuthInvalidToken        = errors.New("Invalid Token")
 	ErrAuthTokenExpired        = errors.New("Token Expired")
 	ErrAuthTokenInvalidExpired = errors.New("Token Invalid or Expired")
 

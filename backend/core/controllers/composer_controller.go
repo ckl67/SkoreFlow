@@ -49,13 +49,13 @@ func (ctrl *ComposerController) CreateComposer(c *gin.Context) {
 	// 2. Form binding
 	var form forms.CreateComposerRequest
 	if err := c.ShouldBind(&form); err != nil {
-		responses.ERROR(c, http.StatusBadRequest, err)
+		responses.FAIL(c, http.StatusBadRequest, err)
 		return
 	}
 
 	// 3. Validation
 	if err := form.ValidateForm(); err != nil {
-		responses.ERROR(c, http.StatusBadRequest, err)
+		responses.FAIL(c, http.StatusBadRequest, err)
 		return
 	}
 
@@ -65,19 +65,19 @@ func (ctrl *ComposerController) CreateComposer(c *gin.Context) {
 		logger.Composer.Error("(CreateComposer Controller) Error returned by service: %v", err)
 		switch err {
 		case apperrors.ErrComposerAlreadyExists:
-			responses.ERROR(c, http.StatusConflict, err) // 409
+			responses.FAIL(c, http.StatusConflict, err) // 409
 		case apperrors.ErrAccessForbidden:
-			responses.ERROR(c, http.StatusForbidden, err) // 403
+			responses.FAIL(c, http.StatusForbidden, err) // 403
 		case apperrors.ErrImageFormatInvalid:
-			responses.ERROR(c, http.StatusBadRequest, err) // 400
+			responses.FAIL(c, http.StatusBadRequest, err) // 400
 		default:
-			responses.ERROR(c, http.StatusInternalServerError, err)
+			responses.FAIL(c, http.StatusInternalServerError, err)
 		}
 		return
 	}
 
 	// 5. Response
-	responses.JSON(c, http.StatusCreated, gin.H{
+	responses.SUCCESS(c, http.StatusCreated, gin.H{
 		"message": "Composer created successfully",
 	})
 }
@@ -88,7 +88,7 @@ func (ctrl *ComposerController) GetComposersPage(c *gin.Context) {
 
 	var form forms.GetComposersPageRequest
 	if err := c.ShouldBind(&form); err != nil {
-		responses.ERROR(c, http.StatusBadRequest, err)
+		responses.FAIL(c, http.StatusBadRequest, err)
 		return
 	}
 
@@ -97,11 +97,11 @@ func (ctrl *ComposerController) GetComposersPage(c *gin.Context) {
 
 	pageData, err := ctrl.service.GetComposersPage(uid, form)
 	if err != nil {
-		responses.ERROR(c, http.StatusInternalServerError, err)
+		responses.FAIL(c, http.StatusInternalServerError, err)
 		return
 	}
 
-	responses.JSON(c, http.StatusOK, pageData)
+	responses.SUCCESS(c, http.StatusOK, pageData)
 }
 
 // GetComposer retrieves detailed information for a single composer
@@ -109,7 +109,7 @@ func (ctrl *ComposerController) GetComposer(c *gin.Context) {
 	idParam := c.Param("id")
 	composerID, err := strconv.ParseUint(idParam, 10, 32)
 	if err != nil {
-		responses.ERROR(c, http.StatusBadRequest, apperrors.ErrComposerInvalidID)
+		responses.FAIL(c, http.StatusBadRequest, apperrors.ErrComposerInvalidID)
 		return
 	}
 
@@ -117,14 +117,14 @@ func (ctrl *ComposerController) GetComposer(c *gin.Context) {
 	if err != nil {
 		switch err {
 		case apperrors.ErrComposerNotFound:
-			responses.ERROR(c, http.StatusNotFound, err)
+			responses.FAIL(c, http.StatusNotFound, err)
 		default:
-			responses.ERROR(c, http.StatusInternalServerError, err)
+			responses.FAIL(c, http.StatusInternalServerError, err)
 		}
 		return
 	}
 
-	responses.JSON(c, http.StatusOK, composer)
+	responses.SUCCESS(c, http.StatusOK, composer)
 }
 
 // Merge Composer from source to target in all the scores
@@ -135,7 +135,7 @@ func (ctrl *ComposerController) MergeComposers(c *gin.Context) {
 
 	var form forms.GetComposersMergeRequest
 	if err := c.ShouldBindJSON(&form); err != nil {
-		responses.ERROR(c, http.StatusBadRequest, err)
+		responses.FAIL(c, http.StatusBadRequest, err)
 		return
 	}
 
@@ -146,16 +146,16 @@ func (ctrl *ComposerController) MergeComposers(c *gin.Context) {
 	if err != nil {
 		switch err {
 		case apperrors.ErrComposerMerging:
-			responses.ERROR(c, http.StatusBadRequest, err)
+			responses.FAIL(c, http.StatusBadRequest, err)
 		case apperrors.ErrComposerNotFound:
-			responses.ERROR(c, http.StatusNotFound, err)
+			responses.FAIL(c, http.StatusNotFound, err)
 		default:
-			responses.ERROR(c, http.StatusInternalServerError, err)
+			responses.FAIL(c, http.StatusInternalServerError, err)
 		}
 		return
 	}
 
-	responses.JSON(c, http.StatusOK, gin.H{"message": "Composer merging successfully"})
+	responses.SUCCESS(c, http.StatusOK, gin.H{"message": "Composer merging successfully"})
 
 }
 
@@ -168,14 +168,14 @@ func (ctrl *ComposerController) UpdateComposer(c *gin.Context) {
 	idParam := c.Param("id")
 	composerID, err := strconv.ParseUint(idParam, 10, 32)
 	if err != nil {
-		responses.ERROR(c, http.StatusBadRequest, errors.New("Composer ID must be a valid number"))
+		responses.FAIL(c, http.StatusBadRequest, errors.New("Composer ID must be a valid number"))
 		return
 	}
 
 	// 2. Form binding (metadata + optional file)
 	var form forms.UpdateComposerRequest
 	if err := c.ShouldBind(&form); err != nil {
-		responses.ERROR(c, http.StatusBadRequest, err)
+		responses.FAIL(c, http.StatusBadRequest, err)
 		return
 	}
 
@@ -186,18 +186,17 @@ func (ctrl *ComposerController) UpdateComposer(c *gin.Context) {
 	if err != nil {
 		switch {
 		case errors.Is(err, apperrors.ErrComposerNotFound):
-			responses.ERROR(c, http.StatusNotFound, err)
+			responses.FAIL(c, http.StatusNotFound, err)
 		case errors.Is(err, apperrors.ErrAccessForbidden):
-			responses.ERROR(c, http.StatusForbidden, err)
+			responses.FAIL(c, http.StatusForbidden, err)
 		default:
-			responses.ERROR(c, http.StatusInternalServerError, err)
+			responses.FAIL(c, http.StatusInternalServerError, err)
 		}
 		return
 	}
 
 	// 4. Success response
-	responses.JSON(c, http.StatusOK, gin.H{
-		"status":  "success",
+	responses.SUCCESS(c, http.StatusOK, gin.H{
 		"message": fmt.Sprintf("Composer '%s' (ID: %d) updated", updatedComposer.Name, updatedComposer.ID),
 		"id":      composerID,
 	})
@@ -213,7 +212,7 @@ func (ctrl *ComposerController) DeleteComposer(c *gin.Context) {
 	idParam := c.Param("id")
 	composerID, err := strconv.ParseUint(idParam, 10, 32)
 	if err != nil {
-		responses.ERROR(c, http.StatusBadRequest, errors.New("invalid ID"))
+		responses.FAIL(c, http.StatusBadRequest, errors.New("invalid ID"))
 		return
 	}
 
@@ -222,23 +221,23 @@ func (ctrl *ComposerController) DeleteComposer(c *gin.Context) {
 	if err != nil {
 		switch {
 		case errors.Is(err, apperrors.ErrFileDeletion):
-			responses.JSON(c, http.StatusOK, gin.H{
+			responses.SUCCESS(c, http.StatusOK, gin.H{
 				"message": "Composer deleted, but some files could not be removed",
 			})
 		case errors.Is(err, apperrors.ErrFileNotFound):
-			responses.JSON(c, http.StatusOK, gin.H{
+			responses.SUCCESS(c, http.StatusOK, gin.H{
 				"message": "Composer deleted, but some files were missing",
 			})
 		case errors.Is(err, apperrors.ErrComposerNotFound):
-			responses.ERROR(c, http.StatusNotFound, err)
+			responses.FAIL(c, http.StatusNotFound, err)
 		case errors.Is(err, apperrors.ErrAccessForbidden):
-			responses.ERROR(c, http.StatusForbidden, err)
+			responses.FAIL(c, http.StatusForbidden, err)
 		default:
-			responses.ERROR(c, http.StatusInternalServerError, err)
+			responses.FAIL(c, http.StatusInternalServerError, err)
 		}
 		return
 	}
 
 	// 3. Success response
-	responses.JSON(c, http.StatusOK, gin.H{"message": "Composer deleted successfully"})
+	responses.SUCCESS(c, http.StatusOK, gin.H{"message": "Composer deleted successfully"})
 }

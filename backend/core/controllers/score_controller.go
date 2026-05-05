@@ -52,14 +52,14 @@ func (ctrl *ScoreController) CreateScore(c *gin.Context) {
 
 	var form forms.CreateScoreRequest
 	if err := c.ShouldBind(&form); err != nil {
-		responses.ERROR(c, http.StatusBadRequest, err)
+		responses.FAIL(c, http.StatusBadRequest, err)
 		return
 	}
 
 	logger.Score.Debug("(CreateScore): Form raw: %+v", c.Request.Form)
 
 	if err := form.ValidateForm(); err != nil {
-		responses.ERROR(c, http.StatusBadRequest, err)
+		responses.FAIL(c, http.StatusBadRequest, err)
 		return
 	}
 
@@ -67,14 +67,14 @@ func (ctrl *ScoreController) CreateScore(c *gin.Context) {
 	if err != nil {
 		switch {
 		case errors.Is(err, apperrors.ErrScoreAlreadyExists):
-			responses.ERROR(c, http.StatusConflict, err)
+			responses.FAIL(c, http.StatusConflict, err)
 		default:
-			responses.ERROR(c, http.StatusInternalServerError, err)
+			responses.FAIL(c, http.StatusInternalServerError, err)
 		}
 		return
 	}
 
-	responses.JSON(c, http.StatusAccepted, gin.H{
+	responses.SUCCESS(c, http.StatusAccepted, gin.H{
 		"message": "File uploaded successfully",
 	})
 }
@@ -91,18 +91,18 @@ func (ctrl *ScoreController) UpdateScore(c *gin.Context) {
 	idParam := c.Param("id")
 	scoreID, err := strconv.ParseUint(idParam, 10, 32)
 	if err != nil {
-		responses.ERROR(c, http.StatusBadRequest, errors.New("score ID must be a valid number"))
+		responses.FAIL(c, http.StatusBadRequest, errors.New("score ID must be a valid number"))
 		return
 	}
 
 	var form forms.UpdateScoreRequest
 	if err := c.ShouldBind(&form); err != nil {
-		responses.ERROR(c, http.StatusBadRequest, err)
+		responses.FAIL(c, http.StatusBadRequest, err)
 		return
 	}
 
 	if err := form.ValidateForm(); err != nil {
-		responses.ERROR(c, http.StatusBadRequest, err)
+		responses.FAIL(c, http.StatusBadRequest, err)
 		return
 	}
 
@@ -112,19 +112,18 @@ func (ctrl *ScoreController) UpdateScore(c *gin.Context) {
 	if err != nil {
 		switch {
 		case errors.Is(err, apperrors.ErrScoreNotFound):
-			responses.ERROR(c, http.StatusNotFound, err)
+			responses.FAIL(c, http.StatusNotFound, err)
 		case errors.Is(err, apperrors.ErrAccessForbidden):
-			responses.ERROR(c, http.StatusForbidden, err)
+			responses.FAIL(c, http.StatusForbidden, err)
 		case errors.Is(err, apperrors.ErrInvalidDate):
-			responses.ERROR(c, http.StatusBadRequest, err)
+			responses.FAIL(c, http.StatusBadRequest, err)
 		default:
-			responses.ERROR(c, http.StatusInternalServerError, err)
+			responses.FAIL(c, http.StatusInternalServerError, err)
 		}
 		return
 	}
 
-	responses.JSON(c, http.StatusOK, gin.H{
-		"status":  "success",
+	responses.SUCCESS(c, http.StatusOK, gin.H{
 		"message": fmt.Sprintf("Score '%s' (ID: %d) updated", updatedScore.ScoreName, updatedScore.ID),
 		"id":      scoreID,
 	})
@@ -143,7 +142,7 @@ func (ctrl *ScoreController) DeleteScore(c *gin.Context) {
 	idParam := c.Param("id")
 	scoreID, err := strconv.ParseUint(idParam, 10, 32)
 	if err != nil {
-		responses.ERROR(c, http.StatusBadRequest, errors.New("invalid ID"))
+		responses.FAIL(c, http.StatusBadRequest, errors.New("invalid ID"))
 		return
 	}
 
@@ -151,24 +150,24 @@ func (ctrl *ScoreController) DeleteScore(c *gin.Context) {
 	if err != nil {
 		switch {
 		case errors.Is(err, apperrors.ErrFileDeletion):
-			responses.JSON(c, http.StatusOK, gin.H{
+			responses.SUCCESS(c, http.StatusOK, gin.H{
 				"message": "Score deleted, but some files could not be removed",
 			})
 		case errors.Is(err, apperrors.ErrFileNotFound):
-			responses.JSON(c, http.StatusOK, gin.H{
+			responses.SUCCESS(c, http.StatusOK, gin.H{
 				"message": "Score deleted but some files were missing",
 			})
 		case errors.Is(err, apperrors.ErrScoreNotFound):
-			responses.ERROR(c, http.StatusNotFound, err)
+			responses.FAIL(c, http.StatusNotFound, err)
 		case errors.Is(err, apperrors.ErrAccessForbidden):
-			responses.ERROR(c, http.StatusForbidden, err)
+			responses.FAIL(c, http.StatusForbidden, err)
 		default:
-			responses.ERROR(c, http.StatusInternalServerError, err)
+			responses.FAIL(c, http.StatusInternalServerError, err)
 		}
 		return
 	}
 
-	responses.JSON(c, http.StatusOK, gin.H{"message": "Score deleted successfully"})
+	responses.SUCCESS(c, http.StatusOK, gin.H{"message": "Score deleted successfully"})
 }
 
 // GetScore
@@ -181,7 +180,7 @@ func (ctrl *ScoreController) GetScore(c *gin.Context) {
 	idParam := c.Param("id")
 	scoreID, err := strconv.ParseUint(idParam, 10, 32)
 	if err != nil {
-		responses.ERROR(c, http.StatusBadRequest, apperrors.ErrScoreInvalidID)
+		responses.FAIL(c, http.StatusBadRequest, apperrors.ErrScoreInvalidID)
 		return
 	}
 
@@ -189,16 +188,16 @@ func (ctrl *ScoreController) GetScore(c *gin.Context) {
 	if err != nil {
 		switch err {
 		case apperrors.ErrScoreNotFound:
-			responses.ERROR(c, http.StatusNotFound, err)
+			responses.FAIL(c, http.StatusNotFound, err)
 		case apperrors.ErrAccessForbidden:
-			responses.ERROR(c, http.StatusForbidden, err)
+			responses.FAIL(c, http.StatusForbidden, err)
 		default:
-			responses.ERROR(c, http.StatusInternalServerError, err)
+			responses.FAIL(c, http.StatusInternalServerError, err)
 		}
 		return
 	}
 
-	responses.JSON(c, http.StatusOK, score)
+	responses.SUCCESS(c, http.StatusOK, score)
 }
 
 // UpdateAnnotations
@@ -210,7 +209,7 @@ func (ctrl *ScoreController) UpdateAnnotations(c *gin.Context) {
 	idParam := c.Param("id")
 	scoreID, err := strconv.ParseUint(idParam, 10, 32)
 	if err != nil {
-		responses.ERROR(c, http.StatusBadRequest, apperrors.ErrScoreInvalidID)
+		responses.FAIL(c, http.StatusBadRequest, apperrors.ErrScoreInvalidID)
 		return
 	}
 
@@ -226,14 +225,14 @@ func (ctrl *ScoreController) UpdateAnnotations(c *gin.Context) {
 	err = ctrl.service.UpdateAnnotations(uid, uint(scoreID), input.Annotations)
 	if err != nil {
 		if errors.Is(err, apperrors.ErrScoreNotFound) {
-			responses.ERROR(c, http.StatusNotFound, err)
+			responses.FAIL(c, http.StatusNotFound, err)
 			return
 		}
-		responses.ERROR(c, http.StatusInternalServerError, err)
+		responses.FAIL(c, http.StatusInternalServerError, err)
 		return
 	}
 
-	responses.JSON(c, http.StatusOK, gin.H{"message": "Annotations saved"})
+	responses.SUCCESS(c, http.StatusOK, gin.H{"message": "Annotations saved"})
 }
 
 // GetScoresPage
@@ -245,7 +244,7 @@ func (ctrl *ScoreController) GetScoresPage(c *gin.Context) {
 
 	var form forms.GetScoresPageRequest
 	if err := c.ShouldBind(&form); err != nil {
-		responses.ERROR(c, http.StatusBadRequest, err)
+		responses.FAIL(c, http.StatusBadRequest, err)
 		return
 	}
 
@@ -253,9 +252,9 @@ func (ctrl *ScoreController) GetScoresPage(c *gin.Context) {
 
 	pageData, err := ctrl.service.GetScoresPage(uid, form)
 	if err != nil {
-		responses.ERROR(c, http.StatusInternalServerError, err)
+		responses.FAIL(c, http.StatusInternalServerError, err)
 		return
 	}
 
-	responses.JSON(c, http.StatusOK, pageData)
+	responses.SUCCESS(c, http.StatusOK, pageData)
 }

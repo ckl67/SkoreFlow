@@ -71,7 +71,7 @@ async function createUser({ email, password }: RequestOptions, token: string) {
 
   //console.log(`\n Creating User: ${username} (${email})`);
 
-  const res = await request<User>('POST', `${API_URL}/admin/createuser`, {
+  const res = await request<User>('POST', `${API_URL}/admin/users`, {
     token,
     data: {
       username: username,
@@ -124,15 +124,13 @@ async function updateUser(
 // --------------------------------------------------------------------------------
 
 async function getUserIdByEmail(email: string, token: string) {
-  const res = await request<User[]>('GET', `${API_URL}/admin/users`, {
-    token,
-  });
-
+  const res = await getUsersPage({ page: 1, limit: 100 }, token);
   if (!res.data) {
     throw new Error('Failed to fetch users');
   }
 
-  const user = res.data.find((u) => u.email === email);
+  console.log('DEBUG users:', res.data);
+  const user = res.data.rows.find((u) => u.email === email);
 
   if (!user) {
     throw new Error(`User not found: ${email}`);
@@ -174,7 +172,7 @@ async function getUsersPage({ page = 1, limit = 10, sort }: GetUsersPageOptions,
 
   const res = await request<PaginatedResponse<User>>(
     'GET',
-    `${API_URL}/admin/userspage?${params.toString()}`,
+    `${API_URL}/admin/users?${params.toString()}`,
     { token },
   );
 

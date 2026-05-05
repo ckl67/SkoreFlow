@@ -17,6 +17,12 @@ Whether you're new to SkoreFlow or an experienced developer, this documentation 
 - [Javascript - some particularities](./general/javascript.md)
 - [JSON Handling](./general/json.md)
 
+  For quick tests in TypeScript terminal use
+
+  ```shell
+          npx ts-node --compiler-options '{"module":"CommonJS", "target":"ESNext"}'
+  ```
+
 ### Development Environment
 
 - [Visual Studio Code settings](./environment/vscode.md)
@@ -44,3 +50,7 @@ Whether you're new to SkoreFlow or an experienced developer, this documentation 
 
 - To contribute, please use **Feature Branches** and submit a **Pull Request**. Direct pushes to the main branch are not permitted.
 - [github contribution](./general/fork.md)
+
+```
+
+```

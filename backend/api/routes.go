@@ -93,17 +93,17 @@ func (server *Server) SetupRouter() {
 
 	// Health check (used by monitoring tools)
 	r.GET("/health", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"status": "OK"}) // MOK
+		c.JSON(http.StatusOK, gin.H{"status": "OK"})
 	})
 
 	// API version
 	r.GET("/version", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"version": server.Version}) // MOK
+		c.JSON(http.StatusOK, gin.H{"version": server.Version})
 	})
 
 	// Root endpoint
 	r.GET("/api", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"message": "API is running"}) // MOK
+		c.JSON(http.StatusOK, gin.H{"message": "API is running"})
 	})
 
 	// -------------------------------------------------------------------------------------------
@@ -145,14 +145,14 @@ func (server *Server) SetupRouter() {
 		//    → backend validates token and updates password
 		// ==============================================
 
-		api.POST("/register", authCtrl.Register)                                  // MOK
-		api.POST("/register/confirm", authCtrl.ConfirmRegistration)               // MOK
-		api.POST("/register/rqconfirm", authCtrl.RequestRegistrationConfirmation) // MOK
+		api.POST("/auth/register", authCtrl.Register)                    //vitest
+		api.POST("/auth/register/confirm", authCtrl.ConfirmRegistration) //vitest
+		api.POST("/auth/register/resend", authCtrl.RequestRegistrationConfirmation)
 
-		api.POST("/login", authCtrl.Login) // MOK
+		api.POST("/login", authCtrl.Login)
 
-		api.POST("/password/forgot", authCtrl.ForgotPassword) // MOK
-		api.POST("/password/reset", authCtrl.ResetPassword)   // MOK
+		api.POST("/password/forgot", authCtrl.ForgotPassword)
+		api.POST("/password/reset", authCtrl.ResetPassword)
 
 		// ---------------------------------------------------------------------------------------
 		// Protected routes (authenticated users only)
@@ -163,9 +163,9 @@ func (server *Server) SetupRouter() {
 			// -----------------------------------------------------------------------------------
 			// User self-management (no ID needed)
 			// -----------------------------------------------------------------------------------
-			protected.GET("/me", userCtrl.GetProfile)           // MOK
-			protected.PUT("/me", userCtrl.UpdateProfile)        // MOK
-			protected.POST("/me/avatar", userCtrl.UploadAvatar) // MOK
+			protected.GET("/me", userCtrl.GetProfile)
+			protected.PUT("/me", userCtrl.UpdateProfile)
+			protected.POST("/me/avatar", userCtrl.UploadAvatar)
 			// protected.DELETE("/me/avatar", userCtrl.DeleteAvatar)
 
 			// -----------------------------------------------------------------------------------
@@ -210,20 +210,19 @@ func (server *Server) SetupRouter() {
 			adminRoutes := protected.Group("/")
 			adminRoutes.Use(middlewares.AdminOnlyMiddleware())
 			{
-				adminRoutes.GET("/admin/userspage", userCtrl.AdmGetUsersPage)  // MOK
-				adminRoutes.GET("/admin/users", userCtrl.AdmGetUsers)          // MOK
-				adminRoutes.GET("/admin/users/:id", userCtrl.AdmGetUser)       // MOK
-				adminRoutes.POST("/admin/createuser", userCtrl.AdmCreateUser)  // MOK
-				adminRoutes.PUT("/admin/users/:id", userCtrl.AdmUpdateUser)    // MOK
-				adminRoutes.DELETE("/admin/users/:id", userCtrl.AdmDeleteUser) // MOK
+				adminRoutes.GET("/admin/users", userCtrl.AdmGetUsersPage)
+				adminRoutes.GET("/admin/users/:id", userCtrl.AdmGetUser)
+				adminRoutes.POST("/admin/users", userCtrl.AdmCreateUser)
+				adminRoutes.PUT("/admin/users/:id", userCtrl.AdmUpdateUser)
+				adminRoutes.DELETE("/admin/users/:id", userCtrl.AdmDeleteUser)
 
-				if config.Config().Backend_Dev_Mode {
+				if config.Config().AppEnv == "test" {
 					fmt.Println("=================================")
 					fmt.Println("BE CARE ROOT NOT ALLOWED IN PROD")
 					fmt.Println("=================================")
-					adminRoutes.GET("/test/reset-token/:email", userCtrl.AdmGetResetToken) // MOK
+					adminRoutes.GET("/test/reset-token/:email", authCtrl.AdmGetResetToken)
+					adminRoutes.POST("/test/expire-token", authCtrl.AdmExpireToken)
 				}
-
 			}
 		}
 	}

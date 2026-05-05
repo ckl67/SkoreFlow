@@ -22,6 +22,7 @@ import (
 	"backend/core/apperrors"
 	"backend/core/forms"
 	"backend/core/services"
+	"backend/infrastructure/config"
 	"backend/infrastructure/logger"
 	"backend/pkg/responses"
 
@@ -55,25 +56,31 @@ func (ctrl *AuthController) Register(c *gin.Context) {
 
 	user, err := ctrl.authService.Register(form)
 	if err != nil {
-		responses.ERROR(c, http.StatusBadRequest, err)
+		responses.FAIL(c, http.StatusBadRequest, err)
 		return
 	}
 
 	// Trigger confirmation email (non-blocking for user creation)
-	err = ctrl.authService.RequestRegistrationConfirmation(form.Email)
+	token, err := ctrl.authService.RequestRegistrationConfirmation(form.Email)
 	if err != nil {
 		logger.Login.Error("Registration Confirmation failed for %s: %v", form.Email, err)
 
 		if errors.Is(err, apperrors.ErrSmtpNotConfigured) {
-			responses.ERROR(c, http.StatusServiceUnavailable, apperrors.ErrSmtpNotConfigured)
+			responses.FAIL(c, http.StatusServiceUnavailable, apperrors.ErrSmtpNotConfigured)
 			return
 		}
 	}
 
-	responses.JSON(c, http.StatusCreated, gin.H{
-		"message": "User registered successfully. Please check your email to confirm registration.",
+	response := gin.H{
+		"message": "User registered successfully",
 		"user_id": user.ID,
-	})
+	}
+
+	if config.Config().AppEnv == "test" {
+		response["token"] = token
+	}
+
+	responses.SUCCESS(c, http.StatusCreated, response)
 }
 
 // RequestRegistrationConfirmation
@@ -88,19 +95,25 @@ func (ctrl *AuthController) RequestRegistrationConfirmation(c *gin.Context) {
 		return
 	}
 
-	err := ctrl.authService.RequestRegistrationConfirmation(form.Email)
+	token, err := ctrl.authService.RequestRegistrationConfirmation(form.Email)
 	if err != nil {
 		logger.Login.Error("Registration Confirmation failed for %s: %v", form.Email, err)
 
 		if errors.Is(err, apperrors.ErrSmtpNotConfigured) {
-			responses.ERROR(c, http.StatusServiceUnavailable, apperrors.ErrSmtpNotConfigured)
+			responses.FAIL(c, http.StatusServiceUnavailable, apperrors.ErrSmtpNotConfigured)
 			return
 		}
 	}
 
-	responses.JSON(c, http.StatusOK, gin.H{
+	response := gin.H{
 		"message": "If this email exists, a registration confirmation link has been sent.",
-	})
+	}
+
+	if config.Config().AppEnv == "test" {
+		response["token"] = token
+	}
+
+	responses.SUCCESS(c, http.StatusCreated, response)
 }
 
 // Confirms a user account using a token.
@@ -119,11 +132,11 @@ func (ctrl *AuthController) ConfirmRegistration(c *gin.Context) {
 		logger.Login.Warn("Registration confirmation failed: %v", err)
 
 		// Unified error for security reasons
-		responses.ERROR(c, http.StatusBadRequest, apperrors.ErrAuthTokenInvalidExpired)
+		responses.FAIL(c, http.StatusBadRequest, apperrors.ErrAuthTokenInvalidExpired)
 		return
 	}
 
-	responses.JSON(c, http.StatusOK, gin.H{
+	responses.SUCCESS(c, http.StatusOK, gin.H{
 		"message": "Registration confirmed successfully.",
 		"user_id": user.ID,
 	})
@@ -143,13 +156,14 @@ func (ctrl *AuthController) Login(c *gin.Context) {
 
 	user, token, err := ctrl.authService.SignIn(input.Email, input.Password)
 	if err != nil {
-		responses.ERROR(c, http.StatusUnauthorized, err)
+		responses.FAIL(c, http.StatusUnauthorized, err)
 		return
 	}
 
-	responses.JSON(c, http.StatusOK, gin.H{
-		"token": token,
-		"user":  user,
+	responses.SUCCESS(c, http.StatusOK, gin.H{
+		"message": "Success Login",
+		"token":   token,
+		"user":    user,
 	})
 }
 
@@ -169,12 +183,12 @@ func (ctrl *AuthController) ForgotPassword(c *gin.Context) {
 		logger.Login.Error("Password reset request failed for %s: %v", form.Email, err)
 
 		if errors.Is(err, apperrors.ErrSmtpNotConfigured) {
-			responses.ERROR(c, http.StatusServiceUnavailable, fmt.Errorf("service unavailable"))
+			responses.FAIL(c, http.StatusServiceUnavailable, fmt.Errorf("service unavailable"))
 			return
 		}
 	}
 
-	responses.JSON(c, http.StatusOK, gin.H{
+	responses.SUCCESS(c, http.StatusOK, gin.H{
 		"message": "If this email exists, a reset link has been sent.",
 	})
 }
@@ -192,11 +206,11 @@ func (ctrl *AuthController) ResetPassword(c *gin.Context) {
 	if err != nil {
 		logger.Login.Warn("Password reset failed: %v", err)
 
-		responses.ERROR(c, http.StatusBadRequest, apperrors.ErrAuthTokenInvalidExpired)
+		responses.FAIL(c, http.StatusBadRequest, apperrors.ErrAuthTokenInvalidExpired)
 		return
 	}
 
-	responses.JSON(c, http.StatusOK, gin.H{
+	responses.SUCCESS(c, http.StatusOK, gin.H{
 		"message": "Password successfully reset",
 		"user_id": user.ID,
 	})
@@ -208,17 +222,60 @@ func (ctrl *AuthController) ValidateResetToken(c *gin.Context) {
 	token := c.Query("token")
 
 	if token == "" {
-		responses.ERROR(c, http.StatusBadRequest, apperrors.ErrMissingToken)
+		responses.FAIL(c, http.StatusBadRequest, apperrors.ErrMissingToken)
 		return
 	}
 
 	err := ctrl.authService.ValidateResetToken(token)
 	if err != nil {
-		responses.ERROR(c, http.StatusBadRequest, apperrors.ErrAuthTokenInvalidExpired)
+		responses.FAIL(c, http.StatusBadRequest, apperrors.ErrAuthTokenInvalidExpired)
 		return
 	}
 
-	responses.JSON(c, http.StatusOK, gin.H{
+	responses.SUCCESS(c, http.StatusOK, gin.H{
 		"message": "Token is valid",
 	})
+}
+
+// Only for test : AdmGetResetToken
+func (ctrl *AuthController) AdmGetResetToken(c *gin.Context) {
+	adminID := c.GetUint32("user_id")
+	email := c.Param("email")
+
+	logger.User.Warn("Admin %d requested reset token for %s", adminID, email)
+
+	token, err := ctrl.authService.GetResetToken(email)
+	if err != nil {
+		responses.FAIL(c, http.StatusNotFound, err)
+		return
+	}
+
+	responses.SUCCESS(c, http.StatusOK, gin.H{
+		"message": "Only for test : Get Rest Token",
+		"token":   token,
+	})
+}
+
+// Only for test : AdmExpireToken
+func (ctrl *AuthController) AdmExpireToken(c *gin.Context) {
+
+	var input struct {
+		Email string `json:"email" binding:"required"`
+	}
+
+	if err := c.ShouldBindJSON(&input); err != nil {
+		responses.VALIDATION_ERROR(c, err)
+		return
+	}
+
+	err := ctrl.authService.SetExpireToken(input.Email)
+	if err != nil {
+		responses.FAIL(c, http.StatusNotFound, err)
+		return
+	}
+
+	responses.SUCCESS(c, http.StatusOK, gin.H{
+		"message": "Only for test : Expired time set",
+	})
+
 }

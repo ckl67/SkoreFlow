@@ -13,27 +13,72 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-// JSON sends a structured success response with a given HTTP status code.
-func JSON(c *gin.Context, statusCode int, data interface{}) {
-	c.JSON(statusCode, data)
+type APIResponse struct {
+	Success bool        `json:"success"`
+	Data    interface{} `json:"data,omitempty"`
+	Error   *APIError   `json:"error,omitempty"`
 }
 
-// ERROR sends a standardized error response.
-// - If err is nil, returns "Unknown error".
-func ERROR(c *gin.Context, statusCode int, err error) {
-	if err != nil {
-		c.JSON(statusCode, gin.H{
-			"status": statusCode,
-			"error":  err.Error(),
-		})
-		return
-	}
+type APIError struct {
+	//Code    string `json:"code"`
+	Message string `json:"message"`
+}
 
-	c.JSON(statusCode, gin.H{
-		"status": statusCode,
-		"error":  "Unknown error",
+func SUCCESS(c *gin.Context, status int, data interface{}) {
+	c.JSON(status, APIResponse{
+		Success: true,
+		Data:    data,
 	})
 }
+
+func FAIL(c *gin.Context, status int, err error) {
+	msg := "Unknown error"
+
+	if err != nil {
+		msg = err.Error()
+	}
+
+	c.JSON(status, APIResponse{
+		Success: false,
+		Error: &APIError{
+			Message: msg,
+		},
+	})
+}
+
+/**
+
+Objective
+
+type APIResponse struct {
+	Success bool        `json:"success"`
+	Data    interface{} `json:"data,omitempty"`
+	Error   *APIError   `json:"error,omitempty"`
+}
+
+type APIError struct {
+	Code    string `json:"code"`
+	Message string `json:"message"`
+}
+
+func Fail(c *gin.Context, status int, code string, msg string) {
+	c.JSON(status, APIResponse{
+		Success: false,
+		Error: &APIError{
+			Code:    code,
+			Message: msg,
+		},
+	})
+}
+
+Fail(c, 400, "AUTH_INVALID_TOKEN", "Invalid or expired token")
+
+**/
+
+// JSON sends a structured success response with a given HTTP status code.
+//func JSON(c *gin.Context, statusCode int, data interface{}) {
+//	c.JSON(statusCode, data)
+//}
 
 // VALIDATION_ERROR converts Gin binding/validator errors into a clean API response.
 // Maps common validator tags (required, email, min, max) to human-readable messages.
