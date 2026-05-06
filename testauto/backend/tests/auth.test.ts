@@ -1,6 +1,12 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 
-import { registerUser, confirmRegistration, expireToken } from '../helpers/auth.js';
+import {
+  registerUser,
+  confirmRegistration,
+  ResendConfirmRegistration,
+  expireToken,
+  login,
+} from '../helpers/auth.js';
 
 interface RegUser {
   username: string;
@@ -17,6 +23,7 @@ interface RegUser {
 // 🔴 Level 3 — Stress / fuzz (Optional)
 
 describe('👤 User API - From the User Point of view', () => {
+  let TOKEN_ADMIN: string;
   let tokens: string[] = [];
 
   const users: RegUser[] = [
@@ -30,6 +37,8 @@ describe('👤 User API - From the User Point of view', () => {
   // See document : architecture.dio
   // ----------------------------------------------------------------------------
   beforeAll(async () => {
+    TOKEN_ADMIN = await login('admin@admin.com', 'skoreflow');
+
     tokens = [];
 
     for (const u of users) {
@@ -40,15 +49,10 @@ describe('👤 User API - From the User Point of view', () => {
       });
 
       expect(res.status).toBe(201);
+      expect(res.data.data!.isVerified).toBe(false);
 
-      // Mandatory to avoid the error
-      // Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
-      // because :   token?: string; // Optional without test
-      if (!res.data.token) {
-        throw new Error('Token should be defined in test env');
-      }
-
-      tokens.push(res.data.token);
+      // we force with ! because data cannot be undefined here !
+      tokens.push(res.data.data!.token);
     }
   });
 
@@ -64,8 +68,7 @@ describe('👤 User API - From the User Point of view', () => {
       });
 
       expect(res.status).toBe(200);
-      // expect(res.data.message).toBe('Registration confirmed successfully.');
-      // expect(res.data.user_id).toBeDefined();
+      expect(res.data.data!.isVerified).toBe(true);
     }
   });
 
@@ -102,17 +105,16 @@ describe('👤 User API - From the User Point of view', () => {
       email: 'reg.user4@test.com',
       password: 'password123',
     });
-    expect(res1.status).toBe(200);
+    expect(res1.status).toBe(201);
+    const token1 = res1.data.data!.token;
 
+    // Attempt with a wrong token
     const res2 = await confirmRegistration({
       token: 'abcde123',
     });
     expect(res2.status).toBe(400);
 
-    if (!res1.data.token) {
-      throw new Error('Token missing');
-    }
-    const token1 = res1.data.token;
+    // Attempt with the good token
     const res3 = await confirmRegistration({
       token: token1,
     });
@@ -124,29 +126,40 @@ describe('👤 User API - From the User Point of view', () => {
   // ----------------------------------------------------------------------------
   it('should reject expired token', async () => {
     // 1. Register user
-    const email = 'expired.user@test.com';
-
     const resRegister = await registerUser({
       username: 'ExpiredUser',
-      email,
+      email: 'expired.user@test.com',
       password: 'password123',
     });
 
     expect(resRegister.status).toBe(201);
-
-    const token = resRegister.data.token!;
+    const token = resRegister.data.data!.token;
     expect(token).toBeDefined();
+    expect(resRegister.data.data!.isVerified).toBe(false);
 
     // 2. Force expiration (TEST ONLY endpoint)
-    const resExpire = await expireToken(email);
+    const resExpire = await expireToken('expired.user@test.com', TOKEN_ADMIN);
     expect(resExpire.status).toBe(200);
 
     // 3. Try confirm with expired token
     const resConfirm = await confirmRegistration({
       token,
     });
-
     expect(resConfirm.status).toBe(400);
-    expect(resConfirm.data.errors).toBeDefined();
+    expect(resConfirm.data.error).toBeDefined();
+
+    // 4. We Resent to request a new token
+    const resResend = await ResendConfirmRegistration({
+      email: 'expired.user@test.com',
+    });
+    expect(resResend.status).toBe(200);
+    const tokenResend = resResend.data.data!.token;
+    expect(tokenResend).toBeDefined();
+
+    // 5. Confirmation
+    const resConfirmResend = await confirmRegistration({
+      token: tokenResend,
+    });
+    expect(resConfirmResend.status).toBe(200);
   });
 });

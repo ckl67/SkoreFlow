@@ -18,10 +18,22 @@ interface RegisterRequestOptions {
   password: string;
 }
 
+// token should never be returned !!
+// Here only for test
+// we could have let optional with
+//   token?: string;
+// Nevertheless this would force to test !
+//    const payload = resRegister.data.data;
+//    if (!payload?.token) {
+//      throw new Error('Login response missing token');
+//    }
+//    const token = payload.token;
+
 interface RegisterResponse {
   message: string;
-  user_id: number;
-  token?: string; // Optional without test
+  user_id: number; // Not really necessary
+  isVerified: boolean;
+  token: string; // Only for test
 }
 
 // -------------------
@@ -30,9 +42,21 @@ interface ConfirmRegistrationRequest {
   token: string;
 }
 
-interface ConfirmationResponse {
+interface ConfirmRegistrationResponse {
   message: string;
   user_id: number;
+  isVerified: boolean;
+}
+
+// -------------------
+
+interface ResendConfirmRegistrationRequest {
+  email: string;
+}
+
+interface ResendConfirmRegistrationResponse {
+  message: string;
+  token: string; // Only for test
 }
 
 // -------------------
@@ -98,11 +122,11 @@ async function login(email: string, password: string) {
   }
 
   // const data = res.data as LoginResponse not necessary because already typed with request<LoginResponse>
-  if (!res.data?.token) {
+  if (!res.data.data?.token) {
     throw new Error('Login response missing token');
   }
 
-  return res.data.token;
+  return res.data.data.token;
 }
 
 // --------------------------------------------------------------------------------
@@ -127,11 +151,32 @@ async function registerUser(data: RegisterRequestOptions) {
 // Confirm Registration
 // --------------------------------------------------------------------------------
 async function confirmRegistration(data: ConfirmRegistrationRequest) {
-  const res = await request<ConfirmationResponse>('POST', `${API_URL}/auth/register/confirm`, {
-    data,
-  });
+  const res = await request<ConfirmRegistrationResponse>(
+    'POST',
+    `${API_URL}/auth/register/confirm`,
+    {
+      data,
+    },
+  );
 
   console.log('\n Confirm Registration response:', res.status, res.data);
+
+  return res;
+}
+
+// --------------------------------------------------------------------------------
+// Resend Confirm Registration
+// --------------------------------------------------------------------------------
+async function ResendConfirmRegistration(data: ResendConfirmRegistrationRequest) {
+  const res = await request<ResendConfirmRegistrationResponse>(
+    'POST',
+    `${API_URL}/auth/register/resend`,
+    {
+      data,
+    },
+  );
+
+  console.log('\n Resend a Confirm Registration mail :', res.status, res.data);
 
   return res;
 }
@@ -140,8 +185,9 @@ async function confirmRegistration(data: ConfirmRegistrationRequest) {
 // Set Expire token time
 // --------------------------------------------------------------------------------
 
-async function expireToken(email: string) {
+async function expireToken(email: string, token: string) {
   const res = await request('POST', `${API_URL}/test/expire-token`, {
+    token,
     data: { email },
   });
 
@@ -150,4 +196,4 @@ async function expireToken(email: string) {
   return res;
 }
 
-export { registerUser, confirmRegistration, expireToken, login };
+export { registerUser, confirmRegistration, ResendConfirmRegistration, expireToken, login };

@@ -1,6 +1,7 @@
 # Custom Dictionary Words
 apperrors
 autotests
+axios
 backen
 backend
 createuser

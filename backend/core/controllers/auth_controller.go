@@ -61,7 +61,7 @@ func (ctrl *AuthController) Register(c *gin.Context) {
 	}
 
 	// Trigger confirmation email (non-blocking for user creation)
-	token, err := ctrl.authService.RequestRegistrationConfirmation(form.Email)
+	token, err := ctrl.authService.SendRegistrationConfirmation(form.Email)
 	if err != nil {
 		logger.Login.Error("Registration Confirmation failed for %s: %v", form.Email, err)
 
@@ -72,8 +72,9 @@ func (ctrl *AuthController) Register(c *gin.Context) {
 	}
 
 	response := gin.H{
-		"message": "User registered successfully",
-		"user_id": user.ID,
+		"message":    "User registered successfully",
+		"user_id":    user.ID,
+		"isVerified": user.IsVerified,
 	}
 
 	if config.Config().AppEnv == "test" {
@@ -83,11 +84,11 @@ func (ctrl *AuthController) Register(c *gin.Context) {
 	responses.SUCCESS(c, http.StatusCreated, response)
 }
 
-// RequestRegistrationConfirmation
+// ResendRegistrationConfirmation
 // re-sends a registration confirmation email.
 // Security:
 // - Always returns a generic response to prevent email enumeration
-func (ctrl *AuthController) RequestRegistrationConfirmation(c *gin.Context) {
+func (ctrl *AuthController) ResendRegistrationConfirmation(c *gin.Context) {
 	var form forms.RequestRegistrationConfirmation
 
 	if err := c.ShouldBindJSON(&form); err != nil {
@@ -95,7 +96,7 @@ func (ctrl *AuthController) RequestRegistrationConfirmation(c *gin.Context) {
 		return
 	}
 
-	token, err := ctrl.authService.RequestRegistrationConfirmation(form.Email)
+	token, err := ctrl.authService.SendRegistrationConfirmation(form.Email)
 	if err != nil {
 		logger.Login.Error("Registration Confirmation failed for %s: %v", form.Email, err)
 
@@ -113,7 +114,7 @@ func (ctrl *AuthController) RequestRegistrationConfirmation(c *gin.Context) {
 		response["token"] = token
 	}
 
-	responses.SUCCESS(c, http.StatusCreated, response)
+	responses.SUCCESS(c, http.StatusOK, response)
 }
 
 // Confirms a user account using a token.
@@ -137,8 +138,9 @@ func (ctrl *AuthController) ConfirmRegistration(c *gin.Context) {
 	}
 
 	responses.SUCCESS(c, http.StatusOK, gin.H{
-		"message": "Registration confirmed successfully.",
-		"user_id": user.ID,
+		"message":    "Registration confirmed successfully.",
+		"user_id":    user.ID,
+		"isVerified": user.IsVerified,
 	})
 }
 
@@ -258,7 +260,7 @@ func (ctrl *AuthController) AdmGetResetToken(c *gin.Context) {
 
 // Only for test : AdmExpireToken
 func (ctrl *AuthController) AdmExpireToken(c *gin.Context) {
-
+	adminID := c.GetUint32("user_id")
 	var input struct {
 		Email string `json:"email" binding:"required"`
 	}
@@ -267,6 +269,8 @@ func (ctrl *AuthController) AdmExpireToken(c *gin.Context) {
 		responses.VALIDATION_ERROR(c, err)
 		return
 	}
+
+	logger.User.Warn("(AdmExpireToken) Admin %d requested reset token for %s", adminID, input.Email)
 
 	err := ctrl.authService.SetExpireToken(input.Email)
 	if err != nil {

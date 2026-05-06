@@ -157,11 +157,11 @@ func (s *AuthService) ConfirmRegistration(token string) (*models.User, error) {
 	return &user, nil
 }
 
-// RequestRegistrationConfirmation
+// SendRegistrationConfirmation
 // Send a registration confirmation email.
 // Note:
 // - Silent failure if user not found (security best practice)
-func (s *AuthService) RequestRegistrationConfirmation(email string) (string, error) {
+func (s *AuthService) SendRegistrationConfirmation(email string) (string, error) {
 	var user models.User
 	email = format.SanitizeUserEmail(email)
 

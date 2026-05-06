@@ -62,8 +62,7 @@ import axios, { Method } from 'axios';
 // IMPORTANT:
 // - 'await' does NOT change or format the response structure.
 // - It only resolves the Promise returned by 'request()'.
-// - The shape { status, data } comes from the implementation of 'request()',
-//   not from 'await' itself.
+// - The shape { status, data } comes from the implementation of 'request()', not from 'await' itself.
 //
 // Example:
 // const res = await request<LoginResponse>('POST', '/login', { data: {...} });
@@ -101,11 +100,21 @@ interface RequestOptions<T = unknown> {
 // The 'data' property will hold the actual server response, typed as T.
 // Example :
 // res = await request<LoginResponse>('POST', `${API_URL}/login`, { data: {email,password }
-interface HttpResponse<T = unknown> {
-  status: number;
-  data: T;
+
+// Return of GO backend API
+interface APIResponse<T = unknown> {
+  success: boolean;
+  data?: T;
+  error?: {
+    message: string;
+  };
 }
 
+// Return of function request
+interface HttpResponse<T = unknown> {
+  status: number;
+  data: APIResponse<T>;
+}
 // --------------------------------------------------------------------------------
 // request
 // --------------------------------------------------------------------------------
@@ -139,32 +148,24 @@ async function request<T = unknown>(
       },
     });
 
-    // 4. THE DELIVERY
     // Here, res.data is returned and automatically cast to type T
     return {
       status: res.status,
-      data: res.data,
+      data: res.data, // Success : { success: true, data: T }
     };
   } catch (err) {
     if (axios.isAxiosError(err)) {
+      // We build an answer in respect of the error structure APIResponse
+      const errorData: APIResponse<T> = err.response?.data ?? {
+        success: false,
+        error: { message: err.message || 'Unknown network error' },
+      };
+
       return {
-        // Returns the error status or defaults to 500 (Internal Server Error)
         status: err.response?.status ?? 500,
-        // Using 'as T' here is a common pattern to handle error bodies
-        // But it is not always T ! { "message": "invalid credentials" }
-        //data: (err.response?.data ?? null) as T,
-        // error network  → data = null
-        // backend down → data = null
-        // timeout → data = null
-        //
-        // Consider that the re turn value is type T, even it is not true
-        //    error: 'unknown error'  is not a T Type !!
-        // This is to avoid : 'res.data' is possibly 'null'.
-        data: err.response?.data ?? ({ error: 'unknown error' } as T),
+        data: errorData,
       };
     }
-
-    // Rethrow if it's a programming error or a total network failure
     throw err;
   }
 }

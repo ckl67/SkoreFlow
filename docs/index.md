@@ -13,6 +13,7 @@ Whether you're new to SkoreFlow or an experienced developer, this documentation 
 ### General
 
 - [HTTP Status Codes](./general/http_status_codes.md)
+- [API Response Standard](./backend/api-response.md)
 - [Javascript - ecosystem](./general/javascript_ecosystem.md) or [Javascript - ecosystem](./general/javascript_ecosystem-fr.md)
 - [Javascript - some particularities](./general/javascript.md)
 - [JSON Handling](./general/json.md)
@@ -31,7 +32,8 @@ Whether you're new to SkoreFlow or an experienced developer, this documentation 
 ### Backend Guides
 
 - [Architecture](./backend/architecture.md)
-- [Architecture Diagram](./backend/architecture.dio)
+- [API Response Standard](./backend/api-response.md)
+- [Some specificities - Architecture Diagram](./backend/architecture.dio)
   _- Fyi : To change the theme in drawio - Ctrl Shift P : "Drawio - Change Theme"_
 - [cors explanation](./backend/cors.md)
 - [go ans Docker paths](./backend/go.md)

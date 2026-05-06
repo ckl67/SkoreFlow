@@ -147,7 +147,7 @@ func (server *Server) SetupRouter() {
 
 		api.POST("/auth/register", authCtrl.Register)                    //vitest
 		api.POST("/auth/register/confirm", authCtrl.ConfirmRegistration) //vitest
-		api.POST("/auth/register/resend", authCtrl.RequestRegistrationConfirmation)
+		api.POST("/auth/register/resend", authCtrl.ResendRegistrationConfirmation)
 
 		api.POST("/login", authCtrl.Login)
 

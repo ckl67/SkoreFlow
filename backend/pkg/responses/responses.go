@@ -24,6 +24,25 @@ type APIError struct {
 	Message string `json:"message"`
 }
 
+/*
+Example using Axios
+const response = await axios.post('/auth/register', userData);
+
+	1. response.status -> 200 (HTTP Level)
+	2. response.data -> { success: true, data: {...} } (The JSON Envelope)
+	3. response.data.data -> The actual user object (The Payload)
+
+try {
+	 const response = await axios.post('/auth/register', userData);
+	//} catch (error) {
+	1. error.response.status -> 400 (HTTP Level)
+	2. error.response.data   -> { success: false, error: { message: "..." } }
+	3. error.response.data.error.message -> "username is required"
+
+	 console.error("Error API:", error.response.data.error.message);
+}
+*/
+
 func SUCCESS(c *gin.Context, status int, data interface{}) {
 	c.JSON(status, APIResponse{
 		Success: true,
@@ -45,40 +64,6 @@ func FAIL(c *gin.Context, status int, err error) {
 		},
 	})
 }
-
-/**
-
-Objective
-
-type APIResponse struct {
-	Success bool        `json:"success"`
-	Data    interface{} `json:"data,omitempty"`
-	Error   *APIError   `json:"error,omitempty"`
-}
-
-type APIError struct {
-	Code    string `json:"code"`
-	Message string `json:"message"`
-}
-
-func Fail(c *gin.Context, status int, code string, msg string) {
-	c.JSON(status, APIResponse{
-		Success: false,
-		Error: &APIError{
-			Code:    code,
-			Message: msg,
-		},
-	})
-}
-
-Fail(c, 400, "AUTH_INVALID_TOKEN", "Invalid or expired token")
-
-**/
-
-// JSON sends a structured success response with a given HTTP status code.
-//func JSON(c *gin.Context, statusCode int, data interface{}) {
-//	c.JSON(statusCode, data)
-//}
 
 // VALIDATION_ERROR converts Gin binding/validator errors into a clean API response.
 // Maps common validator tags (required, email, min, max) to human-readable messages.
