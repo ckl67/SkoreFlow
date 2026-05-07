@@ -10,6 +10,8 @@
   "editor.formatOnSaveMode": "file",
   "editor.renderWhitespace": "selection",
 
+  "workbench.editor.labelFormat": "short",
+
   // =========================================================
   // 📁 FILES
   // =========================================================

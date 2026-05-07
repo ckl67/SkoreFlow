@@ -22,22 +22,6 @@ type APIError struct {
 }
 
 
-func SUCCESS(c *gin.Context, status int, data interface{}) {
-	c.JSON(status, APIResponse{
-		Success: true,
-		Data:    data,
-	})
-}
-
-func FAIL(c *gin.Context, status int, err error) {
-	c.JSON(status, APIResponse{
-		Success: false,
-		Error: &APIError{
-			Message: msg,
-		},
-	})
-}
-
 ```
 
 ## Response Formats

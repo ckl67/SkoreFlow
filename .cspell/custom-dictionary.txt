@@ -21,6 +21,7 @@ kubernetes
 kühl
 microservice
 mkhl
+modcache
 mvdan
 omitempty
 pwreset

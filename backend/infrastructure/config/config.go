@@ -113,14 +113,17 @@ var (
 // Safe Logging (⚠️ NOT production-safe)
 // Logs configuration for debugging purposes
 // This function exposes sensitive data (passwords, secrets).
-// Use ONLY in development or debug mode.
+// Use ONLY in development or test mode.
 func (c ServerConfig) LogSafe() {
+
+	fmt.Println("-------------------- ------")
 	fmt.Println("------ SERVER CONFIG ------")
+	fmt.Println("-------------------- ------")
 
-	if c.AppEnv == "test" || c.AppEnv == "dev" {
+	fmt.Printf("Application Environment - (appEnv) :%s\n", c.AppEnv)
+	fmt.Printf("SMTP Enabled: %t\n", c.Smtp.Enabled)
 
-		fmt.Printf("Application Environment\n")
-		fmt.Printf("   appEnv :%s\n", c.AppEnv)
+	if c.AppEnv == "development" || c.AppEnv == "test" {
 
 		fmt.Println("Paths:")
 		fmt.Printf("  StoragePath: %s\n", c.StoragePath)
@@ -165,8 +168,6 @@ func (c ServerConfig) LogSafe() {
 		fmt.Printf("  FrontendRegisterConfirmPath: %s\n", c.Frontend.RegisterConfirmPath)
 		fmt.Printf("  CORS Origins: %s\n", c.Frontend.CorsAllowedOrigins)
 
-	} else {
-		fmt.Println("BACKEND PROD MODE")
 	}
 
 	fmt.Println("--------------------------------------")

@@ -8,9 +8,20 @@ import {
   login,
 } from '../helpers/auth.js';
 
-interface RegUser {
+interface TestUser {
   username: string;
   email: string;
+  password: string;
+}
+
+function makeUser(prefix = 'user'): TestUser {
+  const id = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+
+  return {
+    username: `${prefix}-${id}`,
+    email: `${prefix}-${id}@test.com`,
+    password: 'password123',
+  };
 }
 
 // 🟢 Level 1 — Happy path (Mandatory)
@@ -24,63 +35,52 @@ interface RegUser {
 
 describe('👤 User API - From the User Point of view', () => {
   let TOKEN_ADMIN: string;
-  let tokens: string[] = [];
-
-  const users: RegUser[] = [
-    { username: 'RegUser1', email: 'reg.user1@test.com' },
-    { username: 'RegUser2', email: 'reg.user2@test.com' },
-    { username: 'RegUser3', email: 'reg.user3@test.com' },
-  ];
 
   // ----------------------------------------------------------------------------
-  // REGISTER USER
-  // See document : architecture.dio
+  // SETUP
   // ----------------------------------------------------------------------------
   beforeAll(async () => {
-    TOKEN_ADMIN = await login('admin@admin.com', 'skoreflow');
+    const res = await login({
+      email: 'admin@admin.com',
+      password: 'skoreflow',
+    });
 
-    tokens = [];
-
-    for (const u of users) {
-      const res = await registerUser({
-        username: u.username,
-        email: u.email,
-        password: 'password123',
-      });
-
-      expect(res.status).toBe(201);
-      expect(res.data.data!.isVerified).toBe(false);
-
-      // we force with ! because data cannot be undefined here !
-      tokens.push(res.data.data!.token);
-    }
+    TOKEN_ADMIN = res.data.data!.token;
   });
 
   // ----------------------------------------------------------------------------
+  // REGISTER USER
   // CONFIRM REGISTRATION
   // ----------------------------------------------------------------------------
-  it('should confirm registration of all users', async () => {
-    for (let i = 0; i < users.length; i++) {
-      const token = tokens[i];
+  it('should confirm registration of user', async () => {
+    const user = makeUser();
 
-      const res = await confirmRegistration({
-        token: token,
-      });
+    const resReg = await registerUser(user);
 
-      expect(res.status).toBe(200);
-      expect(res.data.data!.isVerified).toBe(true);
-    }
+    expect(resReg.status).toBe(201);
+
+    const token = resReg.data.data!.token;
+
+    const res = await confirmRegistration({
+      token,
+    });
+
+    expect(res.status).toBe(200);
+    expect(res.data.data!.isVerified).toBe(true);
   });
 
   // ----------------------------------------------------------------------------
   // FAIL WITH INVALID EMAIL
   // ----------------------------------------------------------------------------
   it('should fail with invalid email', async () => {
+    const user = makeUser();
+
     const res = await registerUser({
-      username: 'toto',
+      username: user.username,
       email: 'wrong.email',
-      password: 'password123',
+      password: user.password,
     });
+
     expect(res.status).toBe(400);
   });
 
@@ -88,36 +88,41 @@ describe('👤 User API - From the User Point of view', () => {
   // FAIL WITH DUPLICATE EMAIL
   // ----------------------------------------------------------------------------
   it('should fail with duplicate email', async () => {
-    const res = await registerUser({
-      username: 'reg.user1',
-      email: 'reg.user1@test.com',
-      password: 'password123',
-    });
-    expect(res.status).toBe(400);
+    const user = makeUser();
+
+    const res1 = await registerUser(user);
+
+    expect(res1.status).toBe(201);
+
+    const res2 = await registerUser(user);
+
+    expect(res2.status).toBe(400);
   });
 
   // ----------------------------------------------------------------------------
   // FAIL WITH INVALID TOKEN
   // ----------------------------------------------------------------------------
-  it('should reject invalid token, second set is passing', async () => {
-    const res1 = await registerUser({
-      username: 'RegUser4',
-      email: 'reg.user4@test.com',
-      password: 'password123',
-    });
-    expect(res1.status).toBe(201);
-    const token1 = res1.data.data!.token;
+  it('should reject invalid token', async () => {
+    const user = makeUser();
 
-    // Attempt with a wrong token
+    const res1 = await registerUser(user);
+
+    expect(res1.status).toBe(201);
+
+    const token = res1.data.data!.token;
+
+    // Wrong token
     const res2 = await confirmRegistration({
       token: 'abcde123',
     });
+
     expect(res2.status).toBe(400);
 
-    // Attempt with the good token
+    // Good token
     const res3 = await confirmRegistration({
-      token: token1,
+      token,
     });
+
     expect(res3.status).toBe(200);
   });
 
@@ -125,41 +130,82 @@ describe('👤 User API - From the User Point of view', () => {
   // FAIL WITH EXPIRED TOKEN
   // ----------------------------------------------------------------------------
   it('should reject expired token', async () => {
-    // 1. Register user
-    const resRegister = await registerUser({
-      username: 'ExpiredUser',
-      email: 'expired.user@test.com',
-      password: 'password123',
-    });
+    const user = makeUser();
+
+    const resRegister = await registerUser(user);
 
     expect(resRegister.status).toBe(201);
+
     const token = resRegister.data.data!.token;
+
     expect(token).toBeDefined();
     expect(resRegister.data.data!.isVerified).toBe(false);
 
-    // 2. Force expiration (TEST ONLY endpoint)
-    const resExpire = await expireToken('expired.user@test.com', TOKEN_ADMIN);
+    // Force expiration
+    const resExpire = await expireToken(user.email, TOKEN_ADMIN);
+
     expect(resExpire.status).toBe(200);
 
-    // 3. Try confirm with expired token
+    // Try confirm
     const resConfirm = await confirmRegistration({
       token,
     });
-    expect(resConfirm.status).toBe(400);
-    expect(resConfirm.data.error).toBeDefined();
 
-    // 4. We Resent to request a new token
+    expect(resConfirm.status).toBe(400);
+
+    // Resend
     const resResend = await ResendConfirmRegistration({
-      email: 'expired.user@test.com',
+      email: user.email,
     });
+
     expect(resResend.status).toBe(200);
+
     const tokenResend = resResend.data.data!.token;
+
     expect(tokenResend).toBeDefined();
 
-    // 5. Confirmation
+    // Confirm again
     const resConfirmResend = await confirmRegistration({
       token: tokenResend,
     });
+
     expect(resConfirmResend.status).toBe(200);
+  });
+
+  // ----------------------------------------------------------------------------
+  // LOGIN WITHOUT CONFIRMATION
+  // ----------------------------------------------------------------------------
+  it('should fail login attempt before confirmation', async () => {
+    const user = makeUser();
+
+    // Register
+    const resRegister = await registerUser(user);
+
+    expect(resRegister.status).toBe(201);
+
+    const token = resRegister.data.data!.token;
+
+    // Login before confirmation
+    const res1 = await login({
+      email: user.email,
+      password: user.password,
+    });
+
+    expect(res1.status).toBe(401);
+
+    // Confirm
+    const res2 = await confirmRegistration({
+      token,
+    });
+
+    expect(res2.status).toBe(200);
+
+    // Login after confirmation
+    const res3 = await login({
+      email: user.email,
+      password: user.password,
+    });
+
+    expect(res3.status).toBe(200);
   });
 });

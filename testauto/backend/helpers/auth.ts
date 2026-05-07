@@ -31,7 +31,6 @@ interface RegisterRequestOptions {
 
 interface RegisterResponse {
   message: string;
-  user_id: number; // Not really necessary
   isVerified: boolean;
   token: string; // Only for test
 }
@@ -61,6 +60,11 @@ interface ResendConfirmRegistrationResponse {
 
 // -------------------
 
+interface LoginRequest {
+  email: string;
+  password: string;
+}
+
 interface User {
   id: number;
   username: string;
@@ -68,12 +72,10 @@ interface User {
   avatar: string;
   role: number;
   isVerified: boolean;
-  createdAt: string;
-  updatedAt: string;
-  token: string;
 }
 
 interface LoginResponse {
+  message: string;
   token: string;
   user: User;
 }
@@ -108,7 +110,7 @@ interface LoginResponse {
 // data: { email, password },
 // --------------------------------------------------------------------------------
 
-async function login(email: string, password: string) {
+async function login({ email, password }: LoginRequest) {
   const res = await request<LoginResponse>('POST', `${API_URL}/login`, {
     data: {
       email: email,
@@ -116,17 +118,7 @@ async function login(email: string, password: string) {
     },
   });
 
-  // This version accept all 2xx and not only 200
-  if (res.status < 200 || res.status >= 300) {
-    throw new Error(`Login failed (${res.status}) - ${JSON.stringify(res.data)}`);
-  }
-
-  // const data = res.data as LoginResponse not necessary because already typed with request<LoginResponse>
-  if (!res.data.data?.token) {
-    throw new Error('Login response missing token');
-  }
-
-  return res.data.data.token;
+  return res;
 }
 
 // --------------------------------------------------------------------------------

@@ -14,7 +14,7 @@ module backend
 //			module github.com/ckl67/skoreflow
 //			go 1.24
 //
-//	However, for autonomy, I prefered no to publish it as a module, and use it a local name like "backend" in this case.
+//	However, for autonomy, I preferred no to publish it as a module, and use it a local name like "backend" in this case.
 //
 //  Go's Module Discovery & Resolution:
 //    When running a command (like "go run" or "go build"), Go performs a recursive
@@ -122,6 +122,7 @@ require (
 	golang.org/x/sync v0.20.0 // indirect
 	golang.org/x/sys v0.42.0 // indirect
 	golang.org/x/text v0.36.0 // indirect
+	golang.org/x/time v0.15.0 // indirect
 	golang.org/x/tools v0.43.0 // indirect
 	google.golang.org/protobuf v1.36.9 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect

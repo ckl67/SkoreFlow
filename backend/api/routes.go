@@ -145,9 +145,12 @@ func (server *Server) SetupRouter() {
 		//    → backend validates token and updates password
 		// ==============================================
 
-		api.POST("/auth/register", authCtrl.Register)                    //vitest
-		api.POST("/auth/register/confirm", authCtrl.ConfirmRegistration) //vitest
-		api.POST("/auth/register/resend", authCtrl.ResendRegistrationConfirmation)
+		api.POST("/auth/register",
+			middlewares.RateLimiter(1, 5),
+			authCtrl.Register) //vitest -->   req/sec, burst 5
+
+		api.POST("/auth/register/confirm", authCtrl.ConfirmRegistration)           //vitest
+		api.POST("/auth/register/resend", authCtrl.ResendRegistrationConfirmation) //vitest
 
 		api.POST("/login", authCtrl.Login)
 
@@ -216,6 +219,7 @@ func (server *Server) SetupRouter() {
 				adminRoutes.PUT("/admin/users/:id", userCtrl.AdmUpdateUser)
 				adminRoutes.DELETE("/admin/users/:id", userCtrl.AdmDeleteUser)
 
+				// For now, only for vitest
 				if config.Config().AppEnv == "test" {
 					fmt.Println("=================================")
 					fmt.Println("BE CARE ROOT NOT ALLOWED IN PROD")

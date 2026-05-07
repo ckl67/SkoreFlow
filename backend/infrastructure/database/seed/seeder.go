@@ -2,7 +2,6 @@ package seed
 
 import (
 	"backend/core/models"
-	"backend/infrastructure/config"
 	"backend/infrastructure/logger"
 	"backend/pkg/format"
 	"backend/pkg/security"
@@ -11,22 +10,20 @@ import (
 )
 
 // Load initializes seed data after database connection.
-// Responsibility:
-// - Ensure a default admin user exists
-// - Create the admin account if it does not already exist
+// Essentially admin
 //
 // Notes:
 // - Uses a lightweight existence check to avoid unnecessary DB errors
 // - Designed to run safely on every application startup
-func Load(db *gorm.DB, email string, password string) {
+func Load(db *gorm.DB, name string, email string, password string, role int, avatar string) {
 	var user models.User
 
-	// 1. Check if admin already exists (silent check)
+	// 1. Check if account exists (silent check)
 	// Avoids triggering "record not found" on an empty database
 	exist, _ := user.ExistsByEmail(db, email)
 
 	if exist {
-		logger.DB.Info("Admin user already exists")
+		logger.DB.Info("%s user already exists", name)
 		return
 	}
 
@@ -37,20 +34,20 @@ func Load(db *gorm.DB, email string, password string) {
 	}
 
 	// 3. Build admin user model
-	admin := models.User{
-		Username:   "admin",
+	newUser := models.User{
+		Username:   name,
 		Email:      format.SanitizeUserEmail(email),
 		Password:   hashedPassword,
-		Role:       config.RoleAdmin,
-		Avatar:     "users/admin.png",
+		Role:       role,
+		Avatar:     avatar,
 		IsVerified: true,
 	}
 
 	// 4. Persist admin user
-	err = admin.Create(db)
+	err = newUser.Create(db)
 	if err != nil {
-		logger.DB.Error("cannot create admin user: %v", err)
+		logger.DB.Error("cannot create %s user: %v", name, err)
 	}
 
-	logger.DB.Info("Admin user created with email: %s", email)
+	logger.DB.Info("%s user created with email: %s", name, email)
 }

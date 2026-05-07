@@ -11,9 +11,7 @@ import (
 func Start(version string) {
 	// Log configuration details (redacted/safe version)
 	cfg := config.Config()
-	if cfg.AppEnv == "test" || cfg.AppEnv == "development" {
-		cfg.LogSafe()
-	}
+	cfg.LogSafe()
 
 	// Path management setup
 	paths := config.NewPaths(cfg)
@@ -26,7 +24,15 @@ func Start(version string) {
 	appServer.Setup(version, db, paths)
 
 	// 3. Database Seeding
-	seed.Load(appServer.DB, cfg.AdminEmail, cfg.AdminPassword)
+	seed.Load(appServer.DB, "admin", cfg.AdminEmail, cfg.AdminPassword, config.RoleAdmin, "users/admin.png")
+
+	if config.Config().AppEnv == "test" {
+		seed.Load(appServer.DB, "user1", "user1@test.com", "password123", config.RoleUser, "users/default.png")
+		seed.Load(appServer.DB, "user2", "user2@test.com", "password123", config.RoleUser, "users/default.png")
+		seed.Load(appServer.DB, "user3", "user3@test.com", "password123", config.RoleUser, "users/default.png")
+		seed.Load(appServer.DB, "moderator1", "moderator1@test.com", "password123", config.RoleModerator, "users/moderator.png")
+		seed.Load(appServer.DB, "moderator2", "moderator2@test.com", "password123", config.RoleModerator, "users/moderator.png")
+	}
 
 	// 4. Port Configuration
 	// Go Listening [Nginx / Reverse Proxy]

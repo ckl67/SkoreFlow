@@ -355,3 +355,10 @@ func (s *AuthService) SetExpireToken(val_email string) error {
 
 	return nil
 }
+
+// Will delete the Unverified Users
+func (s *AuthService) CleanupUnverifiedUsers(olderThan time.Duration) error {
+	return s.db.
+		Where("is_verified = ? AND created_at < ?", false, time.Now().Add(-olderThan)).
+		Delete(&models.User{}).Error
+}

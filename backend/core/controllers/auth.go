@@ -20,6 +20,7 @@ import (
 	"net/http"
 
 	"backend/core/apperrors"
+	"backend/core/dto"
 	"backend/core/forms"
 	"backend/core/services"
 	"backend/infrastructure/config"
@@ -73,10 +74,10 @@ func (ctrl *AuthController) Register(c *gin.Context) {
 
 	response := gin.H{
 		"message":    "User registered successfully",
-		"user_id":    user.ID,
 		"isVerified": user.IsVerified,
 	}
 
+	// Only for vitest we will return the token
 	if config.Config().AppEnv == "test" {
 		response["token"] = token
 	}
@@ -110,6 +111,7 @@ func (ctrl *AuthController) ResendRegistrationConfirmation(c *gin.Context) {
 		"message": "If this email exists, a registration confirmation link has been sent.",
 	}
 
+	// Only for vitest we will return the token
 	if config.Config().AppEnv == "test" {
 		response["token"] = token
 	}
@@ -162,10 +164,10 @@ func (ctrl *AuthController) Login(c *gin.Context) {
 		return
 	}
 
-	responses.SUCCESS(c, http.StatusOK, gin.H{
-		"message": "Success Login",
-		"token":   token,
-		"user":    user,
+	responses.SUCCESS(c, http.StatusOK, dto.LoginResponseDTO{
+		Message: "Success Login",
+		Token:   token,
+		User:    dto.ToUserPublicDTO(user),
 	})
 }
 

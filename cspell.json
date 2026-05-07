@@ -5,6 +5,7 @@
     "node_modules/**",
     ".cspell/custom-dictionary.txt",
     "vendor/**",
+    "*.mod",
     "*.dio",
     ".git/**",
     ".vscode/**",

@@ -6,10 +6,6 @@
     "form-data": "^4.0.5"
   },
   "scripts": {
-    "test:smoke": "vitest run tests/basic.test.ts",
-    "test:users": "vitest run tests/user.test.ts",
-    "test:composers": "vitest run tests/composer.test.ts",
-    "test:scores": "vitest run tests/score.test.ts",
     "e2e": "bash auto-test.sh --all",
     "e2e:clean": "bash auto-test.sh --clean --all",
     "e2e:kill": "bash auto-test.sh --kill"

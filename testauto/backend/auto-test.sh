@@ -43,10 +43,12 @@ Usage:
   ./auto-test.sh --scores       Include score tests
   ./auto-test.sh --composers    Include composer tests
 
+  ./auto-test.sh --stress       Will run the stress test
+
  Options
   --kill                        Kill The process to be sure that there is no Background process
   --clean                       Clean DB and Storage files before running
-  --pwreset                     Include SMTP/Google password reset tests
+  --smtp                        Enable SMTP/Google password reset tests
   --nbg                         Stop server after script
 
   --help                        Help
@@ -59,34 +61,35 @@ export APP_ENV=test
 export SMTP_ENABLED=false
 
 # --- SHELL GLOBAL VARIABLES ---
+RUN_STRESS=false
 
-export RUN_USERS=false
-export RUN_SCORES=false
-export RUN_COMPOSERS=false
+RUN_USERS=false
+RUN_SCORES=false
+RUN_COMPOSERS=false
 
-export KILL_PROCESS=false
+KILL_PROCESS=false
 
-export CLEAN_DB_FILES=false
-export FORCE_BACKGROUND=true
-
-export ROLE_USER=0
-export ROLE_MODERATOR=1
-export ROLE_ADMINISTRATOR=2
+CLEAN_DB_FILES=false
+FORCE_BACKGROUND=true
 
 # --- ARGUMENT PARSING ---
 for arg in "$@"; do
 	case $arg in
-	--pwreset) export SMTP_ENABLED=true ;;
+	--stress)
+		export APP_ENV=development
+		RUN_STRESS=true
+		;;
+	--smtp) export SMTP_ENABLED=true ;;
 	--clean) export CLEAN_DB_FILES=true ;;
-	--users) export RUN_USERS=true ;;
-	--scores) export RUN_SCORES=true ;;
-	--composers) export RUN_COMPOSERS=true ;;
-	--nbg) export FORCE_BACKGROUND=false ;;
-	--kill) export KILL_PROCESS=true ;;
+	--users) RUN_USERS=true ;;
+	--scores) RUN_SCORES=true ;;
+	--composers) RUN_COMPOSERS=true ;;
+	--nbg) FORCE_BACKGROUND=false ;;
+	--kill) KILL_PROCESS=true ;;
 	--all)
-		export RUN_USERS=true
-		export RUN_COMPOSERS=true
-		export RUN_SCORES=true
+		RUN_USERS=true
+		RUN_COMPOSERS=true
+		RUN_SCORES=true
 		;;
 	--help)
 		echo "$HelpTXT"
@@ -146,6 +149,7 @@ if [ "$CLEAN_DB_FILES" = true ]; then
 	if [ -d "$BACKEND_DIR/storage/assets" ]; then
 		cp -r "$BACKEND_DIR/storage/assets/avatars/admin.png" "$BACKEND_DIR/storage/users"
 		cp -r "$BACKEND_DIR/storage/assets/avatars/default.png" "$BACKEND_DIR/storage/users"
+		cp -r "$BACKEND_DIR/storage/assets/avatars/moderator.png" "$BACKEND_DIR/storage/users"
 		cp -r "$BACKEND_DIR/storage/assets/avatars/composer.png" "$BACKEND_DIR/storage/composers/default.png"
 	fi
 else
@@ -181,19 +185,38 @@ cd "$SCRIPT_DIR" || exit
 
 # ---------------------------------------------------------------------------------------------------------------
 # MODULE EXECUTION
-# Externalize  the running "npx tsx" or vitest
+# Remark npm or npx will add automatically the directory node_modules/.bin to the path
+# Alternative solution to run the scripts
+# define in package.json
+#		"scripts": {
+#		    "test:smoke": "vitest run tests/basic.test.ts",
+# 	then
+#		npm run test:smoke
+# However for simplicity we will use
+# 	npx vitest run "tests/basic.test.ts"
 # ---------------------------------------------------------------------------------------------------------------
 
+# 0. Stress test - If activated, will only run this one !
+if [ "$RUN_STRESS" = true ]; then
+	echo "--------------------------------"
+	echo "Stress tests...(Will exit after)"
+	echo "--------------------------------"
+	npx vitest run tests/stress.test.ts
+
+	exit 1
+fi
+
 # 1. Basic Health and Sanity tests
+echo "--------------------------------"
 echo "Running smoke tests..."
-# npx tsx tests/basic.test.ts || exit 1
-npm run test:smoke || exit 1
+echo "--------------------------------"
+npx vitest run "tests/basic.test.ts"
 
 # 2. User Management (MANDATORY: Generates tokens for other tests)
 if [ "$RUN_USERS" = true ]; then
 	echo "Running user tests..."
-	# npx tsx tests/user.test.ts || exit 1
-	npm run test:users || exit 1
+	npx vitest run tests/auth.test.ts
+#npx	vitest run tests/user.test.ts
 else
 	echo "⏩ Skipping User tests"
 fi
@@ -202,7 +225,6 @@ fi
 if [ "$RUN_COMPOSERS" = true ]; then
 	echo "Running composer tests..."
 	# npx tsx tests/composers.tst.ts
-	npm run test:composers || exit 1
 else
 	echo "⏩ Skipping Composer tests"
 fi
@@ -211,8 +233,6 @@ fi
 if [ "$RUN_SCORES" = true ]; then
 	echo "Running score tests..."
 	# npx tsx tests/score.test.js || exit 1
-	npm run test:scores || exit 1
-
 else
 	echo "⏩ Skipping Score tests"
 fi

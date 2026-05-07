@@ -12,9 +12,11 @@ Whether you're new to SkoreFlow or an experienced developer, this documentation 
 
 ### General
 
+- [Linux useful commands](./general/linux-useful.md)
+- [Go Structure](./general/go-struct.md)
 - [HTTP Status Codes](./general/http_status_codes.md)
 - [API Response Standard](./backend/api-response.md)
-- [Javascript - ecosystem](./general/javascript_ecosystem.md) or [Javascript - ecosystem](./general/javascript_ecosystem-fr.md)
+- [Javascript - ecosystem](./general/javascript_ecosystem.md) or [Javascript - ecosystem (.fr)](./general/javascript_ecosystem-fr.md)
 - [Javascript - some particularities](./general/javascript.md)
 - [JSON Handling](./general/json.md)
 
@@ -52,7 +54,3 @@ Whether you're new to SkoreFlow or an experienced developer, this documentation 
 
 - To contribute, please use **Feature Branches** and submit a **Pull Request**. Direct pushes to the main branch are not permitted.
 - [github contribution](./general/fork.md)
-
-```
-
-```
