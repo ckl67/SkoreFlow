@@ -145,15 +145,10 @@ func (server *Server) SetupRouter() {
 		//    → backend validates token and updates password
 		// ==============================================
 
-		api.POST("/auth/register",
-			middlewares.RateLimiter(1, 5),
-			authCtrl.Register) //vitest -->   req/sec, burst 5
-
-		api.POST("/auth/register/confirm", authCtrl.ConfirmRegistration)           //vitest
-		api.POST("/auth/register/resend", authCtrl.ResendRegistrationConfirmation) //vitest
-
-		api.POST("/login", authCtrl.Login)
-
+		api.POST("/auth/register", middlewares.RateLimiter(1, 5), authCtrl.Register) //vitest -->   req/sec, burst 5
+		api.POST("/auth/register/confirm", authCtrl.ConfirmRegistration)             //vitest
+		api.POST("/auth/register/resend", authCtrl.ResendRegistrationConfirmation)   //vitest
+		api.POST("/login", authCtrl.Login)                                           //vitest
 		api.POST("/password/forgot", authCtrl.ForgotPassword)
 		api.POST("/password/reset", authCtrl.ResetPassword)
 

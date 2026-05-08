@@ -72,17 +72,18 @@ func (ctrl *AuthController) Register(c *gin.Context) {
 		}
 	}
 
-	response := gin.H{
-		"message":    "User registered successfully",
-		"isVerified": user.IsVerified,
+	response := dto.RegisterRequestResponseDTO{
+		Message:    "User registered successfully",
+		IsVerified: user.IsVerified,
 	}
 
-	// Only for vitest we will return the token
+	// Only for vitest
 	if config.Config().AppEnv == "test" {
-		response["token"] = token
+		response.Token = token
 	}
 
 	responses.SUCCESS(c, http.StatusCreated, response)
+
 }
 
 // ResendRegistrationConfirmation
@@ -107,16 +108,17 @@ func (ctrl *AuthController) ResendRegistrationConfirmation(c *gin.Context) {
 		}
 	}
 
-	response := gin.H{
-		"message": "If this email exists, a registration confirmation link has been sent.",
+	response := dto.RequestRegistrationConfirmationResponseDTO{
+		Message: "If this email exists, a registration confirmation link has been sent.",
 	}
 
-	// Only for vitest we will return the token
+	// Only for vitest
 	if config.Config().AppEnv == "test" {
-		response["token"] = token
+		response.Token = token
 	}
 
 	responses.SUCCESS(c, http.StatusOK, response)
+
 }
 
 // Confirms a user account using a token.
@@ -139,11 +141,14 @@ func (ctrl *AuthController) ConfirmRegistration(c *gin.Context) {
 		return
 	}
 
-	responses.SUCCESS(c, http.StatusOK, gin.H{
-		"message":    "Registration confirmed successfully.",
-		"user_id":    user.ID,
-		"isVerified": user.IsVerified,
-	})
+	response := dto.RegistrationConfirmationResponseDTO{
+		Message:    "Registration confirmed successfully.",
+		UserId:     user.ID,
+		IsVerified: user.IsVerified,
+	}
+
+	responses.SUCCESS(c, http.StatusOK, response)
+
 }
 
 // Authenticates a user and returns a JWT token.
@@ -164,7 +169,7 @@ func (ctrl *AuthController) Login(c *gin.Context) {
 		return
 	}
 
-	responses.SUCCESS(c, http.StatusOK, dto.LoginResponseDTO{
+	responses.SUCCESS(c, http.StatusOK, dto.LoginRequestResponseDTO{
 		Message: "Success Login",
 		Token:   token,
 		User:    dto.ToUserPublicDTO(user),
@@ -175,14 +180,14 @@ func (ctrl *AuthController) Login(c *gin.Context) {
 // Security:
 // - Always returns a generic response (prevents email enumeration)
 func (ctrl *AuthController) ForgotPassword(c *gin.Context) {
-	var form forms.RequestResetPasswordRequest
+	var form forms.ForgotPasswordRequest
 
 	if err := c.ShouldBindJSON(&form); err != nil {
 		responses.VALIDATION_ERROR(c, err)
 		return
 	}
 
-	err := ctrl.authService.ForgotPassword(form.Email)
+	token, err := ctrl.authService.ForgotPassword(form.Email)
 	if err != nil {
 		logger.Login.Error("Password reset request failed for %s: %v", form.Email, err)
 
@@ -192,9 +197,16 @@ func (ctrl *AuthController) ForgotPassword(c *gin.Context) {
 		}
 	}
 
-	responses.SUCCESS(c, http.StatusOK, gin.H{
-		"message": "If this email exists, a reset link has been sent.",
-	})
+	response := dto.ForgotPasswordResponseDTO{
+		Message: "If this email exists, a reset link has been sent.",
+	}
+
+	// Only for vitest
+	if config.Config().AppEnv == "test" {
+		response.Token = token
+	}
+	responses.SUCCESS(c, http.StatusOK, response)
+
 }
 
 // Resets a user's password using a valid reset token.

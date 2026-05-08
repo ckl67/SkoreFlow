@@ -6,6 +6,7 @@ import {
   ResendConfirmRegistration,
   expireToken,
   login,
+  ForgotPassword,
 } from '../helpers/auth.js';
 
 interface TestUser {
@@ -194,10 +195,7 @@ describe('👤 User API - From the User Point of view', () => {
     expect(res1.status).toBe(401);
 
     // Confirm
-    const res2 = await confirmRegistration({
-      token,
-    });
-
+    const res2 = await confirmRegistration({ token });
     expect(res2.status).toBe(200);
 
     // Login after confirmation
@@ -208,4 +206,31 @@ describe('👤 User API - From the User Point of view', () => {
 
     expect(res3.status).toBe(200);
   });
+
+  // ----------------------------------------------------------------------------
+  // PASSWORD FORGOT
+  // ----------------------------------------------------------------------------
+  it('should succeed for password forgot', async () => {
+    const user = makeUser();
+
+    // Register
+    const res1 = await registerUser(user);
+    expect(res1.status).toBe(201);
+    const token = res1.data.data!.token;
+
+    // Confirm
+    const res2 = await confirmRegistration({ token });
+    expect(res2.status).toBe(200);
+
+    // Request Password
+    const res3 = await ForgotPassword({ email: user.email });
+    expect(res3.status).toBe(200);
+
+    const tokenFP = res3.data.data!.token;
+
+    expect(tokenFP).toBeDefined();
+  });
+
+  // ----------------------------------------------------------------------------
+  // ----------------------------------------------------------------------------
 });

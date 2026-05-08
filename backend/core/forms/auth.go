@@ -67,7 +67,7 @@ type ResetPasswordRequest struct {
 	Password string `json:"password" binding:"required,min=8,max=100"`
 }
 
-// RequestResetPasswordRequest defines the payload for initiating a password reset.
-type RequestResetPasswordRequest struct {
+// ForgotPasswordRequest defines the payload for initiating a password reset.
+type ForgotPasswordRequest struct {
 	Email string `json:"email" binding:"required,email"`
 }

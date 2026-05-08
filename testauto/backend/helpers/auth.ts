@@ -29,7 +29,7 @@ interface RegisterRequestOptions {
 //    }
 //    const token = payload.token;
 
-interface RegisterResponse {
+interface RegisterRequestResponse {
   message: string;
   isVerified: boolean;
   token: string; // Only for test
@@ -37,11 +37,11 @@ interface RegisterResponse {
 
 // -------------------
 
-interface ConfirmRegistrationRequest {
+interface RegistrationConfirmationRequest {
   token: string;
 }
 
-interface ConfirmRegistrationResponse {
+interface RegistrationConfirmationResponse {
   message: string;
   user_id: number;
   isVerified: boolean;
@@ -49,11 +49,11 @@ interface ConfirmRegistrationResponse {
 
 // -------------------
 
-interface ResendConfirmRegistrationRequest {
+interface RequestRegistrationConfirmationRequest {
   email: string;
 }
 
-interface ResendConfirmRegistrationResponse {
+interface RequestRegistrationConfirmationResponse {
   message: string;
   token: string; // Only for test
 }
@@ -74,10 +74,21 @@ interface User {
   isVerified: boolean;
 }
 
-interface LoginResponse {
+interface LoginRequestResponse {
   message: string;
   token: string;
   user: User;
+}
+
+// -------------------
+
+interface ForgotPasswordRequest {
+  email: string;
+}
+
+interface ForgotPasswordResponse {
+  message: string;
+  token: string; // Only for test
 }
 
 // --------------------------------------------------------------------------------
@@ -111,7 +122,7 @@ interface LoginResponse {
 // --------------------------------------------------------------------------------
 
 async function login({ email, password }: LoginRequest) {
-  const res = await request<LoginResponse>('POST', `${API_URL}/login`, {
+  const res = await request<LoginRequestResponse>('POST', `${API_URL}/login`, {
     data: {
       email: email,
       password: password,
@@ -130,7 +141,7 @@ async function registerUser(data: RegisterRequestOptions) {
     throw new Error('Missing required fields: username, email, password');
   }
 
-  const res = await request<RegisterResponse>('POST', `${API_URL}/auth/register`, {
+  const res = await request<RegisterRequestResponse>('POST', `${API_URL}/auth/register`, {
     data,
   });
 
@@ -142,8 +153,8 @@ async function registerUser(data: RegisterRequestOptions) {
 // --------------------------------------------------------------------------------
 // Confirm Registration
 // --------------------------------------------------------------------------------
-async function confirmRegistration(data: ConfirmRegistrationRequest) {
-  const res = await request<ConfirmRegistrationResponse>(
+async function confirmRegistration(data: RegistrationConfirmationRequest) {
+  const res = await request<RegistrationConfirmationResponse>(
     'POST',
     `${API_URL}/auth/register/confirm`,
     {
@@ -159,8 +170,8 @@ async function confirmRegistration(data: ConfirmRegistrationRequest) {
 // --------------------------------------------------------------------------------
 // Resend Confirm Registration
 // --------------------------------------------------------------------------------
-async function ResendConfirmRegistration(data: ResendConfirmRegistrationRequest) {
-  const res = await request<ResendConfirmRegistrationResponse>(
+async function ResendConfirmRegistration(data: RequestRegistrationConfirmationRequest) {
+  const res = await request<RequestRegistrationConfirmationResponse>(
     'POST',
     `${API_URL}/auth/register/resend`,
     {
@@ -188,4 +199,24 @@ async function expireToken(email: string, token: string) {
   return res;
 }
 
-export { registerUser, confirmRegistration, ResendConfirmRegistration, expireToken, login };
+// --------------------------------------------------------------------------------
+// Resend Confirm Registration
+// --------------------------------------------------------------------------------
+async function ForgotPassword(data: ForgotPasswordRequest) {
+  const res = await request<ForgotPasswordResponse>('POST', `${API_URL}/password/forgot`, {
+    data,
+  });
+
+  console.log('\n Forgot Password for mail :', res.status, res.data);
+
+  return res;
+}
+
+export {
+  registerUser,
+  confirmRegistration,
+  ResendConfirmRegistration,
+  expireToken,
+  login,
+  ForgotPassword,
+};

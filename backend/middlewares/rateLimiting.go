@@ -29,7 +29,7 @@ func RateLimiter(rps rate.Limit, burst int) gin.HandlerFunc {
 
 		// 🔥 Bypass the limiter logic if the environment is set to "test".
 		// to avoid blocking in vitest !
-		if config.Config().AppEnv == "test" {
+		if config.Config().ProtectionLevel == "none" {
 			c.Next()
 			return
 		}

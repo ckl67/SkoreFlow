@@ -43,13 +43,13 @@ Usage:
   ./auto-test.sh --scores       Include score tests
   ./auto-test.sh --composers    Include composer tests
 
-  ./auto-test.sh --stress       Will run the stress test
+  ./auto-test.sh --stress       Will run the stress test (PROTECTION_LEVEL=full)
 
  Options
   --kill                        Kill The process to be sure that there is no Background process
   --clean                       Clean DB and Storage files before running
   --smtp                        Enable SMTP/Google password reset tests
-  --nbg                         Stop server after script
+  --bg                          Will Force backend process to continue in background
 
   --help                        Help
 
@@ -57,8 +57,9 @@ Usage:
 
 # --- BACKEND ENVIRONNEMENT VARIABLES ---
 
-export APP_ENV=test
-export SMTP_ENABLED=false
+export APP_ENV=test          # Will seed user on starting of the server
+export SMTP_ENABLED=false    # Will deactivate SMTP server
+export PROTECTION_LEVEL=none # Will bypass for example : RateLimiter()
 
 # --- SHELL GLOBAL VARIABLES ---
 RUN_STRESS=false
@@ -70,21 +71,21 @@ RUN_COMPOSERS=false
 KILL_PROCESS=false
 
 CLEAN_DB_FILES=false
-FORCE_BACKGROUND=true
+FORCE_BACKGROUND=false
 
 # --- ARGUMENT PARSING ---
 for arg in "$@"; do
 	case $arg in
 	--stress)
-		export APP_ENV=development
+		export PROTECTION_LEVEL=full
 		RUN_STRESS=true
 		;;
 	--smtp) export SMTP_ENABLED=true ;;
-	--clean) export CLEAN_DB_FILES=true ;;
+	--clean) CLEAN_DB_FILES=true ;;
 	--users) RUN_USERS=true ;;
 	--scores) RUN_SCORES=true ;;
 	--composers) RUN_COMPOSERS=true ;;
-	--nbg) FORCE_BACKGROUND=false ;;
+	--bg) FORCE_BACKGROUND=true ;;
 	--kill) KILL_PROCESS=true ;;
 	--all)
 		RUN_USERS=true
@@ -118,7 +119,7 @@ if fuser 5010/tcp >/dev/null 2>&1; then
 	fuser -k 5010/tcp
 fi
 
-# Wait for OS to release file handles
+# Wait for 2sec to release file handles
 sleep 2
 
 if [ "$KILL_PROCESS" = true ]; then
@@ -173,7 +174,7 @@ echo " "
 echo " "
 
 # Health check loop
-echo "Waiting for server to be ready..."
+echo "Waiting for server to be ready...(Can be a little bit long in case of new compilation of go.mod)"
 until curl -s http://localhost:8080/health >/dev/null; do
 	sleep 1.0
 	echo -n "."
@@ -203,7 +204,16 @@ if [ "$RUN_STRESS" = true ]; then
 	echo "--------------------------------"
 	npx vitest run tests/stress.test.ts
 
-	exit 1
+	if [ "$FORCE_BACKGROUND" = true ]; then
+		echo "  ---> Running in Background !!"
+		echo "  Backend PID: $BACKEND_PID"
+		echo "  Environment is ready for Vitest manual testing."
+		echo "  Press Ctrl+C to stop the server."
+		wait $BACKEND_PID
+	else
+		echo " Process - Exit"
+	fi
+
 fi
 
 # 1. Basic Health and Sanity tests

@@ -67,7 +67,11 @@ type FrontendConfig struct {
 // Global Server Configuration
 // Central struct holding ALL configuration used across the app
 type ServerConfig struct {
-	AppEnv string `env:"APP_ENV"` // development, production, test
+	// Backend Mode
+	AppEnv string `env:"APP_ENV"` // development, production, test--> for Vitest (= will seed users)
+
+	// Backend Security
+	ProtectionLevel string `env:"PROTECTION_LEVEL"` // none, basic, full.
 
 	// Paths
 	AppRoot     string `env:"APP_ROOT"`     //	APP_ROOT=/app or APP_ROOT=/home/<linux user>/SkoreFlow_Project/SkoreFlow/backend
@@ -120,8 +124,12 @@ func (c ServerConfig) LogSafe() {
 	fmt.Println("------ SERVER CONFIG ------")
 	fmt.Println("-------------------- ------")
 
-	fmt.Printf("Application Environment - (appEnv) :%s\n", c.AppEnv)
-	fmt.Printf("SMTP Enabled: %t\n", c.Smtp.Enabled)
+	fmt.Println("Application")
+	fmt.Printf("  Environment Mode (production/development/test)- (appEnv) :%s\n", c.AppEnv)
+	fmt.Printf("  Protection Level (none/basic/full) - (ProtectionLevel) :%s\n", c.ProtectionLevel)
+
+	fmt.Println("SMTP")
+	fmt.Printf("  Enabled: %t\n", c.Smtp.Enabled)
 
 	if c.AppEnv == "development" || c.AppEnv == "test" {
 
@@ -209,7 +217,7 @@ func Config() ServerConfig {
 // - .env file
 // - environment variables (override priority)
 func (b configBuilder) Build() ServerConfig {
-	// Read Configuration via initialisation
+	// Read Configuration via initialization
 	conf := NewConfig()
 
 	// Read Configuration via .env file
@@ -257,10 +265,10 @@ func (b configBuilder) Build() ServerConfig {
 // Provides fallback values when nothing is defined
 func NewConfig() ServerConfig {
 	return ServerConfig{
-		AppEnv: "",
-
-		AppRoot:     "",
-		StoragePath: "",
+		AppEnv:          "",
+		ProtectionLevel: "full",
+		AppRoot:         "",
+		StoragePath:     "",
 
 		AdminEmail:    "admin@admin.com",
 		AdminPassword: "",

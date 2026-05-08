@@ -203,29 +203,29 @@ func (s *AuthService) SendRegistrationConfirmation(email string) (string, error)
 // Initiates password reset flow.
 // Security:
 // - Does not expose whether email exists
-func (s *AuthService) ForgotPassword(email string) error {
+func (s *AuthService) ForgotPassword(email string) (string, error) {
 	var user models.User
 
 	email = format.SanitizeUserEmail(email)
 
 	if err := user.FindByEmail(s.db, email); err != nil {
 		logger.Login.Warn("User not found %s", email)
-		return nil
+		return "", nil
 	}
 
 	err := user.GeneratePasswordResetToken()
 	if err != nil {
 		logger.Login.Info("Password reset requested for unknown email: %s", email)
-		return nil
+		return "", nil
 	}
 
 	if err := user.Update(s.db); err != nil {
-		return err
+		return "", err
 	}
 
 	cfg := config.Config()
 	if !cfg.Smtp.Enabled {
-		return apperrors.ErrSmtpNotConfigured
+		return user.PasswordReset, apperrors.ErrSmtpNotConfigured
 	}
 
 	logger.Login.Debug("Sending reset email to %s", email)
@@ -237,10 +237,10 @@ func (s *AuthService) ForgotPassword(email string) error {
 	)
 
 	if err := mail.SendHTMLMail(email, "SkoreFlow Password Reset", htmlBody); err != nil {
-		return apperrors.ErrSmtpFailed
+		return user.PasswordReset, apperrors.ErrSmtpFailed
 	}
 
-	return nil
+	return user.PasswordReset, nil
 }
 
 // Resets a user's password using a valid token.
