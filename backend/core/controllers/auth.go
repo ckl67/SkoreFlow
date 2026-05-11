@@ -62,7 +62,7 @@ func (ctrl *AuthController) Register(c *gin.Context) {
 	}
 
 	// Trigger confirmation email (non-blocking for user creation)
-	token, err := ctrl.authService.SendRegistrationConfirmation(form.Email)
+	token, err := ctrl.authService.SendRegistration(form.Email)
 	if err != nil {
 		logger.Login.Error("Registration Confirmation failed for %s: %v", form.Email, err)
 
@@ -72,7 +72,7 @@ func (ctrl *AuthController) Register(c *gin.Context) {
 		}
 	}
 
-	response := dto.RegisterRequestResponseDTO{
+	response := dto.RegisterResponse{
 		Message:    "User registered successfully",
 		IsVerified: user.IsVerified,
 	}
@@ -86,19 +86,19 @@ func (ctrl *AuthController) Register(c *gin.Context) {
 
 }
 
-// ResendRegistrationConfirmation
+// ResendRegistration
 // re-sends a registration confirmation email.
 // Security:
 // - Always returns a generic response to prevent email enumeration
-func (ctrl *AuthController) ResendRegistrationConfirmation(c *gin.Context) {
-	var form forms.RequestRegistrationConfirmation
+func (ctrl *AuthController) ResendRegistration(c *gin.Context) {
+	var form forms.ResendRegistrationRequest
 
 	if err := c.ShouldBindJSON(&form); err != nil {
 		responses.VALIDATION_ERROR(c, err)
 		return
 	}
 
-	token, err := ctrl.authService.SendRegistrationConfirmation(form.Email)
+	token, err := ctrl.authService.SendRegistration(form.Email)
 	if err != nil {
 		logger.Login.Error("Registration Confirmation failed for %s: %v", form.Email, err)
 
@@ -108,7 +108,7 @@ func (ctrl *AuthController) ResendRegistrationConfirmation(c *gin.Context) {
 		}
 	}
 
-	response := dto.RequestRegistrationConfirmationResponseDTO{
+	response := dto.ResendRegistrationResponse{
 		Message: "If this email exists, a registration confirmation link has been sent.",
 	}
 
@@ -125,7 +125,7 @@ func (ctrl *AuthController) ResendRegistrationConfirmation(c *gin.Context) {
 // Security:
 // - Does NOT expose whether token is invalid or expired
 func (ctrl *AuthController) ConfirmRegistration(c *gin.Context) {
-	var form forms.RegistrationConfirmation
+	var form forms.ConfirmRegistrationRequest
 
 	if err := c.ShouldBindJSON(&form); err != nil {
 		responses.VALIDATION_ERROR(c, err)
@@ -141,7 +141,7 @@ func (ctrl *AuthController) ConfirmRegistration(c *gin.Context) {
 		return
 	}
 
-	response := dto.RegistrationConfirmationResponseDTO{
+	response := dto.ConfirmRegistrationResponse{
 		Message:    "Registration confirmed successfully.",
 		UserId:     user.ID,
 		IsVerified: user.IsVerified,
@@ -163,17 +163,33 @@ func (ctrl *AuthController) Login(c *gin.Context) {
 		return
 	}
 
-	user, token, err := ctrl.authService.SignIn(input.Email, input.Password)
+	user, token, err := ctrl.authService.Login(input.Email, input.Password)
 	if err != nil {
 		responses.FAIL(c, http.StatusUnauthorized, err)
 		return
 	}
 
-	responses.SUCCESS(c, http.StatusOK, dto.LoginRequestResponseDTO{
+	response := dto.LoginResponse{
 		Message: "Success Login",
 		Token:   token,
-		User:    dto.ToUserPublicDTO(user),
-	})
+		User:    dto.ToUserPublicResponse(user),
+	}
+
+	responses.SUCCESS(c, http.StatusOK, response)
+}
+
+// Logout
+// Real Logout will be done on the frontend via :
+//
+//	localStorage.removeItem("token");
+//
+// Login time will expire after x hours, meaning user has to be login again : Time is configured in file token.go
+func (ctrl *AuthController) Logout(c *gin.Context) {
+	response := dto.LogoutResponse{
+		Message: "Logout successful",
+	}
+
+	responses.SUCCESS(c, http.StatusOK, response)
 }
 
 // Initiates the password reset process.
@@ -197,7 +213,7 @@ func (ctrl *AuthController) ForgotPassword(c *gin.Context) {
 		}
 	}
 
-	response := dto.ForgotPasswordResponseDTO{
+	response := dto.ForgotPasswordResponse{
 		Message: "If this email exists, a reset link has been sent.",
 	}
 
@@ -226,10 +242,13 @@ func (ctrl *AuthController) ResetPassword(c *gin.Context) {
 		return
 	}
 
-	responses.SUCCESS(c, http.StatusOK, gin.H{
-		"message": "Password successfully reset",
-		"user_id": user.ID,
-	})
+	response := dto.ResetPasswordResponse{
+		Message: "If this email exists, a reset link has been sent.",
+		UserId:  user.ID,
+	}
+
+	responses.SUCCESS(c, http.StatusOK, response)
+
 }
 
 // ValidateResetToken

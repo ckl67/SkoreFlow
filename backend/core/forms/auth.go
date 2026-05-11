@@ -44,13 +44,13 @@ type RegisterRequest struct {
 	Password string `json:"password" binding:"required,min=8,max=100"`
 }
 
-// RegistrationConfirmation defines the payload for confirming a registration using a token.
-type RegistrationConfirmation struct {
+// ConfirmRegistrationRequest defines the payload for confirming a registration using a token.
+type ConfirmRegistrationRequest struct {
 	Token string `json:"token" binding:"required"`
 }
 
-// RequestRegistrationConfirmation defines the payload for requesting a new registration confirmation email.
-type RequestRegistrationConfirmation struct {
+// ResendRegistrationRequest defines the payload for requesting a new registration confirmation email.
+type ResendRegistrationRequest struct {
 	Email string `json:"email" binding:"required,email"`
 }
 

@@ -12,24 +12,14 @@ import { API_URL } from '../config.js';
 // TYPES
 // --------------------------------------------------------------------------------
 
-interface RegisterRequestOptions {
+interface RegisterRequest {
   username: string;
   email: string;
   password: string;
 }
 
 // token should never be returned !!
-// Here only for test
-// we could have let optional with
-//   token?: string;
-// Nevertheless this would force to test !
-//    const payload = resRegister.data.data;
-//    if (!payload?.token) {
-//      throw new Error('Login response missing token');
-//    }
-//    const token = payload.token;
-
-interface RegisterRequestResponse {
+interface RegisterResponse {
   message: string;
   isVerified: boolean;
   token: string; // Only for test
@@ -37,11 +27,11 @@ interface RegisterRequestResponse {
 
 // -------------------
 
-interface RegistrationConfirmationRequest {
+interface ConfirmRegistrationRequest {
   token: string;
 }
 
-interface RegistrationConfirmationResponse {
+interface ConfirmRegistrationResponse {
   message: string;
   user_id: number;
   isVerified: boolean;
@@ -49,11 +39,11 @@ interface RegistrationConfirmationResponse {
 
 // -------------------
 
-interface RequestRegistrationConfirmationRequest {
+interface ResendRegistrationRequest {
   email: string;
 }
 
-interface RequestRegistrationConfirmationResponse {
+interface ResendRegistrationResponse {
   message: string;
   token: string; // Only for test
 }
@@ -65,7 +55,7 @@ interface LoginRequest {
   password: string;
 }
 
-interface User {
+interface UserPublicResponse {
   id: number;
   username: string;
   email: string;
@@ -74,12 +64,17 @@ interface User {
   isVerified: boolean;
 }
 
-interface LoginRequestResponse {
+interface LoginResponse {
   message: string;
   token: string;
-  user: User;
+  user: UserPublicResponse;
 }
 
+// -------------------
+
+interface LogoutResponse {
+  message: string;
+}
 // -------------------
 
 interface ForgotPasswordRequest {
@@ -89,6 +84,17 @@ interface ForgotPasswordRequest {
 interface ForgotPasswordResponse {
   message: string;
   token: string; // Only for test
+}
+
+// -------------------
+interface ResetPasswordRequest {
+  token: string;
+  password: string;
+}
+
+interface ResetPasswordResponse {
+  message: string;
+  id: number;
 }
 
 // --------------------------------------------------------------------------------
@@ -122,7 +128,7 @@ interface ForgotPasswordResponse {
 // --------------------------------------------------------------------------------
 
 async function login({ email, password }: LoginRequest) {
-  const res = await request<LoginRequestResponse>('POST', `${API_URL}/login`, {
+  const res = await request<LoginResponse>('POST', `${API_URL}/login`, {
     data: {
       email: email,
       password: password,
@@ -133,15 +139,26 @@ async function login({ email, password }: LoginRequest) {
 }
 
 // --------------------------------------------------------------------------------
-// Register User
+// Logout
+// Real Logout will be done on the frontend via : localStorage.removeItem("token");
+// Login time will expire after x hours, meaning user has to be login again : Time is configured in file token.go
 // --------------------------------------------------------------------------------
-async function registerUser(data: RegisterRequestOptions) {
+async function logout() {
+  const res = await request<LogoutResponse>('POST', `${API_URL}/logout`, {});
+
+  return res;
+}
+
+// --------------------------------------------------------------------------------
+// Register
+// --------------------------------------------------------------------------------
+async function register(data: RegisterRequest) {
   // TypeScript exists only on compilation, it is a security to keep this check
   if (!data.username || !data.email || !data.password) {
     throw new Error('Missing required fields: username, email, password');
   }
 
-  const res = await request<RegisterRequestResponse>('POST', `${API_URL}/auth/register`, {
+  const res = await request<RegisterResponse>('POST', `${API_URL}/auth/register`, {
     data,
   });
 
@@ -153,8 +170,8 @@ async function registerUser(data: RegisterRequestOptions) {
 // --------------------------------------------------------------------------------
 // Confirm Registration
 // --------------------------------------------------------------------------------
-async function confirmRegistration(data: RegistrationConfirmationRequest) {
-  const res = await request<RegistrationConfirmationResponse>(
+async function confirmRegistration(data: ConfirmRegistrationRequest) {
+  const res = await request<ConfirmRegistrationResponse>(
     'POST',
     `${API_URL}/auth/register/confirm`,
     {
@@ -168,16 +185,12 @@ async function confirmRegistration(data: RegistrationConfirmationRequest) {
 }
 
 // --------------------------------------------------------------------------------
-// Resend Confirm Registration
+// Resend Registration
 // --------------------------------------------------------------------------------
-async function ResendConfirmRegistration(data: RequestRegistrationConfirmationRequest) {
-  const res = await request<RequestRegistrationConfirmationResponse>(
-    'POST',
-    `${API_URL}/auth/register/resend`,
-    {
-      data,
-    },
-  );
+async function ResendRegistration(data: ResendRegistrationRequest) {
+  const res = await request<ResendRegistrationResponse>('POST', `${API_URL}/auth/register/resend`, {
+    data,
+  });
 
   console.log('\n Resend a Confirm Registration mail :', res.status, res.data);
 
@@ -187,7 +200,6 @@ async function ResendConfirmRegistration(data: RequestRegistrationConfirmationRe
 // --------------------------------------------------------------------------------
 // Set Expire token time
 // --------------------------------------------------------------------------------
-
 async function expireToken(email: string, token: string) {
   const res = await request('POST', `${API_URL}/test/expire-token`, {
     token,
@@ -200,7 +212,7 @@ async function expireToken(email: string, token: string) {
 }
 
 // --------------------------------------------------------------------------------
-// Resend Confirm Registration
+// Forgot Password
 // --------------------------------------------------------------------------------
 async function ForgotPassword(data: ForgotPasswordRequest) {
   const res = await request<ForgotPasswordResponse>('POST', `${API_URL}/password/forgot`, {
@@ -212,11 +224,26 @@ async function ForgotPassword(data: ForgotPasswordRequest) {
   return res;
 }
 
+// --------------------------------------------------------------------------------
+// Forgot Password
+// --------------------------------------------------------------------------------
+async function ResetPassword(data: ResetPasswordRequest) {
+  const res = await request<ResetPasswordResponse>('POST', `${API_URL}/password/reset`, {
+    data,
+  });
+
+  console.log('\n ResetPassword Password :', res.status, res.data);
+
+  return res;
+}
+
 export {
-  registerUser,
+  register,
   confirmRegistration,
-  ResendConfirmRegistration,
+  ResendRegistration,
   expireToken,
   login,
   ForgotPassword,
+  ResetPassword,
+  logout,
 };

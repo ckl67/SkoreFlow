@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
-    <diagram id="3xDQYAC0QjJy17-5WhtZ" name="User">
-        <mxGraphModel dx="3408" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2336" pageHeight="1654" math="0" shadow="0">
+    <diagram id="3xDQYAC0QjJy17-5WhtZ" name="Auth">
+        <mxGraphModel dx="3408" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2336" pageHeight="1654" background="light-dark(#FFFFFF,#1F1F1F)" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -8,17 +8,17 @@
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
                 <mxCell id="2" value="&lt;div&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;(1) Register User&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(192, 192, 192), rgb(204, 0, 0));&quot;&gt;/auth/register&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="-1870" y="460" width="120" height="60" as="geometry"/>
+                    <mxGeometry x="-2130" y="460" width="120" height="60" as="geometry"/>
                 </mxCell>
                 <mxCell id="-LPKLOolhMpLLHFIRt2M-21" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;" parent="1" source="6" target="-LPKLOolhMpLLHFIRt2M-20" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
                 <mxCell id="6" value="&lt;b&gt;For&lt;font style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;m&lt;/font&gt;&lt;/b&gt;&lt;div&gt;&lt;br&gt;&lt;div style=&quot;color: rgb(192, 192, 192); scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;&lt;font style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;username&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;color: rgb(192, 192, 192); scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;&lt;font style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;mail&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;color: rgb(192, 192, 192); scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;&lt;font style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;password&lt;br style=&quot;color: rgb(192, 192, 192); scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;&lt;/font&gt;&lt;div style=&quot;color: rgb(192, 192, 192); scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;&lt;br style=&quot;color: rgb(192, 192, 192); scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;" parent="1" vertex="1">
-                    <mxGeometry x="-1870" y="550" width="120" height="100" as="geometry"/>
+                    <mxGeometry x="-2130" y="550" width="120" height="100" as="geometry"/>
                 </mxCell>
                 <mxCell id="-LPKLOolhMpLLHFIRt2M-17" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="-LPKLOolhMpLLHFIRt2M-9" target="-LPKLOolhMpLLHFIRt2M-11" edge="1">
                     <mxGeometry relative="1" as="geometry">
-                        <mxPoint x="-1970" y="1010" as="targetPoint"/>
+                        <mxPoint x="-2230" y="1010" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
                 <mxCell id="-LPKLOolhMpLLHFIRt2M-24" value="true" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="-LPKLOolhMpLLHFIRt2M-17" vertex="1" connectable="0">
@@ -31,7 +31,7 @@
                         <mxPoint as="offset"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="-LPKLOolhMpLLHFIRt2M-29" value="&amp;nbsp;True&amp;nbsp;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="-LPKLOolhMpLLHFIRt2M-17" vertex="1" connectable="0">
+                <mxCell id="-LPKLOolhMpLLHFIRt2M-29" value="&amp;nbsp;True&amp;nbsp;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=light-dark(#FFFFFF,#1F1F1F);" parent="-LPKLOolhMpLLHFIRt2M-17" vertex="1" connectable="0">
                     <mxGeometry x="-0.408" y="2" relative="1" as="geometry">
                         <mxPoint as="offset"/>
                     </mxGeometry>
@@ -39,45 +39,45 @@
                 <mxCell id="-LPKLOolhMpLLHFIRt2M-26" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="-LPKLOolhMpLLHFIRt2M-9" target="-LPKLOolhMpLLHFIRt2M-19" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="-LPKLOolhMpLLHFIRt2M-27" value="&amp;nbsp;false&amp;nbsp;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="-LPKLOolhMpLLHFIRt2M-26" vertex="1" connectable="0">
+                <mxCell id="-LPKLOolhMpLLHFIRt2M-27" value="&amp;nbsp;false&amp;nbsp;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=light-dark(#FFFFFF,#1F1F1F);" parent="-LPKLOolhMpLLHFIRt2M-26" vertex="1" connectable="0">
                     <mxGeometry x="-0.5" y="-3" relative="1" as="geometry">
                         <mxPoint as="offset"/>
                     </mxGeometry>
                 </mxCell>
                 <mxCell id="-LPKLOolhMpLLHFIRt2M-9" value="SMTP_ENABLE" style="rhombus;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="-1895" y="970" width="170" height="80" as="geometry"/>
+                    <mxGeometry x="-2155" y="970" width="170" height="80" as="geometry"/>
                 </mxCell>
                 <mxCell id="-LPKLOolhMpLLHFIRt2M-39" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="-LPKLOolhMpLLHFIRt2M-11" target="-LPKLOolhMpLLHFIRt2M-38" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
                 <mxCell id="-LPKLOolhMpLLHFIRt2M-11" value="Send email" style="rounded=1;whiteSpace=wrap;html=1;shadow=1;" parent="1" vertex="1">
-                    <mxGeometry x="-2020" y="1070" width="120" height="60" as="geometry"/>
+                    <mxGeometry x="-2280" y="1070" width="120" height="60" as="geometry"/>
                 </mxCell>
                 <mxCell id="-LPKLOolhMpLLHFIRt2M-40" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="-LPKLOolhMpLLHFIRt2M-19" target="-LPKLOolhMpLLHFIRt2M-38" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
                 <mxCell id="-LPKLOolhMpLLHFIRt2M-19" value="Skip email&lt;div&gt;wihout error&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="-1720" y="1070" width="120" height="60" as="geometry"/>
+                    <mxGeometry x="-1980" y="1070" width="120" height="60" as="geometry"/>
                 </mxCell>
                 <mxCell id="-LPKLOolhMpLLHFIRt2M-23" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;" parent="1" source="-LPKLOolhMpLLHFIRt2M-20" target="-LPKLOolhMpLLHFIRt2M-22" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
                 <mxCell id="-LPKLOolhMpLLHFIRt2M-20" value="Create User&lt;div&gt;&lt;font color=&quot;#ffffff&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;font&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(192, 192, 192));&quot;&gt;Username,&lt;/font&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(192, 192, 192));&quot;&gt;&lt;font&gt;&amp;nbsp;&lt;/font&gt;&lt;span style=&quot;background-color: transparent; color: rgb(192, 192, 192);&quot;&gt;&lt;font&gt;email,&amp;nbsp;&lt;/font&gt;&lt;/span&gt;&lt;/font&gt;&lt;span style=&quot;background-color: transparent; color: rgb(192, 192, 192);&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&lt;font&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(192, 192, 192));&quot;&gt;hashedPassword,&lt;/font&gt;&lt;/font&gt;&lt;/font&gt;&lt;/span&gt;&lt;/font&gt;&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;Avatar:&amp;nbsp; --&amp;gt; &quot;users/default.png&quot;,&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(192, 192, 192));&quot;&gt;RoleUser,...&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&amp;nbsp;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 179, 102));&quot;&gt;IsVerified = false&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="-1925" y="700" width="230" height="120" as="geometry"/>
+                    <mxGeometry x="-2185" y="700" width="230" height="120" as="geometry"/>
                 </mxCell>
                 <mxCell id="-LPKLOolhMpLLHFIRt2M-28" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="-LPKLOolhMpLLHFIRt2M-22" target="-LPKLOolhMpLLHFIRt2M-9" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="-LPKLOolhMpLLHFIRt2M-22" value="&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;div style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30); color: rgb(192, 192, 192);&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;Generat token&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30); text-align: left; color: rgb(192, 192, 192);&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;PasswordReset = token&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;color: rgb(192, 192, 192); scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30); text-align: left;&quot;&gt;&lt;br style=&quot;color: rgb(192, 192, 192); scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;&lt;/div&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="-1910" y="860" width="200" height="60" as="geometry"/>
+                <mxCell id="-LPKLOolhMpLLHFIRt2M-22" value="&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;div style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30); color: rgb(192, 192, 192);&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;Generat token&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30); text-align: left;&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;PasswordReset = &lt;/font&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(204, 0, 0));&quot;&gt;token&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;color: rgb(192, 192, 192); scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30); text-align: left;&quot;&gt;&lt;br style=&quot;color: rgb(192, 192, 192); scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;&lt;/div&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="-2170" y="860" width="200" height="60" as="geometry"/>
                 </mxCell>
                 <mxCell id="-LPKLOolhMpLLHFIRt2M-30" value="api answer&lt;div style=&quot;text-align: left;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;user_id&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;message&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="-2010" y="1280" width="120" height="80" as="geometry"/>
+                    <mxGeometry x="-2270" y="1280" width="120" height="80" as="geometry"/>
                 </mxCell>
                 <mxCell id="-LPKLOolhMpLLHFIRt2M-42" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="-LPKLOolhMpLLHFIRt2M-38" target="-LPKLOolhMpLLHFIRt2M-30" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="9" value="&amp;nbsp;Prod&amp;nbsp;&lt;br&gt;or&lt;br&gt;Dev" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="-LPKLOolhMpLLHFIRt2M-42" vertex="1" connectable="0">
+                <mxCell id="9" value="&amp;nbsp;Prod&amp;nbsp;&lt;br&gt;or&lt;br&gt;Dev" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=light-dark(#FFFFFF,#1F1F1F);" parent="-LPKLOolhMpLLHFIRt2M-42" vertex="1" connectable="0">
                     <mxGeometry x="-0.4095" relative="1" as="geometry">
                         <mxPoint as="offset"/>
                     </mxGeometry>
@@ -85,63 +85,58 @@
                 <mxCell id="-LPKLOolhMpLLHFIRt2M-43" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="-LPKLOolhMpLLHFIRt2M-38" target="-LPKLOolhMpLLHFIRt2M-41" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="8" value="&amp;nbsp;Test&amp;nbsp;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="-LPKLOolhMpLLHFIRt2M-43" vertex="1" connectable="0">
+                <mxCell id="8" value="&amp;nbsp;Test&amp;nbsp;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=light-dark(#FFFFFF,#1F1F1F);" parent="-LPKLOolhMpLLHFIRt2M-43" vertex="1" connectable="0">
                     <mxGeometry x="-0.555" relative="1" as="geometry">
                         <mxPoint as="offset"/>
                     </mxGeometry>
                 </mxCell>
                 <mxCell id="-LPKLOolhMpLLHFIRt2M-38" value="APP_ENV" style="rhombus;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="-1880" y="1180" width="150" height="80" as="geometry"/>
+                    <mxGeometry x="-2140" y="1180" width="150" height="80" as="geometry"/>
                 </mxCell>
-                <mxCell id="25" style="edgeStyle=orthogonalEdgeStyle;html=1;" parent="1" source="-LPKLOolhMpLLHFIRt2M-41" edge="1">
+                <mxCell id="102" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;dashed=1;dashPattern=8 8;" edge="1" parent="1" target="23">
                     <mxGeometry relative="1" as="geometry">
-                        <mxPoint x="-1485.5" y="600" as="targetPoint"/>
-                        <mxPoint x="-1540" y="1290" as="sourcePoint"/>
+                        <mxPoint x="-1795" y="585" as="targetPoint"/>
+                        <mxPoint x="-1930" y="1330" as="sourcePoint"/>
                         <Array as="points">
-                            <mxPoint x="-1580" y="1330"/>
-                            <mxPoint x="-1580" y="600"/>
+                            <mxPoint x="-1830" y="1330"/>
+                            <mxPoint x="-1830" y="585"/>
                         </Array>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="26" value="For tests !" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="25" vertex="1" connectable="0">
-                    <mxGeometry x="-0.004" y="2" relative="1" as="geometry">
-                        <mxPoint x="1" as="offset"/>
-                    </mxGeometry>
-                </mxCell>
                 <mxCell id="-LPKLOolhMpLLHFIRt2M-41" value="api answer&lt;div style=&quot;text-align: left;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;user_id&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;message&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(204, 0, 0));&quot;&gt;token&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="-1740" y="1280" width="120" height="100" as="geometry"/>
+                    <mxGeometry x="-2000" y="1280" width="120" height="100" as="geometry"/>
                 </mxCell>
-                <mxCell id="19" value="&lt;h1 style=&quot;text-align: center; margin-top: 0px;&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;Registration Flow :&amp;nbsp;&lt;/font&gt;&lt;/h1&gt;&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); font-size: 18px;&quot;&gt;&amp;nbsp;&lt;/font&gt;&lt;font style=&quot;font-size: 18px; color: light-dark(rgb(0, 0, 0), rgb(204, 0, 0));&quot;&gt;token &lt;/font&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); font-size: 18px;&quot;&gt;= Registration token - based &quot;&lt;/font&gt;&lt;font style=&quot;font-size: 18px; color: light-dark(rgb(0, 0, 0), rgb(255, 179, 102));&quot;&gt;email&lt;/font&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); font-size: 18px;&quot;&gt;&quot;&lt;/font&gt;&lt;/h1&gt;&lt;p&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;span style=&quot;background-color: transparent; color: rgb(192, 192, 192);&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;User POSTs /register {username, email, password}&lt;/font&gt;&lt;/span&gt;&lt;/li&gt;&lt;ul&gt;&lt;li&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;creates user with IsVerified=false&lt;/font&gt;&lt;/li&gt;&lt;li&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;backend sends confirmation email with frontend link:&lt;/font&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 255));&quot;&gt;https://frontend/register/confirm?token=abc123&lt;/font&gt;&lt;/li&gt;&lt;/ul&gt;&lt;li&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;User clicks frontend link&lt;/font&gt;&lt;/li&gt;&lt;ul&gt;&lt;li&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;frontend calls POST /register/confirm {token}&lt;/font&gt;&lt;/li&gt;&lt;li&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;backend validates token and sets IsVerified=true&lt;/font&gt;&lt;/li&gt;&lt;/ul&gt;&lt;li&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;Optional: POST /register/request_confirmation {email}&lt;/font&gt;&lt;/li&gt;&lt;ul&gt;&lt;li&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;re-sends confirmation email if user did not receive it&lt;/font&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/ul&gt;&lt;p&gt;&lt;/p&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">
-                    <mxGeometry x="-1620" y="100" width="490" height="310" as="geometry"/>
+                <mxCell id="19" value="&lt;h1 style=&quot;text-align: center; margin-top: 0px;&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); background-color: light-dark(#ffffff, var(--ge-dark-color, #121212));&quot;&gt;Registration Flow :&amp;nbsp;&lt;/font&gt;&lt;/h1&gt;&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;&lt;span style=&quot;background-color: light-dark(#ffffff, var(--ge-dark-color, #121212));&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); font-size: 18px;&quot;&gt;&amp;nbsp;&lt;/font&gt;&lt;font style=&quot;font-size: 18px; color: light-dark(rgb(0, 0, 0), rgb(204, 0, 0));&quot;&gt;token &lt;/font&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); font-size: 18px;&quot;&gt;= Registration token - based &quot;&lt;/font&gt;&lt;font style=&quot;font-size: 18px; color: light-dark(rgb(0, 0, 0), rgb(255, 179, 102));&quot;&gt;email&lt;/font&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); font-size: 18px;&quot;&gt;&quot;&lt;/font&gt;&lt;/span&gt;&lt;/h1&gt;&lt;p&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;span style=&quot;color: rgb(192, 192, 192); background-color: light-dark(#ffffff, var(--ge-dark-color, #121212));&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); font-size: 14px;&quot;&gt;(1) User POSTs /register {username, email, password}&lt;/font&gt;&lt;/span&gt;&lt;/li&gt;&lt;ul&gt;&lt;li&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); font-size: 14px; background-color: light-dark(#ffffff, var(--ge-dark-color, #121212));&quot;&gt;creates user with IsVerified=false&lt;/font&gt;&lt;/li&gt;&lt;li&gt;&lt;font style=&quot;font-size: 14px; background-color: light-dark(#ffffff, var(--ge-dark-color, #121212));&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;backend sends confirmation email with frontend link:&lt;/font&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 255));&quot;&gt;https://frontend/register/confirm?token=abc123&lt;/font&gt;&lt;/font&gt;&lt;/li&gt;&lt;/ul&gt;&lt;li&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); font-size: 14px; background-color: light-dark(#ffffff, var(--ge-dark-color, #121212));&quot;&gt;(2) User clicks frontend link&lt;/font&gt;&lt;/li&gt;&lt;ul&gt;&lt;li&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); font-size: 14px; background-color: light-dark(#ffffff, var(--ge-dark-color, #121212));&quot;&gt;frontend calls POST /register/confirm {token}&lt;/font&gt;&lt;/li&gt;&lt;li&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); font-size: 14px; background-color: light-dark(#ffffff, var(--ge-dark-color, #121212));&quot;&gt;backend validates token and sets IsVerified=true&lt;/font&gt;&lt;/li&gt;&lt;/ul&gt;&lt;li&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); font-size: 14px; background-color: light-dark(#ffffff, var(--ge-dark-color, #121212));&quot;&gt;(3) Optional: POST /register/resend {email}&lt;/font&gt;&lt;/li&gt;&lt;ul&gt;&lt;li&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); font-size: 14px; background-color: light-dark(#ffffff, var(--ge-dark-color, #121212));&quot;&gt;re-sends confirmation email if user did not receive it&lt;/font&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/ul&gt;&lt;p&gt;&lt;/p&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=1;strokeColor=default;glass=0;shadow=0;fillColor=default;labelBackgroundColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="-2310" y="30" width="450" height="310" as="geometry"/>
                 </mxCell>
                 <mxCell id="20" style="edgeStyle=none;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" parent="1" source="21" target="23" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
                 <mxCell id="21" value="&lt;div&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;(2) Confirm&amp;nbsp;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;Registration&amp;nbsp; User&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(204, 0, 0));&quot;&gt;auth/register/confirm&lt;/font&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="-1500" y="460" width="150" height="60" as="geometry"/>
+                    <mxGeometry x="-1760" y="460" width="150" height="60" as="geometry"/>
                 </mxCell>
                 <mxCell id="22" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;" parent="1" source="23" target="24" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="23" value="&lt;b&gt;For&lt;font style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;m&lt;/font&gt;&lt;/b&gt;&lt;div&gt;&lt;br&gt;&lt;div style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;&lt;font style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30); color: light-dark(rgb(192, 192, 192), rgb(204, 0, 0));&quot;&gt;token&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;color: rgb(192, 192, 192); scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;&lt;div style=&quot;color: rgb(192, 192, 192); scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;&lt;br style=&quot;color: rgb(192, 192, 192); scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;" parent="1" vertex="1">
-                    <mxGeometry x="-1485" y="550" width="120" height="100" as="geometry"/>
+                <mxCell id="23" value="&lt;b&gt;For&lt;font style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;m&lt;/font&gt;&lt;/b&gt;&lt;div&gt;&lt;br&gt;&lt;div style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;&lt;font style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30); color: light-dark(rgb(192, 192, 192), rgb(204, 0, 0));&quot;&gt;token&lt;/font&gt;&lt;/div&gt;&lt;/div&gt;" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;" parent="1" vertex="1">
+                    <mxGeometry x="-1745" y="545" width="120" height="80" as="geometry"/>
                 </mxCell>
-                <mxCell id="24" value="User&lt;div&gt;&lt;font color=&quot;#ffffff&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&amp;nbsp;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 179, 102));&quot;&gt;IsVerified = true&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="-1540" y="700" width="230" height="120" as="geometry"/>
+                <mxCell id="24" value="User&lt;div&gt;&lt;font color=&quot;#ffffff&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&amp;nbsp;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 153, 0));&quot;&gt;IsVerified = true&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="-1800" y="700" width="230" height="120" as="geometry"/>
                 </mxCell>
                 <mxCell id="29" style="edgeStyle=none;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" edge="1">
                     <mxGeometry relative="1" as="geometry">
-                        <mxPoint x="-2000" y="210" as="sourcePoint"/>
-                        <mxPoint x="-1840" y="210" as="targetPoint"/>
+                        <mxPoint x="-1700" y="130" as="sourcePoint"/>
+                        <mxPoint x="-1540" y="130" as="targetPoint"/>
                         <Array as="points">
-                            <mxPoint x="-1970" y="200"/>
-                            <mxPoint x="-1970" y="170"/>
-                            <mxPoint x="-1870" y="170"/>
-                            <mxPoint x="-1870" y="200"/>
+                            <mxPoint x="-1670" y="120"/>
+                            <mxPoint x="-1670" y="90"/>
+                            <mxPoint x="-1570" y="90"/>
+                            <mxPoint x="-1570" y="120"/>
                         </Array>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="30" value="&amp;nbsp;(1)&amp;nbsp; Register User&amp;nbsp;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="29" vertex="1" connectable="0">
+                <mxCell id="30" value="&amp;nbsp;(1)&amp;nbsp; Register User&amp;nbsp;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=light-dark(#FFFFFF,#1F1F1F);labelBorderColor=none;fontSize=12;" parent="29" vertex="1" connectable="0">
                     <mxGeometry y="-2" relative="1" as="geometry">
                         <mxPoint x="-5" y="-12" as="offset"/>
                     </mxGeometry>
@@ -149,14 +144,14 @@
                 <mxCell id="46" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="27" target="28" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <Array as="points">
-                            <mxPoint x="-1970" y="220"/>
-                            <mxPoint x="-1970" y="250"/>
-                            <mxPoint x="-1860" y="250"/>
-                            <mxPoint x="-1860" y="220"/>
+                            <mxPoint x="-1670" y="140"/>
+                            <mxPoint x="-1670" y="170"/>
+                            <mxPoint x="-1560" y="170"/>
+                            <mxPoint x="-1560" y="140"/>
                         </Array>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="47" value="(2) Confirm Registration&lt;br&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(204, 0, 0));&quot;&gt;token&lt;/font&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="46" vertex="1" connectable="0">
+                <mxCell id="47" value="(2) Confirm Registration&lt;br&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(204, 0, 0));&quot;&gt;token&lt;/font&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=light-dark(#FFFFFF,#1F1F1F);fontSize=12;" parent="46" vertex="1" connectable="0">
                     <mxGeometry x="-0.0928" y="-2" relative="1" as="geometry">
                         <mxPoint x="10" y="18" as="offset"/>
                     </mxGeometry>
@@ -164,97 +159,295 @@
                 <mxCell id="48" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="27" target="28" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <Array as="points">
-                            <mxPoint x="-2060" y="110"/>
-                            <mxPoint x="-1780" y="110"/>
+                            <mxPoint x="-1760" y="30"/>
+                            <mxPoint x="-1480" y="30"/>
                         </Array>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="49" value="(3) Resend &lt;br&gt;Confirmation Registration&lt;br&gt;&lt;font style=&quot;&quot;&gt;&lt;i style=&quot;&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 153, 0));&quot;&gt;(email)&amp;nbsp;&lt;/font&gt;&lt;/i&gt;&lt;/font&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="48" vertex="1" connectable="0">
+                <mxCell id="49" value="(3) Resend &lt;br&gt;Confirmation Registration&lt;div&gt;{email}&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=light-dark(#FFFFFF,#1F1F1F);fontColor=default;fontSize=12;" parent="48" vertex="1" connectable="0">
                     <mxGeometry x="-0.0312" y="1" relative="1" as="geometry">
                         <mxPoint as="offset"/>
                     </mxGeometry>
                 </mxCell>
                 <mxCell id="27" value="Frontend" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0050ef;fontColor=#ffffff;strokeColor=#001DBC;" parent="1" vertex="1">
-                    <mxGeometry x="-2120" y="190" width="120" height="60" as="geometry"/>
+                    <mxGeometry x="-1820" y="110" width="120" height="60" as="geometry"/>
                 </mxCell>
                 <mxCell id="34" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" parent="1" source="28" target="31" edge="1">
                     <mxGeometry relative="1" as="geometry">
-                        <mxPoint x="-1810" y="350" as="targetPoint"/>
+                        <mxPoint x="-1510" y="270" as="targetPoint"/>
                         <Array as="points">
-                            <mxPoint x="-1780" y="350"/>
+                            <mxPoint x="-1480" y="270"/>
                         </Array>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="35" value="&lt;font style=&quot;&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;(1 or 3) Send&amp;nbsp;&lt;/font&gt;&lt;span style=&quot;background-color: light-dark(#ffffff, var(--ge-dark-color, #121212));&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;email&lt;/font&gt;&lt;/span&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;to Confirm Registration&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(204, 0, 0));&quot;&gt;token&lt;/font&gt;&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="34" vertex="1" connectable="0">
+                <mxCell id="35" value="&lt;font style=&quot;font-size: 12px;&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;(1) Send&amp;nbsp;&lt;/font&gt;&lt;span style=&quot;&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;email&lt;/font&gt;&lt;/span&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); font-size: 12px;&quot;&gt;to Confirm Registration&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(204, 0, 0)); font-size: 12px;&quot;&gt;token&lt;/font&gt;&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=light-dark(#FFFFFF,#1F1F1F);labelBorderColor=none;" parent="34" vertex="1" connectable="0">
                     <mxGeometry x="-0.4096" y="2" relative="1" as="geometry">
                         <mxPoint as="offset"/>
                     </mxGeometry>
                 </mxCell>
                 <mxCell id="28" value="Backend" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#a20025;fontColor=#ffffff;strokeColor=#6F0000;" parent="1" vertex="1">
-                    <mxGeometry x="-1840" y="190" width="120" height="60" as="geometry"/>
+                    <mxGeometry x="-1540" y="110" width="120" height="60" as="geometry"/>
                 </mxCell>
                 <mxCell id="37" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.07;exitY=0.4;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="31" target="36" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="40" value="&amp;nbsp;(1)&amp;nbsp;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="37" vertex="1" connectable="0">
+                <mxCell id="40" value="&amp;nbsp;(1)&amp;nbsp;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=light-dark(#FFFFFF,#1F1F1F);" parent="37" vertex="1" connectable="0">
                     <mxGeometry x="0.1066" y="2" relative="1" as="geometry">
                         <mxPoint as="offset"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="31" value="SMTP" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="-1980" y="310" width="120" height="80" as="geometry"/>
+                <mxCell id="31" value="SMTP" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;fillColor=#cce5ff;strokeColor=#36393d;" parent="1" vertex="1">
+                    <mxGeometry x="-1680" y="230" width="120" height="80" as="geometry"/>
                 </mxCell>
                 <mxCell id="41" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" parent="1" source="36" target="27" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="42" value="(1-&amp;gt;2) link :&lt;br&gt;to Finalize Registration&lt;br&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(204, 0, 0));&quot;&gt;token&lt;/font&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="41" vertex="1" connectable="0">
+                <mxCell id="42" value="&lt;font style=&quot;font-size: 12px;&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;(2) User Click link :&lt;br&gt;to Finalize Registration&lt;br&gt;&lt;/font&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(204, 0, 0));&quot;&gt;token&lt;/font&gt;&lt;/font&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=light-dark(#FFFFFF,#1F1F1F);" parent="41" vertex="1" connectable="0">
                     <mxGeometry x="0.0276" y="-1" relative="1" as="geometry">
                         <mxPoint as="offset"/>
                     </mxGeometry>
                 </mxCell>
                 <mxCell id="36" value="Actor" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" parent="1" vertex="1">
-                    <mxGeometry x="-2090" y="330" width="30" height="60" as="geometry"/>
+                    <mxGeometry x="-1775" y="310" width="30" height="60" as="geometry"/>
                 </mxCell>
                 <mxCell id="50" style="edgeStyle=none;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" parent="1" source="51" target="52" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
                 <mxCell id="51" value="&lt;div&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;(3) Resend Confirm&amp;nbsp;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;Registration&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(204, 0, 0));&quot;&gt;auth/register/resend&lt;/font&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="-1170" y="460" width="150" height="60" as="geometry"/>
+                    <mxGeometry x="-1490" y="460" width="150" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="53" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="52" target="21" edge="1">
-                    <mxGeometry relative="1" as="geometry">
-                        <mxPoint x="-1240" y="480" as="targetPoint"/>
-                        <Array as="points">
-                            <mxPoint x="-1095" y="690"/>
-                            <mxPoint x="-1253" y="690"/>
-                            <mxPoint x="-1253" y="490"/>
-                        </Array>
-                    </mxGeometry>
-                </mxCell>
-                <mxCell id="52" value="&lt;b&gt;For&lt;font style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;m&lt;/font&gt;&lt;/b&gt;&lt;div&gt;&lt;br&gt;&lt;div style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;&lt;font style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30); color: light-dark(rgb(192, 192, 192), rgb(255, 255, 255));&quot;&gt;email&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;color: rgb(192, 192, 192); scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;&lt;div style=&quot;color: rgb(192, 192, 192); scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;&lt;br style=&quot;color: rgb(192, 192, 192); scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;" parent="1" vertex="1">
-                    <mxGeometry x="-1155" y="550" width="120" height="100" as="geometry"/>
-                </mxCell>
-                <mxCell id="54" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 179, 102));&quot;&gt;Backdore : Everybody can&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 179, 102));&quot;&gt;create un account by grabing&amp;nbsp;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 179, 102));&quot;&gt;the token !&amp;nbsp;&lt;/font&gt;&lt;/div&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;" parent="1" vertex="1">
-                    <mxGeometry x="-1470" y="1130" width="205" height="120" as="geometry"/>
-                </mxCell>
-                <mxCell id="56" style="edgeStyle=none;html=1;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0;entryDx=102.5;entryDy=120;entryPerimeter=0;" parent="1" source="-LPKLOolhMpLLHFIRt2M-41" target="54" edge="1">
-                    <mxGeometry relative="1" as="geometry">
-                        <Array as="points">
-                            <mxPoint x="-1410" y="1355"/>
-                        </Array>
-                    </mxGeometry>
-                </mxCell>
-                <mxCell id="57" value="&lt;h1 style=&quot;text-align: center; margin-top: 0px;&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;Login Flow :&amp;nbsp;&lt;/font&gt;&lt;/h1&gt;&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); font-size: 18px;&quot;&gt;&amp;nbsp;&lt;/font&gt;&lt;font style=&quot;font-size: 18px; color: light-dark(rgb(0, 0, 0), rgb(204, 0, 0));&quot;&gt;token &lt;/font&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); font-size: 18px;&quot;&gt;= Login token - based &quot;&lt;/font&gt;&lt;font style=&quot;font-size: 18px; color: light-dark(rgb(0, 0, 0), rgb(255, 179, 102));&quot;&gt;email + password&lt;/font&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); font-size: 18px;&quot;&gt;&quot;&lt;/font&gt;&lt;/h1&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); font-size: 18px;&quot;&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;&lt;i&gt;JWT/session token&lt;/i&gt;&lt;/font&gt;&lt;/div&gt;&lt;p&gt;&lt;/p&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">
-                    <mxGeometry x="-1090" y="100" width="490" height="120" as="geometry"/>
-                </mxCell>
-                <mxCell id="60" style="edgeStyle=none;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="61" target="62">
+                <mxCell id="100" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="52" target="99">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="61" value="&lt;div&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;Password Reset&amp;nbsp;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(204, 0, 0));&quot;&gt;password/forgot&lt;/font&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-                    <mxGeometry x="-810" y="460" width="150" height="60" as="geometry"/>
+                <mxCell id="52" value="&lt;b&gt;For&lt;font style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;m&lt;/font&gt;&lt;/b&gt;&lt;div&gt;&lt;br&gt;&lt;div style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;&lt;font style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30); color: light-dark(rgb(192, 192, 192), rgb(255, 255, 255));&quot;&gt;email&lt;/font&gt;&lt;/div&gt;&lt;/div&gt;" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;" parent="1" vertex="1">
+                    <mxGeometry x="-1475" y="550" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="62" value="&lt;b&gt;For&lt;font style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;m&lt;/font&gt;&lt;/b&gt;&lt;div&gt;&lt;br&gt;&lt;div style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;&lt;font style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30); color: light-dark(rgb(192, 192, 192), rgb(255, 255, 255));&quot;&gt;email&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;color: rgb(192, 192, 192); scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;&lt;div style=&quot;color: rgb(192, 192, 192); scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;&lt;br style=&quot;color: rgb(192, 192, 192); scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;" vertex="1" parent="1">
-                    <mxGeometry x="-795" y="550" width="120" height="100" as="geometry"/>
+                <mxCell id="57" value="&lt;h1 style=&quot;text-align: center; margin-top: 0px;&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;Login Flow :&amp;nbsp;&lt;/font&gt;&lt;/h1&gt;&lt;h1 style=&quot;text-align: center; margin-top: 0px;&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); font-size: 18px;&quot;&gt;&amp;nbsp;&lt;/font&gt;&lt;font style=&quot;font-size: 18px; color: light-dark(rgb(0, 0, 0), rgb(204, 0, 0));&quot;&gt;token &lt;/font&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); font-size: 18px;&quot;&gt;= Login token - based &quot;&lt;/font&gt;&lt;font style=&quot;font-size: 18px; color: light-dark(rgb(0, 0, 0), rgb(255, 179, 102));&quot;&gt;email + password&lt;/font&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); font-size: 18px;&quot;&gt;&quot;&lt;/font&gt;&lt;/h1&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); font-size: 18px;&quot;&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;&lt;i&gt;JWT/session token&lt;/i&gt;&lt;/font&gt;&lt;/div&gt;&lt;p&gt;&lt;/p&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=1;fillColor=default;strokeColor=default;" parent="1" vertex="1">
+                    <mxGeometry x="-1340" y="30" width="290" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="60" style="edgeStyle=none;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" parent="1" source="61" target="62" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="61" value="&lt;div&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;(4) Password Reset&amp;nbsp;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(204, 0, 0));&quot;&gt;password/forgot&lt;/font&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="-715" y="460" width="150" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="91" style="edgeStyle=none;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="62" target="90">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="62" value="&lt;b&gt;For&lt;font style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;m&lt;/font&gt;&lt;/b&gt;&lt;div&gt;&lt;br&gt;&lt;div style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;&lt;font style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30); color: light-dark(rgb(192, 192, 192), rgb(255, 255, 255));&quot;&gt;email&lt;/font&gt;&lt;/div&gt;&lt;/div&gt;" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;" parent="1" vertex="1">
+                    <mxGeometry x="-700" y="550" width="120" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="66" value="&lt;h1 style=&quot;text-align: center; margin-top: 0px;&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&amp;nbsp; &amp;nbsp;Password Reset Flow :&lt;/font&gt;&lt;/h1&gt;&lt;div style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;&lt;div style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;&lt;font style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30); font-size: 14px;&quot;&gt;&lt;h1 style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30); margin-top: 0px;&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30); font-size: 18px;&quot;&gt;&amp;nbsp;&lt;/font&gt;&lt;font style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30); font-size: 18px;&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(204, 0, 0));&quot;&gt;token&lt;/font&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&amp;nbsp;&lt;/font&gt;&lt;/font&gt;&lt;font style=&quot;&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30); font-size: 18px;&quot;&gt;= Reset Password&amp;nbsp; token - based &quot;&lt;/font&gt;&lt;font style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30); font-size: 18px; color: light-dark(rgb(0, 0, 0), rgb(255, 179, 102));&quot;&gt;email&lt;/font&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30); font-size: 18px;&quot;&gt;&quot;&lt;/font&gt;&lt;/font&gt;&lt;/h1&gt;&lt;p style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30); font-size: 12px;&quot;&gt;&lt;/p&gt;&lt;ul style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30); font-size: 12px;&quot;&gt;&lt;/ul&gt;&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;&lt;font style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30); font-size: 14px; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;(1) POST /password/forgot {email}&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;&lt;font style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30); font-size: 14px; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&amp;nbsp; &amp;nbsp;→ backend generates token, sends frontend link:&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;&lt;font style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30); font-size: 14px; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; https://frontend/reset-password?token=abc123&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;&lt;font style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30); font-size: 14px; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;(2) Frontend displays reset form (new password / confirm)&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;&lt;font style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30); font-size: 14px; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&amp;nbsp; &amp;nbsp;→ POST /password/reset {token, password}&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;&lt;font style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30); font-size: 14px; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&amp;nbsp; &amp;nbsp;→ backend validates token and updates password&lt;/font&gt;&lt;/div&gt;&lt;/div&gt;" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=1;strokeColor=default;fillColor=default;" vertex="1" parent="1">
+                    <mxGeometry x="-950" y="30" width="430" height="230" as="geometry"/>
+                </mxCell>
+                <mxCell id="70" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="76" target="78">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="-800" y="930" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="71" value="true" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="70">
+                    <mxGeometry x="-0.3833" y="1" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="72" value="&amp;nbsp;Text&amp;nbsp;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="70">
+                    <mxGeometry x="-0.4" y="2" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="73" value="&amp;nbsp;True&amp;nbsp;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="70">
+                    <mxGeometry x="-0.408" y="2" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="74" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="76" target="80">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="75" value="&amp;nbsp;false&amp;nbsp;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="74">
+                    <mxGeometry x="-0.5" y="-3" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="76" value="SMTP_ENABLE" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="-725" y="890" width="170" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="77" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="78" target="88">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="78" value="Send email" style="rounded=1;whiteSpace=wrap;html=1;shadow=1;" vertex="1" parent="1">
+                    <mxGeometry x="-850" y="990" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="79" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="80" target="88">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="80" value="Skip email&lt;div&gt;wihout error&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="-550" y="990" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="81" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="82" target="76">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="82" value="&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;div style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30); color: rgb(192, 192, 192);&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;Generat token&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30); text-align: left;&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;PasswordReset = &lt;/font&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(204, 0, 0));&quot;&gt;token&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;color: rgb(192, 192, 192); scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30); text-align: left;&quot;&gt;&lt;br style=&quot;color: rgb(192, 192, 192); scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;&lt;/div&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="-740" y="780" width="200" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="83" value="api answer&lt;div style=&quot;text-align: left;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;user_id&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;message&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="-840" y="1200" width="120" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="84" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="88" target="83">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="85" value="&amp;nbsp;Prod&amp;nbsp;&lt;br&gt;or&lt;br&gt;Dev" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="84">
+                    <mxGeometry x="-0.4095" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="86" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="88" target="89">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="87" value="&amp;nbsp;Test&amp;nbsp;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="86">
+                    <mxGeometry x="-0.555" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="88" value="APP_ENV" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="-710" y="1100" width="150" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="130" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="89" target="128">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="-370" y="910" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="-400" y="1250"/>
+                            <mxPoint x="-400" y="580"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="89" value="api answer&lt;div style=&quot;text-align: left;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;user_id&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;message&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(204, 0, 0));&quot;&gt;token&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="-570" y="1200" width="120" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="92" style="edgeStyle=none;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="90" target="82">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="93" value="If email exist&amp;nbsp;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="92">
+                    <mxGeometry x="-0.1667" y="1" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="90" value="Find existence of email" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="-700" y="660" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="95" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="89" target="105">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="96" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="-LPKLOolhMpLLHFIRt2M-41" target="105">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="98" value="If email exist&amp;nbsp;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;" vertex="1" connectable="0" parent="1">
+                    <mxGeometry x="-1380" y="780" as="geometry"/>
+                </mxCell>
+                <mxCell id="101" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="99" target="-LPKLOolhMpLLHFIRt2M-22">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="99" value="Find existence of email" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="-1475" y="680" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="105" value="&lt;font style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30); color: light-dark(rgb(0, 0, 0), rgb(255, 179, 102));&quot;&gt;Backdore : Everybody can&lt;/font&gt;&lt;div style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30); color: rgb(192, 192, 192);&quot;&gt;&lt;font style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30); color: light-dark(rgb(0, 0, 0), rgb(255, 179, 102));&quot;&gt;create un account by grabing&amp;nbsp;&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30); color: rgb(192, 192, 192);&quot;&gt;&lt;font style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30); color: light-dark(rgb(0, 0, 0), rgb(255, 179, 102));&quot;&gt;the token !&amp;nbsp;&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30); color: rgb(192, 192, 192);&quot;&gt;&lt;font style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30); color: light-dark(rgb(0, 0, 0), rgb(255, 179, 102));&quot;&gt;So just used for test !!&lt;/font&gt;&lt;/div&gt;" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;" vertex="1" parent="1">
+                    <mxGeometry x="-1618" y="1470" width="190" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="108" style="edgeStyle=none;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="-340" y="130" as="sourcePoint"/>
+                        <mxPoint x="-180" y="130" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="-310" y="120"/>
+                            <mxPoint x="-310" y="90"/>
+                            <mxPoint x="-210" y="90"/>
+                            <mxPoint x="-210" y="120"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="109" value="&amp;nbsp;(4)&amp;nbsp; Password Forgot&amp;nbsp;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=light-dark(#FFFFFF,#1F1F1F);fontSize=12;" vertex="1" connectable="0" parent="108">
+                    <mxGeometry y="-2" relative="1" as="geometry">
+                        <mxPoint x="-5" y="-12" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="110" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" source="114" target="117" parent="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="-310" y="140"/>
+                            <mxPoint x="-310" y="170"/>
+                            <mxPoint x="-200" y="170"/>
+                            <mxPoint x="-200" y="140"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="111" value="(5) Password Reset&amp;nbsp;&lt;div&gt;{New Password}&lt;br&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(204, 0, 0));&quot;&gt;token&lt;/font&gt;&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=light-dark(#FFFFFF,#1F1F1F);fontSize=12;" vertex="1" connectable="0" parent="110">
+                    <mxGeometry x="-0.0928" y="-2" relative="1" as="geometry">
+                        <mxPoint x="10" y="18" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="114" value="Frontend" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0050ef;fontColor=#ffffff;strokeColor=#001DBC;" vertex="1" parent="1">
+                    <mxGeometry x="-460" y="110" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="115" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" source="117" target="120" parent="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="-150" y="270" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="-120" y="270"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="116" value="&lt;font style=&quot;font-size: 12px;&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;(4) Send&amp;nbsp;&lt;/font&gt;&lt;span style=&quot;&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;email&lt;/font&gt;&lt;/span&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); font-size: 12px;&quot;&gt;to Confirm Action Password Forgot&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(204, 0, 0)); font-size: 12px;&quot;&gt;token&lt;/font&gt;&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=light-dark(#FFFFFF,#1F1F1F);" vertex="1" connectable="0" parent="115">
+                    <mxGeometry x="-0.4096" y="2" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="117" value="Backend" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#a20025;fontColor=#ffffff;strokeColor=#6F0000;" vertex="1" parent="1">
+                    <mxGeometry x="-180" y="110" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="118" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.07;exitY=0.4;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" source="120" target="124" parent="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="119" value="&amp;nbsp;(4)&amp;nbsp;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=light-dark(#FFFFFF,#1F1F1F);fontSize=12;" vertex="1" connectable="0" parent="118">
+                    <mxGeometry x="0.1066" y="2" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="120" value="SMTP" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;fillColor=#cce5ff;strokeColor=#36393d;" vertex="1" parent="1">
+                    <mxGeometry x="-320" y="230" width="120" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="121" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" source="124" target="114" parent="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="122" value="&lt;font style=&quot;font-size: 12px;&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;(5) User Click link :&lt;br&gt;to Finalize Password reset&lt;br&gt;&lt;/font&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(204, 0, 0));&quot;&gt;token&lt;/font&gt;&lt;/font&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=light-dark(#FFFFFF,#1F1F1F);" vertex="1" connectable="0" parent="121">
+                    <mxGeometry x="0.0276" y="-1" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="124" value="Actor" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" vertex="1" parent="1">
+                    <mxGeometry x="-415" y="310" width="30" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="125" style="edgeStyle=none;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="126" target="128">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="126" value="&lt;div&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;(5) Give new Password&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(204, 0, 0));&quot;&gt;password/reset&lt;/font&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="-380" y="460" width="150" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="127" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="128" target="129">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="128" value="&lt;b&gt;For&lt;font style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;m&lt;/font&gt;&lt;/b&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(204, 0, 0));&quot;&gt;token&lt;/font&gt;&lt;br&gt;&lt;div style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(255, 255, 255), rgb(255, 255, 255));&quot;&gt;newpassword&lt;/font&gt;&lt;/div&gt;&lt;/div&gt;" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;" vertex="1" parent="1">
+                    <mxGeometry x="-365" y="550" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="132" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" parent="1" source="129" target="131">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="129" value="Find User&amp;nbsp;&lt;div&gt;by token&amp;nbsp;&lt;/div&gt;" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="-365" y="680" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="131" value="Update user&amp;nbsp;&lt;div&gt;with new password&lt;/div&gt;" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="-365" y="820" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="135" value="&lt;div style=&quot;line-height: 19px;&quot;&gt;&lt;span style=&quot;color: rgb(102, 102, 255); font-family: &amp;quot;Droid Sans Mono&amp;quot;, monospace; font-size: 14px; white-space: pre;&quot;&gt; &lt;/span&gt;&lt;span style=&quot;font-family: &amp;quot;Droid Sans Mono&amp;quot;, monospace; font-size: 14px; white-space: pre; color: rgb(102, 102, 255);&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(102, 102, 255), rgb(206, 145, 120));&quot;&gt;&quot;admin&quot;, &quot;...&quot;, &quot;...&quot;&lt;/font&gt;&lt;/span&gt;&lt;font style=&quot;scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30); font-family: &amp;quot;Droid Sans Mono&amp;quot;, monospace; font-size: 14px; white-space: pre;&quot;&gt;&lt;br style=&quot;color: rgb(192, 192, 192); scrollbar-color: rgb(75, 75, 75) rgb(27, 29, 30);&quot;&gt;&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;line-height: 19px;&quot;&gt;&lt;span style=&quot;color: rgb(102, 102, 255); font-family: &amp;quot;Droid Sans Mono&amp;quot;, monospace; font-size: 14px; white-space: pre;&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;line-height: 19px;&quot;&gt;&lt;font style=&quot;&quot; face=&quot;Droid Sans Mono, monospace&quot;&gt;&lt;span style=&quot;font-size: 14px; white-space: pre;&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(102, 102, 255));&quot;&gt; &quot;user1&quot;, &quot;user1@test.com&quot;, &quot;password123&quot;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(102, 102, 255));&quot;&gt;&lt;br&gt; &quot;user2&quot;, &quot;user2@test.com&quot;, &quot;password123&quot;&lt;br&gt; &quot;user3&quot;, &quot;user3@test.com&quot;, &quot;password123&lt;/font&gt;&quot;&lt;/font&gt;&lt;/span&gt;&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;line-height: 19px;&quot;&gt;&lt;span style=&quot;font-size: 14px; white-space: pre; font-family: &amp;quot;Droid Sans Mono&amp;quot;, monospace; background-color: light-dark(#ffffff, var(--ge-dark-color, #121212));&quot;&gt; &lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;line-height: 19px;&quot;&gt;&lt;span style=&quot;background-color: light-dark(#ffffff, var(--ge-dark-color, #121212)); font-size: 14px; white-space: pre;&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 153, 0));&quot; face=&quot;Droid Sans Mono, monospace&quot;&gt;&quot;moderator1&quot;, &quot;moderator1@test.com&quot;, &quot;password123&quot;&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;line-height: 19px;&quot;&gt;&lt;span style=&quot;color: rgb(0, 153, 0); font-family: &amp;quot;Droid Sans Mono&amp;quot;, monospace; font-size: 14px; white-space: pre;&quot;&gt;&quot;moderator2&quot;, &quot;moderator2@test.com&quot;, &quot;password123&quot;&lt;/span&gt;&lt;span style=&quot;background-color: light-dark(#ffffff, var(--ge-dark-color, #121212)); font-size: 14px; white-space: pre;&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 153, 0));&quot; face=&quot;Droid Sans Mono, monospace&quot;&gt;&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;align=left;labelBackgroundColor=default;" vertex="1" parent="1">
+                    <mxGeometry x="-1480" y="1000" width="450" height="260" as="geometry"/>
                 </mxCell>
             </root>
         </mxGraphModel>

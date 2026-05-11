@@ -2,7 +2,7 @@ package dto
 
 import "backend/core/models"
 
-type UserPublicDTO struct {
+type UserPublicResponse struct {
 	ID         uint32 `json:"id"`
 	Username   string `json:"username"`
 	Email      string `json:"email"`
@@ -11,8 +11,16 @@ type UserPublicDTO struct {
 	IsVerified bool   `json:"isVerified"`
 }
 
-func ToUserPublicDTO(user *models.User) UserPublicDTO {
-	return UserPublicDTO{
+type ProfileUserResponse struct {
+	Message string             `json:"message"`
+	User    UserPublicResponse `json:"user"`
+}
+
+// --------------------------------------------------------------------------
+// Function
+// --------------------------------------------------------------------------
+func ToUserPublicResponse(user *models.User) UserPublicResponse {
+	return UserPublicResponse{
 		ID:         user.ID,
 		Username:   user.Username,
 		Email:      user.Email,

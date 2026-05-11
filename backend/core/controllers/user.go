@@ -22,6 +22,7 @@ import (
 	"strings"
 
 	"backend/core/apperrors"
+	"backend/core/dto"
 	"backend/core/forms"
 	"backend/core/models"
 	"backend/core/services"
@@ -58,13 +59,19 @@ func (ctrl *UserController) GetProfile(c *gin.Context) {
 	userID := c.GetUint32("user_id")
 	logger.User.Debug("User %d retrieves their profile", userID)
 
-	userGotten, err := ctrl.userService.GetProfileByID(userID)
+	userProfile, err := ctrl.userService.GetProfileByID(userID)
 	if err != nil {
 		responses.FAIL(c, http.StatusNotFound, fmt.Errorf("user not found"))
 		return
 	}
 
-	responses.SUCCESS(c, http.StatusOK, userGotten)
+	response := dto.ProfileUserResponse{
+		Message: fmt.Sprintf("Get Profile of UserID %d", userID),
+		User:    dto.ToUserPublicResponse(userProfile),
+	}
+
+	responses.SUCCESS(c, http.StatusOK, response)
+
 }
 
 // Updates user data (PATCH-style).
@@ -80,6 +87,7 @@ func (ctrl *UserController) UpdateProfile(c *gin.Context) {
 		responses.VALIDATION_ERROR(c, err)
 		return
 	}
+	logger.User.Debug("Update payload: %+v", input)
 
 	updatedUser, err := ctrl.userService.UpdateProfile(uint32(userID), input)
 	if err != nil {
@@ -87,7 +95,49 @@ func (ctrl *UserController) UpdateProfile(c *gin.Context) {
 		return
 	}
 
-	responses.SUCCESS(c, http.StatusOK, updatedUser)
+	response := dto.ProfileUserResponse{
+		Message: fmt.Sprintf("Update Profile of UserID %d", userID),
+		User:    dto.ToUserPublicResponse(updatedUser),
+	}
+
+	responses.SUCCESS(c, http.StatusOK, response)
+
+}
+
+// Handles avatar upload (multipart/form-data).
+// Delegates storage and update logic to the service layer.
+func (ctrl *UserController) UploadAvatar(c *gin.Context) {
+	userID := c.GetUint32("user_id")
+
+	logger.User.Debug("User %d attempts to upload file", userID)
+
+	var form forms.UploadAvatarRequest
+	if err := c.ShouldBind(&form); err != nil {
+
+		responses.VALIDATION_ERROR(c, err)
+		return
+	}
+
+	// 3. Validation
+	if err := form.ValidateForm(); err != nil {
+		responses.FAIL(c, http.StatusBadRequest, err)
+		return
+	}
+
+	logger.User.Debug("User %d attempts to upload file %s", userID, form.File.Filename)
+
+	user, err := ctrl.userService.UploadAvatar(userID, form.File)
+	if err != nil {
+		responses.FAIL(c, http.StatusInternalServerError, err)
+		return
+	}
+
+	response := dto.ProfileUserResponse{
+		Message: fmt.Sprintf("Upload Avatar of UserID %d", userID),
+		User:    dto.ToUserPublicResponse(user),
+	}
+
+	responses.SUCCESS(c, http.StatusOK, response)
 }
 
 // Returns the full list of users.
@@ -236,37 +286,6 @@ func (ctrl *UserController) AdmUpdateUser(c *gin.Context) {
 	}
 
 	responses.SUCCESS(c, http.StatusOK, response)
-}
-
-// Handles avatar upload (multipart/form-data).
-// Delegates storage and update logic to the service layer.
-func (ctrl *UserController) UploadAvatar(c *gin.Context) {
-	uid := c.GetUint32("user_id")
-
-	logger.User.Debug("User %d attempts to upload file", uid)
-
-	var form forms.UploadAvatarRequest
-	if err := c.ShouldBind(&form); err != nil {
-
-		responses.VALIDATION_ERROR(c, err)
-		return
-	}
-
-	// 3. Validation
-	if err := form.ValidateForm(); err != nil {
-		responses.FAIL(c, http.StatusBadRequest, err)
-		return
-	}
-
-	logger.User.Debug("User %d attempts to upload file %s", uid, form.File.Filename)
-
-	user, err := ctrl.userService.UploadAvatar(uid, form.File)
-	if err != nil {
-		responses.FAIL(c, http.StatusInternalServerError, err)
-		return
-	}
-
-	responses.SUCCESS(c, http.StatusOK, user)
 }
 
 // Deletes a user from the system.

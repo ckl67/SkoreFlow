@@ -147,10 +147,11 @@ func (server *Server) SetupRouter() {
 
 		api.POST("/auth/register", middlewares.RateLimiter(1, 5), authCtrl.Register) //vitest -->   req/sec, burst 5
 		api.POST("/auth/register/confirm", authCtrl.ConfirmRegistration)             //vitest
-		api.POST("/auth/register/resend", authCtrl.ResendRegistrationConfirmation)   //vitest
+		api.POST("/auth/register/resend", authCtrl.ResendRegistration)               //vitest
 		api.POST("/login", authCtrl.Login)                                           //vitest
-		api.POST("/password/forgot", authCtrl.ForgotPassword)
-		api.POST("/password/reset", authCtrl.ResetPassword)
+		api.POST("/logout", authCtrl.Logout)                                         //vitest
+		api.POST("/password/forgot", authCtrl.ForgotPassword)                        //vitest
+		api.POST("/password/reset", authCtrl.ResetPassword)                          //vitest
 
 		// ---------------------------------------------------------------------------------------
 		// Protected routes (authenticated users only)
@@ -161,10 +162,10 @@ func (server *Server) SetupRouter() {
 			// -----------------------------------------------------------------------------------
 			// User self-management (no ID needed)
 			// -----------------------------------------------------------------------------------
-			protected.GET("/me", userCtrl.GetProfile)
-			protected.PUT("/me", userCtrl.UpdateProfile)
+			protected.GET("/me", userCtrl.GetProfile)    //vitest
+			protected.PUT("/me", userCtrl.UpdateProfile) //vitest
 			protected.POST("/me/avatar", userCtrl.UploadAvatar)
-			// protected.DELETE("/me/avatar", userCtrl.DeleteAvatar)
+			protected.DELETE("/me/avatar", userCtrl.DeleteAvatar)
 
 			// -----------------------------------------------------------------------------------
 			// SCORES (Music scores)
@@ -219,7 +220,7 @@ func (server *Server) SetupRouter() {
 					fmt.Println("=================================")
 					fmt.Println("BE CARE ROOT NOT ALLOWED IN PROD")
 					fmt.Println("=================================")
-					adminRoutes.GET("/test/reset-token/:email", authCtrl.AdmGetResetToken)
+					adminRoutes.GET("/test/reset-token/:email", authCtrl.AdmGetResetToken) // NOT TO USE WITH
 					adminRoutes.POST("/test/expire-token", authCtrl.AdmExpireToken)
 				}
 			}

@@ -65,11 +65,11 @@ import axios, { Method } from 'axios';
 // - The shape { status, data } comes from the implementation of 'request()', not from 'await' itself.
 //
 // Example:
-// const res = await request<LoginRequestResponse>('POST', '/login', { data: {...} });
+// const res = await request<LoginResponse>('POST', '/login', { data: {...} });
 //
 // Result:
 // res.status → number
-// res.data   → LoginRequestResponse
+// res.data   → LoginResponse
 //
 // Example:
 // const res = request(...)
@@ -99,7 +99,7 @@ interface RequestOptions<T = unknown> {
 // This ensures every API call returns a consistent object shape.
 // The 'data' property will hold the actual server response, typed as T.
 // Example :
-// res = await request<LoginRequestResponse>('POST', `${API_URL}/login`, { data: {email,password }
+// res = await request<LoginResponse>('POST', `${API_URL}/login`, { data: {email,password }
 
 // Return of GO backend API
 interface APIResponse<T = unknown> {
@@ -126,10 +126,10 @@ interface HttpResponse<T = unknown> {
  * @param options - Includes the payload (data) and auth (token)
  *
  * FLOW EXPLANATION:
- * When you call request<LoginRequestResponse>(...), T becomes 'LoginRequestResponse'.
+ * When you call request<LoginResponse>(...), T becomes 'LoginResponse'.
  * Consequently:
  * - RequestOptions uses T for the 'data' sent (input)
- * - Promise<HttpResponse<T>> ensures the returned 'data' is LoginRequestResponse (output)
+ * - Promise<HttpResponse<T>> ensures the returned 'data' is LoginResponse (output)
  */
 async function request<T = unknown>(
   method: Method,

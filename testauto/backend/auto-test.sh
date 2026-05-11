@@ -168,8 +168,13 @@ echo "Starting Backend Server..."
 cd "$BACKEND_DIR" || exit
 echo "Must be RUN FROM THE Project Root Directory !!! (Check it below !!!)"
 pwd
+
+echo "Running backend..."
+
 go run ./cmd/server/main.go &
 BACKEND_PID=$!
+trap 'echo "Stopping backend..."; kill "$BACKEND_PID" 2>/dev/null' EXIT INT TERM
+
 echo " "
 echo " "
 
@@ -205,11 +210,16 @@ if [ "$RUN_STRESS" = true ]; then
 	npx vitest run tests/stress.test.ts
 
 	if [ "$FORCE_BACKGROUND" = true ]; then
+		echo "########################################################"
 		echo "  ---> Running in Background !!"
 		echo "  Backend PID: $BACKEND_PID"
-		echo "  Environment is ready for Vitest manual testing."
+		echo "  Environment is ready for manual testing."
 		echo "  Press Ctrl+C to stop the server."
-		wait $BACKEND_PID
+		echo "########################################################"
+		echo
+		# Disable auto-cleanup
+		trap - EXIT INT TERM
+		wait "$BACKEND_PID"
 	else
 		echo " Process - Exit"
 	fi
@@ -226,7 +236,7 @@ npx vitest run "tests/basic.test.ts"
 if [ "$RUN_USERS" = true ]; then
 	echo "Running user tests..."
 	npx vitest run tests/auth.test.ts
-#npx	vitest run tests/user.test.ts
+	npx vitest run tests/user.test.ts
 else
 	echo "⏩ Skipping User tests"
 fi

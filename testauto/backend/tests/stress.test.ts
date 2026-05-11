@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 
-import { registerUser } from '../helpers/auth.js';
+import { register } from '../helpers/auth.js';
 
 describe('🧪 Stress tests - Production or Development Mode ', () => {
   // ----------------------------------------------------------------------------
@@ -12,7 +12,7 @@ describe('🧪 Stress tests - Production or Development Mode ', () => {
 
     for (let i = 0; i < 10; i++) {
       requests.push(
-        registerUser({
+        register({
           username: `spam${i}`,
           email: `spam${i}@test.com`,
           password: 'password123',

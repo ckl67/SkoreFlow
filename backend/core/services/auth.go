@@ -97,9 +97,9 @@ func (s *AuthService) Register(form forms.RegisterRequest) (*models.User, error)
 	return &user, nil
 }
 
-// SignIn
+// Login
 // Authenticates a user and generates a JWT token.
-func (s *AuthService) SignIn(email, password string) (*models.User, string, error) {
+func (s *AuthService) Login(email, password string) (*models.User, string, error) {
 	var user models.User
 
 	// 1. Normalize email
@@ -127,7 +127,7 @@ func (s *AuthService) SignIn(email, password string) (*models.User, string, erro
 		return nil, "", err
 	}
 
-	return &user, token, nil
+	return &user, token, err
 }
 
 // ConfirmRegistration
@@ -157,11 +157,11 @@ func (s *AuthService) ConfirmRegistration(token string) (*models.User, error) {
 	return &user, nil
 }
 
-// SendRegistrationConfirmation
+// SendRegistration
 // Send a registration confirmation email.
 // Note:
 // - Silent failure if user not found (security best practice)
-func (s *AuthService) SendRegistrationConfirmation(email string) (string, error) {
+func (s *AuthService) SendRegistration(email string) (string, error) {
 	var user models.User
 	email = format.SanitizeUserEmail(email)
 
@@ -186,7 +186,7 @@ func (s *AuthService) SendRegistrationConfirmation(email string) (string, error)
 		return user.PasswordReset, nil
 	}
 
-	htmlBody := s.buildRegistrationConfirmationBodyHTML(
+	htmlBody := s.HtmlBodySendRegistration(
 		user.PasswordReset,
 		cfg.Frontend.Origin,
 		cfg.Frontend.RegisterConfirmPath,
@@ -225,7 +225,9 @@ func (s *AuthService) ForgotPassword(email string) (string, error) {
 
 	cfg := config.Config()
 	if !cfg.Smtp.Enabled {
-		return user.PasswordReset, apperrors.ErrSmtpNotConfigured
+		// In order to authorize Register without to sent email
+		logger.Login.Info("SMTP disabled, skipping email send for %s", email)
+		return user.PasswordReset, nil
 	}
 
 	logger.Login.Debug("Sending reset email to %s", email)
@@ -305,9 +307,9 @@ func (s *AuthService) buildResetBodyHTML(token string, FrontendOrigin string, Fr
 	return fmt.Sprintf("<p>Click here to reset your password (link expires in 1 hour): <a href='%s'>Link</a></p>", link)
 }
 
-// buildRegistrationConfirmationBodyHTML (private)
+// HtmlBodySendRegistration (private)
 // Builds the HTML email body for account confirmation.
-func (s *AuthService) buildRegistrationConfirmationBodyHTML(token string, FrontendOrigin string, FrontendResetPasswordPath string) string {
+func (s *AuthService) HtmlBodySendRegistration(token string, FrontendOrigin string, FrontendResetPasswordPath string) string {
 	link := fmt.Sprintf("%s%s?token=%s",
 		FrontendOrigin,
 		FrontendResetPasswordPath,

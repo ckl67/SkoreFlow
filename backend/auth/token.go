@@ -30,11 +30,16 @@ import (
 // - role
 // - expiration (7 days)
 func CreateToken(userID uint32, role int, apiSecret string) (string, error) {
+	// Expiration after x hours !
+	// Afterwards, the user has to login again
+	expirationTime := time.Now().Add(12 * time.Hour)
+
 	claims := jwt.MapClaims{
 		"authorized": true,
 		"user_id":    userID,
 		"role":       role,
-		"exp":        time.Now().Add(168 * time.Hour).Unix(),
+		"exp":        expirationTime.Unix(),
+		"iat":        time.Now().Unix(),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

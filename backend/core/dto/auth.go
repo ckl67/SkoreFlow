@@ -1,32 +1,41 @@
 package dto
 
-type LoginRequestResponseDTO struct {
-	Message string        `json:"message"`
-	Token   string        `json:"token"`
-	User    UserPublicDTO `json:"user"`
+type LoginResponse struct {
+	Message string             `json:"message"`
+	Token   string             `json:"token"`
+	User    UserPublicResponse `json:"user"`
+}
+
+type LogoutResponse struct {
+	Message string `json:"message"`
 }
 
 // Mandatory : omitempty is really the trick here !
 // if Token = empty, nothing will be transmitted
-type RegisterRequestResponseDTO struct {
+type RegisterResponse struct {
 	Message    string `json:"message"`
 	IsVerified bool   `json:"isVerified"`
 	Token      string `json:"token,omitempty"`
 }
 
-type RegistrationConfirmationResponseDTO struct {
+type ConfirmRegistrationResponse struct {
 	Message    string `json:"message"`
 	UserId     uint32 `json:"user_id"`
 	IsVerified bool   `json:"isVerified"`
 }
 
 // Mandatory : omitempty is really the trick here !
-type RequestRegistrationConfirmationResponseDTO struct {
+type ResendRegistrationResponse struct {
 	Message string `json:"message"`
 	Token   string `json:"token,omitempty"`
 }
 
-type ForgotPasswordResponseDTO struct {
+type ForgotPasswordResponse struct {
 	Message string `json:"message"`
 	Token   string `json:"token,omitempty"`
+}
+
+type ResetPasswordResponse struct {
+	Message string `json:"message"`
+	UserId  uint32 `json:"user_id"`
 }
