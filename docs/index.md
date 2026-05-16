@@ -35,11 +35,11 @@ Whether you're new to SkoreFlow or an experienced developer, this documentation 
 
 - [Architecture](./backend/architecture.md)
 - [API Response Standard](./backend/api-response.md)
-- [Some specificities - Architecture Diagram](./backend/architecture.dio)
-  _- Fyi : To change the theme in drawio - Ctrl Shift P : "Drawio - Change Theme"_
+- [Some specificities - Architecture Diagram](./backend/architecture.dio) _(To change the theme in drawio - Ctrl Shift P : "Drawio - Change Theme")_
 - [cors explanation](./backend/cors.md)
 - [go ans Docker paths](./backend/go.md)
 - [Installation](./backend/install.md)
+- [Database migration](./backend/database.md)
 - [Automatic Code Reloading with Air](./backend/air.md)
 - [Running the Backend](./backend/run.md)
 - [Debugging](./backend/debug.md)

@@ -50,8 +50,21 @@ interface ProfileUserResponse {
 
 // -------------------
 
-interface UpdateUserRequest {
+interface UpdateProfilerRequest {
   username: string;
+}
+
+// -------------------
+
+interface UpdateMailRequest {
+  email: string;
+}
+
+interface UpdateMailResponse {
+  message: string;
+  email: string;
+  pending_email: string;
+  token_email: string;
 }
 
 // --------------------------------------------------------------------------------
@@ -72,13 +85,13 @@ async function getProfile(token: string) {
 // Update Profile
 // --------------------------------------------------------------------------------
 
-async function updateProfile(data: UpdateUserRequest, token: string) {
-  console.log('REQUEST UPDATE PROFILE:', {
+async function updateProfile(data: UpdateProfilerRequest, token: string) {
+  console.log('UpdateProfilerRequest: Input Data', {
     data,
     token,
   });
 
-  const res = await request<ProfileUserResponse>('PUT', `${API_URL}/me`, {
+  const res = await request<ProfileUserResponse>('PUT', `${API_URL}/me/profile`, {
     token: token,
     data: data,
   });
@@ -87,8 +100,29 @@ async function updateProfile(data: UpdateUserRequest, token: string) {
 
   return res;
 }
+
+// --------------------------------------------------------------------------------
+// Update User's email
+// --------------------------------------------------------------------------------
+
+async function updateMail(data: UpdateMailRequest, token: string) {
+  console.log('REQUEST UPDATE MAIL:', {
+    data,
+    token,
+  });
+
+  const res = await request<UpdateMailResponse>('PUT', `${API_URL}/me/mail`, {
+    token: token,
+    data: data,
+  });
+
+  console.log('\n RESPONSE UPDATE MAIL', res.status, res.data);
+
+  return res;
+}
+
 // --------------------------------------------------------------------------------
 // EXPORT (ESM)
 // --------------------------------------------------------------------------------
 
-export { getProfile, updateProfile };
+export { getProfile, updateProfile, updateMail };

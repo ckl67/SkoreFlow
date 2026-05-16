@@ -57,9 +57,10 @@ type MicroServiceConfig struct {
 
 // Frontend Configuration
 type FrontendConfig struct {
-	Origin              string `env:"FRONTEND_ORIGIN"`                // e.g. http://localhost:3000
-	ResetPasswordPath   string `env:"FRONTEND_RESET_PASSWORD_PATH"`   // e.g. /reset-password
-	RegisterConfirmPath string `env:"FRONTEND_REGISTER_CONFIRM_PATH"` // e.g. /register/confirm
+	Origin                string `env:"FRONTEND_ORIGIN"`                   // e.g. http://localhost:3000
+	ResetPasswordPath     string `env:"FRONTEND_RESET_PASSWORD_PATH"`      // e.g. /reset/password
+	RegisterConfirmPath   string `env:"FRONTEND_REGISTER_CONFIRM_PATH"`    // e.g. /register/confirm
+	UpdateMailConfirmPath string `env:"FRONTEND_UPDATE_MAIL_CONFIRM_PATH"` // e.g. /mail/confirm
 
 	CorsAllowedOrigins string `env:"CORS_ALLOWED_ORIGINS"` // Allowed origins for CORS e.g. http://localhost:3000,https://app.skoreflow.com
 }
@@ -171,9 +172,10 @@ func (c ServerConfig) LogSafe() {
 		fmt.Printf("  Full Path: %s\n", c.AppRoot+"/"+c.MicroService.MsRoot)
 
 		fmt.Println("Frontend:")
-		fmt.Printf("  FrontendOrigin: %s\n", c.Frontend.Origin)
-		fmt.Printf("  FrontendResetPasswordPath: %s\n", c.Frontend.ResetPasswordPath)
-		fmt.Printf("  FrontendRegisterConfirmPath: %s\n", c.Frontend.RegisterConfirmPath)
+		fmt.Printf("  Origin: %s\n", c.Frontend.Origin)
+		fmt.Printf("  ResetPasswordPath: %s\n", c.Frontend.ResetPasswordPath)
+		fmt.Printf("  RegisterConfirmPath: %s\n", c.Frontend.RegisterConfirmPath)
+		fmt.Printf("  UpdateMailConfirmPath: %s\n", c.Frontend.UpdateMailConfirmPath)
 		fmt.Printf("  CORS Origins: %s\n", c.Frontend.CorsAllowedOrigins)
 
 	}
@@ -277,10 +279,11 @@ func NewConfig() ServerConfig {
 		BackendListenAddress: "0.0.0.0:8080",
 
 		Frontend: FrontendConfig{
-			Origin:              "http://localhost:3000", //(ex: Dev http://localhost:3000 ou Prod https://app.skoreflow.com)
-			ResetPasswordPath:   "/reset-password",
-			RegisterConfirmPath: "/register/confirm",
-			CorsAllowedOrigins:  "http://localhost:3000", //(ex: http://localhost:3000,https://app.skoreflow.com)
+			Origin:                "http://localhost:3000", //(ex: Dev http://localhost:3000 ou Prod https://app.skoreflow.com)
+			ResetPasswordPath:     "/reset/password",
+			RegisterConfirmPath:   "/register/confirm",
+			UpdateMailConfirmPath: "/mail/confirm",
+			CorsAllowedOrigins:    "http://localhost:3000", //(ex: http://localhost:3000,https://app.skoreflow.com)
 		},
 
 		Database: DatabaseConfig{

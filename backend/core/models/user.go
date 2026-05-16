@@ -18,17 +18,20 @@ import (
 // User represents a system user entity stored in the database.
 
 type User struct {
-	ID                  uint32    `gorm:"primaryKey;autoIncrement" json:"id"`
-	Username            string    `gorm:"size:100;not null;uniqueIndex" json:"username"`
-	Email               string    `gorm:"size:100;not null;uniqueIndex" json:"email"`
-	Password            string    `gorm:"size:255;not null" json:"-"` // Excluded from JSON output
-	PasswordReset       string    `gorm:"size:255" json:"-"`          // Password reset token Excluded too !
-	PasswordResetExpire time.Time `json:"-"`                          // Token expiration time Excluded !
-	Avatar              string    `gorm:"size:255" json:"avatar"`
-	Role                int       `gorm:"default:0" json:"role"` // 0 = standard user
-	IsVerified          bool      `gorm:"default:false" json:"isVerified"`
-	CreatedAt           time.Time `json:"createdAt"`
-	UpdatedAt           time.Time `json:"updatedAt"`
+	ID                     uint32    `gorm:"primaryKey;autoIncrement" json:"id"`
+	Username               string    `gorm:"size:100;not null;uniqueIndex" json:"username"`
+	Email                  string    `gorm:"size:100;not null;uniqueIndex" json:"email"`
+	PendingEmail           string    `gorm:"size:100" json:"pending_email"`
+	EmailChangeToken       string    `gorm:"size:255" json:"-"`
+	EmailChangeTokenExpire time.Time `json:"-"`
+	Password               string    `gorm:"size:255;not null" json:"-"` // Excluded from JSON output
+	PasswordReset          string    `gorm:"size:255" json:"-"`          // Password reset token Excluded too !
+	PasswordResetExpire    time.Time `json:"-"`                          // Token expiration time Excluded !
+	Avatar                 string    `gorm:"size:255" json:"avatar"`
+	Role                   int       `gorm:"default:0" json:"role"` // 0 = standard user
+	IsVerified             bool      `gorm:"default:false" json:"isVerified"`
+	CreatedAt              time.Time `json:"createdAt"`
+	UpdatedAt              time.Time `json:"updatedAt"`
 }
 
 // Create inserts a new user record into the database.
@@ -44,6 +47,11 @@ func (u *User) FindByEmail(db *gorm.DB, email string) error {
 // FindByToken retrieves a user using a password reset token.
 func (u *User) FindByToken(db *gorm.DB, token string) error {
 	return db.Where("password_reset = ?", token).First(u).Error
+}
+
+// FindByToken retrieves a user using a email reset token.
+func (u *User) FindByEmailToken(db *gorm.DB, token string) error {
+	return db.Where("email_change_token = ?", token).First(u).Error
 }
 
 // ExistsByEmail checks whether a user exists with the given email.
@@ -87,10 +95,10 @@ func (u *User) Save(db *gorm.DB) error {
 	return db.Save(u).Error
 }
 
-// GeneratePasswordResetToken generates a secure token and sets its expiration time.
+// GeneratePasswordToken generates a secure token and sets its expiration time.
 // Updates : PasswordReset=token and PasswordResetExpire
 // Token is valid for 1 hour.
-func (u *User) GeneratePasswordResetToken() error {
+func (u *User) GeneratePasswordToken() error {
 	token, err := auth.CreateSecureToken(40)
 	if err != nil {
 		return err
@@ -98,6 +106,17 @@ func (u *User) GeneratePasswordResetToken() error {
 
 	u.PasswordReset = token
 	u.PasswordResetExpire = time.Now().Add(time.Hour)
+	return nil
+}
+
+func (u *User) GenerateEmailChangeToken() error {
+	token, err := auth.CreateSecureToken(40)
+	if err != nil {
+		return err
+	}
+
+	u.EmailChangeToken = token
+	u.EmailChangeTokenExpire = time.Now().Add(time.Hour)
 	return nil
 }
 

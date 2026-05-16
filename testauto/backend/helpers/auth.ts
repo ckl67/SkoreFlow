@@ -87,12 +87,24 @@ interface ForgotPasswordResponse {
 }
 
 // -------------------
+
 interface ResetPasswordRequest {
   token: string;
   password: string;
 }
 
 interface ResetPasswordResponse {
+  message: string;
+  id: number;
+}
+
+// -------------------
+
+interface ConfirmUpdateMailRequest {
+  token: string;
+}
+
+interface ConfirmUpdateMailResponse {
   message: string;
   id: number;
 }
@@ -237,6 +249,23 @@ async function ResetPassword(data: ResetPasswordRequest) {
   return res;
 }
 
+// --------------------------------------------------------------------------------
+// Confirm UpdateMail
+// --------------------------------------------------------------------------------
+async function confirmUpdateMail(data: ConfirmUpdateMailRequest) {
+  console.log('CONFIRM UPDATE MAIL', {
+    data,
+  });
+
+  const res = await request<ConfirmUpdateMailResponse>('POST', `${API_URL}/me/mail/confirm`, {
+    data,
+  });
+
+  console.log('\n Confirm UpdateMail response:', res.status, res.data);
+
+  return res;
+}
+
 export {
   register,
   confirmRegistration,
@@ -246,4 +275,5 @@ export {
   ForgotPassword,
   ResetPassword,
   logout,
+  confirmUpdateMail,
 };

@@ -170,7 +170,7 @@ func (s *AuthService) SendRegistration(email string) (string, error) {
 		return "", nil
 	}
 
-	if err := user.GeneratePasswordResetToken(); err != nil {
+	if err := user.GeneratePasswordToken(); err != nil {
 		return "", nil
 	}
 
@@ -181,9 +181,12 @@ func (s *AuthService) SendRegistration(email string) (string, error) {
 	cfg := config.Config()
 
 	if !cfg.Smtp.Enabled {
-		// In order to authorize Register without to sent email
-		logger.Login.Info("SMTP disabled, skipping email send for %s", email)
-		return user.PasswordReset, nil
+		if cfg.AppEnv == "test" {
+			logger.Login.Info("SMTP disabled, skipping email send for %s", email)
+			return user.PasswordReset, nil
+		}
+		logger.User.Info("SMTP not configured for %s", email)
+		return "", apperrors.ErrSmtpNotConfigured
 	}
 
 	htmlBody := s.HtmlBodySendRegistration(
@@ -213,7 +216,7 @@ func (s *AuthService) ForgotPassword(email string) (string, error) {
 		return "", nil
 	}
 
-	err := user.GeneratePasswordResetToken()
+	err := user.GeneratePasswordToken()
 	if err != nil {
 		logger.Login.Info("Password reset requested for unknown email: %s", email)
 		return "", nil
@@ -225,9 +228,12 @@ func (s *AuthService) ForgotPassword(email string) (string, error) {
 
 	cfg := config.Config()
 	if !cfg.Smtp.Enabled {
-		// In order to authorize Register without to sent email
-		logger.Login.Info("SMTP disabled, skipping email send for %s", email)
-		return user.PasswordReset, nil
+		if cfg.AppEnv == "test" {
+			logger.Login.Info("SMTP disabled, skipping email send for %s", email)
+			return user.PasswordReset, nil
+		}
+		logger.User.Info("SMTP not configured for %s", email)
+		return "", apperrors.ErrSmtpNotConfigured
 	}
 
 	logger.Login.Debug("Sending reset email to %s", email)

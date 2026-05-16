@@ -145,13 +145,19 @@ func (server *Server) SetupRouter() {
 		//    → backend validates token and updates password
 		// ==============================================
 
-		api.POST("/auth/register", middlewares.RateLimiter(1, 5), authCtrl.Register) //vitest -->   req/sec, burst 5
-		api.POST("/auth/register/confirm", authCtrl.ConfirmRegistration)             //vitest
-		api.POST("/auth/register/resend", authCtrl.ResendRegistration)               //vitest
-		api.POST("/login", authCtrl.Login)                                           //vitest
-		api.POST("/logout", authCtrl.Logout)                                         //vitest
-		api.POST("/password/forgot", authCtrl.ForgotPassword)                        //vitest
-		api.POST("/password/reset", authCtrl.ResetPassword)                          //vitest
+		api.POST("/auth/register", middlewares.RateLimiter(1, 5), authCtrl.Register) // vitest -->   req/sec, burst 5
+		api.POST("/auth/register/confirm", authCtrl.ConfirmRegistration)             // vitest
+		api.POST("/auth/register/resend", authCtrl.ResendRegistration)               // vitest
+		api.POST("/login", authCtrl.Login)                                           // vitest
+		api.POST("/logout", authCtrl.Logout)                                         // vitest
+		api.POST("/password/forgot", authCtrl.ForgotPassword)                        // vitest
+		api.POST("/password/reset", authCtrl.ResetPassword)                          // vitest
+
+		// The route : me/mail/confirm is linked to
+		// 	 protected.PUT("/me/mail", userCtrl.UpdateMail)
+		// However, it is preferable to route with no login route, because
+		// 		change mail  --> logout --> Link email later
+		api.POST("/me/mail/confirm", userCtrl.ConfirmUpdateMail) // vitest
 
 		// ---------------------------------------------------------------------------------------
 		// Protected routes (authenticated users only)
@@ -162,8 +168,10 @@ func (server *Server) SetupRouter() {
 			// -----------------------------------------------------------------------------------
 			// User self-management (no ID needed)
 			// -----------------------------------------------------------------------------------
-			protected.GET("/me", userCtrl.GetProfile)    //vitest
-			protected.PUT("/me", userCtrl.UpdateProfile) //vitest
+			protected.GET("/me", userCtrl.GetProfile)            // vitest
+			protected.PUT("/me/profile", userCtrl.UpdateProfile) // vitest
+			protected.PUT("/me/mail", userCtrl.UpdateMail)       // vitest
+
 			protected.POST("/me/avatar", userCtrl.UploadAvatar)
 			protected.DELETE("/me/avatar", userCtrl.DeleteAvatar)
 

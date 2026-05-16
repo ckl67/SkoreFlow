@@ -22,6 +22,9 @@ import (
 // → Do not include HTTP status codes or response formatting here; this layer is only for error definitions.
 
 var (
+	// General
+	ErrInvalidInput = errors.New("Invalid Input")
+
 	// Auth
 	ErrAuthInvalidCredentials  = errors.New("Invalid Credential")
 	ErrMissingToken            = errors.New("Missing Token")
@@ -36,6 +39,10 @@ var (
 	ErrUsernameTaken            = errors.New("username already taken")
 	ErrUserAvatarFileNotFound   = errors.New("Avatar picture not found")
 	ErrUserAvatarFileNotDeleted = errors.New("Avatar picture not deleted")
+
+	// User
+	ErrUserInvalid         = errors.New("user invalid error")
+	ErrInvalidPendingEmail = errors.New("user invalid pending email")
 
 	// User Access
 	ErrAccessForbidden = errors.New("access forbidden")

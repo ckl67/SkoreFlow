@@ -26,6 +26,7 @@ import (
 	"backend/core/forms"
 	"backend/core/models"
 	"backend/core/services"
+	"backend/infrastructure/config"
 	"backend/infrastructure/logger"
 	"backend/pkg/responses"
 
@@ -38,8 +39,13 @@ type UserController struct {
 	userService *services.UserService
 }
 
-func NewUserController(s *services.UserService) *UserController {
-	return &UserController{userService: s}
+func NewUserController(
+	userService *services.UserService,
+) *UserController {
+
+	return &UserController{
+		userService: userService,
+	}
 }
 
 // --- DTO - Data Transfer Object ---
@@ -74,15 +80,14 @@ func (ctrl *UserController) GetProfile(c *gin.Context) {
 
 }
 
-// Updates user data (PATCH-style).
-// Only provided fields are modified.
+// Update user profile
 func (ctrl *UserController) UpdateProfile(c *gin.Context) {
 	userID := c.GetUint32("user_id")
 	userRole := c.GetInt("user_role")
 
 	logger.User.Info("User %d (role %d) attempts to update itself", userID, userRole)
 
-	var input forms.UpdateUserRequest
+	var input forms.UpdateProfileRequest
 	if err := c.ShouldBindJSON(&input); err != nil {
 		responses.VALIDATION_ERROR(c, err)
 		return
@@ -98,6 +103,80 @@ func (ctrl *UserController) UpdateProfile(c *gin.Context) {
 	response := dto.ProfileUserResponse{
 		Message: fmt.Sprintf("Update Profile of UserID %d", userID),
 		User:    dto.ToUserPublicResponse(updatedUser),
+	}
+
+	responses.SUCCESS(c, http.StatusOK, response)
+
+}
+
+// Update mail
+func (ctrl *UserController) UpdateMail(c *gin.Context) {
+	userID := c.GetUint32("user_id")
+	var input forms.UpdateMailRequest
+	var updatedUser *models.User
+	var err error
+
+	if err = c.ShouldBindJSON(&input); err != nil {
+		responses.VALIDATION_ERROR(c, err)
+		return
+	}
+
+	// Update the user (pointer) with the new email and with expired token for second step validation
+	updatedUser, err = ctrl.userService.UpdateEmail(uint32(userID), input)
+	if err != nil {
+		responses.FAIL(c, http.StatusBadRequest, err)
+		return
+	}
+
+	// Send confirmation email (non-blocking in test mode ,and token in test mode)
+	tokenEmail, err := ctrl.userService.SendUpdateEmailToken(updatedUser)
+	if err != nil {
+
+		if errors.Is(err, apperrors.ErrSmtpNotConfigured) {
+			responses.FAIL(c, http.StatusServiceUnavailable, err)
+			return
+		}
+
+		responses.FAIL(c, http.StatusInternalServerError, err)
+		return
+
+	}
+
+	response := dto.UpdateMailResponse{
+		Email:        updatedUser.Email,
+		PendingEmail: updatedUser.PendingEmail,
+		Message:      "email Update",
+	}
+
+	// Only for vitest
+	if config.Config().AppEnv == "test" {
+		response.TokenEmail = tokenEmail
+	}
+
+	responses.SUCCESS(c, http.StatusOK, response)
+}
+
+// Confirms email update using a token.
+func (ctrl *UserController) ConfirmUpdateMail(c *gin.Context) {
+	var form forms.ConfirmUpdateMailRequest
+
+	if err := c.ShouldBindJSON(&form); err != nil {
+		responses.VALIDATION_ERROR(c, err)
+		return
+	}
+
+	user, err := ctrl.userService.ConfirmUpdateMail(form.Token)
+	if err != nil {
+		logger.Login.Warn("Email Update confirmation failed: %v", err)
+
+		// Unified error for security reasons
+		responses.FAIL(c, http.StatusBadRequest, apperrors.ErrAuthTokenInvalidExpired)
+		return
+	}
+
+	response := dto.ConfirmUpdateMailResponse{
+		Message: "email update confirmed successfully.",
+		UserId:  user.ID,
 	}
 
 	responses.SUCCESS(c, http.StatusOK, response)

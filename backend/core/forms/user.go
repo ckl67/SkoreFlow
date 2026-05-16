@@ -26,7 +26,7 @@ package forms
 // → Never duplicate binding validation inside ValidateForm()
 
 // ===============================================================================================
-// Black Import !
+// Blank Import !
 // ===============================================================================================
 // Blank imports like _ "image/jpeg" follow the "Registration Pattern".
 // 1. It imports the package solely for its side effects.
@@ -60,16 +60,41 @@ import (
 // Update → pointers
 // -----------------------
 
-// GetUsersPageRequest defines pagination and filtering for composers listing.
-type GetUsersPageRequest struct {
-	PaginatedRequest
-}
-
 // CreateUserRequest defines the payload for user creation.
 type AdmCreateUserRequest struct {
 	Username string `json:"username" binding:"omitempty,min=3,max=100"`
 	Email    string `json:"email" form:"email" binding:"required,email"`
 	Password string `json:"password" binding:"required,min=8,max=100"`
+}
+
+// UpdateUserRequest defines the payload for updating a user.
+type UpdateProfileRequest struct {
+	Username *string `json:"username" binding:"omitempty,min=3,max=100"`
+}
+
+// UpdateMailRequest represents the payload for updating a user's email address.
+// The single field uses a string pointer to distinguish between an empty value and an unprovided field.
+// It maps to 'email' in JSON : 	ex: {"email": "test@example.com"}).
+// or 'email' in form/query data ex: 	?email=test@example.com
+//
+// and strictly requires a valid email format.
+type UpdateMailRequest struct {
+	Email *string `json:"email" form:"email" binding:"required,email"`
+}
+
+// ConfirmUpdateMailRequest defines the payload
+type ConfirmUpdateMailRequest struct {
+	Token string `json:"token" binding:"required"`
+}
+
+// UploadAvatarRequest defines the payload for uploading a user avatar.
+type UploadAvatarRequest struct {
+	File *multipart.FileHeader `form:"uploadFile" binding:"required"`
+}
+
+// GetUsersPageRequest defines pagination and filtering for composers listing.
+type GetUsersPageRequest struct {
+	PaginatedRequest
 }
 
 // AdminUpdateUserRequest defines the payload for updating a user.
@@ -80,16 +105,7 @@ type AdmUpdateUserRequest struct {
 	IsVerified *bool   `json:"isVerified"`
 }
 
-// UpdateUserRequest defines the payload for updating a user.
-type UpdateUserRequest struct {
-	Username *string `json:"username" binding:"omitempty,min=3,max=100"`
-}
-
-// UploadAvatarRequest defines the payload for uploading a user avatar.
-type UploadAvatarRequest struct {
-	File *multipart.FileHeader `form:"uploadFile" binding:"required"`
-}
-
+// ====================================================================================
 // ValidateForm performs custom validation for CreateComposerRequest.
 // Validations:
 // - Name must not be empty

@@ -23,6 +23,7 @@ import (
 	"backend/infrastructure/logger"
 	"backend/pkg/filedir"
 	"backend/pkg/format"
+	"backend/pkg/mail"
 	"backend/pkg/media"
 	"backend/pkg/security"
 
@@ -110,8 +111,6 @@ func (s *UserService) CreateUser(input forms.AdmCreateUserRequest) (*models.User
 	return &user, nil
 }
 
-// GetUserByID retrieves a specific user by ID.
-// Returns a business error if the user is not found.
 func (s *UserService) GetUserByID(uid uint32) (*models.User, error) {
 	user := models.User{}
 
@@ -119,6 +118,141 @@ func (s *UserService) GetUserByID(uid uint32) (*models.User, error) {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, apperrors.ErrUserNotFound
 		}
+		return nil, err
+	}
+
+	return &user, nil
+}
+
+// UpdateMail
+func (s *UserService) UpdateEmail(uid uint32, input forms.UpdateMailRequest) (*models.User, error) {
+	var user models.User
+	var existingUser models.User
+	var newEmail string
+
+	// Even if binding includes "require" service should verify and not trust
+	if input.Email == nil {
+		return nil, apperrors.ErrInvalidInput
+	}
+
+	if err := user.FindByID(s.db, uid); err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, apperrors.ErrUserNotFound
+		}
+		return nil, err
+	}
+
+	newEmail = format.SanitizeUserEmail(*input.Email)
+
+	// Check email uniqueness
+	exists, err := existingUser.ExistsByEmail(s.db, newEmail)
+	if err != nil {
+		return nil, err
+	}
+	if exists {
+		return nil, apperrors.ErrUserEmailAlreadyUsed
+	}
+
+	// Check email not used by another user !!
+	if newEmail == user.Email {
+		return nil, apperrors.ErrUserEmailAlreadyUsed
+	}
+
+	// All is OK
+	user.PendingEmail = newEmail
+
+	// Create token and limitation of token
+	if err := user.GenerateEmailChangeToken(); err != nil {
+		return nil, err
+	}
+
+	// Now we update the user
+	if err := user.Update(s.db); err != nil {
+		return nil, err
+	}
+	return &user, nil
+
+}
+
+// Send mail
+func (s *UserService) SendUpdateEmailToken(user *models.User) (string, error) {
+
+	cfg := config.Config()
+
+	// Non blocking in case smtp not configured in test Mode only
+	if !cfg.Smtp.Enabled {
+		if cfg.AppEnv == "test" {
+			logger.User.Info("SMTP disabled, skipping email send for %s", user.PendingEmail)
+			return user.EmailChangeToken, nil
+		}
+		logger.User.Info("SMTP not configured for %s", user.PendingEmail)
+		return "", apperrors.ErrSmtpNotConfigured
+	}
+
+	htmlBody := s.HtmlBodyUpdateMail(
+		user.EmailChangeToken,
+		cfg.Frontend.Origin,
+		cfg.Frontend.UpdateMailConfirmPath,
+	)
+
+	if err := mail.SendHTMLMail(user.PendingEmail, "Confirm Your New email", htmlBody); err != nil {
+		return "", apperrors.ErrSmtpFailed
+	}
+
+	return user.EmailChangeToken, nil
+}
+
+// HtmlBodySendRegistration (private)
+// Builds the HTML email body for account confirmation.
+func (s *UserService) HtmlBodyUpdateMail(token string, FrontendOrigin string, FrontendResetPasswordPath string) string {
+	link := fmt.Sprintf("%s%s?token=%s",
+		FrontendOrigin,
+		FrontendResetPasswordPath,
+		token,
+	)
+
+	return fmt.Sprintf(
+		"<p>Click to validate your email update (link expires in 1 hour): <a href='%s'>Confirm</a></p>",
+		link,
+	)
+}
+
+// ConfirmUpdateMail
+func (s *UserService) ConfirmUpdateMail(token string) (*models.User, error) {
+	var user models.User
+	var existingUser models.User
+
+	// 1. Retrieve user by token
+	if err := user.FindByEmailToken(s.db, token); err != nil {
+		return nil, apperrors.ErrAuthInvalidToken
+	}
+
+	// 2. Validate expiration
+	if time.Now().After(user.EmailChangeTokenExpire) {
+		return nil, apperrors.ErrAuthTokenExpired
+	}
+
+	if user.PendingEmail == "" {
+		return nil, apperrors.ErrInvalidPendingEmail
+	}
+
+	// Ultimate verification in case there is a user which subscribe with the same mail !!
+	// Check email uniqueness
+	exists, err := existingUser.ExistsByEmail(s.db, user.PendingEmail)
+	if err != nil {
+		return nil, err
+	}
+	if exists {
+		return nil, apperrors.ErrUserEmailAlreadyUsed
+	}
+
+	// 3. Activate account
+	user.Email = user.PendingEmail
+	user.PendingEmail = ""
+	user.EmailChangeTokenExpire = time.Time{}
+	user.EmailChangeToken = ""
+
+	if err := user.Update(s.db); err != nil {
 		return nil, err
 	}
 
@@ -180,7 +314,7 @@ func (s *UserService) UpdateUser(uid uint32, input forms.AdmUpdateUserRequest) (
 }
 
 // UpdateUser Profile
-func (s *UserService) UpdateProfile(uid uint32, input forms.UpdateUserRequest) (*models.User, error) {
+func (s *UserService) UpdateProfile(uid uint32, input forms.UpdateProfileRequest) (*models.User, error) {
 	var user models.User
 
 	// 1. Retrieve existing user
@@ -193,7 +327,6 @@ func (s *UserService) UpdateProfile(uid uint32, input forms.UpdateUserRequest) (
 		user.Username = *input.Username
 	}
 
-	// email not allowed to be updated for now, to avoid complexity with verification and uniqueness
 	// Avatar update is handled separately via UploadAvatar, so we ignore it here to avoid confusion.
 
 	// 4. Persist changes

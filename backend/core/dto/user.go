@@ -16,6 +16,22 @@ type ProfileUserResponse struct {
 	User    UserPublicResponse `json:"user"`
 }
 
+type UpdateMailResponse struct {
+	Message      string `json:"message"`
+	Email        string `json:"email"`
+	PendingEmail string `json:"pending_email"`
+	TokenEmail   string `json:"token_email,omitempty"`
+}
+
+type ConfirmUpdateMailResponse struct {
+	Message string `json:"message"`
+	UserId  uint32 `json:"user_id"`
+}
+
+type UpdatePasswordResponse struct {
+	Message string `json:"message"`
+}
+
 // --------------------------------------------------------------------------
 // Function
 // --------------------------------------------------------------------------

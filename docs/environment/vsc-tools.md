@@ -17,6 +17,9 @@ Example :
 ```bash
 npm install react-router-dom -w frontend
 npm install axios -w testauto/backend
+
+npm install better-sqlite3 -w testauto/backend
+npm install -D @types/better-sqlite3 -w testauto/backend
 ```
 
 ---

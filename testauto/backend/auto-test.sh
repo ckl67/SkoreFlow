@@ -264,6 +264,7 @@ fi
 echo " "
 echo "########################################################"
 echo "  TEST SUITE FINISHED"
+echo "    -->> Running with bash will set automatically some environment variable !!"
 echo "########################################################"
 
 if [ "$CLEAN_DB_FILES" = true ]; then
