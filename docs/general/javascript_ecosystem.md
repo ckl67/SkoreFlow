@@ -109,10 +109,10 @@ We are using:
 - Vitest → tests
 - ESLint → linting
 
-Therefore we DO NOT need:
+## TypeScript test in terminal windows
 
-- NodeNext strict mode
-  -Complex ESM configuration
-- Bundler-style resolution 13. Golden Rule
+For quick TypeScript test in a terminal we can run
 
-The more you rely on tsx, the less you should try to mimic strict Node.js module behavior.
+```shell
+        npx ts-node --compiler-options '{"module":"CommonJS", "target":"ESNext"}'
+```

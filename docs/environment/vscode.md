@@ -23,6 +23,7 @@ File → Open Folder → SkoreFlow/
 ## 3. Required Extensions (Minimal)
 
 Install only what is necessary.
+The needed extensions are declared in file "./vscode/extensions.json"
 
 ### 3.0.1. Core
 

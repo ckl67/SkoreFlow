@@ -1,4 +1,4 @@
-### Smoke Testing
+# Smoke Testing
 
 These checks the health of the backend service. A successful response indicates that the service is running and responsive.
 

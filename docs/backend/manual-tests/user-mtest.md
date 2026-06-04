@@ -130,7 +130,7 @@ curl -X POST http://localhost:8080/api/password/reset \
  -H "Content-Type: application/json" \
  -d "{
     \"token\":\"${TOKEN_SQL}\",
-    \"password\":\"newpassword123\"
+    \"password\":\"newPassword123\"
     }" | jq
 ```
 
@@ -141,7 +141,7 @@ TOKEN_USER=$(curl -s -X POST http://localhost:8080/api/login \
  -H "Content-Type: application/json" \
  -d "{
     \"email\":\"${EMAIL}\",
-    \"password\":\"newpassword123\"
+    \"password\":\"newPassword123\"
   }" | jq -r '.token')
 echo "JWT Token: $TOKEN_USER"
 ```

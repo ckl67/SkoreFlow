@@ -3,6 +3,12 @@ BINARY_NAME=sf-backend
 GO=go
 MAIN_FILE=./cmd/server/main.go
 
+# Default environment Variables
+#  APP_ENV = : development, production, test --> Will seed user on starting of the server
+#  SMTP_ENABLED = :  true / false
+#  PROTECTION_LEVEL = : full / none
+
+
 # Versioning via Git
 # --tags: Look for tags
 # --always: Fallback to commit hash if no tag is found
@@ -18,7 +24,7 @@ VERSION=$(shell git describe --tags --always --dirty)
 LDFLAGS=-ldflags="-X main.Version=$(VERSION)"
 
 # Makefile Rules
-.PHONY: all build run cleandb air clean tidy reset help version
+.PHONY: all build run run-test cleandb air air-test clean tidy reset help version
 
 ## all: Clean, organize modules, and compile
 all: tidy build
@@ -32,9 +38,18 @@ build:
 	@echo "==> Compiling binary (Version: $(VERSION))..."
 	CGO_ENABLED=0 $(GO) build $(LDFLAGS) -o build/$(BINARY_NAME) $(MAIN_FILE)
 
-## run: Launch the program
+run-test:
+	@echo "==> Running TEST environment (Version: $(VERSION))...."
+	APP_ENV=test \
+	SMTP_ENABLED=false \
+	PROTECTION_LEVEL=none \
+	$(GO) run $(LDFLAGS) $(MAIN_FILE)
+
 run:
 	@echo "==> Running main.go (Version: $(VERSION))..."
+	APP_ENV=development \
+	SMTP_ENABLED=false \
+	PROTECTION_LEVEL=none \
 	$(GO) run $(LDFLAGS) $(MAIN_FILE)
 
 cleandb:
@@ -45,6 +60,17 @@ cleandb:
 ## runHR: Automate the Hot Reload process thanks to the standard Air tool
 air:
 	@echo "==> Running Hot Reload (air) main.go (Version: $(VERSION))..."
+	APP_ENV=development \
+	SMTP_ENABLED=false \
+	PROTECTION_LEVEL=none \
+
+	air
+
+air-test:
+	@echo "==> Running Hot Reload (air) in TEST Environment (Version: $(VERSION))..."
+	APP_ENV=test \
+	SMTP_ENABLED=false \
+	PROTECTION_LEVEL=none \
 	air
 
 ## tidy: Organize and clean the go.mod file
@@ -68,8 +94,10 @@ help:
 	@echo "Available commands:"
 	@echo "  make build       : Compile the project with version injection"
 	@echo "  make run         : Run the project with version injection"
+	@echo "  make run-test    : Run in test mode with version injection"
 	@echo "  make cleandb     : Clean Database"
 	@echo "  make air         : Run with air allowing hot reload"
+	@echo "  make air-test    : Run with air in test mode"
 	@echo "  make version     : Show the version to be injected"
 	@echo "  make tidy        : Clean up dependencies"
 	@echo "  make reset       : Clear cache and reinstall everything"

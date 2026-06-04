@@ -46,7 +46,6 @@ apiCall({
 When {} appears on the left-hand side of an assignment, it performs destructuring.
 
 ```js
-// Examples
 const user = { email: 'test@example.com', password: '1234' };
 
 // Extract properties into variables

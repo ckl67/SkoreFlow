@@ -2,8 +2,6 @@
 
 This document explains the step by step to set up the development environment and follow the contribution workflow for the SkoreFlow backend project.
 
----
-
 ## Clone the Repository
 
 ```bash
@@ -11,16 +9,12 @@ git clone https://github.com/ckl67/skoreflow.git
 cd skoreflow
 ```
 
----
-
 ## Prerequisites
 
 Make sure you have the following installed:
 
 - Go (programming language and compiler)
 - See below for specific installation instructions.
-
----
 
 ## Remove Previous Go Installation
 
@@ -31,14 +25,12 @@ sudo apt remove golang-go golang
 sudo rm -rf /usr/local/go
 ```
 
----
-
 ## Install Go
 
 It is not recommended to install Go using snap.
 
 We are using the specific version 1.25.0 to ensure compatibility with our codebase and avoid potential issues with newer versions.
-Upgrated to 1.25.0 has been requested by the use of package
+Upgraded to 1.25.0 has been requested by the use of package
 
 ```go
 _ "golang.org/x/image/webp"
@@ -71,8 +63,6 @@ which go
 go version
 ```
 
----
-
 ## Backend Setup
 
 Clean and synchronize dependencies:
@@ -81,8 +71,6 @@ Clean and synchronize dependencies:
 go clean -modcache
 go mod tidy
 ```
-
----
 
 ## Image Format Registration in Go
 
@@ -113,7 +101,7 @@ Adding a modern "x" library dependency might automatically bump (increase) your 
 go 1.25.0
 ```
 
-Afterwars it is mandatory to run
+Afterwards it is mandatory to run
 
 ```shell
 make reset

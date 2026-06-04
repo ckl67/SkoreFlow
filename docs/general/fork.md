@@ -2,21 +2,23 @@
 
 ## 👥 Mode Collaboration (Direct Access)
 
-Use this if you are a member of the core team.
+If you are a member of the core team.
+
+### 1. Clone the repository
 
 ```bash
-# Clone the repository
 git clone https://github.com/ckl67/SkoreFlow.git
 cd SkoreFlow
 ```
 
-🌿 2. Create a branch
+### 2. Create a branch
 
 ```bash
 git checkout -b <github-login>/dev
+git checkout -b <github-login>/My New feature
 ```
 
-🔄 3. Workflow
+### 3. Workflow
 
 ```mermaid
 flowchart LR
@@ -28,11 +30,11 @@ flowchart LR
     F --> G[Merge to Main]
 ```
 
-# Mode Fork
+## Mode Fork
 
-Use this if you want to propose a change without direct write access.
+If you want to propose a change without direct write access.
 
-## 🍴 1. Fork the repository
+### 🍴 1. Fork the repository
 
 ```bash
 git clone https://github.com/ckl67/SkoreFlow.git
@@ -46,24 +48,19 @@ git remote add upstream https://github.com/ckl67/SkoreFlow.git
 git remote -v
 ```
 
----
-
-## 🌿 2. Create a branch
+### 🌿 2. Create a branch
 
 ```bash
-git checkout -b <github-login>/dev
+git checkout -b <github-login>/My New feature or My correction
 ```
 
 Examples:
 
 ```bash
-git checkout -b christian/dev
-git checkout -b loic/fix/login-error
+git checkout -b paul/fix login-error
 ```
 
----
-
-## 🔄 3. Workflow
+### 🔄 3. Workflow
 
 ```mermaid
 flowchart LR
@@ -75,9 +72,7 @@ flowchart LR
     F --> G[Merge]
 ```
 
----
-
-## 💻 4. Development
+### 💻 4. Development
 
 ```bash
 
@@ -86,9 +81,7 @@ git add .
 git commit -m "feat: add PDF export"
 ```
 
----
-
-## 🔁 5. Sync with upstream
+### 🔁 5. Sync with upstream
 
 ```bash
 # Update your local main
@@ -101,35 +94,27 @@ git checkout <your-branch>
 git rebase main
 ```
 
----
-
-## 🚀 6. Push
+### 🚀 6. Push
 
 ```bash
 git push origin <your-branch>
 # Then open a PR on GitHub
 ```
 
----
-
-## 🔀 7. Pull Request
+### 🔀 7. Pull Request
 
 - Open PR on GitHub
 - Explain what, why, how
 
----
+### 🧪 8. Testing
 
-## 🧪 8. Testing
-
-See directory : /autotest
+See directory : /testauto
 
 ```bash
 ./auto-test.sh
 ```
 
 All tests must pass.
-
----
 
 ## ✅ Checklist
 

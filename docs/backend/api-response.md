@@ -76,7 +76,7 @@ It is important to distinguish between the HTTP Response Object (from Axios) and
 ### The "data.data" nesting
 
 Axios automatically wraps the HTTP response body in a property called **.data.**
-Since our API also uses a .data property for the payload, the access pattern in the frontend will be:
+Since our API also uses a .data property for the payload, the access pattern in the frontend will be: **.data.data**
 In other words "status:" and "data:" are coming from axios !
 
 ```TypeScript

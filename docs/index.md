@@ -1,5 +1,7 @@
 # Home
 
+## Welcome
+
 Welcome to the SkoreFlow documentation !
 
 This documentation provides comprehensive guides and documentation for contributing to the SkoreFlow project, including setup instructions for both the backend and frontend development environments.
@@ -16,18 +18,13 @@ Whether you're new to SkoreFlow or an experienced developer, this documentation 
 - [Go Structure](./general/go-struct.md)
 - [HTTP Status Codes](./general/http_status_codes.md)
 - [API Response Standard](./backend/api-response.md)
-- [Javascript - ecosystem](./general/javascript_ecosystem.md) or [Javascript - ecosystem (.fr)](./general/javascript_ecosystem-fr.md)
+- [Javascript - ecosystem](./general/javascript_ecosystem.md)
 - [Javascript - some particularities](./general/javascript.md)
 - [JSON Handling](./general/json.md)
 
-  For quick tests in TypeScript terminal use
-
-  ```shell
-          npx ts-node --compiler-options '{"module":"CommonJS", "target":"ESNext"}'
-  ```
-
 ### Development Environment
 
+- [Foreword](./environment/foreword.md)
 - [Visual Studio Code settings](./environment/vscode.md)
 - [TypeScript Setup Requirements](./environment/vs-tools.md)
 
@@ -35,9 +32,9 @@ Whether you're new to SkoreFlow or an experienced developer, this documentation 
 
 - [Architecture](./backend/architecture.md)
 - [API Response Standard](./backend/api-response.md)
-- [Some specificities - Architecture Diagram](./backend/architecture.dio) _(To change the theme in drawio - Ctrl Shift P : "Drawio - Change Theme")_
+- [Some specificities - Architecture Diagram](./backend/architecture.dio)
 - [cors explanation](./backend/cors.md)
-- [go ans Docker paths](./backend/go.md)
+- [go and Docker paths](./backend/go.md)
 - [Installation](./backend/install.md)
 - [Database migration](./backend/database.md)
 - [Automatic Code Reloading with Air](./backend/air.md)

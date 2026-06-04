@@ -5,11 +5,13 @@ autotests
 axios
 backen
 backend
+cleandb
 createuser
 dotenv
 esbenp
 frontend
 fuser
+Getwd
 gitgraph
 gofmt
 gofumpt
@@ -36,5 +38,6 @@ sqlitebrowser
 subfolders
 Supertramp
 testauto
+testcache
 typestrict
 Vitest

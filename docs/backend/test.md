@@ -1,7 +1,5 @@
 # Auto testing
 
--- CKL - TO MODIFY --
-
 This page provides instructions on how to run automated tests for the SkoreFlow backend.
 Automated testing is crucial for ensuring the reliability and stability of the application as it evolves.
 
@@ -20,7 +18,6 @@ bash auto-test.sh --help
 
 # or with multi parameters !
 bash auto-test.sh --clean --users --composers
-
 ```
 
 This command will execute the test suite, which includes various test cases designed to validate the functionality of the backend.
@@ -35,27 +32,26 @@ Some manual testing commands are provided below, but you can also create your ow
 
 ```bash
 # In Bash, variables inside single quotes '...' are not interpolated (expanded).
-# Solution: Always use double quotes "... to include variables.
+# Solution: Always use double quotes "..." to include variables.
 ```
 
-List of manual tests:
+List of manual tests, you can inspire you about this examples
 [smoke](./manual-tests/smoke-mtest.md)
 [register and login](./manual-tests/user-mtest.md)
 [composer](./manual-tests/composer-mtest.md)
 [score](./manual-tests/score-mtest.md)
 
-## Autotests Coding
+## Autotests Coding in Typescript
 
 Automated tests are now implemented in **JavaScript (Node.js)**.
 
 This approach provides more flexibility compared to shell-based testing, especially for:
+(Preferable solution)
 
 - complex workflows
 - API chaining
 - file uploads (multipart/form-data)
 - structured assertions and error handling
-
----
 
 ### Project Structure
 
@@ -95,58 +91,7 @@ Notes
 
 This setup ensures consistency, maintainability, and better debugging capabilities compared to raw shell scripts.
 
-### ESM means ECMAScript Modules
-
-Because we are using typestrict, a modification of package.json is mandatory to indicate that we are using module
-
-```json
-{
-  "type": "module",
-  "dependencies": {
-    "axios": "^1.15.1",
-    "form-data": "^4.0.5"
-  },
-  "devDependencies": {
-    "@types/node": "^25.6.0",
-    "ts-node": "^10.9.2",
-    "typescript": "^6.0.3"
-  }
-}
-```
-
-## Vitest Testing Guide for SkoreFlow
-
-We use Vitest for TypeScript API testing, integrated with the existing backend shell scripts.
-
-### Installation
-
-Navigate to your testing directory (where your package.json is located) and install Vitest as a development dependency:
-
-```Bash
-cd testauto
-npm install -D vitest
-```
-
-### Configuration
-
-Create a file named vitest.config.ts in your testauto folder. This tells Vitest where to find your tests and how to run them:
-
-```Bash
-
-import { defineConfig } from 'vitest/config'
-
-export default defineConfig({
-  test: {
-    globals: true,
-    environment: 'node',
-    // Looks for files ending in .test.ts or .spec.ts
-    include: ['**/*.{test,spec}.ts'],
-  },
-})
-
-```
-
-### VS Code Integration
+## Vitest VSC Code Integration
 
 To get the most out of Vitest, use the graphical interface:
 
@@ -160,8 +105,7 @@ To test effectively, you should use a "Two-Speed" workflow:
 
 ### Step 1: Infrastructure (The Shell Script)
 
-Before running Vitest, your backend must be running.
-Use your Terminal or NPM script to launch the environment:
+You can run the test via shell
 
 ```Bash
 
@@ -180,26 +124,3 @@ Once the server is "UP", stay in your TypeScript files:
 - Modify: Edit your test logic Example : in composer.test.ts.
 - Execute: Click "Play" in the Vitest "Vial" tab.
 - Benefit: Tests run in seconds because you don't need to restart the Go server or wipe the database every time.
-
-### Writing Tests
-
-Ensure your helper functions (like createComposer) return the response object and use standard assertions:
-
-```TypeScript
-
-import { it, expect } from 'vitest';
-
-it('should create a composer and return 201', async () => {
-  const res = await createComposer({ name: "Bach" }, token);
-
-  // Vitest assertion
-  expect(res.status).toBe(201);
-  expect(res.data.name).toBe("Bach");
-});
-
-```
-
-### Summary of Tools
-
-- Shell Script (auto-test.sh): Manages the server life cycle and database state.
-- Vitest: Executes granular API logic tests with fast feedback.

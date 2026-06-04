@@ -22,12 +22,11 @@ SkoreFlow provides a structured pipeline to:
 
 ## 🚧 Project Status
 
-SkoreFlow is actively under development.
+SkoreFlow is actively under development and improvement on
 
-- Backend: ✅ Mostly ready
-  - currently finalizing and working on backend auto test
-- Frontend: 🚧 not yet started (React)
-- Features: evolving
+- Backend:
+- Frontend:
+- Features:
 
 Contributions and feedback are welcome.
 
@@ -79,7 +78,7 @@ SkoreFlow/
 
 - Always run npm install from the root
 - Always specify the workspace using -w
-- Never create a local node_modules/ inside subprojects !
+- Never create a local node_modules inside subprojects !
 - Common tools must be installed on the root
   - Prettier / ESLint → root
   - Vitest → testauto/backend
@@ -106,7 +105,7 @@ cd skoreflow
 
 ## 🌿 Contributions
 
-- To contribute, please use **Feature Branches** and submit a **Pull Request**. Direct pushes to the main branch are not permitted.
+- To contribute, please use your **Own Branches** or **Feature Branches** and submit a **Pull Request**. Direct pushes to the main branch are not permitted.
 - See [CONTRIBUTING](./CONTRIBUTING.md) or [CONTRIBUTING (more details)](./docs/general/fork.md)
 
 ## 📄 License

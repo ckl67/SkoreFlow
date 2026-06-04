@@ -1,7 +1,7 @@
 # 1. Go Struct Tags & Field Mapping
 
 In Go, Struct Tags are small pieces of metadata attached to struct fields.
-They are strings (enclosed in backticks) that provide instructions to external libraries—like encoding/json for API responses or gorm for database mapping—on how to handle each field.
+They are strings _(enclosed in backticks)_ that provide instructions to external libraries—like encoding/json for API responses or gorm for database mapping—on how to handle each field.
 
 ## 1.1. The Core Principle: Exporting & Reflection
 
@@ -37,6 +37,8 @@ These define the database schema and constraints when using the GORM ORM.
   - size:100 defines the VAR CHAR length in the database.
 - Default Values:
   - default:0 sets a fallback value if none is provided during insertion.
+
+### 1.2.3. Application
 
 ```go
     type User struct {

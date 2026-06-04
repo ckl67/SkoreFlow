@@ -153,10 +153,8 @@ func (server *Server) SetupRouter() {
 		api.POST("/password/forgot", authCtrl.ForgotPassword)                        // vitest
 		api.POST("/password/reset", authCtrl.ResetPassword)                          // vitest
 
-		// The route : me/mail/confirm is linked to
-		// 	 protected.PUT("/me/mail", userCtrl.UpdateMail)
-		// However, it is preferable to route with no login route, because
-		// 		change mail  --> logout --> Link email later
+		// The route : api.POST("/me/mail/confirm", userCtrl.ConfirmUpdateMail) is the following of the route protected.PUT("/me/mail", userCtrl.UpdateMail)
+		// However, we prefer use the route with no login route, because the process is : change mail  --> logout --> Link email later
 		api.POST("/me/mail/confirm", userCtrl.ConfirmUpdateMail) // vitest
 
 		// ---------------------------------------------------------------------------------------
@@ -166,7 +164,7 @@ func (server *Server) SetupRouter() {
 		protected.Use(middlewares.AuthMiddleware())
 		{
 			// -----------------------------------------------------------------------------------
-			// User self-management (no ID needed)
+			// User self-management
 			// -----------------------------------------------------------------------------------
 			protected.GET("/me", userCtrl.GetProfile)            // vitest
 			protected.PUT("/me/profile", userCtrl.UpdateProfile) // vitest

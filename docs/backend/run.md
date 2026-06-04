@@ -9,8 +9,6 @@ This is because the backend relies on the .env file located at the root of the p
 go run ./cmd/server/main.go
 # or
 make run
-
-
 ```
 
 ## Run with Air (Hot Reload)
@@ -44,8 +42,10 @@ example of the output:
 Available commands:
   make build       : Compile the project with version injection
   make run         : Run the project with version injection
+  make run-test    : Run in test mode with version injection
   make cleandb     : Clean Database
   make air         : Run with air allowing hot reload
+  make air-test    : Run with air in test mode
   make version     : Show the version to be injected
   make tidy        : Clean up dependencies
   make reset       : Clear cache and reinstall everything

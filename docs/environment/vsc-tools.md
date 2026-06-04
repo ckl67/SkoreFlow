@@ -22,8 +22,6 @@ npm install better-sqlite3 -w testauto/backend
 npm install -D @types/better-sqlite3 -w testauto/backend
 ```
 
----
-
 ### 1.1.3. ❌ Do NOT do this
 
 ```bash
@@ -33,17 +31,13 @@ npm install
 
 👉 This breaks the monorepo (creates local node_modules)
 
----
-
 ### 1.1.4. Key Rules
 
 - Always run commands from the root
 - Always use `-w <workspace>`
 - Only one `node_modules/` at root
 
----
-
-## npm update
+## 1.2. npm update
 
 In some case, you can upgrade node packet manager
 
@@ -56,29 +50,27 @@ npm install
 
 ```
 
-## 1.2. Formatting & Linting
+## 1.3. Formatting & Linting
 
-### 1.2.1. Formatting
+### 1.3.1. Formatting
 
 - Prettier is the **only formatter**
 - Runs automatically on save
 
-### 1.2.2. Linting
+### 1.3.2. Linting
 
 - ESLint is used for **code quality only**
 - No formatting rules inside ESLint
 
-### 1.2.3. Vitest
+### 1.3.3. Vitest
 
 - Tests run via Vitest
 
-### 1.2.4. Markdown
+### 1.3.4. Markdown
 
 - Markdown is formatted consistently
 
----
-
-## 1.3. Backend (Go)
+## 1.4. Backend (Go)
 
 - Uses `gofumpt` for formatting
 
@@ -86,18 +78,14 @@ npm install
 go install mvdan.cc/gofumpt@latest
 ```
 
----
-
-## 1.4. Shell Tools (Optional)
+## 1.5. Shell Tools (Optional)
 
 ```bash
 sudo snap install shellcheck
 go install mvdan.cc/sh/v3/cmd/shfmt@latest
 ```
 
----
-
-## 1.5. TypeScript Setup (Tests & Scripts)
+## 1.6. TypeScript Setup (Tests & Scripts)
 
 This project uses **TypeScript** mainly for test automation (`testauto/`) and scripting.
 
@@ -130,9 +118,7 @@ In each directory we can specify the packages which are needed
 }
 ```
 
----
-
-## 1.6. Initialize Configuration
+## 1.7. Initialize Configuration
 
 Just for information
 
@@ -153,9 +139,7 @@ Minimal recommended config:
 }
 ```
 
----
-
-## 1.7. Run TypeScript
+## 1.8. Run TypeScript
 
 Instead of:
 
@@ -169,9 +153,7 @@ Use:
 npx ts-node script.ts
 ```
 
----
-
-## 1.8. Types for Libraries
+## 1.9. Types for Libraries
 
 Some libraries require type definitions:
 
@@ -181,9 +163,7 @@ npm install --save-dev @types/form-data
 
 👉 Note: Axios already includes its own types.
 
----
-
-## 1.9. Project Usage
+## 1.10. Project Usage
 
 TypeScript is mainly used in:
 
@@ -194,9 +174,7 @@ testauto/frontend/
 
 Each workspace can have its own `tsconfig.json` if needed.
 
----
-
-## 1.10. Summary
+## 1.11. Summary
 
 - Monorepo with shared tooling
 - Single root workspace (no multi-root)
@@ -206,5 +184,3 @@ Each workspace can have its own `tsconfig.json` if needed.
 - TypeScript is used for tests and scripts
 - Runs with `ts-node` (no build step)
 - Strict mode enabled for safety
-
----

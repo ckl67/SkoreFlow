@@ -1,14 +1,22 @@
-🌐 CORS Configuration Guide - SkoreFlow Backend
+# 🌐 CORS Configuration Guide - SkoreFlow Backend
 
 This document explains the implementation and purpose of the CORS (Cross-Origin Resource Sharing) mechanism within the SkoreFlow Go backend.
 
-# DOM (Document Object Model)
+## DOM (Document Object Model)
 
 The DOM (Document Object Model) is the bridge between a web page and your code (JavaScript).
 Here is the breakdown:
 
 - The Blueprint: When a browser loads your HTML, it creates a "live" map of the page.
-- The Tree Structure: It organizes every element (<div>, <h1>, <p>) into a hierarchical tree of objects.
+- The Tree Structure: It organizes every element into a hierarchical tree of objects.
+
+  ```html
+  <div>
+    <h1>header</h1>
+    <p>paragraph.</p>
+  </div>
+  ```
+
 - The Remote Control: JavaScript uses the DOM to change, add, or delete elements on the fly without refreshing the page.
 
 Key Difference:
@@ -18,14 +26,14 @@ Key Difference:
 
 Summary: The DOM turns your static document into a dynamic object that code can manipulate.
 
-# CORS (Cross-Origin Resource Sharing)
+## CORS (Cross-Origin Resource Sharing)
 
 By default, web browsers (DOM) enforce the Same-Origin Policy (SOP).
 This security measure prevents a frontend application running on http://localhost:3000 (e.g., React/Vue) from making HTTP requests to a backend on http://localhost:8080 unless the server explicitly allows it.
 
 Without the configuration below, the browser will block backend responses to protect the user from malicious cross-site requests.
 
-## The Dialogue Between the Browser and the Backend
+### The Dialogue Between the Browser and the Backend
 
 Imagine the Browser is a bodyguard. Your Frontend code (React) wants to enter a club called "Backend Go."
 
@@ -37,7 +45,7 @@ Imagine the Browser is a bodyguard. Your Frontend code (React) wants to enter a 
 
 It is the which Backend decide about the right !
 
-## Technical Summary
+### Technical Summary
 
 It is a three-party contract:
 
@@ -47,7 +55,7 @@ It is a three-party contract:
 
 **This is why tools like Postman or cURL always work even without CORS: they don't have a "bodyguard" (browser) enforcing web security rules.**
 
-# Implementation in SkoreFlow (Go + Gin)
+## Implementation in SkoreFlow (Go + Gin)
 
 In this project, CORS is handled via a middleware injected into the Gin router.
 
@@ -88,7 +96,7 @@ You must specify the actual URL of the deployed application:
 CORS_ALLOWED_ORIGINS=https://app.skoreflow.com
 ```
 
-## The Request Flow (Preflight)
+### The Request Flow (Preflight)
 
 For complex requests (those using Authorization or Content-Type: application/json), the browser performs a two-step process:
 

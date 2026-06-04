@@ -1,12 +1,5 @@
 # 🎼 SkoreFlow Backend
 
-> **From upload to structured music data — cleanly processed.**
-
-SkoreFlow Backend is based on an original idea proposed on [SheetAble](hhttps://github.com/ScoreAble/SheetAble).
-However SkoreFlow is completely different, and has been designed with a full new modern REST architecture with much more features, and possibility of cool enhancements. It is also open sourced, and free.
-
----
-
 ## 🧱 Architecture
 
 The project follows a **layered architecture with clear separation of concerns**, combining domain-driven structure and infrastructure isolation.
@@ -21,9 +14,9 @@ Client
          → Domain (business helpers)
          → Infrastructure (storage, DB, etc.)
  → Response
-```
+    → dto
 
----
+```
 
 ## 📁 Project Structure
 
@@ -36,8 +29,9 @@ Client
 │   ├── services/
 │   ├── models/
 │   ├── forms/
+│   ├── dto/
 │   ├── domain/         # Domain-specific logic (e.g. score processing)
-│   └── errors/
+│   └── apperrors/
 │
 ├── infrastructure/     # Technical layers (external systems)
 │   ├── database/
@@ -71,15 +65,13 @@ Client
 
 ```
 
----
-
 ## 🌐 API Design
 
 ### Base URL
 
 ```bash
 /api
-# Or if nesserary
+# Or if necessary
 /api/v1
 ```
 
@@ -93,9 +85,7 @@ Client
 /uploads
 ```
 
----
-
-## 🔄 Example Flow: Upload Score
+### 🔄 Example Flow: Upload Score
 
 ```text
 POST /scores/upload
@@ -107,10 +97,8 @@ POST /scores/upload
 → Model (DB insert)
 → Domain logic (normalization, naming)
 → Infrastructure (file storage, thumbnail generation)
-→ JSON Response
+→ Data Output JSON (dto) Response
 ```
-
----
 
 ## 🧠 Core Concepts
 
@@ -133,8 +121,6 @@ Reusable helpers are separated from business logic.
 - Store
 - Generate thumbnails
 
----
-
 ## ⚙️ Tech Stack
 
 - **Language**: Go (Golang)
@@ -142,14 +128,10 @@ Reusable helpers are separated from business logic.
 - **ORM**: GORM
 - **Validation**: go-playground/validator
 
----
-
 ## 🔐 Authentication
 
-- Token-based authentication (JWT)
+- Token-based authentication (JWT) [see also](./architecure.dio)
 - Middleware-based access control
-
----
 
 ## 📦 Storage Structure
 
@@ -163,14 +145,14 @@ Reusable helpers are separated from business logic.
 
 ```
 
-# Rule path for SkoreFlow
+## Rule path for SkoreFlow
 
 To avoid confusion and ensure consistency, we define a clear structure for our file storage in SkoreFlow, both in local development and within Docker containers.
 We use environment variables to set the root path and storage path, and we construct absolute paths using Go's `filepath.Join` to ensure portability across different environments.
 
 ```go
 //In local
-APP_ROOT=/home/<linuxuser>/SkoreFlow_Project/SkoreFlow/backend
+APP_ROOT=/home/<linux user>/SkoreFlow_Project/SkoreFlow/backend
 STORAGE_PATH=storage
 
 //In Docker
@@ -178,18 +160,14 @@ APP_ROOT=/app
 STORAGE_PATH=storage
 ```
 
-In database the data are stored relative to the **Storagepath=storage/**
+In database the data are stored relative to the **StoragePath=storage/**
 
 See **path.go** for more details.
-
----
 
 ## 🧪 Testing (Planned)
 
 - Auto test : Reference : /SkoreFlow/testauto/backend
 - Manual tests (services/ domain / API routes / forms)
-
----
 
 ## 🚀 Getting Started
 
@@ -211,5 +189,3 @@ cp .env.example .env
 ```bash
 go run cmd/server/main.go
 ```
-
----

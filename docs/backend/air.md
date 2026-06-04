@@ -1,9 +1,9 @@
-# Automatic Code Reloading with Air
+# 1. Automatic Code Reloading with Air
 
 Go is a compiled language. By default, this means you need to stop, rebuild, and restart the application manually.
 To automate this process (commonly called "Hot Reload"), the standard tool is Air.
 
-## 1. Installing Air
+## 1.1. Installing Air
 
 Open your terminal and install it using go install:
 
@@ -14,7 +14,7 @@ See [backend installation guide](install.md) for instructions on how to add Go b
 go install github.com/air-verse/air@latest
 ```
 
-## 2. Configuration
+## 1.2. Configuration
 
 Navigate to the root of your backend project and initialize Air:
 
@@ -25,7 +25,7 @@ air init
 This will create a .air.toml file.
 This file tells Air: "Watch all .go files, and whenever one changes, run go build and restart the binary."
 
-## 3. Usage
+## 1.3. Usage
 
 Instead of running:
 
@@ -36,3 +36,8 @@ go run ./cmd/server/main.go
 
 air
 ```
+
+## 1.4 Be care
+
+When you start the backend with air, to be sure that you will use the right environment variables
+auto-test.sh will set the right environnement variable !

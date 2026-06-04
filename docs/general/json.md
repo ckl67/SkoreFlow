@@ -13,61 +13,59 @@ A JSON value can be one of six types:
 - boolean
 - null
 
-So a JSON **object** is just one of many possible types. Despite the name — _JavaScript Object Notation_ — JSON does not have to be an object. The name comes from JavaScript's object literal syntax.
+So a JSON **object** is just one of many possible types.
 
-> **Note:** JSON has no native date type.
+Despite the name — _JavaScript Object Notation_ — JSON does not have to be an object.
 
----
+The name comes from JavaScript's object literal syntax, and so JSON has no native date type.
 
 ## Valid JSON: Six Examples
 
 All six of the following are valid JSON documents:
 
-**Object**
+### Object
 
 ```json
 { "name": "Christian" }
 ```
 
-**Array**
+### Array
 
 ```json
 [1, 2, 3]
 ```
 
-**String**
+### String
 
 ```json
 "hello"
 ```
 
-**Number**
+### Number
 
 ```json
 42
 ```
 
-**Boolean**
+### Boolean
 
 ```json
 true
 ```
 
-**Null**
+### Null
 
 ```json
 null
 ```
 
----
-
 ## Simplified JSON Grammar
 
-```
+```text
 JSON-text = value
 
 value =
-    false
+  | false
   | null
   | true
   | object
@@ -77,8 +75,6 @@ value =
 ```
 
 An object is just one possible case.
-
----
 
 ## JSON in REST APIs
 
@@ -93,8 +89,6 @@ JSON is a text-based data exchange format standardized by RFC 8259, widely used 
 ```go
 import "encoding/json"
 ```
-
----
 
 ## JSON Object Structure
 
@@ -122,8 +116,6 @@ Here:
 - root = object `{}`
 - `roles` = array `[]`
 - each array element is a string
-
----
 
 ## Quoting Rules
 
@@ -159,8 +151,6 @@ JSON requires keys to be strings, so they must always use double quotes.
 "admin": "true"  // This is a string, not a boolean
 ```
 
----
-
 ## JSON Serialization in Go
 
 ### Struct Definition
@@ -190,8 +180,6 @@ Output:
   "age": 42
 }
 ```
-
----
 
 ## Handling `time.Time` in JSON
 
@@ -233,23 +221,19 @@ Key points:
 
 ```json
 { "created_at": "01/03/2026" }
-```
 
-```
-parsing time "01/03/2026" as "2006-01-02T15:04:05Z07:00": cannot parse
+// parsing time "01/03/2026" as "2006-01-02T15:04:05Z07:00": cannot parse
 ```
 
 **Unix timestamp instead of string:**
 
 ```json
 { "created_at": 1709293200 }
+
+// cannot un-marshal number into Go struct field of type time.Time
 ```
 
-```
-cannot unmarshal number into Go struct field of type time.Time
-```
-
-### Why Is a Date a String in JSON?
+### Why is a Date a String in JSON?
 
 Because JSON has no date type. Dates are represented as strings by convention (typically RFC 3339 / ISO 8601).
 
@@ -267,7 +251,7 @@ If `DeletedAt` is the zero value, `omitempty` does **not** omit it — it still 
 { "deleted_at": "0001-01-01T00:00:00Z" }
 ```
 
-**Best practice: use a pointer**
+The **Best practice: use a pointer**
 
 ```go
 type User struct {
@@ -286,8 +270,6 @@ CreatedAt time.Time
 UpdatedAt time.Time
 DeletedAt gorm.DeletedAt
 ```
-
----
 
 ## Frontend ↔ Backend: Full Example
 
