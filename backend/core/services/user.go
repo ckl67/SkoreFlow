@@ -408,12 +408,18 @@ func (s *UserService) DeleteUser(targetUID uint32, adminID uint32) error {
 // DeleteAvatarFile removes a user's avatar file from storage.
 // Behavior:
 // - Logs warning if file is missing
-// - Cleans empty directories after deletion
 func (s *UserService) DeleteAvatarFile(userID uint32) error {
 	var user models.User
 
 	if err := user.FindByID(s.db, userID); err != nil {
 		return apperrors.ErrUserNotFound
+	}
+	logger.User.Debug("(DeleteAvatarFile) Attempts to delete avatar for user id (%d) with Avatar = %s", userID, user.Avatar)
+
+	if user.Avatar == "users/default.png" {
+		// For non blocking
+		return nil
+		//return apperrors.ErrUserAvatarAlreadyDefault
 	}
 
 	relativePath := user.Avatar
@@ -425,15 +431,23 @@ func (s *UserService) DeleteAvatarFile(userID uint32) error {
 	fullPath := s.paths.StorageAbsPath(relativePath)
 
 	err := filedir.RemoveFileIfExists(fullPath)
-	if err != nil {
-		if os.IsNotExist(err) {
-			logger.User.Warn("Avatar file not found: %s", fullPath)
-		} else {
-			logger.User.Error("Avatar deletion failed: %s (%v)", fullPath, err)
-		}
+
+	if err != nil && !os.IsNotExist(err) {
+		logger.User.Error(
+			"Avatar deletion failed: %s (%v)",
+			fullPath,
+			err,
+		)
+
+		return apperrors.ErrUserAvatarFileNotDeleted
 	}
 
-	filedir.CleanEmptyDirs(filepath.Dir(fullPath))
+	// Here file is deleted, now we set to default
+	user.Avatar = "users/default.png"
+	if err := user.Update(s.db); err != nil {
+		return apperrors.ErrDatabaseAccess
+	}
+
 	return nil
 }
 

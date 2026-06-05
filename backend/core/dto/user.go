@@ -32,6 +32,10 @@ type UpdatePasswordResponse struct {
 	Message string `json:"message"`
 }
 
+type DeleteAvatarResponse struct {
+	Message string `json:"message"`
+}
+
 // --------------------------------------------------------------------------
 // Function
 // --------------------------------------------------------------------------

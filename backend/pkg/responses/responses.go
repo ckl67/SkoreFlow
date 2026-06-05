@@ -20,8 +20,8 @@ type APIResponse struct {
 }
 
 type APIError struct {
-	//Code    string `json:"code"`
-	Message string `json:"message"`
+	Message string            `json:"message"`
+	Fields  map[string]string `json:"fields,omitempty"`
 }
 
 /*
@@ -90,14 +90,21 @@ func VALIDATION_ERROR(c *gin.Context, err error) {
 			}
 		}
 
-		c.JSON(http.StatusBadRequest, gin.H{
-			"errors": errorsMap,
+		c.JSON(http.StatusBadRequest, APIResponse{
+			Success: false,
+			Error: &APIError{
+				Message: "validation failed",
+				Fields:  errorsMap,
+			},
 		})
+
 		return
 	}
 
-	// Fallback for non-validator errors (e.g., JSON type mismatch)
-	c.JSON(http.StatusBadRequest, gin.H{
-		"error": err.Error(),
+	c.JSON(http.StatusBadRequest, APIResponse{
+		Success: false,
+		Error: &APIError{
+			Message: err.Error(),
+		},
 	})
 }

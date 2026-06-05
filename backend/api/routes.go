@@ -166,12 +166,11 @@ func (server *Server) SetupRouter() {
 			// -----------------------------------------------------------------------------------
 			// User self-management
 			// -----------------------------------------------------------------------------------
-			protected.GET("/me", userCtrl.GetProfile)            // vitest
-			protected.PUT("/me/profile", userCtrl.UpdateProfile) // vitest
-			protected.PUT("/me/mail", userCtrl.UpdateMail)       // vitest
-
-			protected.POST("/me/avatar", userCtrl.UploadAvatar)
-			protected.DELETE("/me/avatar", userCtrl.DeleteAvatar)
+			protected.GET("/me", userCtrl.GetProfile)             // vitest
+			protected.PUT("/me/profile", userCtrl.UpdateProfile)  // vitest
+			protected.PUT("/me/mail", userCtrl.UpdateMail)        // vitest
+			protected.POST("/me/avatar", userCtrl.UploadAvatar)   // vitest
+			protected.DELETE("/me/avatar", userCtrl.DeleteAvatar) // vitest
 
 			// -----------------------------------------------------------------------------------
 			// SCORES (Music scores)

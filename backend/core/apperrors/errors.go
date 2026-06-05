@@ -25,6 +25,9 @@ var (
 	// General
 	ErrInvalidInput = errors.New("Invalid Input")
 
+	// Database
+	ErrDatabaseAccess = errors.New("Issue on Database Access")
+
 	// Auth
 	ErrAuthInvalidCredentials  = errors.New("Invalid Credential")
 	ErrMissingToken            = errors.New("Missing Token")
@@ -39,6 +42,7 @@ var (
 	ErrUsernameTaken            = errors.New("username already taken")
 	ErrUserAvatarFileNotFound   = errors.New("Avatar picture not found")
 	ErrUserAvatarFileNotDeleted = errors.New("Avatar picture not deleted")
+	ErrUserAvatarAlreadyDefault = errors.New("User Avatar already default")
 
 	// User
 	ErrUserInvalid         = errors.New("user invalid error")

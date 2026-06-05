@@ -192,7 +192,6 @@ func (ctrl *UserController) UploadAvatar(c *gin.Context) {
 
 	var form forms.UploadAvatarRequest
 	if err := c.ShouldBind(&form); err != nil {
-
 		responses.VALIDATION_ERROR(c, err)
 		return
 	}
@@ -203,7 +202,7 @@ func (ctrl *UserController) UploadAvatar(c *gin.Context) {
 		return
 	}
 
-	logger.User.Debug("User %d attempts to upload file %s", userID, form.File.Filename)
+	logger.User.Debug("Upload file %s", form.File.Filename)
 
 	user, err := ctrl.userService.UploadAvatar(userID, form.File)
 	if err != nil {
@@ -411,5 +410,10 @@ func (ctrl *UserController) DeleteAvatar(c *gin.Context) {
 		return
 	}
 
-	responses.SUCCESS(c, http.StatusOK, err)
+	response := dto.DeleteAvatarResponse{
+		Message: fmt.Sprintf("Avatar deleted successfully for UserID %d", uid),
+	}
+
+	responses.SUCCESS(c, http.StatusOK, response)
+
 }

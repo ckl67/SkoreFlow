@@ -1,13 +1,11 @@
 // --------------------------------------------------------------------------------
 // HELPERS
 // --------------------------------------------------------------------------------
+import FormData from 'form-data';
+import fs from 'fs';
 
 import { request } from './api.js';
-import { createReadStream } from 'node:fs';
-import FormData from 'form-data';
-
 import { API_URL } from '../config.js';
-import { PaginatedResponse } from './paginate.js';
 // --------------------------------------------------------------------------------
 // createUser
 // --------------------------------------------------------------------------------
@@ -67,6 +65,19 @@ interface UpdateMailResponse {
   token_email: string;
 }
 
+// -------------------
+
+interface UploadAvatarResponse {
+  message: string;
+  user: UserPublicResponse;
+}
+
+// -------------------
+
+interface DeleteAvatarResponse {
+  message: string;
+}
+
 // --------------------------------------------------------------------------------
 // Get Profile
 // --------------------------------------------------------------------------------
@@ -122,7 +133,60 @@ async function updateMail(data: UpdateMailRequest, token: string) {
 }
 
 // --------------------------------------------------------------------------------
+// Update User's Avatar
+// --------------------------------------------------------------------------------
+
+async function uploadAvatar(filePath: string, token: string) {
+  const form = new FormData();
+
+  form.append('uploadFile', fs.createReadStream(filePath));
+
+  // In function request :
+  //    headers: {
+  //      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  //      ...(headers || {}),
+  // We will construct
+  //    Authorization: Bearer xxx
+  //    Content-Type: multipart/form-data; boundary=
+  const res = await request<UploadAvatarResponse>('POST', `${API_URL}/me/avatar`, {
+    token,
+    data: form,
+    headers: form.getHeaders(),
+  });
+
+  console.log('\n RESPONSE UPLOAD Avatar', res.status, res.data);
+
+  return res;
+}
+
+// --------------------------------------------------------------------------------
+
+async function uploadEmptyAvatarFile(token: string) {
+  const form = new FormData();
+
+  const res = await request<UploadAvatarResponse>('POST', `${API_URL}/me/avatar`, {
+    token,
+    data: form,
+    headers: form.getHeaders(),
+  });
+
+  return res;
+}
+
+// --------------------------------------------------------------------------------
+
+async function DeleteAvatar(token: string) {
+  const res = await request<DeleteAvatarResponse>('DELETE', `${API_URL}/me/avatar`, {
+    token: token,
+  });
+
+  console.log('\n RESPONSE DELETE AVATAR', res.status, res.data);
+
+  return res;
+}
+
+// --------------------------------------------------------------------------------
 // EXPORT (ESM)
 // --------------------------------------------------------------------------------
 
-export { getProfile, updateProfile, updateMail };
+export { getProfile, updateProfile, updateMail, uploadAvatar, uploadEmptyAvatarFile, DeleteAvatar };
