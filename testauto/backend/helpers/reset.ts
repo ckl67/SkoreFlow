@@ -27,11 +27,11 @@ async function getResetToken(email: string, adminToken: string) {
     token: adminToken,
   });
 
-  if (!res.data?.token) {
+  if (!res.data.data?.token) {
     throw new Error('Reset token not found');
   }
 
-  return res.data.token;
+  return res.data.data.token;
 }
 
 // --------------------------------------------------------------------------------

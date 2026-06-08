@@ -55,32 +55,15 @@ function makeUser(prefix = 'user'): TestUser {
 }
 
 // ----------------------------------------------------------------------------
-// 🟢 Level 1 — Happy path (Mandatory)
-//  register → confirm OK
-// 🟡 Level 2 — Security edge cases (Important)
-//  invalid token
-//  expired token
-//  no token
-//  ...
-//  already used token
-// 🔴 Level 3 — Stress / fuzz (Optional)
 // ----------------------------------------------------------------------------
 
 describe('👤 User  API - From the User Point of view', () => {
-  let TOKEN_ADMIN: string;
   let TOKEN_USER1: string;
   let TOKEN_USER2: string;
   // ----------------------------------------------------------------------------
   // SETUP
   // ----------------------------------------------------------------------------
-  beforeAll(async () => {
-    const res = await login({
-      email: 'admin@admin.com',
-      password: 'skoreflow',
-    });
-
-    TOKEN_ADMIN = res.data.data!.token;
-  });
+  beforeAll(async () => {});
 
   // ----------------------------------------------------------------------------
   // REGISTER USER
@@ -225,6 +208,35 @@ describe('👤 User  API - From the User Point of view', () => {
 
   // ----------------------------------------------------------------------------
 
+  it('for random user should upload avatar', async () => {
+    const user = makeUser();
+
+    // Register + Validate
+    const resReg = await register(user);
+    expect(resReg.status).toBe(201);
+    const token = resReg.data.data!.token;
+    const res = await confirmRegistration({ token });
+    expect(res.data.data!.isVerified).toBe(true);
+
+    // Login
+    const resLogin = await login({ email: user.email, password: 'password123' });
+    expect(resLogin.status).toBe(200);
+    const TokenLogin = resLogin.data.data!.token;
+
+    const uploadRes = await uploadAvatar(VALID_AVATAR, TokenLogin);
+    expect(uploadRes.status).toBe(200);
+    expect(uploadRes.data.success).toBe(true);
+    expect(uploadRes.data.data!.user.avatar).not.toBe('');
+
+    const profileRes = await getProfile(TokenLogin);
+    const Id = profileRes.data.data!.user.id;
+
+    console.log('avatar:', uploadRes.data.data!.user.avatar);
+    expect(uploadRes.data.data!.user.avatar).toContain(`users/user-${Id}.png`);
+  });
+
+  // ----------------------------------------------------------------------------
+
   it('should reject upload without file', async () => {
     const resLogin = await login({
       email: 'user1@test.com',
@@ -305,7 +317,7 @@ describe('👤 User  API - From the User Point of view', () => {
 
   it('should delete avatar twice without error', async () => {
     const loginRes = await login({
-      email: 'user1@test.com',
+      email: 'user2@test.com',
       password: 'password123',
     });
 

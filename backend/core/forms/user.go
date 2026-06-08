@@ -61,7 +61,7 @@ import (
 // -----------------------
 
 // CreateUserRequest defines the payload for user creation.
-type AdmCreateUserRequest struct {
+type AdminCreateUserRequest struct {
 	Username string `json:"username" binding:"omitempty,min=3,max=100"`
 	Email    string `json:"email" form:"email" binding:"required,email"`
 	Password string `json:"password" binding:"required,min=8,max=100"`
@@ -92,14 +92,15 @@ type UploadAvatarRequest struct {
 	File *multipart.FileHeader `form:"uploadFile" binding:"required"`
 }
 
-// GetUsersPageRequest defines pagination and filtering for composers listing.
-type GetUsersPageRequest struct {
+// AdminGetUsersPageRequest defines pagination and filtering for composers listing.
+type AdminGetUsersPageRequest struct {
 	PaginatedRequest
 }
 
 // AdminUpdateUserRequest defines the payload for updating a user.
-type AdmUpdateUserRequest struct {
+type AdminUpdateUserRequest struct {
 	Username   *string `json:"username" binding:"omitempty,min=3,max=100"`
+	Email      *string `json:"email" form:"email" binding:"email"`
 	Password   *string `json:"password" binding:"omitempty,min=8,max=100"`
 	Role       *int    `json:"role"`
 	IsVerified *bool   `json:"isVerified"`

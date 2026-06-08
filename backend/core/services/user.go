@@ -66,7 +66,7 @@ func (s *UserService) GetAllUsers() ([]models.User, error) {
 }
 
 // CreateUser creates a new user with hashed password and default role.
-func (s *UserService) CreateUser(input forms.AdmCreateUserRequest) (*models.User, error) {
+func (s *UserService) AdminCreateUser(input forms.AdminCreateUserRequest) (*models.User, error) {
 	// 1. Normalize input
 	email := format.SanitizeUserEmail(input.Email)
 	username := format.SafeFileName(input.Username)
@@ -81,7 +81,7 @@ func (s *UserService) CreateUser(input forms.AdmCreateUserRequest) (*models.User
 	}
 
 	// 3. Check username uniqueness
-	exists, err = new(models.User).ExistsByUserName(s.db, username)
+	exists, err = new(models.User).ExistsByUsername(s.db, username)
 	if err != nil {
 		return nil, err
 	}
@@ -102,10 +102,11 @@ func (s *UserService) CreateUser(input forms.AdmCreateUserRequest) (*models.User
 		Avatar:              "users/default.png",
 		PasswordReset:       "",
 		PasswordResetExpire: time.Time{},
+		IsVerified:          true,
 	}
 
 	if err := user.Save(s.db); err != nil {
-		return nil, err
+		return nil, apperrors.ErrDatabaseAccess
 	}
 
 	return &user, nil
@@ -264,7 +265,7 @@ func (s *UserService) ConfirmUpdateMail(token string) (*models.User, error) {
 // - Only provided fields are updated.
 // - Password is hashed if provided.
 // - Email is normalized before saving.
-func (s *UserService) UpdateUser(uid uint32, input forms.AdmUpdateUserRequest) (*models.User, error) {
+func (s *UserService) AdminUpdateUser(uid uint32, input forms.AdminUpdateUserRequest) (*models.User, error) {
 	var user models.User
 
 	// 1. Retrieve existing user
@@ -272,13 +273,33 @@ func (s *UserService) UpdateUser(uid uint32, input forms.AdmUpdateUserRequest) (
 		return nil, apperrors.ErrUserNotFound
 	}
 
+	logger.User.Info("(Service AdminUpdateUser) input: (%s, %s) ", *input.Email, *input.Username)
+	logger.User.Info("(Service AdminUpdateUser) existing user: %+v", user)
+
 	// 2. Apply updates (partial update)
 
-	if input.Username != nil {
+	if input.Username != nil && *input.Username != user.Username {
+		exists, err := user.ExistsByUsername(s.db, *input.Username)
+		if err != nil {
+			return nil, err
+		}
+		if exists {
+			return nil, apperrors.ErrUserUsernameAlreadyUsed
+		}
 		user.Username = *input.Username
 	}
 
-	// email not allowed to be updated for now, to avoid complexity with verification and uniqueness
+	if input.Email != nil && *input.Email != user.Email {
+		exists, err := user.ExistsByEmail(s.db, *input.Email)
+		if err != nil {
+			return nil, err
+		}
+		if exists {
+			return nil, apperrors.ErrUserEmailAlreadyUsed
+		}
+
+		user.Email = *input.Email
+	}
 
 	if input.Role != nil {
 		user.Role = *input.Role
@@ -301,12 +322,6 @@ func (s *UserService) UpdateUser(uid uint32, input forms.AdmUpdateUserRequest) (
 
 	// 4. Persist changes
 	if err := user.Update(s.db); err != nil {
-
-		// Handle unique constraint (email)
-		if strings.Contains(err.Error(), "UNIQUE") && strings.Contains(err.Error(), "email") {
-			return nil, apperrors.ErrUserEmailAlreadyUsed
-		}
-
 		return nil, err
 	}
 
@@ -380,12 +395,16 @@ func (s *UserService) UploadAvatar(uid uint32, file *multipart.FileHeader) (*mod
 // DeleteUser deletes a user with security checks.
 // Rules:
 // - An admin cannot delete their own account.
-func (s *UserService) DeleteUser(targetUID uint32, adminID uint32) error {
-	logger.User.Debug("(DeleteUser) Admin %d attempts to delete user %d", adminID, targetUID)
+func (s *UserService) AdminDeleteUser(targetUID uint32, adminID uint32) error {
 
-	// Prevent self-deletion
+	logger.User.Debug(
+		"(DeleteUser) Admin %d attempts to delete user %d",
+		adminID,
+		targetUID,
+	)
+
 	if targetUID == adminID {
-		return fmt.Errorf("SECURITY_ERR: an admin cannot delete their own account")
+		return apperrors.ErrSelfAccountProtection
 	}
 
 	var user models.User
@@ -394,12 +413,28 @@ func (s *UserService) DeleteUser(targetUID uint32, adminID uint32) error {
 		return apperrors.ErrUserNotFound
 	}
 
-	// Delete avatar file if exists other delete only the user record
-	// will not delete the Avatar file because they cab be default.png
+	// Delete avatar if not default
+	if user.Avatar != "" && user.Avatar != "users/default.png" {
 
-	// Perform database hard delete
+		fullPath := s.paths.StorageAbsPath(user.Avatar)
+
+		err := filedir.RemoveFileIfExists(fullPath)
+
+		if err != nil && !os.IsNotExist(err) {
+			logger.User.Error(
+				"Avatar deletion failed for user %d: %v",
+				targetUID,
+				err,
+			)
+
+			return apperrors.ErrUserAvatarFileNotDeleted
+
+		}
+	}
+
+	// Delete user
 	if _, err := user.Delete(s.db); err != nil {
-		return err
+		return apperrors.ErrDatabaseAccess
 	}
 
 	return nil
@@ -452,7 +487,7 @@ func (s *UserService) DeleteAvatarFile(userID uint32) error {
 }
 
 // Retrieves a paginated list of users
-func (s *UserService) GetUsersPage(uid uint32, form forms.GetUsersPageRequest) (*models.Pagination, error) {
+func (s *UserService) AdminGetUsersPage(uid uint32, form forms.AdminGetUsersPageRequest) (*models.Pagination, error) {
 
 	if form.Page <= 0 {
 		form.Page = 1

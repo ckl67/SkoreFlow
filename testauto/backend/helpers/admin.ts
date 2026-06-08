@@ -3,30 +3,7 @@
 // --------------------------------------------------------------------------------
 
 import { request } from './api.js';
-import { createReadStream } from 'node:fs';
-import FormData from 'form-data';
-
 import { API_URL } from '../config.js';
-import { PaginatedResponse } from './paginate.js';
-// --------------------------------------------------------------------------------
-// createUser
-// --------------------------------------------------------------------------------
-// Function: createUser
-//  → Sends a POST request to the /admin/createuser endpoint using the request helper
-//  → Expects a 201 Created response on success
-//
-//  Go Form
-// 	  Username string `json:"username" binding:"omitempty,min=3,max=100"`
-//	  Email    string `json:"email" form:"email" binding:"required,email"`
-//	  Password string `json:"password" binding:"required,min=8,max=100"`
-
-//  Example call:
-//    await createUser({
-//      email: "newuser@example.com",
-//      password: "password123"}
-//      TOKEN_ADMIN
-//    );
-// --------------------------------------------------------------------------------
 
 // --------------------------------------------------------------------------------
 // TYPES
@@ -41,37 +18,80 @@ interface UserPublicResponse {
   isVerified: boolean;
 }
 
-interface RequestOptions {
-  email?: string;
-  username?: string;
-  password?: string;
-  role?: number;
-  isVerified?: boolean;
+// ---------------------------
+
+interface AdminCreateUserRequest {
+  username: string;
+  email: string;
+  password: string;
 }
 
-interface GetUsersPageOptions {
+interface AdminCreateUserResponse {
+  message: string;
+  user_id: number;
+}
+
+// ---------------------------
+
+interface AdminGetUsersPageRequest {
   page?: number;
   limit?: number;
   sort?: string;
 }
 
+interface AdminGetUsersPageResponse {
+  message: string;
+  limit: number;
+  page: number;
+  sort?: string;
+  total_rows: number;
+  total_pages: number;
+  users: UserPublicResponse[];
+}
+
+interface AdminGetUserResponse {
+  message: string;
+  user: UserPublicResponse;
+}
+
+// ---------------------------
+
+interface AdminUpdateUserRequest {
+  username?: string;
+  email?: string;
+  password?: string;
+  role?: number;
+  isVerified?: boolean;
+}
+
+interface AdminUpdateUserResponse {
+  message: string;
+  user: UserPublicResponse;
+}
+
+// ---------------------------
+
+interface AdminDeleteUserResponse {
+  message: string;
+}
+
+// ---------------------------
+// ---------------------------
+
 // --------------------------------------------------------------------------------
 // Create User
 // Usage in Vitest
-// const res = await createUser(...)
-//      expect(res.status).toBe(201)
-//      expect(res.data.email).toBe(...)
+// const res = await AdminCreateUser(...)
 // --------------------------------------------------------------------------------
-async function createUser({ email, password }: RequestOptions, token: string) {
-  if (!email || !password) {
+async function adminCreateUser(
+  { username, email, password }: AdminCreateUserRequest,
+  token: string,
+) {
+  if (!username || !email || !password) {
     throw new Error('email and password are required');
   }
 
-  const username = email.split('@')[0];
-
-  //console.log(`\n Creating User: ${username} (${email})`);
-
-  const res = await request<UserPublicResponse>('POST', `${API_URL}/admin/users`, {
+  const res = await request<AdminCreateUserResponse>('POST', `${API_URL}/admin/users`, {
     token,
     data: {
       username: username,
@@ -80,106 +100,98 @@ async function createUser({ email, password }: RequestOptions, token: string) {
     },
   });
 
+  console.log('\n Admin User response:', res.status, res.data);
+
   return res;
 }
 
 // --------------------------------------------------------------------------------
-// updateUser
+// AdminGetUsersPage
 // --------------------------------------------------------------------------------
-//  → Sends a PUT request to the /admin/users/:id endpoint using the request helper
-//  → Expects a 200 OK response on success
+//  {}, parameter optional --> Must be placed at the second rang
+// const res = await adminGetUsersPage(TOKEN_ADMIN);
+// Or {}, parameter optional --> first rang
 //
-//  Go Form
-//	  Username   *string `json:"username" binding:"omitempty,min=3,max=100"`
-//		Password   *string `json:"password" binding:"omitempty,min=8,max=100"`
-//		Role       *int    `json:"role"`
-//		IsVerified *bool   `json:"isVerified"`
-//
-// --------------------------------------------------------------------------------
-
-async function admUpdateUser(
-  userId: number,
-  { username, password, role, isVerified }: RequestOptions,
+async function adminGetUsersPage(
+  { page = 1, limit = 10, sort = 'id asc' }: AdminGetUsersPageRequest = {},
   token: string,
 ) {
-  console.log(`\n updateUser User: ${username} `);
-
-  const res = await request<UserPublicResponse>('PUT', `${API_URL}/admin/users/${userId}`, {
-    token,
-    data: {
-      username: username,
-      password: password,
-      role: role,
-      isVerified: isVerified,
-    },
-  });
-
-  return res;
-}
-
-// --------------------------------------------------------------------------------
-// getUserIdByEmail
-// --------------------------------------------------------------------------------
-// Internal helper
-// --------------------------------------------------------------------------------
-
-async function getUserIdByEmail(email: string, token: string) {
-  const res = await getUsersPage({ page: 1, limit: 100 }, token);
-  if (!res.data) {
-    throw new Error('Failed to fetch users');
-  }
-
-  console.log('DEBUG users:', res.data);
-  const user = res.data.data!.rows.find((u) => u.email === email);
-
-  if (!user) {
-    throw new Error(`User not found: ${email}`);
-  }
-
-  return user.id;
-}
-
-// --------------------------------------------------------------------------------
-// createComposer
-// --------------------------------------------------------------------------------
-
-async function userLoadAvatar(uploadFile: string, token: string) {
-  const form = new FormData();
-
-  if (uploadFile) {
-    form.append('uploadFile', createReadStream(uploadFile));
-  }
-
-  const res = await request('POST', `${API_URL}/me/avatar`, {
-    token,
-    data: form,
-    headers: form.getHeaders(),
-  });
-
-  return res;
-}
-
-// --------------------------------------------------------------------------------
-// createComposer
-// --------------------------------------------------------------------------------
-
-async function getUsersPage({ page = 1, limit = 10, sort }: GetUsersPageOptions, token: string) {
   const params = new URLSearchParams();
 
-  params.append('page', String(page));
-  params.append('limit', String(limit));
+  if (page !== undefined) params.append('page', String(page));
+  if (limit !== undefined) params.append('limit', String(limit));
   if (sort) params.append('sort', sort);
 
-  const res = await request<PaginatedResponse<UserPublicResponse>>(
-    'GET',
-    `${API_URL}/admin/users?${params.toString()}`,
-    { token },
-  );
+  const url =
+    params.toString().length > 0
+      ? `${API_URL}/admin/users?${params.toString()}`
+      : `${API_URL}/admin/users`;
+
+  const res = await request<AdminGetUsersPageResponse>('GET', url, {
+    token,
+  });
+
+  console.log('\n Admin Get Users Page response:', res.status);
+  console.log(JSON.stringify(res.data, null, 2));
 
   return res;
 }
+
+// --------------------------------------------------------------------------------
+
+async function adminGetUser(userId: number, token: string) {
+  const res = await request<AdminGetUserResponse>('GET', `${API_URL}/admin/users/${userId}`, {
+    token,
+  });
+
+  console.log('\n Admin User response:', res.status, res.data);
+  return res;
+}
+
+// --------------------------------------------------------------------------------
+// Admin Update User
+// --------------------------------------------------------------------------------
+
+async function adminUpdateUser(data: AdminUpdateUserRequest, userId: number, token: string) {
+  if (!userId) {
+    throw new Error('userId is required');
+  }
+
+  console.log('AdminUpdateUserRequest: Input Data', {
+    data,
+    token,
+  });
+
+  const res = await request<AdminUpdateUserResponse>('PUT', `${API_URL}/admin/users/${userId}`, {
+    token: token,
+    data: data,
+  });
+
+  console.log('\n Update :', res.status, res.data);
+
+  return res;
+}
+
+// --------------------------------------------------------------------------------
+// Admin Delete User
+// --------------------------------------------------------------------------------
+
+async function adminDeleteUser(userId: number, token: string) {
+  if (!userId) {
+    throw new Error('userId is required');
+  }
+
+  const res = await request<AdminDeleteUserResponse>('DELETE', `${API_URL}/admin/users/${userId}`, {
+    token: token,
+  });
+
+  console.log('\n Update :', res.status, res.data);
+
+  return res;
+}
+
 // --------------------------------------------------------------------------------
 // EXPORT (ESM)
 // --------------------------------------------------------------------------------
 
-export { createUser, admUpdateUser, getUserIdByEmail, userLoadAvatar, getUsersPage };
+export { adminCreateUser, adminGetUsersPage, adminGetUser, adminUpdateUser, adminDeleteUser };

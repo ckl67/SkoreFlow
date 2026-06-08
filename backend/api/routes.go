@@ -129,6 +129,7 @@ func (server *Server) SetupRouter() {
 		//    → backend validates token and sets IsVerified=true
 		// 3. Optional: POST /register/request_confirmation {email}
 		//    → re-sends confirmation email if user did not receive it
+		//		Remark : Do not confuse user's IsVerified with composer's IsVerified, the second one indicate that it has been confirmed by moderator or admin
 		//
 		// Login Flow:
 		// -----------
@@ -214,19 +215,19 @@ func (server *Server) SetupRouter() {
 			adminRoutes := protected.Group("/")
 			adminRoutes.Use(middlewares.AdminOnlyMiddleware())
 			{
-				adminRoutes.GET("/admin/users", userCtrl.AdmGetUsersPage)
-				adminRoutes.GET("/admin/users/:id", userCtrl.AdmGetUser)
-				adminRoutes.POST("/admin/users", userCtrl.AdmCreateUser)
-				adminRoutes.PUT("/admin/users/:id", userCtrl.AdmUpdateUser)
-				adminRoutes.DELETE("/admin/users/:id", userCtrl.AdmDeleteUser)
+				adminRoutes.GET("/admin/users", userCtrl.AdminGetUsersPage)      // vitest
+				adminRoutes.GET("/admin/users/:id", userCtrl.AdminGetUser)       // vitest
+				adminRoutes.POST("/admin/users", userCtrl.AdminCreateUser)       // vitest
+				adminRoutes.PUT("/admin/users/:id", userCtrl.AdminUpdateUser)    // vitest
+				adminRoutes.DELETE("/admin/users/:id", userCtrl.AdminDeleteUser) // vitest
 
 				// For now, only for vitest
 				if config.Config().AppEnv == "test" {
 					fmt.Println("=================================")
 					fmt.Println("BE CARE ROOT NOT ALLOWED IN PROD")
 					fmt.Println("=================================")
-					adminRoutes.GET("/test/reset-token/:email", authCtrl.AdmGetResetToken) // NOT TO USE WITH
-					adminRoutes.POST("/test/expire-token", authCtrl.AdmExpireToken)
+					adminRoutes.GET("/test/reset-token/:email", authCtrl.AdmGetResetToken) // vitest : Currently NOT USED
+					adminRoutes.POST("/test/expire-token", authCtrl.AdmExpireToken)        // vitest - used in auth.ts
 				}
 			}
 		}

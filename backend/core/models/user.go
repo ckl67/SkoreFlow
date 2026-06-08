@@ -28,8 +28,8 @@ type User struct {
 	PasswordReset          string    `gorm:"size:255" json:"-"`          // Password reset token Excluded too !
 	PasswordResetExpire    time.Time `json:"-"`                          // Token expiration time Excluded !
 	Avatar                 string    `gorm:"size:255" json:"avatar"`
-	Role                   int       `gorm:"default:0" json:"role"` // 0 = standard user
-	IsVerified             bool      `gorm:"default:false" json:"isVerified"`
+	Role                   int       `gorm:"default:0" json:"role"`           // 0 = standard user
+	IsVerified             bool      `gorm:"default:false" json:"isVerified"` // Set to 1, if email address is confirmed during authentication process (no relation with IsVerified of composer !!)
 	CreatedAt              time.Time `json:"createdAt"`
 	UpdatedAt              time.Time `json:"updatedAt"`
 }
@@ -62,9 +62,9 @@ func (u *User) ExistsByEmail(db *gorm.DB, email string) (bool, error) {
 	return count > 0, err
 }
 
-// ExistsByUserName checks whether a user exists with the given username.
+// ExistsByUsername checks whether a user exists with the given username.
 // Returns true if found, false otherwise.
-func (u *User) ExistsByUserName(db *gorm.DB, username string) (bool, error) {
+func (u *User) ExistsByUsername(db *gorm.DB, username string) (bool, error) {
 	var count int64
 	err := db.Model(&User{}).Where("username = ?", username).Count(&count).Error
 	return count > 0, err

@@ -37,6 +37,7 @@ var (
 
 	// User Login
 	ErrUserEmailAlreadyUsed     = errors.New("email already in use")
+	ErrUserUsernameAlreadyUsed  = errors.New("Username already in use")
 	ErrUserNotVerified          = errors.New("User Not verified!")
 	ErrUserNotFound             = errors.New("User Not Found")
 	ErrUsernameTaken            = errors.New("username already taken")
@@ -49,8 +50,8 @@ var (
 	ErrInvalidPendingEmail = errors.New("user invalid pending email")
 
 	// User Access
-	ErrAccessForbidden = errors.New("access forbidden")
-
+	ErrAccessForbidden       = errors.New("access forbidden")
+	ErrSelfAccountProtection = errors.New("An admin cannot delete its own account")
 	// SMTP
 	ErrSmtpNotConfigured = errors.New("smtp not configured")
 	ErrSmtpFailed        = errors.New("smtp failed")

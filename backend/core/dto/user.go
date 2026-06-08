@@ -36,6 +36,34 @@ type DeleteAvatarResponse struct {
 	Message string `json:"message"`
 }
 
+type AdminCreateUserResponse struct {
+	Message string `json:"message"`
+	UserId  uint32 `json:"user_id"`
+}
+
+type AdminGetUsersPageResponse struct {
+	Message    string               `json:"message"`
+	Page       int                  `json:"page"`
+	Limit      int                  `json:"limit"`
+	TotalRows  int64                `json:"total_rows"`
+	TotalPages int                  `json:"total_pages"`
+	Users      []UserPublicResponse `json:"users"`
+}
+
+type AdminGetUserResponse struct {
+	Message string             `json:"message"`
+	User    UserPublicResponse `json:"user"`
+}
+
+type AdminUpdateUserResponse struct {
+	Message string             `json:"message"`
+	User    UserPublicResponse `json:"user"`
+}
+
+type AdminDeleteUserResponse struct {
+	Message string `json:"message"`
+}
+
 // --------------------------------------------------------------------------
 // Function
 // --------------------------------------------------------------------------
@@ -48,4 +76,13 @@ func ToUserPublicResponse(user *models.User) UserPublicResponse {
 		Avatar:     user.Avatar,
 		IsVerified: user.IsVerified,
 	}
+}
+
+func ToUsersPublicResponse(users []*models.User) []UserPublicResponse {
+	result := make([]UserPublicResponse, len(users))
+
+	for i, u := range users {
+		result[i] = ToUserPublicResponse(u)
+	}
+	return result
 }

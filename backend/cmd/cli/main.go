@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"backend/core/models"
 	"backend/infrastructure/config"
@@ -16,12 +15,19 @@ import (
 )
 
 // ===============================================================================================
-//	cd backend/cmd/cli
-// 	go build -o skoreflow-cli
-//	Exemples d’utilisation :
-//		./skoreflow-cli -version
+//	Due to the import, the code has to be run from the backend root !!
+//  Directory backen
+//		go run ./cmd/cli/main.go
+// 		go build ./cmd/cli/main.go -o skoreflow-cli
+//	Examples of use :
+//		go run ./cmd/cli/main.go -version
+//		go run ./cmd/cli/main.go -list-users
 //		./skoreflow-cli -list-users
-//		./skoreflow-cli -reset-password user@example.com
+//		......
+//
+//	Test cleanup-avatars"
+//  Create
+
 // ===============================================================================================
 
 const cliVersion = "0.1.0"
@@ -79,90 +85,99 @@ func listUsers(db *gorm.DB) {
 	}
 }
 
+// Cleanup orphan files
 func runAvatarCleanup(db *gorm.DB, paths *config.Paths) {
-	// Start the cleanup process
 	logger.Main.Info("Starting avatar cleanup...")
 
-	// ----------------------------------------------------------------------------
-	// 1. Fetch all users (only IDs for efficiency)
-	// ----------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
+	// 1. Fetch all avatar paths stored in database
+	// ------------------------------------------------------------------------
 	var users []models.User
-	// Specifies which columns to retrieve from the database. id == SELECT id FROM users;
-	// Find(&users) : Executes the query and stores the result into users.
-	if err := db.Select("id").Find(&users).Error; err != nil {
-		// Fatal: cannot proceed without user reference data
+
+	if err := db.Select("avatar").Find(&users).Error; err != nil {
 		logger.Main.Fatal("Failed to fetch users: %v", err)
 	}
 
-	// ----------------------------------------------------------------------------
-	// 2. Build a set of valid avatar identifiers (user-<id>)
-	//    Using map[string]struct{} as a memory-efficient set
-	// ----------------------------------------------------------------------------
-	validUsers := make(map[string]struct{})
+	// ------------------------------------------------------------------------
+	// 2. Build a set of valid avatar filenames
+	//
+	// Example:
+	// users/user-5.png     -> user-5.png
+	// users/avatar.webp    -> avatar.webp
+	// ------------------------------------------------------------------------
+	validFiles := make(map[string]struct{})
+
 	for _, u := range users {
-		key := fmt.Sprintf("user-%d", u.ID)
-		validUsers[key] = struct{}{}
+		if u.Avatar == "" {
+			continue
+		}
+
+		filename := filepath.Base(u.Avatar)
+		validFiles[filename] = struct{}{}
 	}
 
-	// ----------------------------------------------------------------------------
-	// 2.b Define protected files (must NEVER be deleted)
-	// ----------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
+	// 3. Protected files (never deleted)
+	// ------------------------------------------------------------------------
 	protectedFiles := map[string]struct{}{
-		"admin.png":   {},
-		"default.png": {},
+		"admin.png":     {},
+		"default.png":   {},
+		"moderator.png": {},
 	}
-	// ----------------------------------------------------------------------------
-	// 3. Resolve avatar storage directory
-	// ----------------------------------------------------------------------------
+
+	// ------------------------------------------------------------------------
+	// 4. Avatar directory
+	// ------------------------------------------------------------------------
 	avatarDir := paths.StorageAbsPath("users")
 
-	// Read all entries (files + directories) in the avatar folder
 	files, err := os.ReadDir(avatarDir)
 	if err != nil {
-		// Fatal: cannot inspect filesystem
 		logger.Main.Fatal("Failed to read avatar directory: %v", err)
 	}
 
-	// Counter for deleted files
 	deleted := 0
 
-	// ----------------------------------------------------------------------------
-	// 4. Iterate over all files
-	// ----------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
+	// 5. Delete orphan files
+	// ------------------------------------------------------------------------
 	for _, f := range files {
+
 		if f.IsDir() {
 			continue
 		}
 
-		name := f.Name()
+		filename := f.Name()
 
-		// ----------------------------------------------------------------------------
-		// Skip protected files explicitly
-		// ----------------------------------------------------------------------------
-		if _, isProtected := protectedFiles[name]; isProtected {
+		// Never delete protected files
+		if _, protected := protectedFiles[filename]; protected {
 			continue
 		}
 
-		// Extract base name without extension → "user-5"
-		base := strings.TrimSuffix(name, filepath.Ext(name))
-
-		// Check if file belongs to a valid user
-		if _, exists := validUsers[base]; !exists {
-			fullPath := filepath.Join(avatarDir, name)
-
-			err := os.Remove(fullPath)
-			if err != nil {
-				logger.Main.Warn("Failed to delete %s: %v", fullPath, err)
-				continue
-			}
-
-			logger.Main.Info("Deleted orphan avatar: %s", fullPath)
-			deleted++
+		// File still referenced by a user
+		if _, exists := validFiles[filename]; exists {
+			continue
 		}
+
+		fullPath := filepath.Join(avatarDir, filename)
+
+		if err := os.Remove(fullPath); err != nil {
+			logger.Main.Warn(
+				"Failed to delete orphan avatar %s: %v",
+				fullPath,
+				err,
+			)
+			continue
+		}
+
+		logger.Main.Info("Deleted orphan avatar: %s", fullPath)
+		deleted++
 	}
 
-	// ----------------------------------------------------------------------------
-	// 5. Final report
-	// ----------------------------------------------------------------------------
-	logger.Main.Info("Cleanup finished. Deleted %d files.", deleted)
+	// ------------------------------------------------------------------------
+	// 6. Summary
+	// ------------------------------------------------------------------------
+	logger.Main.Info(
+		"Avatar cleanup finished. Deleted %d orphan files.",
+		deleted,
+	)
 }

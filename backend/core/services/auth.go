@@ -65,7 +65,7 @@ func (s *AuthService) Register(form forms.RegisterRequest) (*models.User, error)
 	}
 
 	// 3. Check username uniqueness
-	exists, err = new(models.User).ExistsByUserName(s.db, username)
+	exists, err = new(models.User).ExistsByUsername(s.db, username)
 	if err != nil {
 		return nil, err
 	}

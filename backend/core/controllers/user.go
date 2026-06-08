@@ -19,7 +19,6 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"strings"
 
 	"backend/core/apperrors"
 	"backend/core/dto"
@@ -236,58 +235,96 @@ func (ctrl *UserController) AdmGetUsers(c *gin.Context) {
 }
 
 // GetUsersPage fetches a paginated list of composers with optional search filters
-func (ctrl *UserController) AdmGetUsersPage(c *gin.Context) {
+func (ctrl *UserController) AdminGetUsersPage(c *gin.Context) {
 	uid := c.GetUint32("user_id")
 
-	var form forms.GetUsersPageRequest
+	var form forms.AdminGetUsersPageRequest
 	if err := c.ShouldBind(&form); err != nil {
 		responses.FAIL(c, http.StatusBadRequest, err)
 		return
 	}
 
-	logger.Score.Debug("(Controller AdmGetUsersPage) : User: %d | Page: %d | PageSize: %d | SortBy: %s",
+	logger.Score.Debug("(Controller AdminGetUsersPage) : User: %d | Page: %d | PageSize: %d | SortBy: %s",
 		uid, form.Page, form.Limit, form.SortBy)
 
-	pageData, err := ctrl.userService.GetUsersPage(uid, form)
+	pageData, err := ctrl.userService.AdminGetUsersPage(uid, form)
 	if err != nil {
 		responses.FAIL(c, http.StatusInternalServerError, err)
 		return
 	}
 
-	responses.SUCCESS(c, http.StatusOK, pageData)
+	// Cast to users
+	// Pagination.Rows is stored as interface{} because the same Pagination
+	// structure is reused for different entities (users, scores, composers, ...).
+	//
+	// Here we know that AdminGetUsersPage() populated Rows with []*models.User,
+	// so we perform a type assertion to recover the concrete type.
+	//
+	// The "ok" value prevents a panic if Rows contains an unexpected type.
+	// This is mandatory to avoid a panic and a program stop !!
+	//
+	// Example
+	// var x interface{} --> x contains something but we don't know what
+	// Could be
+	//		x = 123
+	//		x = "hello"
+	//    x = []*models.User{}
+	// To get the right value
+	// 	users, ok := x.([]*models.User)
+
+	var users []*models.User
+	var ok bool
+	users, ok = pageData.Rows.([]*models.User)
+	if !ok {
+		responses.FAIL(c, http.StatusInternalServerError, fmt.Errorf("invalid users type"))
+		return
+	}
+
+	response := dto.AdminGetUsersPageResponse{
+		Message:    "Users retrieved successfully",
+		Page:       pageData.Page,
+		Limit:      pageData.Limit,
+		TotalRows:  pageData.TotalRows,
+		TotalPages: pageData.TotalPages,
+		Users:      dto.ToUsersPublicResponse(users),
+	}
+
+	responses.SUCCESS(c, http.StatusOK, response)
+
 }
 
 // Creates a new user.
 // - Validates JSON input via Gin binding
 // - Delegates creation logic to service
-// - Returns 201 with Location header
-func (ctrl *UserController) AdmCreateUser(c *gin.Context) {
+func (ctrl *UserController) AdminCreateUser(c *gin.Context) {
 	userID := c.GetUint32("user_id")
 	userRole := c.GetInt("user_role")
 
 	logger.User.Info("User %d (role %d) attempts to create a new user", userID, userRole)
 
-	var input forms.AdmCreateUserRequest
+	var input forms.AdminCreateUserRequest
 	if err := c.ShouldBindJSON(&input); err != nil {
 		responses.FAIL(c, http.StatusUnprocessableEntity, err)
 		return
 	}
 
-	userCreated, err := ctrl.userService.CreateUser(input)
+	userCreated, err := ctrl.userService.AdminCreateUser(input)
 	if err != nil {
 		responses.FAIL(c, http.StatusUnprocessableEntity, err)
 		return
 	}
 
-	location := fmt.Sprintf("%s%s/%d", c.Request.Host, c.Request.URL.Path, userCreated.ID)
-	c.Header("Location", location)
+	response := dto.AdminCreateUserResponse{
+		Message: "User created successfully",
+		UserId:  userCreated.ID,
+	}
+	responses.SUCCESS(c, http.StatusCreated, response)
 
-	responses.SUCCESS(c, http.StatusCreated, userCreated)
 }
 
 // Retrieves a specific user by ID.
 // Includes validation of path parameter and error mapping.
-func (ctrl *UserController) AdmGetUser(c *gin.Context) {
+func (ctrl *UserController) AdminGetUser(c *gin.Context) {
 	userID := c.GetUint32("user_id")
 	userRole := c.GetInt("user_role")
 
@@ -310,13 +347,9 @@ func (ctrl *UserController) AdmGetUser(c *gin.Context) {
 		return
 	}
 
-	response := UserResponse{
-		ID:         userGotten.ID,
-		Username:   userGotten.Username,
-		Email:      userGotten.Email,
-		Avatar:     userGotten.Avatar,
-		Role:       userGotten.Role,
-		IsVerified: userGotten.IsVerified,
+	response := dto.AdminGetUserResponse{
+		Message: "User retrieved successfully",
+		User:    dto.ToUserPublicResponse(userGotten),
 	}
 
 	responses.SUCCESS(c, http.StatusOK, response)
@@ -325,7 +358,7 @@ func (ctrl *UserController) AdmGetUser(c *gin.Context) {
 
 // Updates user data (PATCH-style).
 // Only provided fields are modified.
-func (ctrl *UserController) AdmUpdateUser(c *gin.Context) {
+func (ctrl *UserController) AdminUpdateUser(c *gin.Context) {
 	userID := c.GetUint32("user_id")
 	userRole := c.GetInt("user_role")
 
@@ -342,28 +375,35 @@ func (ctrl *UserController) AdmUpdateUser(c *gin.Context) {
 
 	logger.User.Info("User %d (role %d) attempts to update user %d", userID, userRole, uid)
 
-	var input forms.AdmUpdateUserRequest
+	var input forms.AdminUpdateUserRequest
 	if err = c.ShouldBindJSON(&input); err != nil {
 		responses.VALIDATION_ERROR(c, err)
 		return
 	}
 
-	updatedUser, err = ctrl.userService.UpdateUser(uint32(uid), input)
+	updatedUser, err = ctrl.userService.AdminUpdateUser(uint32(uid), input)
 	if err != nil {
+		if err == apperrors.ErrUserUsernameAlreadyUsed || err == apperrors.ErrUserEmailAlreadyUsed {
+			responses.FAIL(c, http.StatusConflict, err)
+			return
+		}
+
+		if err == apperrors.ErrUserNotFound {
+			responses.FAIL(c, http.StatusNotFound, err)
+			return
+		}
+
 		responses.FAIL(c, http.StatusInternalServerError, err)
 		return
 	}
 
-	response := UserResponse{
-		ID:         updatedUser.ID,
-		Username:   updatedUser.Username,
-		Email:      updatedUser.Email,
-		Avatar:     updatedUser.Avatar,
-		Role:       updatedUser.Role,
-		IsVerified: updatedUser.IsVerified,
+	response := dto.AdminUpdateUserResponse{
+		Message: "User Updated successfully",
+		User:    dto.ToUserPublicResponse(updatedUser),
 	}
 
 	responses.SUCCESS(c, http.StatusOK, response)
+
 }
 
 // Deletes a user from the system.
@@ -371,7 +411,7 @@ func (ctrl *UserController) AdmUpdateUser(c *gin.Context) {
 // Security rules:
 // - An admin cannot delete their own account
 // - Errors are mapped to appropriate HTTP responses
-func (ctrl *UserController) AdmDeleteUser(c *gin.Context) {
+func (ctrl *UserController) AdminDeleteUser(c *gin.Context) {
 	adminID := c.GetUint32("user_id")
 
 	uidString := c.Param("id")
@@ -384,20 +424,30 @@ func (ctrl *UserController) AdmDeleteUser(c *gin.Context) {
 	targetUID := uint32(uid)
 	logger.User.Warn("Admin %d attempts to delete user %d", adminID, targetUID)
 
-	err = ctrl.userService.DeleteUser(targetUID, adminID)
+	err = ctrl.userService.AdminDeleteUser(targetUID, adminID)
+
 	if err != nil {
-		if strings.Contains(err.Error(), "SECURITY_ERR") {
-			responses.FAIL(c, http.StatusBadRequest, fmt.Errorf("Security: an administrator cannot delete their own account"))
+
+		if err == apperrors.ErrSelfAccountProtection {
+			responses.FAIL(c, http.StatusForbidden, err)
 			return
 		}
 
-		responses.FAIL(c, http.StatusInternalServerError, fmt.Errorf("error while deleting user"))
+		if err == apperrors.ErrUserNotFound {
+			responses.FAIL(c, http.StatusNotFound, err)
+			return
+		}
+
+		responses.FAIL(c, http.StatusInternalServerError, err)
 		return
 	}
 
-	responses.SUCCESS(c, http.StatusOK, gin.H{
-		"message": fmt.Sprintf("User %d successfully deleted", targetUID),
-	})
+	response := dto.AdminDeleteUserResponse{
+		Message: fmt.Sprintf("User %d successfully deleted", uid),
+	}
+
+	responses.SUCCESS(c, http.StatusOK, response)
+
 }
 
 // Removes the user's avatar file from storage.

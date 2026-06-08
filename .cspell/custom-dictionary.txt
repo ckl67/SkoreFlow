@@ -41,3 +41,4 @@ testauto
 testcache
 typestrict
 Vitest
+webp

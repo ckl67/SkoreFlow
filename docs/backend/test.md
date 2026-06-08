@@ -5,10 +5,11 @@ Automated testing is crucial for ensuring the reliability and stability of the a
 
 This part will also address some manual tests
 
-In order to access the database, you can use sqlitebrowser, a graphical tool that allows you to interact with SQLite databases. It provides an intuitive interface for browsing, querying, and managing your SQLite databases without needing to use command-line tools.
+In order to access the database, you can use sqlitebrowser, a graphical tool that allows you to interact with SQLite databases.
+It provides an intuitive interface for browsing, querying, and managing your SQLite databases without needing to use command-line tools.
 For more information on how to install and use sqlitebrowser, please refer to the [sqlitebrowser guide](./sqlite.md).
 
-## Running Tests
+## Running auto-test Tests
 
 To run the automated tests, you can use the following command from the root of the backend project:
 
@@ -23,30 +24,24 @@ bash auto-test.sh --clean --users --composers
 This command will execute the test suite, which includes various test cases designed to validate the functionality of the backend.
 All the tests must pass successfully for the backend to be considered stable.
 
-## Manual Testing
+## Manual curl Testing
 
-In addition to automated tests, you can also perform manual testing to verify specific functionalities or to debug issues.
-Manual testing involves executing specific API calls or actions and observing the results to ensure they meet the expected outcomes.
+In addition to automated tests, you can also perform manual curl (client URL request library ) testing to verify specific functionalities or to debug issues.
 
-Some manual testing commands are provided below, but you can also create your own based on the API endpoints and functionalities you want to test.
+However, we recommend to use tests via vitest, which is much more user friendly !
 
-```bash
-# In Bash, variables inside single quotes '...' are not interpolated (expanded).
-# Solution: Always use double quotes "..." to include variables.
-```
+Below some manual testing commands, but you can also create your own based on the API endpoints and functionalities you want to test.
 
-List of manual tests, you can inspire you about this examples
 [smoke](./manual-tests/smoke-mtest.md)
 [register and login](./manual-tests/user-mtest.md)
 [composer](./manual-tests/composer-mtest.md)
 [score](./manual-tests/score-mtest.md)
 
-## Autotests Coding in Typescript
+## Autotests with Vitest
 
-Automated tests are now implemented in **JavaScript (Node.js)**.
+Automated tests are also implemented in **JavaScript (Node.js)**.
 
-This approach provides more flexibility compared to shell-based testing, especially for:
-(Preferable solution)
+This approach provides more flexibility compared to shell-based testing, especially
 
 - complex workflows
 - API chaining
@@ -59,7 +54,7 @@ The test suite is organized as follows:
 
 ```bash
 testauto/
-    auto-test.sh        # Main test runner (entry point)
+    auto-test.sh or air # Main test runner (entry point)
     config.js           # Global configuration (API URL, etc.)
     helpers/            # Reusable logic (API calls, assertions, auth, reset)
     tests/              # Test suites grouped by domain
@@ -91,7 +86,7 @@ Notes
 
 This setup ensures consistency, maintainability, and better debugging capabilities compared to raw shell scripts.
 
-## Vitest VSC Code Integration
+### Vitest VSC Code Integration
 
 To get the most out of Vitest, use the graphical interface:
 
@@ -103,24 +98,28 @@ To get the most out of Vitest, use the graphical interface:
 
 To test effectively, you should use a "Two-Speed" workflow:
 
-### Step 1: Infrastructure (The Shell Script)
+### Step 1: Coding & Testing (via Vitest)
 
-You can run the test via shell
+During coding phase.
 
 ```Bash
+  make run-test
+  # or better
+  make air-test
+  # or eventually
+  bash auto-test.sh --help # --> to specify the suite option
+```
 
+Then to run individually the vitest tests via vsc interface.
+
+### Step 2: Infrastructure (The Shell Script)
+
+For un full test before any commitment
+
+```Bash
     #Action: Run
-    bash auto-test.sh --all --clean
-
-    # Result: Database is wiped, storage is cleared, and the Go server starts.
-    # Result must be OK !
+    bash auto-test.sh --help # --> to specify the suite option
 
 ```
 
-### Step 2: Coding & Testing (Vitest)
-
-Once the server is "UP", stay in your TypeScript files:
-
-- Modify: Edit your test logic Example : in composer.test.ts.
-- Execute: Click "Play" in the Vitest "Vial" tab.
-- Benefit: Tests run in seconds because you don't need to restart the Go server or wipe the database every time.
+All the tests must pass !!
