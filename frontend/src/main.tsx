@@ -2,15 +2,12 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { RouterProvider } from 'react-router-dom';
 import { router } from './router/router';
+import { AuthProvider } from './auth/AuthContext';
 
-const root = document.getElementById('root');
-
-if (!root) {
-  throw new Error('Root element not found');
-}
-
-ReactDOM.createRoot(root).render(
+ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
   </React.StrictMode>,
 );
