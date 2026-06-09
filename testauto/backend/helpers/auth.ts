@@ -147,6 +147,7 @@ async function login({ email, password }: LoginRequest) {
     },
   });
 
+  console.log('\n Login User response:', res.status, res.data);
   return res;
 }
 

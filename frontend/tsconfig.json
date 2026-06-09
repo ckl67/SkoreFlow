@@ -1,3 +1,8 @@
 {
-  "extends": "../config/typescript/tsconfig.base.json"
+  "extends": "../config/typescript/tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "noEmit": true
+  },
+  "include": ["src"]
 }

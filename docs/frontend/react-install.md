@@ -70,7 +70,9 @@ npm create vite@latest . -- --template react
 ## 5. Add React Router
 
 ```shell
- npm install -w frontend/react-router-dom
+ npm install react-router-dom -w frontend
+ npm install axios -w frontend
+
  npm install axios -w testauto/backend
 
 ```

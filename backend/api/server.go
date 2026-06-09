@@ -15,7 +15,6 @@ import (
 	"backend/infrastructure/config"
 	"backend/infrastructure/logger"
 
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
@@ -144,33 +143,10 @@ func (server *Server) StartMicroService(paths *config.Paths) {
 
 // ListenAndServe starts the HTTP server and manages graceful shutdown.
 // Responsibilities:
-// - Configure global middlewares (logging, recovery, CORS)
 // - Start HTTP listener in a non-blocking goroutine
 // - Handle OS signals for graceful termination
 // - Ensure external processes are properly stopped
 func (server *Server) ListenAndServe(addr string) {
-	// Base middlewares
-	server.Router.Use(gin.Logger())
-	server.Router.Use(gin.Recovery())
-
-	// CORS configuration (required for cross-origin frontend) --> see document cors.md
-	// Parameter Purpose
-	//  - AllowOrigins Lists the domains permitted to contact the API (e.g., http://localhost:3000).
-	//  - AllowMethods Defines which HTTP verbs are allowed (GET, POST, etc.).
-	//  - AllowHeaders Permits specific headers like Authorization (essential for JWT tokens).
-	//  - AllowCredentials Allows the exchange of cookies or authentication headers between front and back.
-	//  - MaxAge Tells the browser how long (12h) to cache the "Preflight" response. 3. Configuration via Environment Variables
-
-	if origin := config.Config().Frontend.CorsAllowedOrigins; origin != "" {
-		server.Router.Use(cors.New(cors.Config{
-			AllowOrigins:     []string{origin},
-			AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD"},
-			AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
-			AllowCredentials: true,
-			MaxAge:           12 * time.Hour,
-		}))
-	}
-
 	srv := &http.Server{
 		Addr:         addr,
 		Handler:      server.Router,

@@ -41,11 +41,14 @@ package api
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"backend/core/controllers"
 	"backend/infrastructure/config"
+	"backend/infrastructure/logger"
 	"backend/middlewares"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -66,10 +69,35 @@ func (server *Server) SetupRouter() {
 
 	// -------------------------------------------------------------------------------------------
 	// 3. Global middleware
+	// --> Mandatory to declare all the Middleware here !
 	// -------------------------------------------------------------------------------------------
+
+	// Base middlewares
+
+	// CORS configuration (required for cross-origin frontend) --> see document cors.md
+	// Parameter Purpose
+	//  - AllowOrigins Lists the domains permitted to contact the API (e.g., http://localhost:5173).
+	//  - AllowMethods Defines which HTTP verbs are allowed (GET, POST, etc.).
+	//  - AllowHeaders Permits specific headers like Authorization (essential for JWT tokens).
+	//  - AllowCredentials Allows the exchange of cookies or authentication headers between front and back.
+	//  - MaxAge Tells the browser how long (12h) to cache the "Preflight" response. 3. Configuration via Environment Variables
+	//
+
+	origin := config.Config().Frontend.CorsAllowedOrigins
+	if origin != "" {
+		r.Use(cors.New(cors.Config{
+			AllowOrigins:     []string{origin},
+			AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD"},
+			AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+			AllowCredentials: true,
+			MaxAge:           12 * time.Hour,
+		}))
+	}
+	logger.Server.Info("CORS origin READING = %q", origin)
 
 	// Recovery middleware prevents server crashes on panic.
 	// Instead of crashing, it returns HTTP 500 and keeps the server alive.
+	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 
 	// Custom logger configuration:
@@ -233,5 +261,6 @@ func (server *Server) SetupRouter() {
 		}
 	}
 
+	// We Set r to the "server.Router"
 	server.Router = r
 }

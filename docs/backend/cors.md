@@ -1,105 +1,178 @@
 # 🌐 CORS Configuration Guide - SkoreFlow Backend
 
-This document explains the implementation and purpose of the CORS (Cross-Origin Resource Sharing) mechanism within the SkoreFlow Go backend.
+## What is CORS?
 
-## DOM (Document Object Model)
+CORS (Cross-Origin Resource Sharing) is a browser security mechanism.
 
-The DOM (Document Object Model) is the bridge between a web page and your code (JavaScript).
-Here is the breakdown:
+By default, browsers enforce the Same-Origin Policy (SOP), which prevents a web application running on one origin from accessing resources from another origin unless the server explicitly allows it.
 
-- The Blueprint: When a browser loads your HTML, it creates a "live" map of the page.
-- The Tree Structure: It organizes every element into a hierarchical tree of objects.
+Example:
 
-  ```html
-  <div>
-    <h1>header</h1>
-    <p>paragraph.</p>
-  </div>
-  ```
-
-- The Remote Control: JavaScript uses the DOM to change, add, or delete elements on the fly without refreshing the page.
-
-Key Difference:
-
-- HTML: Is the static text file you write.
-- DOM: Is the dynamic, interactive version living in the browser's memory.
-
-Summary: The DOM turns your static document into a dynamic object that code can manipulate.
-
-## CORS (Cross-Origin Resource Sharing)
-
-By default, web browsers (DOM) enforce the Same-Origin Policy (SOP).
-This security measure prevents a frontend application running on http://localhost:3000 (e.g., React/Vue) from making HTTP requests to a backend on http://localhost:8080 unless the server explicitly allows it.
-
-Without the configuration below, the browser will block backend responses to protect the user from malicious cross-site requests.
-
-### The Dialogue Between the Browser and the Backend
-
-Imagine the Browser is a bodyguard. Your Frontend code (React) wants to enter a club called "Backend Go."
-
-- The Frontend says to the Bodyguard: "Send this POST request to localhost:8080."
-- The Browser (the bodyguard) replies: "Hold on. You are coming from localhost:3000, but the club is at 8080. That’s suspicious. I’m going to ask the club first if they allow people from localhost:3000."
-  -The Browser sends an OPTIONS request **_(the famous Preflight request)_** to the Backend.
-- The Backend (your Go code with the CORS middleware) answers: "Yes, I accept visitors coming from localhost:3000."
-- The Browser turns back to the Frontend: "Alright, the club confirmed it's okay. I'm sending your actual POST request now."
-
-It is the which Backend decide about the right !
-
-### Technical Summary
-
-It is a three-party contract:
-
-- Frontend: Requests the resource.
-- Backend: Provides the "permission keys" (HTTP Headers like Access-Control-Allow-Origin).
-- Browser: Checks if the Backend's keys match the Frontend's origin. If they match, it allows the data to pass through.
-
-**This is why tools like Postman or cURL always work even without CORS: they don't have a "bodyguard" (browser) enforcing web security rules.**
-
-## Implementation in SkoreFlow (Go + Gin)
-
-In this project, CORS is handled via a middleware injected into the Gin router.
-
-```go
-
-// Code Snippet (infrastructure/server.go):
-
-
-if origin := config.Config().CorsAllowedOrigins; origin != "" {
-  server.Router.Use(cors.New(cors.Config{
-  AllowOrigins: []string{origin},
-  AllowMethods: []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD"},
-  AllowHeaders: []string{"Origin", "Content-Type", "Authorization"},
-  AllowCredentials: true,
-  MaxAge: 12 \* time.Hour,
-  }))
-}
-
-// Parameter Purpose
-//  - AllowOrigins Lists the domains permitted to contact the API (e.g., http://localhost:3000).
-//  - AllowMethods Defines which HTTP verbs are allowed (GET, POST, etc.).
-//  - AllowHeaders Permits specific headers like Authorization (essential for JWT tokens).
-//  - AllowCredentials Allows the exchange of cookies or authentication headers between front and back.
-//  - MaxAge Tells the browser how long (12h) to cache the "Preflight" response. 3. Configuration via Environment Variables
-
+```shell
+Frontend: http://localhost:5173
+Backend: http://localhost:8080
 ```
 
-The server retrieves authorized origins through the "config.go" file or CORS_ALLOWED_ORIGINS environment variable.
+Even though both run on your machine, they are considered different origins because the ports are different.
+Without CORS configuration, the browser blocks the response.
 
-```Bash
+## Important: CORS Is Enforced by the Browser
 
-# In your .env file or local environment:
-CORS_ALLOWED_ORIGINS=http://localhost:3000
+A common misconception is that the backend blocks the request.
 
-# Production:
-You must specify the actual URL of the deployed application:
+In reality:
 
+- The frontend sends a request.
+- The backend responds.
+- The browser checks whether the response contains the required CORS headers.
+- If not, the browser hides the response from JavaScript.
+
+This is why tools such as Postman, cURL, or backend-to-backend requests work even when CORS is misconfigured: they do not enforce browser security policies.
+
+## How the Browser and Backend Communicate
+
+Think of the browser as a security guard.
+
+Before allowing a frontend application to access a backend hosted on another origin, the browser asks:
+
+- "Does this server allow requests from this origin?"
+- The backend answers through HTTP headers such as:
+- Access-Control-Allow-Origin: `http://localhost:5173`
+- If the origin is allowed, the browser lets the response reach the frontend code.
+
+## Preflight Requests (OPTIONS)
+
+For simple requests, the browser directly sends the request.
+
+For more complex requests (for example using:
+
+- Authorization
+- Content-Type: application/json
+- custom headers
+
+), the browser first performs a Preflight Request.
+
+### Step 1: OPTIONS Request
+
+```http
+OPTIONS /api/login
+```
+
+The browser asks:
+
+"Are you okay with me sending this request?"
+
+### Step 2: Server Response
+
+```http
+HTTP/1.1 204 No Content
+Access-Control-Allow-Origin: http://localhost:5173
+Access-Control-Allow-Methods: GET, POST, PUT, DELETE
+Access-Control-Allow-Headers: Authorization, Content-Type
+```
+
+### Step 3: Actual Request
+
+If the response is valid, the browser sends the real request:
+
+```http
+POST /api/login
+```
+
+## CORS Configuration in SkoreFlow
+
+CORS is implemented through a Gin middleware.
+
+The middleware must be registered during router initialization so that every request passes through it.
+
+```go
+r := gin.New()
+
+r.Use(corsMiddleware)
+```
+
+If the middleware is attached too late in the request lifecycle, some requests may bypass it.
+
+## Allowed Origins
+
+Allowed origins are configured through the environment variable:
+
+```go
+//Local development
+CORS_ALLOWED_ORIGINS=http://localhost:5173
+```
+
+```go
+//Production
 CORS_ALLOWED_ORIGINS=https://app.skoreflow.com
 ```
 
-### The Request Flow (Preflight)
+The value must exactly match the frontend origin.
 
-For complex requests (those using Authorization or Content-Type: application/json), the browser performs a two-step process:
+Common mistakes:
 
-- OPTIONS (Preflight): The browser asks the server: "Do you allow this origin to perform this action?"
-- Actual Request: If the server responds with the correct headers (handled by our middleware), the browser proceeds with the real request (GET/POST/etc.).
-- Troubleshooting Tip: If you see a "CORS policy" error in your browser console, double-check that the URL in the error message matches the one in your CORS_ALLOWED_ORIGINS variable exactly (watch out for trailing slashes / or http vs https mismatches).
+- http vs https
+- wrong port
+- trailing slash (/)
+- typo in the domain name
+
+## Real Issue Encountered
+
+Observed Behavior
+
+The preflight request worked correctly:
+
+```http
+OPTIONS /api/login
+→ 204 No Content
+```
+
+The response contained all required CORS headers.
+
+However, the actual request returned:
+
+```http
+POST /api/login
+→ 200 OK
+```
+
+without:
+
+```http
+Access-Control-Allow-Origin
+```
+
+Firefox therefore blocked the response and displayed:
+
+```http
+CORS Error:
+Access-Control-Allow-Origin header missing
+```
+
+## Root Cause
+
+The CORS middleware was registered too late.
+
+As a result:
+
+- OPTIONS requests passed through the middleware.
+- Regular requests (POST, PUT, DELETE, etc.) did not.
+
+## Solution
+
+Move the middleware registration directly into SetupRouter():
+
+```go
+func SetupRouter() \*gin.Engine {
+r := gin.New()
+
+    r.Use(corsMiddleware)
+
+    return r
+
+}
+```
+
+```
+
+```

@@ -42,6 +42,6 @@ func Start(version string) {
 	}
 
 	// 5. Execution
-	// We call ListenAndServe (or Serve) to show this is where the process blocks.
+	// We call ListenAndServe .
 	appServer.ListenAndServe(addr)
 }
