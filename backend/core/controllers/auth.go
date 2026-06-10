@@ -78,7 +78,7 @@ func (ctrl *AuthController) Register(c *gin.Context) {
 	}
 
 	// Only for vitest
-	if config.Config().AppEnv == "test" {
+	if config.Config().TestMode {
 		response.Token = token
 	}
 
@@ -113,7 +113,7 @@ func (ctrl *AuthController) ResendRegistration(c *gin.Context) {
 	}
 
 	// Only for vitest
-	if config.Config().AppEnv == "test" {
+	if config.Config().TestMode {
 		response.Token = token
 	}
 
@@ -218,7 +218,7 @@ func (ctrl *AuthController) ForgotPassword(c *gin.Context) {
 	}
 
 	// Only for vitest
-	if config.Config().AppEnv == "test" {
+	if config.Config().TestMode {
 		response.Token = token
 	}
 	responses.SUCCESS(c, http.StatusOK, response)

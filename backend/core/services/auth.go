@@ -181,7 +181,7 @@ func (s *AuthService) SendRegistration(email string) (string, error) {
 	cfg := config.Config()
 
 	if !cfg.Smtp.Enabled {
-		if cfg.AppEnv == "test" {
+		if cfg.TestMode {
 			logger.Login.Info("SMTP disabled, skipping email send for %s", email)
 			return user.PasswordReset, nil
 		}
@@ -228,7 +228,7 @@ func (s *AuthService) ForgotPassword(email string) (string, error) {
 
 	cfg := config.Config()
 	if !cfg.Smtp.Enabled {
-		if cfg.AppEnv == "test" {
+		if cfg.TestMode {
 			logger.Login.Info("SMTP disabled, skipping email send for %s", email)
 			return user.PasswordReset, nil
 		}

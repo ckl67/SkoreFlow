@@ -182,7 +182,7 @@ func (s *UserService) SendUpdateEmailToken(user *models.User) (string, error) {
 
 	// Non blocking in case smtp not configured in test Mode only
 	if !cfg.Smtp.Enabled {
-		if cfg.AppEnv == "test" {
+		if cfg.TestMode {
 			logger.User.Info("SMTP disabled, skipping email send for %s", user.PendingEmail)
 			return user.EmailChangeToken, nil
 		}

@@ -4,10 +4,12 @@ GO=go
 MAIN_FILE=./cmd/server/main.go
 
 # Default environment Variables
-#  APP_ENV = : development, production, test --> Will seed user on starting of the server
+#  APP_ENV = : development, production
 #  SMTP_ENABLED = :  true / false
 #  PROTECTION_LEVEL = : full / none
-
+#  TEST_MODE = : true / false
+# 		Will automatically seed test users on server startup for testing purposes.
+# 		Will authorize all requests without smtp authentication for easier testing of protected routes.
 
 # Versioning via Git
 # --tags: Look for tags
@@ -40,16 +42,19 @@ build:
 
 run-test:
 	@echo "==> Running TEST environment (Version: $(VERSION))...."
-	APP_ENV=test \
+	APP_ENV=development \
+	TEST_MODE=true \
 	SMTP_ENABLED=false \
 	PROTECTION_LEVEL=none \
 	$(GO) run $(LDFLAGS) $(MAIN_FILE)
+	@echo "==> Running TEST environment (Version: $(VERSION))...."
 
 run:
 	@echo "==> Running main.go (Version: $(VERSION))..."
-	APP_ENV=development \
-	SMTP_ENABLED=false \
-	PROTECTION_LEVEL=none \
+	APP_ENV=production \
+	TEST_MODE=false \
+	SMTP_ENABLED=true \
+	PROTECTION_LEVEL=full \
 	$(GO) run $(LDFLAGS) $(MAIN_FILE)
 
 cleandb:
@@ -60,15 +65,16 @@ cleandb:
 ## runHR: Automate the Hot Reload process thanks to the standard Air tool
 air:
 	@echo "==> Running Hot Reload (air) main.go (Version: $(VERSION))..."
-	APP_ENV=development \
-	SMTP_ENABLED=false \
-	PROTECTION_LEVEL=none \
-
+	APP_ENV=production \
+	TEST_MODE=false \
+	SMTP_ENABLED=true \
+	PROTECTION_LEVEL=full \
 	air
 
 air-test:
 	@echo "==> Running Hot Reload (air) in TEST Environment (Version: $(VERSION))..."
-	APP_ENV=test \
+	APP_ENV=development \
+	TEST_MODE=true \
 	SMTP_ENABLED=false \
 	PROTECTION_LEVEL=none \
 	air
@@ -93,11 +99,11 @@ reset:
 help:
 	@echo "Available commands:"
 	@echo "  make build       : Compile the project with version injection"
-	@echo "  make run         : Run the project with version injection"
-	@echo "  make run-test    : Run in test mode with version injection"
+	@echo "  make run         : Run (Prod) with version injection"
+	@echo "  make run-test    : Run (Dev+Test) with version injection"
 	@echo "  make cleandb     : Clean Database"
-	@echo "  make air         : Run with air allowing hot reload"
-	@echo "  make air-test    : Run with air in test mode"
+	@echo "  make air         : Run (Prod) with air allowing hot reload"
+	@echo "  make air-test    : Run (Dev+Test) with air in test mode"
 	@echo "  make version     : Show the version to be injected"
 	@echo "  make tidy        : Clean up dependencies"
 	@echo "  make reset       : Clear cache and reinstall everything"

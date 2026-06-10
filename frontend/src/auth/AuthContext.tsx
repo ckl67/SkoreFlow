@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
+import type { UserPublicResponse } from '../../../shared/types/auth';
 import { apiRequest } from '../api/client';
-import type { UserPublicResponse } from '../types/user';
 
 interface AuthContextType {
   user: UserPublicResponse | null;
@@ -14,11 +14,15 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<UserPublicResponse | null>(null);
   const [token, setToken] = useState<string | null>(() => localStorage.getItem('token'));
 
+  const [user, setUser] = useState<UserPublicResponse | null>(() => {
+    const stored = localStorage.getItem('user');
+    return stored ? JSON.parse(stored) : null;
+  });
+
   // --------------------------------------------------
-  // LOGIN (after /login)
+  // LOGIN
   // --------------------------------------------------
   function login(token: string, user: UserPublicResponse) {
     localStorage.setItem('token', token);
@@ -40,31 +44,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   // --------------------------------------------------
-  // REFRESH /ME
+  // REFRESH /me
   // --------------------------------------------------
   async function refreshMe() {
     if (!token) return;
 
-    const res = await apiRequest<{ user: UserPublicResponse }>('GET', '/me');
+    const res = await apiRequest<UserPublicResponse>('GET', '/me');
 
-    if (res.data.success && res.data.data) {
-      setUser(res.data.data.user);
-      localStorage.setItem('user', JSON.stringify(res.data.data.user));
+    if (!res.success || !res.data) {
+      throw new Error(res.error?.message ?? 'Login failed');
+    }
+
+    if (res.data) {
+      setUser(res.data);
+      localStorage.setItem('user', JSON.stringify(res.data));
     } else {
       logout();
     }
   }
 
   // --------------------------------------------------
-  // AUTO LOAD at start
+  // AUTO LOAD
   // --------------------------------------------------
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-
     if (token) {
       refreshMe();
     }
@@ -75,7 +77,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       value={{
         user,
         token,
-        isAuthenticated: !!user && !!token,
+        isAuthenticated: !!token,
         login,
         logout,
         refreshMe,
@@ -91,8 +93,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 // --------------------------------------------------
 export function useAuth() {
   const ctx = useContext(AuthContext);
-  if (!ctx) {
-    throw new Error('useAuth must be used inside AuthProvider');
-  }
+  if (!ctx) throw new Error('useAuth must be used inside provider');
   return ctx;
 }

@@ -1,16 +1,23 @@
 import { useState } from 'react';
-import { apiRequest } from '../api/client';
 import { useNavigate } from 'react-router-dom';
+
+import { apiRequest } from '../api/client';
 import { useAuth } from '../auth/AuthContext';
-import type { LoginRequest, LoginResponse } from '../types/user';
+import type { LoginRequest, LoginResponse } from '../../../shared/types/auth';
 
 export default function Login() {
+  // State
   const [email, setEmail] = useState('user1@test.com');
   const [password, setPassword] = useState('password123');
 
   const navigate = useNavigate();
+
+  // Get property  of login from useAuth --> Like
+  // const auth = useAuth();
+  // const login = auth.login;
   const { login } = useAuth();
 
+  // Handler
   async function handleLogin() {
     try {
       const res = await apiRequest<LoginResponse, LoginRequest>('POST', '/login', {
@@ -20,13 +27,11 @@ export default function Login() {
         },
       });
 
-      const payload = res.data.data;
-
-      if (!payload) {
-        throw new Error('Login failed');
+      if (!res.success || !res.data) {
+        throw new Error(res.error?.message ?? 'Login failed');
       }
 
-      login(payload.token, payload.user);
+      login(res.data.token, res.data.user);
 
       navigate('/me');
     } catch (err) {
@@ -35,6 +40,7 @@ export default function Login() {
     }
   }
 
+  // Render
   return (
     <div style={{ padding: 20 }}>
       <h1>Login</h1>

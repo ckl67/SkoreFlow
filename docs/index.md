@@ -47,6 +47,10 @@ Whether you're new to SkoreFlow or an experienced developer, this documentation 
 - [Architecture](./frontend/architecture.md)
 - [Installation](./frontend/install.md)
 
+### Shared
+
+- [Shared data](./shared/shared.md)
+
 ### Contribution
 
 - To contribute, please use **Feature Branches** and submit a **Pull Request**. Direct pushes to the main branch are not permitted.

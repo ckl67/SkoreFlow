@@ -148,7 +148,7 @@ func (ctrl *UserController) UpdateMail(c *gin.Context) {
 	}
 
 	// Only for vitest
-	if config.Config().AppEnv == "test" {
+	if config.Config().TestMode {
 		response.TokenEmail = tokenEmail
 	}
 

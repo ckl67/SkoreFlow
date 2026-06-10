@@ -250,7 +250,7 @@ func (server *Server) SetupRouter() {
 				adminRoutes.DELETE("/admin/users/:id", userCtrl.AdminDeleteUser) // vitest
 
 				// For now, only for vitest
-				if config.Config().AppEnv == "test" {
+				if config.Config().TestMode {
 					fmt.Println("=================================")
 					fmt.Println("BE CARE ROOT NOT ALLOWED IN PROD")
 					fmt.Println("=================================")

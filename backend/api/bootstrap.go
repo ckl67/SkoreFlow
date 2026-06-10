@@ -26,7 +26,7 @@ func Start(version string) {
 	// 3. Database Seeding
 	seed.Load(appServer.DB, "admin", cfg.AdminEmail, cfg.AdminPassword, config.RoleAdmin, "users/admin.png")
 
-	if config.Config().AppEnv == "test" {
+	if config.Config().TestMode {
 		seed.Load(appServer.DB, "user1", "user1@test.com", "password123", config.RoleUser, "users/default.png")
 		seed.Load(appServer.DB, "user2", "user2@test.com", "password123", config.RoleUser, "users/default.png")
 		seed.Load(appServer.DB, "user3", "user3@test.com", "password123", config.RoleUser, "users/default.png")

@@ -7,23 +7,12 @@
 
 import { request } from './api.js';
 import { API_URL } from '../config.js';
+import { RegisterRequest, RegisterResponse } from '../../../shared/types/auth.js';
+import { LoginRequest, LoginResponse } from '../../../shared/types/auth.js';
 
 // --------------------------------------------------------------------------------
 // TYPES
 // --------------------------------------------------------------------------------
-
-interface RegisterRequest {
-  username: string;
-  email: string;
-  password: string;
-}
-
-// token should never be returned !!
-interface RegisterResponse {
-  message: string;
-  isVerified: boolean;
-  token: string; // Only for test
-}
 
 // -------------------
 
@@ -49,26 +38,6 @@ interface ResendRegistrationResponse {
 }
 
 // -------------------
-
-interface LoginRequest {
-  email: string;
-  password: string;
-}
-
-interface UserPublicResponse {
-  id: number;
-  username: string;
-  email: string;
-  avatar: string;
-  role: number;
-  isVerified: boolean;
-}
-
-interface LoginResponse {
-  message: string;
-  token: string;
-  user: UserPublicResponse;
-}
 
 // -------------------
 

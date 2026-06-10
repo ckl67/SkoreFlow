@@ -68,8 +68,11 @@ type FrontendConfig struct {
 // Global Server Configuration
 // Central struct holding ALL configuration used across the app
 type ServerConfig struct {
-	// Backend Mode
-	AppEnv string `env:"APP_ENV"` // development, production, test--> for Vitest (= will seed users)
+	// Backend Mode Environment runtime (infra)
+	AppEnv string `env:"APP_ENV"` // development, production
+
+	// Backend Test Mode
+	TestMode bool `env:"TEST_MODE"` // For tests Purpose - To activate some specific routes for tests facilities + seed users
 
 	// Backend Security
 	ProtectionLevel string `env:"PROTECTION_LEVEL"` // none, basic, full.
@@ -125,14 +128,20 @@ func (c ServerConfig) LogSafe() {
 	fmt.Println("------ SERVER CONFIG ------")
 	fmt.Println("-------------------- ------")
 
-	fmt.Println("Application")
-	fmt.Printf("  Environment Mode (production/development/test)- (appEnv) :%s\n", c.AppEnv)
-	fmt.Printf("  Protection Level (none/basic/full) - (ProtectionLevel) :%s\n", c.ProtectionLevel)
+	fmt.Println("Environment runtime (infra)")
+	fmt.Printf("    Environment Mode (production/development)- (appEnv) :%s\n", c.AppEnv)
 
-	fmt.Println("SMTP")
-	fmt.Printf("  Enabled: %t\n", c.Smtp.Enabled)
+	fmt.Printf("    Test Mode (TestMode) :%t\n", c.TestMode)
+	if c.TestMode {
+		fmt.Println("		- Will automatically seed test users on server startup for testing purposes.")
+		fmt.Println("		- Will authorize all requests without smtp authentication for easier testing of protected routes.")
+	}
 
-	if c.AppEnv == "development" || c.AppEnv == "test" {
+	fmt.Println("Feature flags")
+	fmt.Printf("    Protection Level (none/basic/full) - (ProtectionLevel) :%s\n", c.ProtectionLevel)
+	fmt.Printf("    SMTP Enabled: %t\n", c.Smtp.Enabled)
+
+	if c.AppEnv == "development" {
 
 		fmt.Println("Paths:")
 		fmt.Printf("  StoragePath: %s\n", c.StoragePath)

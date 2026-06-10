@@ -1,0 +1,9 @@
+{
+  "name": "backend-go",
+  "private": true,
+  "scripts": {
+    "test": "make run-test",
+    "test-air": "make air-test",
+    "lint": "eslint ."
+  }
+}

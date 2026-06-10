@@ -57,9 +57,10 @@ Usage:
 
 # --- BACKEND ENVIRONNEMENT VARIABLES ---
 
-export APP_ENV=test          # Will seed user on starting of the server
+export APP_ENV=development
 export SMTP_ENABLED=false    # Will deactivate SMTP server
 export PROTECTION_LEVEL=none # Will bypass for example : RateLimiter()
+export TEST_MODE=true        # Will automatically seed test users on server startup + authorize all requests without smtp authentication for easier testing of protected routes.
 
 # --- SHELL GLOBAL VARIABLES ---
 RUN_STRESS=false

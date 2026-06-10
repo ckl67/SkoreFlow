@@ -7,8 +7,6 @@
     "testauto/frontend"
   ],
   "scripts": {
-    "backend e2e": "npm run e2e  -w testauto/backend",
-    "dev:frontend": "npm run dev -w frontend",
     "lint": "eslint .",
     "format": "prettier --write ."
   },

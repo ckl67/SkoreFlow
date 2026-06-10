@@ -22,21 +22,13 @@ interface APIResponse<T = unknown> {
 }
 
 // --------------------------------------------------------------------------------
-// Axios wrapper response (internal)
-// --------------------------------------------------------------------------------
-interface HttpResponse<T = unknown> {
-  status: number;
-  data: APIResponse<T>;
-}
-
-// --------------------------------------------------------------------------------
 // request
 // --------------------------------------------------------------------------------
 export async function apiRequest<TResponse = unknown, TRequest = unknown>(
   method: Method,
   url: string,
   options: RequestOptions<TRequest> = {},
-): Promise<HttpResponse<TResponse>> {
+): Promise<APIResponse<TResponse>> {
   const token = localStorage.getItem('token');
 
   try {
@@ -50,36 +42,27 @@ export async function apiRequest<TResponse = unknown, TRequest = unknown>(
       },
     });
 
-    return {
-      status: res.status,
-      data: res.data,
-    };
+    return res.data;
   } catch (err) {
     if (axios.isAxiosError(err)) {
-      return {
-        status: err.response?.status ?? 500,
-        data: (err.response?.data as APIResponse<TResponse>) ?? {
+      return (
+        (err.response?.data as APIResponse<TResponse>) ?? {
           success: false,
           error: {
             message: err.message || 'Unknown network error',
           },
-        },
-      };
+        }
+      );
     }
 
-    throw err;
+    return {
+      success: false,
+      error: {
+        message: 'Unexpected error',
+      },
+    };
   }
 }
-
-axios.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-
-  return config;
-});
 
 axios.interceptors.response.use(
   (response) => response,
@@ -94,11 +77,3 @@ axios.interceptors.response.use(
     return Promise.reject(error);
   },
 );
-
-function get<T>(url: string) {
-  return apiRequest<T>('GET', url);
-}
-
-function post<T, B>(url: string, data: B) {
-  return apiRequest<T, B>('POST', url, { data });
-}
