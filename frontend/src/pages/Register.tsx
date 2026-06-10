@@ -21,6 +21,7 @@ export default function Register() {
 
       console.log('Register :', res);
       if (!res.success || !res.data) {
+        alert(res.error!.message);
         throw new Error(res.error?.message ?? 'Register failed');
       }
 

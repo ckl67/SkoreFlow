@@ -6,18 +6,19 @@ import { useAuth } from '../auth/AuthContext';
 import type { LoginRequest, LoginResponse } from '../../../shared/types/auth';
 
 export default function Login() {
-  // State
+  // 1. STATE
   const [email, setEmail] = useState('user1@test.com');
   const [password, setPassword] = useState('password123');
 
-  const navigate = useNavigate();
+  // 2. SERVICES
+  // useNavigate is a hook which returns the function for navigating
+  const navigateTo = useNavigate();
 
-  // Get property  of login from useAuth --> Like
-  // const auth = useAuth();
-  // const login = auth.login;
-  const { login } = useAuth();
+  // Get login from useAuth - idem as const { login } = useAuth();
+  const auth = useAuth();
+  const login = auth.login;
 
-  // Handler
+  // 3. HANDLERS
   async function handleLogin() {
     try {
       const res = await apiRequest<LoginResponse, LoginRequest>('POST', '/login', {
@@ -33,14 +34,14 @@ export default function Login() {
 
       login(res.data.token, res.data.user);
 
-      navigate('/me');
+      navigateTo('/me');
     } catch (err) {
       console.error(err);
       alert('Login failed');
     }
   }
 
-  // Render
+  // 4. RENDER
   return (
     <div style={{ padding: 20 }}>
       <h1>Login</h1>

@@ -21,6 +21,7 @@ Whether you're new to SkoreFlow or an experienced developer, this documentation 
 - [Javascript - ecosystem](./general/javascript_ecosystem.md)
 - [Javascript - some particularities](./general/javascript.md)
 - [JSON Handling](./general/json.md)
+- [MonoRepo](./general/monorepo.md)
 
 ### Development Environment
 
@@ -46,6 +47,7 @@ Whether you're new to SkoreFlow or an experienced developer, this documentation 
 
 - [Architecture](./frontend/architecture.md)
 - [Installation](./frontend/install.md)
+- [Frontend Testing](./frontend/test.md)
 
 ### Shared
 

@@ -68,16 +68,6 @@ The test framework relies on the following Node.js libraries:
 - axios → HTTP client used for all API requests
 - form-data → Required for multipart requests (e.g. file uploads)
 
-To install dependencies:
-
-```shell
-npm install
-
-# Or manually:
-
-npm install axios form-data
-```
-
 Notes
 
 - All HTTP requests are now handled via a unified axios-based helper.

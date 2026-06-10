@@ -5,6 +5,12 @@
 SkoreFlow is a backend and frontend application designed to manage, process, and serve musical scores through a clean, scalable, and layered architecture.
 SkoreFlow is the result of several iterations on earlier experimental projects, redesigned with a focus on clean architecture, scalability, and maintainability.
 
+Full test chain with
+
+- vitest backend and frontend
+- Mock Service Worker
+- ..
+
 So welcome to SkoreFlow 🎉
 
 ---
@@ -36,10 +42,15 @@ Contributions and feedback are welcome.
 
 ```bash
 .
-├── backend/
-├── frontend/
-├── testauto/
-├── docs/
+
+├── backend
+├── config
+├── docs
+├── frontend
+├── node_modules
+├── shared
+├── testauto
+
 
 ```
 
@@ -68,8 +79,6 @@ SkoreFlow/
 ├── testauto/
 │ ├── backend/
 │ │ └── package.json
-│ └── frontend/
-│ └── package.json
 ├── docs/
 
 ```
