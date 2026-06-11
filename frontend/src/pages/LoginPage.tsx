@@ -3,53 +3,56 @@ import { useNavigate } from 'react-router-dom';
 
 import { apiRequest } from '../api/client';
 import { useAuth } from '../auth/AuthContext';
+
+import FormInput from '../components/FormInput';
+import SubmitButton from '../components/SubmitButton';
+
 import type { LoginRequest, LoginResponse } from '../../../shared/types/auth';
 
-export default function Login() {
-  // 1. STATE
+export default function LoginPage() {
+  // STATE
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  // 2. SERVICES
-  // useNavigate is a hook which returns the function for navigating
-  const navigateTo = useNavigate();
+  // SERVICES
+  const navigate = useNavigate();
+  const { login } = useAuth();
 
-  // Get login from useAuth - idem as const { login } = useAuth();
-  const auth = useAuth();
-  const login = auth.login;
-
-  // 3. HANDLERS
+  // HANDLER
   async function handleLogin() {
+    const payload: LoginRequest = {
+      email,
+      password,
+    };
+
     try {
       const res = await apiRequest<LoginResponse, LoginRequest>('POST', '/login', {
-        data: {
-          email,
-          password,
-        },
+        data: payload,
       });
 
       if (!res.success || !res.data) {
         throw new Error(res.error?.message ?? 'Login failed');
       }
 
+      // auth context
       login(res.data.token, res.data.user);
 
-      navigateTo('/me');
+      // redirect
+      navigate('/me');
     } catch (err) {
       console.error(err);
       alert('Login failed');
     }
   }
 
-  // 4. RENDER
+  // RENDER
+  // user2@test.com password123
   return (
-    <div style={{ padding: 20 }}>
+    <div style={{ maxWidth: 400 }}>
       <h1>Login</h1>
-
-      <input value={email} onChange={(e) => setEmail(e.target.value)} />
-      <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-
-      <button onClick={handleLogin}>Login</button>
+      <FormInput label="Email" value={email} onChange={setEmail} placeholder="you@example.com" />
+      <FormInput label="Password" type="password" value={password} onChange={setPassword} />
+      <SubmitButton label="Login" onClick={handleLogin} />
     </div>
   );
 }

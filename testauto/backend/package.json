@@ -7,9 +7,9 @@
     "form-data": "^4.0.5"
   },
   "scripts": {
-    "e2e (backend)": "bash auto-test.sh --all",
-    "e2e:clean (backend database)": "bash auto-test.sh --clean --all",
-    "e2e:kill (backend process)": "bash auto-test.sh --kill"
+    "e2e:backend": "bash auto-test.sh --all",
+    "e2e:clean:backend-database": "bash auto-test.sh --clean --all",
+    "e2e:kill:backend-process": "bash auto-test.sh --kill"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.13"

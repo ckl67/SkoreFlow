@@ -22,7 +22,7 @@ interface APIResponse<T = unknown> {
 }
 
 // --------------------------------------------------------------------------------
-// request
+// apiRequest
 // --------------------------------------------------------------------------------
 export async function apiRequest<TResponse = unknown, TRequest = unknown>(
   method: Method,

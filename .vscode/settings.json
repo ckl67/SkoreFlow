@@ -12,6 +12,8 @@
 
   "workbench.editor.labelFormat": "short",
 
+  "npm.packageManager": "npm",
+
   //"npm.scriptExplorerAction": "run",
 
   // =========================================================
@@ -30,6 +32,7 @@
   // 🧹 PRETTIER
   // =========================================================
   "prettier.requireConfig": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
 
   // =========================================================
   // 🧹 LANGUAGE FORMATTERS
@@ -65,6 +68,15 @@
   "eslint.workingDirectories": [{ "mode": "auto" }],
 
   "eslint.format.enable": false,
+
+  // =========================================================
+  // Emmet React
+  // =========================================================
+  "emmet.includeLanguages": {
+    "javascript": "javascriptreact",
+    "typescript": "typescriptreact"
+  },
+  "emmet.triggerExpansionOnTab": true,
 
   // =========================================================
   // 🧹 MARKDOWNLINT (OPTIONNEL)

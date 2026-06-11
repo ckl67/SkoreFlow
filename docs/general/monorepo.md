@@ -92,7 +92,6 @@ npm install
 In case of wrong installation
 
 ```shell
-
 # Error example
 npm install -D @testing-library/react @testing-library/dom @testing-library/user-event
 
@@ -101,3 +100,14 @@ npm uninstall @testing-library/react @testing-library/dom @testing-library/user-
 npm install -D @testing-library/react @testing-library/dom @testing-library/user-event -w frontend
 
 ```
+
+### Control
+
+```shell
+npm ls --depth=0
+npm ls --depth=0 -w frontend
+```
+
+frontend@0.0.0 -> ./frontend
+
+Le -> ./frontend means that npm has well the link to workspace.

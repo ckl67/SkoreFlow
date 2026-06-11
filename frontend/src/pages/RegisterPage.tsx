@@ -1,12 +1,19 @@
 import { useState } from 'react';
 import { apiRequest } from '../api/client';
 import type { RegisterRequest, RegisterResponse } from '../../../shared/types/auth';
+import { useNavigate } from 'react-router-dom';
 
 export default function Register() {
+  // 1. STATE
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  // 2. SERVICES
+  // useNavigate is a hook which returns the function for navigating
+  const navigateTo = useNavigate();
+
+  // 3. HANDLERS
   async function handleRegister() {
     const payload: RegisterRequest = {
       username,
@@ -20,11 +27,11 @@ export default function Register() {
       });
 
       console.log('Register :', res);
+
       if (!res.success || !res.data) {
         alert(res.error!.message);
         throw new Error(res.error?.message ?? 'Register failed');
       }
-
       alert(res.data.message);
     } catch (err) {
       if (err instanceof Error) {
@@ -35,6 +42,7 @@ export default function Register() {
     }
   }
 
+  // 4. RENDER
   return (
     <div style={{ padding: 20 }}>
       <h1>Register</h1>

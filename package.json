@@ -3,11 +3,10 @@
   "private": true,
   "workspaces": [
     "frontend",
-    "testauto/backend",
-    "testauto/e2e"
+    "testauto/backend"
   ],
   "scripts": {
-    "test:e2e (with ui)": "playwright test --ui",
+    "test:e2e-with-ui": "playwright test --ui",
     "test:e2e ": "playwright test",
     "lint": "eslint .",
     "format": "prettier --write ."
