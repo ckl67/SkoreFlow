@@ -47,7 +47,10 @@ Whether you're new to SkoreFlow or an experienced developer, this documentation 
 
 - [Architecture](./frontend/architecture.md)
 - [Installation](./frontend/install.md)
-- [Frontend Testing](./frontend/test.md)
+
+### End to End Guides
+
+- [e2e Testing](./e2e/test.md)
 
 ### Shared
 

@@ -26,6 +26,8 @@ npm install better-sqlite3 -w testauto/backend
 npm install -D @types/better-sqlite3 -w testauto/backend
 ```
 
+-> by specifying -w "target" **we will modify the package.json in the target workspace**
+
 ### 1.1.3. ❌ Do NOT do this
 
 ```bash
@@ -73,20 +75,21 @@ npm ls -ws
   - Vitest → testauto/backend
   - React → frontend
 
-## Reinstall
+## npm in case of issue
 
 In cas of issue, you can reinstall the full packages
 
 ```shell
 # For root project
-rm -rf node_modules package-lock.json
+rm -rf node_modules
+rm -rf package-lock.json
 npm install
 
 ```
 
 ## Delete
 
-In case of wring installation
+In case of wrong installation
 
 ```shell
 
