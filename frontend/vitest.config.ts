@@ -7,7 +7,7 @@ export default mergeConfig(
     test: {
       setupFiles: ['./vitest.setup.ts'],
       environment: 'jsdom', // ⚠️ Mandatory for React
-      include: ['tests/**/*.test.ts'],
+      include: ['tests/**/*.test.tsx'],
     },
   }),
 );

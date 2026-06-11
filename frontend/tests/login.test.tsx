@@ -1,12 +1,19 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect } from 'vitest';
-import Login from '../src/pages/Login';
-import '@testing-library/jest-dom';
+import { MemoryRouter } from 'react-router-dom';
+import { AuthProvider } from '../src/auth/AuthContext';
+import Login from '../src//pages/Login';
 
-describe('LoginPage', () => {
-  it('logs in user successfully', async () => {
-    render(<Login />);
+describe('Login flow', () => {
+  it('logs in successfully', async () => {
+    render(
+      <MemoryRouter>
+        <AuthProvider>
+          <Login />
+        </AuthProvider>
+      </MemoryRouter>,
+    );
 
     const user = userEvent.setup();
 
