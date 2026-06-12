@@ -1,16 +1,40 @@
 import { Outlet } from 'react-router-dom';
-import Navbar from '../components/Navbar';
+
+import TopNavbar from '../components/TopNavbar';
+import SideNavbar from '../components/SideNavbar';
+import DevPanel from '../dev/DevPanel';
+const TEST_MODE = import.meta.env.VITE_TEST_MODE === 'true';
+
+import './MainLayout.css';
+
+// +----------------------+
+// | TopNavbar            |
+// +----------------------+
+// | Side |   Content     |
+// | Nav  |               |
+// | bar  |               |
+// +----------------------+
 
 export default function MainLayout() {
   return (
-    <div>
+    <div className="layout">
       {/* TOP BAR */}
-      <Navbar />
+      <header className="topbar">
+        <TopNavbar />
+      </header>
 
-      {/* CONTENT AREA */}
-      <div style={{ padding: 20 }}>
-        <Outlet />
+      {/* BODY */}
+      <div className="body">
+        <aside className="sidebar">
+          <SideNavbar />
+        </aside>
+
+        <main className="content">
+          <Outlet />
+        </main>
       </div>
+
+      {TEST_MODE && <DevPanel />}
     </div>
   );
 }

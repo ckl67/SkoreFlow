@@ -8,11 +8,13 @@ import FormInput from '../components/FormInput';
 import SubmitButton from '../components/SubmitButton';
 
 import type { LoginRequest, LoginResponse } from '../../../shared/types/auth';
+import { useDevFillLogin } from '../dev/useDevFillLogin';
 
 export default function LoginPage() {
   // STATE
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  useDevFillLogin(setEmail, setPassword);
 
   // SERVICES
   const navigate = useNavigate();

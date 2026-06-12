@@ -39,6 +39,7 @@ subfolders
 Supertramp
 testauto
 testcache
+topbar
 typestrict
 Vitest
 webp

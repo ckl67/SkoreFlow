@@ -1,0 +1,59 @@
+/* 전체 layout */
+.layout {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: Arial, sans-serif;
+}
+
+/* TOP BAR */
+.topbar {
+  height: 56px;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  background: #fff;
+}
+
+/* BODY (sidebar + content) */
+.body {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+/* LEFT SIDEBAR */
+.sidebar {
+  width: 220px;
+  border-right: 1px solid #ddd;
+  padding: 12px;
+  background: #f9f9f9;
+}
+
+/* MAIN CONTENT */
+.content {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  background: #fff;
+}
+
+/* DEV PANEL */
+.dev-panel {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+
+  width: 220px;
+
+  background: #111;
+  color: white;
+
+  padding: 12px;
+  border-radius: 8px;
+
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+
+  z-index: 9999;
+}
