@@ -26,7 +26,7 @@ VERSION=$(shell git describe --tags --always --dirty)
 LDFLAGS=-ldflags="-X main.Version=$(VERSION)"
 
 # Makefile Rules
-.PHONY: all build run run-test cleandb air air-test clean tidy reset help version
+.PHONY: all build run run-test run-dev cleandb air air-test air-dev clean tidy reset help version
 
 ## all: Clean, organize modules, and compile
 all: tidy build
@@ -45,6 +45,15 @@ run-test:
 	APP_ENV=development \
 	TEST_MODE=true \
 	SMTP_ENABLED=false \
+	PROTECTION_LEVEL=none \
+	$(GO) run $(LDFLAGS) $(MAIN_FILE)
+	@echo "==> Running TEST environment (Version: $(VERSION))...."
+
+run-dev:
+	@echo "==> Running TEST environment (Version: $(VERSION))...."
+	APP_ENV=development \
+	TEST_MODE=false \
+	SMTP_ENABLED=true \
 	PROTECTION_LEVEL=none \
 	$(GO) run $(LDFLAGS) $(MAIN_FILE)
 	@echo "==> Running TEST environment (Version: $(VERSION))...."
@@ -76,6 +85,14 @@ air-test:
 	APP_ENV=development \
 	TEST_MODE=true \
 	SMTP_ENABLED=false \
+	PROTECTION_LEVEL=none \
+	air
+
+air-dev:
+	@echo "==> Running Hot Reload (air) in TEST Environment (Version: $(VERSION))..."
+	APP_ENV=development \
+	TEST_MODE= false\
+	SMTP_ENABLED=true \
 	PROTECTION_LEVEL=none \
 	air
 

@@ -180,6 +180,7 @@ func (s *AuthService) SendRegistration(email string) (string, error) {
 
 	cfg := config.Config()
 
+
 	if !cfg.Smtp.Enabled {
 		if cfg.TestMode {
 			logger.Login.Info("SMTP disabled, skipping email send for %s", email)
@@ -194,6 +195,8 @@ func (s *AuthService) SendRegistration(email string) (string, error) {
 		cfg.Frontend.Origin,
 		cfg.Frontend.RegisterConfirmPath,
 	)
+
+	logger.Login.Debug("HtmlBody : %s",htmlBody)
 
 	if err := mail.SendHTMLMail(email, "Confirm Your SkoreFlow Registration", htmlBody); err != nil {
 		return user.PasswordReset, apperrors.ErrSmtpFailed

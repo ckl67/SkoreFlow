@@ -2,8 +2,9 @@
   "name": "backend-go",
   "private": true,
   "scripts": {
-    "run:mode-test": "make run-test",
+    "run-air:mode-dev": "make air-dev",
     "run-air:mode-test": "make air-test",
+    "run:mode-test": "make run-test",
     "lint": "eslint ."
   }
 }

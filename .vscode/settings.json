@@ -32,11 +32,14 @@
   // 🧹 PRETTIER
   // =========================================================
   "prettier.requireConfig": true,
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.defaultFormatter": null,
 
   // =========================================================
   // 🧹 LANGUAGE FORMATTERS
   // =========================================================
+  "[go]": {
+    "editor.defaultFormatter": "golang.go"
+  },
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },

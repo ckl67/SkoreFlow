@@ -4,10 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "run-dev": "vite",
-    "run-dev:test": "vite --mode test",
+    "run:mode-test": "vite --mode test",
+    "run:mode": "vite",
     "run-build": "vite preview",
-    "build-dev": "vite build",
+    "build": "vite build",
     "lint": "eslint ."
   },
   "dependencies": {

@@ -32,3 +32,15 @@ export interface LoginResponse {
   token: string;
   user: UserPublicResponse;
 }
+
+// -------------------
+
+export interface ConfirmRegistrationRequest {
+  token: string;
+}
+
+export interface ConfirmRegistrationResponse {
+  message: string;
+  user_id: number;
+  isVerified: boolean;
+}

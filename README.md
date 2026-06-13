@@ -87,6 +87,14 @@ SkoreFlow/
   - Vitest → testauto/backend
   - React → frontend
 
+## Local Services
+
+Backend Go : localhost:8080
+Backend MicroService : localhost:5010
+Frontend React : localhost:5173
+MailPit SMTP : localhost:1025
+Interface Mail : localhost:8025
+
 ## 🚀 Getting Started
 
 ### Clone repository

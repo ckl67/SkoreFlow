@@ -7,6 +7,7 @@ import RegisterPage from '../pages/RegisterPage';
 import MePage from '../pages/MePage';
 
 import ProtectedRoute from '../components/ProtectedRoute';
+import RegisterConfirmPage from '../pages/RegisterConfirmPage';
 
 export const router = createBrowserRouter([
   {
@@ -23,6 +24,10 @@ export const router = createBrowserRouter([
       {
         path: '/register',
         element: <RegisterPage />,
+      },
+      {
+        path: 'register/confirm',
+        element: <RegisterConfirmPage />,
       },
       {
         path: '/me',

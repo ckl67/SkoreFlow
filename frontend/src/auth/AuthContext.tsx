@@ -2,6 +2,10 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import type { UserPublicResponse } from '../../../shared/types/auth';
 import { apiRequest } from '../api/client';
 
+// Context handle 3 thinks
+// * Global State : user - token - isAuthenticated
+// * Actions: login - logout - refreshMe
+// * Persistence : localStorage
 interface AuthContextType {
   user: UserPublicResponse | null;
   token: string | null;
@@ -15,7 +19,6 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [token, setToken] = useState<string | null>(() => localStorage.getItem('token'));
-
   const [user, setUser] = useState<UserPublicResponse | null>(() => {
     const stored = localStorage.getItem('user');
     return stored ? JSON.parse(stored) : null;

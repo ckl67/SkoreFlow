@@ -61,6 +61,7 @@ func (ctrl *AuthController) Register(c *gin.Context) {
 		return
 	}
 
+	logger.Login.Debug("Attempting to send registration confirmation email to %s", user.Email)
 	// Trigger confirmation email (non-blocking for user creation)
 	token, err := ctrl.authService.SendRegistration(form.Email)
 	if err != nil {
@@ -73,7 +74,7 @@ func (ctrl *AuthController) Register(c *gin.Context) {
 	}
 
 	response := dto.RegisterResponse{
-		Message:    "User registered successfully",
+		Message:    "User Register Requested",
 		IsVerified: user.IsVerified,
 	}
 

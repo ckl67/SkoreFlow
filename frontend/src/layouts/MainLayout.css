@@ -45,15 +45,39 @@
   bottom: 16px;
   right: 16px;
 
-  width: 220px;
+  width: 260px;
 
-  background: #111;
+  padding: 16px;
+
+  background: #060933;
   color: white;
 
-  padding: 12px;
   border-radius: 8px;
-
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 
   z-index: 9999;
+}
+
+.dev-panel h3 {
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+.dev-section {
+  margin-bottom: 20px;
+}
+
+.dev-section h4 {
+  margin: 0 0 8px 0;
+  padding-bottom: 4px;
+
+  border-bottom: 1px solid #444;
+}
+
+.dev-section button {
+  display: block;
+  width: 100%;
+
+  margin-bottom: 8px;
+  padding: 8px;
 }

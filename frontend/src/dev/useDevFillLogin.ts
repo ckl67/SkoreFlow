@@ -1,15 +1,13 @@
 import { useEffect } from 'react';
 
-type DevFillLoginEvent = CustomEvent<{
-  email: string;
-  password: string;
-}>;
+import type { LoginRequest } from '../../../shared/types/auth';
+
+type DevFillLoginEvent = CustomEvent<LoginRequest>;
 
 export function useDevFillLogin(setEmail: (v: string) => void, setPassword: (v: string) => void) {
   useEffect(() => {
     function handler(event: Event) {
       const customEvent = event as DevFillLoginEvent;
-
       const { email, password } = customEvent.detail;
 
       setEmail(email);

@@ -3,12 +3,14 @@ apperrors
 AUTOINCREMENT
 autotests
 axios
+axllent
 backen
 backend
 cleandb
 createuser
 dotenv
 esbenp
+ESMTP
 frontend
 fuser
 Getwd
@@ -23,6 +25,7 @@ gopher
 gorm
 kubernetes
 kühl
+mailpit
 microservice
 mkhl
 modcache

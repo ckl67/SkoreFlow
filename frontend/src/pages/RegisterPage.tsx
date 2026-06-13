@@ -1,17 +1,24 @@
 import { useState } from 'react';
-import { apiRequest } from '../api/client';
-import type { RegisterRequest, RegisterResponse } from '../../../shared/types/auth';
 import { useNavigate } from 'react-router-dom';
+
+import { apiRequest } from '../api/client';
+
+import FormInput from '../components/FormInput';
+import SubmitButton from '../components/SubmitButton';
+import { useDevFillRegister } from '../dev/useDevFillRegister';
+
+import type { RegisterRequest, RegisterResponse } from '../../../shared/types/auth';
 
 export default function Register() {
   // 1. STATE
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  useDevFillRegister(setUsername, setEmail, setPassword);
 
   // 2. SERVICES
   // useNavigate is a hook which returns the function for navigating
-  const navigateTo = useNavigate();
+  const navigate = useNavigate();
 
   // 3. HANDLERS
   async function handleRegister() {
@@ -27,6 +34,10 @@ export default function Register() {
       });
 
       console.log('Register :', res);
+
+      navigate('/register/pending', {
+        state: { email },
+      });
 
       if (!res.success || !res.data) {
         alert(res.error!.message);
@@ -44,25 +55,13 @@ export default function Register() {
 
   // 4. RENDER
   return (
-    <div style={{ padding: 20 }}>
+    <div style={{ maxWidth: 400 }}>
       <h1>Register</h1>
 
-      <input
-        placeholder="username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-      />
-
-      <input placeholder="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-
-      <input
-        type="password"
-        placeholder="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-
-      <button onClick={handleRegister}>Register</button>
+      <FormInput label="Username" value={username} onChange={setUsername} placeholder="your name" />
+      <FormInput label="Email" value={email} onChange={setEmail} placeholder="you@example.com" />
+      <FormInput label="Password" type="password" value={password} onChange={setPassword} />
+      <SubmitButton label="Register" onClick={handleRegister} />
     </div>
   );
 }

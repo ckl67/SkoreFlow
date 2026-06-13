@@ -33,6 +33,8 @@ func SendHTMLMail(to, subject, body string) error {
 func sendMail(to, subject, body, contentType string) error {
 	cfg := config.Config().Smtp
 
+	logger.Login.Debug("SMTP Config: Enabled=%v, Host=%s, Port=%d, From=%s", cfg.Enabled, cfg.HostServerAddr, cfg.HostServerPort, cfg.From)
+
 	// Skip sending if SMTP is disabled
 	if !cfg.Enabled {
 		logger.Login.Debug("SMTP disabled - email skipped")
@@ -42,18 +44,22 @@ func sendMail(to, subject, body, contentType string) error {
 	addr := net.JoinHostPort(cfg.HostServerAddr, strconv.Itoa(cfg.HostServerPort))
 
 	// return : []byte{108, 122, 104, 116}
-	// string() --> lzht
+	// string() --> transform to real string "abcd"
 	decodedPassword, err := base64.StdEncoding.DecodeString(cfg.PasswordBase64)
 	if err != nil {
 		logger.Login.Error("invalid SMTP password encoding")
 	}
 
-	auth := smtp.PlainAuth(
-		"",
-		cfg.Username,
-		string(decodedPassword),
-		cfg.HostServerAddr,
-	)
+	var auth smtp.Auth = nil
+	// MailPit is note compatible with smtp.Auth
+	if cfg.Username != "" {
+		auth = smtp.PlainAuth(
+			"",
+			cfg.Username,
+			string(decodedPassword),
+			cfg.HostServerAddr,
+		)
+	}
 
 	// RFC-standard date header
 	date := time.Now().Format(time.RFC1123Z)

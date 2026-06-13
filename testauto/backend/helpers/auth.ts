@@ -10,21 +10,14 @@ import { API_URL } from '../config.js';
 import { RegisterRequest, RegisterResponse } from '../../../shared/types/auth.js';
 import { LoginRequest, LoginResponse } from '../../../shared/types/auth.js';
 
+import {
+  ConfirmRegistrationRequest,
+  ConfirmRegistrationResponse,
+} from '../../../shared/types/auth.js';
+
 // --------------------------------------------------------------------------------
 // TYPES
 // --------------------------------------------------------------------------------
-
-// -------------------
-
-interface ConfirmRegistrationRequest {
-  token: string;
-}
-
-interface ConfirmRegistrationResponse {
-  message: string;
-  user_id: number;
-  isVerified: boolean;
-}
 
 // -------------------
 
