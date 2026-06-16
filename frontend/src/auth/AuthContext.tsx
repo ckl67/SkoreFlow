@@ -17,7 +17,29 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
+// --------------------------------------------------------------------------------
+// Note for SkoreFlow Architecture:
+// Even though this is declared as a standard JavaScript function, the Capital letter 'A'
+// turns it into a React Component.
+// When used as a JSX tag (<AuthProvider>...</AuthProvider>),
+// React automatically takes everything nested inside it and passes
+// it as the 'children' argument.
+// --------------------------------------------------------------------------------
+// The left-hand side { children }:
+//  This is pure JavaScript.
+//  We’re telling the function: “You’ll receive an object (the React properties/props),
+//  and I want you to extract the children variable from it”.
+//
+// The right-hand side: { children: React.ReactNode }:
+//  This is TypeScript.
+//  We add a safety check by saying:
+//  “Please note, I’m specifying that this `children` must be of type `React.ReactNode`”.
+//
+// React don't need that we clarify the output, it is deduced via the return
+//
+// --------------------------------------------------------------------------------
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  //Init value : Lazy Initial State : through () => : only once during initialization
   const [token, setToken] = useState<string | null>(() => localStorage.getItem('token'));
   const [user, setUser] = useState<UserPublicResponse | null>(() => {
     const stored = localStorage.getItem('user');
@@ -49,6 +71,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // --------------------------------------------------
   // REFRESH /me
   // --------------------------------------------------
+  // Sends the current token to the Go backend via the '/me' endpoint.
+  // This serves two purposes:
+  // 1. Verifies if the session/token is still valid on the server.
+  // 2. Fetches the latest user profile data to sync the frontend state.
+  // If the server rejects the token, it automatically triggers a logout.
+  // --------------------------------------------------
   async function refreshMe() {
     if (!token) return;
 
@@ -69,6 +97,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // --------------------------------------------------
   // AUTO LOAD
   // --------------------------------------------------
+  // Automatically validates the session on startup or when the token changes.
+  // By depending only on '[token]', we ensure 'refreshMe()' runs safely
+  // and prevent infinite re-render loops when 'user' state is updated
+  // --------------------------------------------------
+
   useEffect(() => {
     if (token) {
       refreshMe();
@@ -94,6 +127,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 // --------------------------------------------------
 // Hook
 // --------------------------------------------------
+// A secure shortcut for components to access authentication states and actions.
+// Instead of manually calling 'useContext(AuthContext)' everywhere, components just call 'useAuth()'.
+// The 'if (!ctx)' check acts as a developer safety net, crashing early with a clear message
+// if a component tries to access auth data outside the <AuthProvider> tree.
 export function useAuth() {
   const ctx = useContext(AuthContext);
   if (!ctx) throw new Error('useAuth must be used inside provider');

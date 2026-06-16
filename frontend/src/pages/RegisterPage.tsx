@@ -58,9 +58,6 @@ export default function Register() {
     <div style={{ maxWidth: 400 }}>
       <h1>Register</h1>
 
-      <FormInput label="Username" value={username} onChange={setUsername} placeholder="your name" />
-      <FormInput label="Email" value={email} onChange={setEmail} placeholder="you@example.com" />
-      <FormInput label="Password" type="password" value={password} onChange={setPassword} />
       <SubmitButton label="Register" onClick={handleRegister} />
     </div>
   );

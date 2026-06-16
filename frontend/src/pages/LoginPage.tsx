@@ -6,6 +6,7 @@ import { useAuth } from '../auth/AuthContext';
 
 import FormInput from '../components/FormInput';
 import SubmitButton from '../components/SubmitButton';
+
 import { useDevFillLogin } from '../dev/useDevFillLogin';
 
 import type { LoginRequest, LoginResponse } from '../../../shared/types/auth';
@@ -14,6 +15,8 @@ export default function LoginPage() {
   // STATE
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  // FOR DEBUG
   useDevFillLogin(setEmail, setPassword);
 
   // SERVICES
@@ -48,10 +51,21 @@ export default function LoginPage() {
   }
 
   // RENDER
-  // user2@test.com password123
+  // Option 1
+  //      <input type="text" onChange={(e) => onChange(e.target.value)} />
+  // Option 2
+  //      function onChangefct(e) {
+  //          onChange(e.target.value);
+  //        }
+  //  <input type="text" onChange={onChangefct} />;
+  //  function onChangefct(e) {
+  //    onChange(e.target.value);
+  //  }
+
   return (
     <div style={{ maxWidth: 400 }}>
       <h1>Login</h1>
+
       <FormInput label="Email" value={email} onChange={setEmail} placeholder="you@example.com" />
       <FormInput label="Password" type="password" value={password} onChange={setPassword} />
       <SubmitButton label="Login" onClick={handleLogin} />
