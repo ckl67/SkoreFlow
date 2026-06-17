@@ -5,8 +5,6 @@ import SideNavbar from '../components/SideNavbar';
 import DevPanel from '../dev/DevPanel';
 const TEST_MODE = import.meta.env.VITE_TEST_MODE === 'true';
 
-import './MainLayout.css';
-
 // +----------------------+
 // | TopNavbar            |
 // +----------------------+
@@ -17,19 +15,19 @@ import './MainLayout.css';
 
 export default function MainLayout() {
   return (
-    <div className="layout">
+    <div className="flex h-screen flex-col">
       {/* TOP BAR */}
-      <header className="topbar">
+      <header className="h-16 border-b ">
         <TopNavbar />
       </header>
 
       {/* BODY */}
-      <div className="body">
-        <aside className="sidebar">
+      <div className="flex flex-1">
+        <aside className="w-64 p-4 border-r">
           <SideNavbar />
         </aside>
 
-        <main className="content">
+        <main className="flex-1 p-4 overflow-auto">
           <Outlet />
         </main>
       </div>

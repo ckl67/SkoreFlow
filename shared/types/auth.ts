@@ -35,6 +35,8 @@ export interface LoginResponse {
 
 // -------------------
 
+// -------------------
+
 export interface ConfirmRegistrationRequest {
   token: string;
 }

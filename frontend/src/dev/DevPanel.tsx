@@ -71,21 +71,32 @@ export default function DevPanel() {
   // ---
 
   return (
-    <div className="dev-panel">
-      <h3>🛠 Development Tools</h3>
+    <div className="fixed bottom-4 right-4 w-72 rounded-lg border bg-gray-100 p-4 shadow-lg">
+      <h3 className="mb-4 text-lg font-bold">🛠 Development Tools</h3>
 
-      <section className="dev-section">
-        <h4>Register</h4>
+      <section className="mb-4">
+        <h4 className="mb-2 font-semibold">Register</h4>
 
-        <button onClick={fillRegister}>Fill Random Register</button>
+        <button
+          className="w-full rounded border px-3 py-2 bg-gray-200 hover:bg-gray-100"
+          onClick={fillRegister}
+        >
+          Fill Random Register
+        </button>
       </section>
 
-      <section className="dev-section">
-        <h4>Login</h4>
+      <section>
+        <h4 className="mb-2 font-semibold">Login</h4>
 
-        <button onClick={fillUser1}>Fill User1</button>
+        <div className="flex flex-col gap-2">
+          <button className="rounded border px-3 py-2 hover:bg-gray-100" onClick={fillUser1}>
+            Fill User1
+          </button>
 
-        <button onClick={fillAdmin}>Fill Admin</button>
+          <button className="rounded border px-3 py-2 hover:bg-gray-100" onClick={fillAdmin}>
+            Fill Admin
+          </button>
+        </div>
       </section>
     </div>
   );

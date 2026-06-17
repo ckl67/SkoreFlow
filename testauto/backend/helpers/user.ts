@@ -6,6 +6,9 @@ import fs from 'fs';
 
 import { request } from './api.js';
 import { API_URL } from '../config.js';
+
+import { UpdateProfilerRequest, ProfileUserResponse } from '../../../shared/types/user.js';
+
 // --------------------------------------------------------------------------------
 // createUser
 // --------------------------------------------------------------------------------
@@ -41,16 +44,7 @@ interface UserPublicResponse {
 
 // -------------------
 
-interface ProfileUserResponse {
-  message: string;
-  user: UserPublicResponse;
-}
-
 // -------------------
-
-interface UpdateProfilerRequest {
-  username: string;
-}
 
 // -------------------
 

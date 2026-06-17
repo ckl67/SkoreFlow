@@ -63,12 +63,35 @@ export default function LoginPage() {
   //  }
 
   return (
-    <div style={{ maxWidth: 400 }}>
-      <h1>Login</h1>
+    <div className="flex items-center justify-center h-screen bg-gray-50">
+      <div className="w-full max-w-md bg-white border rounded-xl shadow-sm p-6 space-y-6">
+        {/* HEADER */}
+        <div className="text-center space-y-1">
+          <h1 className="text-2xl font-semibold">Login</h1>
+          <p className="text-sm text-gray-500">Sign in to your SkoreFlow account</p>
+        </div>
 
-      <FormInput label="Email" value={email} onChange={setEmail} placeholder="you@example.com" />
-      <FormInput label="Password" type="password" value={password} onChange={setPassword} />
-      <SubmitButton label="Login" onClick={handleLogin} />
+        {/* FORM */}
+        <div className="space-y-4">
+          <FormInput
+            label="Email"
+            value={email}
+            onChange={setEmail}
+            placeholder="you@example.com"
+          />
+
+          <FormInput
+            label="Password"
+            type="password"
+            value={password}
+            onChange={setPassword}
+            placeholder="••••••••"
+          />
+        </div>
+
+        {/* ACTION */}
+        <SubmitButton label="Login" onClick={handleLogin} />
+      </div>
     </div>
   );
 }

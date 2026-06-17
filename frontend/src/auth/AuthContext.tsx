@@ -1,5 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import type { UserPublicResponse } from '../../../shared/types/auth';
+import type { ProfileUserResponse } from '../../../shared/types/user';
+
 import { apiRequest } from '../api/client';
 
 // Context handle 3 thinks
@@ -80,14 +82,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   async function refreshMe() {
     if (!token) return;
 
-    const res = await apiRequest<UserPublicResponse>('GET', '/me');
+    const res = await apiRequest<ProfileUserResponse>('GET', '/me');
+
+    console.log('refreshMe :', res);
 
     if (!res.success || !res.data) {
       throw new Error(res.error?.message ?? 'Login failed');
     }
 
     if (res.data) {
-      setUser(res.data);
+      setUser(res.data.user);
       localStorage.setItem('user', JSON.stringify(res.data));
     } else {
       logout();
