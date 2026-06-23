@@ -2,12 +2,12 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { apiRequest } from '../api/client';
-import { useAuth } from '../auth/AuthContext';
+import { useAuth } from '../auth/AuthProvider';
 
 import FormInput from '../components/FormInput';
 import SubmitButton from '../components/SubmitButton';
 
-import { useDevFillLogin } from '../dev/useDevFillLogin';
+import { useDevFillLogin } from '../hooks/useDevFillLogin';
 
 import type { LoginRequest, LoginResponse } from '../../../shared/types/auth';
 

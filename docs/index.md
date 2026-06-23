@@ -22,6 +22,7 @@ Whether you're new to SkoreFlow or an experienced developer, this documentation 
 - [Javascript - some particularities](./general/javascript.md)
 - [JSON Handling](./general/json.md)
 - [MonoRepo](./general/monorepo.md)
+- [Classroom](./general/classroom.md)
 
 ### Development Environment
 

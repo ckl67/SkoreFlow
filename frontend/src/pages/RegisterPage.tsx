@@ -5,7 +5,7 @@ import { apiRequest } from '../api/client';
 
 import FormInput from '../components/FormInput';
 import SubmitButton from '../components/SubmitButton';
-import { useDevFillRegister } from '../dev/useDevFillRegister';
+import { useDevFillRegister } from '../hooks/useDevFillRegister';
 
 import type { RegisterRequest, RegisterResponse } from '../../../shared/types/auth';
 

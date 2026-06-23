@@ -2,6 +2,7 @@
 apperrors
 AUTOINCREMENT
 autotests
+AVATARMENU
 axios
 axllent
 backen
@@ -9,6 +10,7 @@ backend
 Changefct
 cleandb
 createuser
+DEVPANEL
 dotenv
 esbenp
 ESMTP
@@ -27,6 +29,7 @@ gorm
 kubernetes
 kühl
 mailpit
+MAINLAYOUT
 microservice
 mkhl
 modcache
@@ -36,6 +39,7 @@ pwreset
 rqconfirm
 shellcheck
 shfmt
+SIDENAVBAR
 Skoreflow
 sonate
 sqlitebrowser
@@ -44,6 +48,7 @@ Supertramp
 testauto
 testcache
 topbar
+TOPNAVBAR
 typestrict
 Vitest
 webp

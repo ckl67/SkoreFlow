@@ -1,4 +1,4 @@
-import { useAuth } from '../auth/AuthContext';
+import { useAuth } from '../auth/AuthProvider';
 
 export default function Me() {
   const { user, isAuthenticated, logout } = useAuth();
