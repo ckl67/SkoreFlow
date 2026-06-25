@@ -173,6 +173,19 @@ r := gin.New()
 }
 ```
 
-```
+## Proxy Vite tackle the problem differently?
 
+The **Proxy Vite** technique is a ‘workaround’ to completely bypass this CORS protocol during development:
+
+1. Your React app calls `/api/users` (i.e. on `http://localhost:5173/api/users`).
+2. The browser sees that the request stays within the **same domain** (`localhost:5173`). As far as it’s concerned, there’s no change of origin, so **it doesn’t even trigger CORS security**.
+3. Behind the scenes, the Vite server (which is a development tool) intercepts the request and forwards it directly to your Linux VM (`192.168.X.X:8080`). Servers do not have CORS security between them; only browsers do.
+
+### If you’d prefer not to use the Vite proxy (and keep the CORS logic pure)
+
+Simply modify your React code so that it explicitly calls the VM:
+
+```typescript
+// Replace localhost with backend Linux IP address
+fetch('http://192.168.X.X:8080/api/users');
 ```

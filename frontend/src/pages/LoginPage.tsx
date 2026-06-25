@@ -1,15 +1,9 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-
-import { apiRequest } from '../api/client';
-import { useAuth } from '../auth/AuthProvider';
-
 import FormInput from '../components/FormInput';
 import SubmitButton from '../components/SubmitButton';
-
 import { useDevFillLogin } from '../hooks/useDevFillLogin';
-
-import type { LoginRequest, LoginResponse } from '../../../shared/types/auth';
+import type { LoginRequest } from '../../../shared/types/auth';
+import { useLogin } from '../hooks/useLogin';
 
 export default function LoginPage() {
   // STATE
@@ -20,8 +14,7 @@ export default function LoginPage() {
   useDevFillLogin(setEmail, setPassword);
 
   // SERVICES
-  const navigate = useNavigate();
-  const { login } = useAuth();
+  const { loginUser } = useLogin();
 
   // HANDLER
   async function handleLogin() {
@@ -31,19 +24,7 @@ export default function LoginPage() {
     };
 
     try {
-      const res = await apiRequest<LoginResponse, LoginRequest>('POST', '/login', {
-        data: payload,
-      });
-
-      if (!res.success || !res.data) {
-        throw new Error(res.error?.message ?? 'Login failed');
-      }
-
-      // auth context
-      login(res.data.token, res.data.user);
-
-      // redirect
-      navigate('/me');
+      await loginUser(payload);
     } catch (err) {
       console.error(err);
       alert('Login failed');

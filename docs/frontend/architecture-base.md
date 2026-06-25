@@ -4,7 +4,7 @@
 
 The SkoreFlow frontend is a React + TypeScript application built with Vite.
 
-The primary objective is not only to create a modern user interface but also to keep the frontend architecture simple, maintainable, and understandable for developers coming from a backend-oriented background.
+The primary objective is not only to create a modern user interface but also to keep the frontend architecture simple, maintainable, and understandable for developers.
 
 The frontend follows the same philosophy as the Go backend:
 
@@ -15,8 +15,6 @@ The frontend follows the same philosophy as the Go backend:
 - Progressive implementation
 
 The project is developed incrementally, route by route, rather than relying on large AI-generated codebases.
-
----
 
 ## Technology Stack
 
@@ -33,30 +31,15 @@ The project is developed incrementally, route by route, rather than relying on l
 - ESLint
 - Prettier
 
-### Testing (planned)
+### Testing
 
-Frontend tests will eventually be added independently from backend tests.
-
-Current backend testing is performed through Vitest and Playwright in dedicated workspaces.
-
----
-
-## Monorepo Structure
-
-```text
-SkoreFlow/
-├── backend/
-├── frontend/
-├── shared/
-├── testauto/
-└── package.json
-```
+The FrontEnd test is performed through Vitest and Playwright in dedicated workspaces.
 
 ### Responsibilities
 
 #### backend/
 
-Contains the Go API.
+Remember contains the Go API.
 
 Responsible for:
 
@@ -92,16 +75,6 @@ shared/
 └── backend/
 ```
 
-#### testauto/
-
-Contains:
-
-- Backend integration tests
-- End-to-end tests
-- Playwright scenarios
-
----
-
 ## Routing Strategy
 
 Routing is managed using React Router.
@@ -128,32 +101,6 @@ createBrowserRouter([
   },
 ]);
 ```
-
-### Philosophy
-
-Each backend route should eventually have a corresponding frontend page.
-
-Examples:
-
-| Backend Route       | Frontend Page |
-| ------------------- | ------------- |
-| POST /login         | Login         |
-| POST /auth/register | Register      |
-| GET /me             | Me            |
-| PUT /me/profile     | Profile       |
-| GET /admin/users    | Admin Users   |
-
----
-
-## API Layer
-
-All HTTP communication is centralized inside:
-
-```text
-src/api/client.ts
-```
-
----
 
 ## API Response Model
 
@@ -185,7 +132,7 @@ Success:
 }
 ```
 
-Error:
+### Error Response
 
 ```json
 {
@@ -196,35 +143,14 @@ Error:
 }
 ```
 
----
-
 ## Shared DTO Philosophy
 
-The frontend reuses DTOs stored inside:
-
-```text
-shared/types/
-```
-
-Example:
-
-```ts
-LoginRequest;
-LoginResponse;
-
-RegisterRequest;
-RegisterResponse;
-
-UserPublicResponse;
-```
-
+The frontend reuses DTOs stored inside: shared/types/
 Benefits:
 
 - Single source of truth
 - No duplicated TypeScript definitions
 - Consistent contracts between tests and frontend
-
----
 
 ## Authentication Strategy
 
@@ -240,8 +166,6 @@ The backend returns:
 ```
 
 after a successful login.
-
----
 
 ## AuthContext
 
@@ -261,8 +185,6 @@ Responsibilities:
 - Logout
 - Refresh current user
 - Expose authentication state
-
----
 
 ## Token Persistence
 
@@ -286,8 +208,6 @@ localStorage.setItem('user', JSON.stringify(user));
 
 This allows session restoration after a page refresh.
 
----
-
 ## Protected Routes
 
 Protected pages are wrapped inside:
@@ -304,8 +224,6 @@ Responsibilities:
 - Redirect unauthenticated users
 - Prevent access to private pages
 
----
-
 ## React Component Philosophy
 
 Every page follows the same structure.
@@ -317,8 +235,6 @@ const [email, setEmail] = useState('');
 ```
 
 State represents mutable UI data.
-
----
 
 ### 2. Handlers
 
@@ -335,8 +251,6 @@ Examples:
 - Save profile
 - Upload avatar
 
----
-
 ### 3. Render
 
 ```tsx
@@ -352,8 +266,6 @@ setEmail(...)
 ```
 
 React automatically re-renders the component.
-
----
 
 ## Context Usage
 
@@ -373,15 +285,3 @@ Benefits:
 - ...
 
 ## Design Principles
-
-The frontend follows the same principles as the backend:
-
-- Explicit over magic
-- Type-safe contracts
-- Shared DTOs
-- Single responsibility
-- Progressive complexity
-- Testable architecture
-- Backend-first design
-
-The objective is for a backend-oriented developer to understand every layer of the frontend without relying on hidden framework behavior.

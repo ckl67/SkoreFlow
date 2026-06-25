@@ -47,9 +47,12 @@ Whether you're new to SkoreFlow or an experienced developer, this documentation 
 
 ### Frontend Guides
 
-- [Architecture](./frontend/architecture.md)
+- [Architecture](./frontend/architecture-base.md)
+- [Architecture Flow](./frontend/architecture-base.md)
+- [Architecture Principle](./frontend//architecture-principle.md)
 - [Installation](./frontend/install.md)
 - [React Guideline](./frontend/react-guide.md)
+- [Tailwind css](./frontend/tailwind.md)
 
 ### End to End Guides
 

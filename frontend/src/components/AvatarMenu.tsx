@@ -1,14 +1,13 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
-import { useAuth } from '../auth/AuthProvider';
+import { useAuth } from '../auth/ useAuth';
 
 export default function AvatarMenu() {
   const [menuOpen, setMenuOpen] = useState(false);
-
   const { user, logout } = useAuth();
 
-  if (!user) {
+  if (!user || !user.username) {
     return null;
   }
 
@@ -16,8 +15,8 @@ export default function AvatarMenu() {
     <div className="relative">
       {/* Avatar button */}
       <button onClick={() => setMenuOpen(!menuOpen)} className="flex items-center gap-2">
-        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200">
-          {user.username.charAt(0).toUpperCase()}
+        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200  hover:bg-blue-200">
+          {user.username.charAt(0).toUpperCase() || '?'}
         </div>
 
         <span>{user.username}</span>

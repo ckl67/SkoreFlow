@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useEffect, useState } from 'react';
 import type { UserPublicResponse } from '../../../shared/types/auth';
 import type { ProfileUserResponse } from '../../../shared/types/user';
 
@@ -17,7 +17,7 @@ interface AuthContextType {
   refreshMe: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType | null>(null);
+export const AuthContext = createContext<AuthContextType | null>(null);
 
 // --------------------------------------------------------------------------------
 // Note for SkoreFlow Architecture:
@@ -126,17 +126,4 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       {children}
     </AuthContext.Provider>
   );
-}
-
-// --------------------------------------------------
-// Hook
-// --------------------------------------------------
-// A secure shortcut for components to access authentication states and actions.
-// Instead of manually calling 'useContext(AuthContext)' everywhere, components just call 'useAuth()'.
-// The 'if (!ctx)' check acts as a developer safety net, crashing early with a clear message
-// if a component tries to access auth data outside the <AuthProvider> tree.
-export function useAuth() {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error('useAuth must be used inside provider');
-  return ctx;
 }

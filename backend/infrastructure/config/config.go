@@ -173,6 +173,7 @@ func (c ServerConfig) LogSafe() {
 		fmt.Printf("  Port: %d\n", c.Smtp.HostServerPort)
 		fmt.Printf("  Username: %s\n", c.Smtp.Username)
 		fmt.Printf("  Password: %s\n", c.Smtp.PasswordBase64) // ❌ sensitive
+		fmt.Printf("  ==> In case MailPit is used you can access to its interface: http://localhost:8025 \n")
 
 		fmt.Println("MicroService:")
 		fmt.Printf("  Name: %s\n", c.MicroService.MsName)
@@ -287,7 +288,7 @@ func NewConfig() ServerConfig {
 
 		BackendListenAddress: "0.0.0.0:8080",
 
-		Frontend: FrontendConfig{
+		Frontend: FrontendConfig{ //Don't forget to configure vite.config.js file
 			Origin:                "http://localhost:5173", //(ex: Dev http://localhost:5173 ou Prod https://app.skoreflow.com)
 			ResetPasswordPath:     "/reset/password",
 			RegisterConfirmPath:   "/register/confirm",

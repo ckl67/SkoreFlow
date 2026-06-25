@@ -82,7 +82,28 @@
   "emmet.triggerExpansionOnTab": true,
 
   // =========================================================
-  // 🧹 MARKDOWNLINT (OPTIONNEL)
+  // Markdown Preview
   // =========================================================
-  "markdownlint.run": "onSave"
+
+  "markdown.preview.breaks": true,
+  "editor.semanticHighlighting.enabled": true,
+
+  // =========================================================
+  // MARKDOWNLINT (OPTIONAL)
+  // =========================================================
+  "markdownlint.run": "onSave",
+
+  // =========================================================
+  // LENS
+  // =========================================================
+
+  "mermaidChart.showGenerateDiagramCodeLens": false,
+  //"editor.codeLens": false,
+
+  // =========================================================
+  // DRAW.IO
+  // =========================================================
+
+  "hediet.vscode-drawio.theme": "kennedy",
+  "hediet.vscode-drawio.appearance": "dark"
 }

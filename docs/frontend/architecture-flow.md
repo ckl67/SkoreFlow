@@ -10,9 +10,10 @@
 | Utility Files                  | camelCase               |
 | Entry Point of the application | low case (Ex: main.tsx) |
 
-## Main Flow
+## Entry points Flow
 
-See that **AuthProvider.tsx** is the central authentication component !
+Gives just a short overview of the entry points.
+See lso that **AuthProvider.tsx** is the central authentication component !
 
 ```mermaid
 graph TD
@@ -21,8 +22,6 @@ graph TD
 classDef file fill:#f3f4f6,stroke:#6b7280;
 classDef component fill:#deafe,stroke:#2563eb;
 classDef function fill:#fef3c7,stroke:#d97706;
-
-
 
 %% html entry : point
 INDEX["📄 index.html"]
@@ -59,44 +58,59 @@ MAINLAYOUT --> OUTLET
 
 ROUTER --> |/login <br> /register <br> /me <br> ...| OUTLET
 
-%%
-
-TOPNAVBAR --> |login| END1["."]
-TOPNAVBAR --> AVATARMENU["AvatarMenu() "]
-
-SIDENAVBAR-->|profile| END2["."]
-SIDENAVBAR-->/admin
 
 %% Class application
 
 class TOPNAVBAR,SIDENAVBAR,OUTLET component;
-
 class login,logout,refreshMe,useAuth function;
 
 ```
 
-## Authentication Flow
+## Architecture
 
-AuthProvider is the central authentication component.
-
-It exposes:
-
-- login()
-- logout()
-- refreshMe()
-- useAuth()
--
-
-```mermaid
-
-
+````mermaid
 graph TD
 
-AUTH["AuthProvider.tsx"]
+%% UI LAYER
+UI["UI Layer"]
+PAGES["Pages"]
+COMP["Components"]
+LAYOUT["Layout"]
 
-AUTH --> LOGIN["login()"]
-AUTH --> LOGOUT["logout()"]
-AUTH --> REFRESH["refreshMe()"]
-AUTH --> HOOK["useAuth()"]
+%% ROUTING
+ROUTER["Router Layer"]
+ROUTER_FILE["router.tsx"]
+
+%% STATE
+STATE["State Layer"]
+AUTH["AuthProvider"]
+USEAUTH["useAuth"]
+
+%% SERVICES
+SERVICES["Services Layer"]
+AUTH_SVC["authService"]
+USER_SVC["userService"]
+
+%% API
+API["api/client.ts"]
+BACKEND["Backend API"]
+
+%% FLOW
+UI --> PAGES
+UI --> COMP
+UI --> LAYOUT
+
+ROUTER --> ROUTER_FILE
+PAGES --> ROUTER
+
+STATE --> AUTH
+STATE --> USEAUTH
+
+PAGES --> SERVICES
+SERVICES --> API
+API --> BACKEND
+
+STATE --> UI
 
 ```
+````

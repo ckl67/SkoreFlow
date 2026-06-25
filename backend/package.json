@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "run-air:mode-dev": "make air-dev",
-    "run-air:mode-test": "make air-test",
+    "run-air:mode-test(RegToken)": "make air-test",
     "run:mode-test": "make run-test",
     "lint": "eslint ."
   }

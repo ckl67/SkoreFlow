@@ -41,7 +41,7 @@ build:
 	CGO_ENABLED=0 $(GO) build $(LDFLAGS) -o build/$(BINARY_NAME) $(MAIN_FILE)
 
 run-test:
-	@echo "==> Running TEST environment (Version: $(VERSION))...."
+	@echo "==> Running DEV - (TEST = TRUE Send Registration Token) (SMTP = FALSE) environment (Version: $(VERSION))...."
 	APP_ENV=development \
 	TEST_MODE=true \
 	SMTP_ENABLED=false \
@@ -50,7 +50,7 @@ run-test:
 	@echo "==> Running TEST environment (Version: $(VERSION))...."
 
 run-dev:
-	@echo "==> Running TEST environment (Version: $(VERSION))...."
+	@echo "==> Running DEV - (TEST = FALSE) (SMTP = TUE) environment (Version: $(VERSION))...."
 	APP_ENV=development \
 	TEST_MODE=false \
 	SMTP_ENABLED=true \
@@ -59,7 +59,7 @@ run-dev:
 	@echo "==> Running TEST environment (Version: $(VERSION))...."
 
 run:
-	@echo "==> Running main.go (Version: $(VERSION))..."
+	@echo "==> Running PROD main.go (Version: $(VERSION))..."
 	APP_ENV=production \
 	TEST_MODE=false \
 	SMTP_ENABLED=true \
@@ -81,7 +81,7 @@ air:
 	air
 
 air-test:
-	@echo "==> Running Hot Reload (air) in TEST Environment (Version: $(VERSION))..."
+	@echo "==> Running Hot Reload (air) DEV - (TEST = TRUE Send Registration Token) (SMTP = FALSE) environment (Version: $(VERSION))...."
 	APP_ENV=development \
 	TEST_MODE=true \
 	SMTP_ENABLED=false \
@@ -89,7 +89,7 @@ air-test:
 	air
 
 air-dev:
-	@echo "==> Running Hot Reload (air) in TEST Environment (Version: $(VERSION))..."
+	@echo "==> Running Hot Reload (air) DEV - (TEST = FALSE) (SMTP = TRUE) environment (Version: $(VERSION))...."
 	APP_ENV=development \
 	TEST_MODE= false\
 	SMTP_ENABLED=true \

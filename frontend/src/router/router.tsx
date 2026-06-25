@@ -8,6 +8,7 @@ import MePage from '../pages/MePage';
 
 import ProtectedRoute from '../components/ProtectedRoute';
 import RegisterConfirmPage from '../pages/RegisterConfirmPage';
+import MainPage from '../pages/MainPage';
 
 export const router = createBrowserRouter([
   {
@@ -15,7 +16,7 @@ export const router = createBrowserRouter([
     children: [
       {
         path: '/',
-        element: <LoginPage />,
+        element: <MainPage />,
       },
       {
         path: '/login',

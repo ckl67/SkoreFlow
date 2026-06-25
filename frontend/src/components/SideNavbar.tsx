@@ -5,17 +5,14 @@ export default function SideNavbar() {
     <nav className="p-4">
       <ul className="space-y-2">
         <li>
-          <Link to="/profile" className="block px-3 py-2 rounded-md hover:bg-gray-100 transition">
-            Profile
+          <Link to="/composers" className="block px-3 py-2 rounded-md hover:bg-gray-100 transition">
+            Composers
           </Link>
         </li>
 
         <li>
-          <Link
-            to="/parameters"
-            className="block px-3 py-2 rounded-md hover:bg-gray-100 transition"
-          >
-            Parameters
+          <Link to="/scores" className="block px-3 py-2 rounded-md hover:bg-gray-100 transition">
+            Scores
           </Link>
         </li>
 
