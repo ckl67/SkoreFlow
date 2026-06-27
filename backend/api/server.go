@@ -105,6 +105,21 @@ func (server *Server) StartMicroService(paths *config.Paths) {
 	// Optional: debug (can be removed later)
 	logger.Server.Info("(StartMicroService) runner: %s", poetryExe)
 	logger.Server.Info("(StartMicroService) script: %s", scriptPath)
+	logger.Server.Info("(StartMicroService) script: %s run python %s", poetryExe, scriptPath)
+
+	// Automatic detection/installation of Poetry by Go
+	logger.Server.Info("(StartMicroService) Checking Python dependencies with Poetry...")
+
+	// We’re setting up a ‘poetry install’ command to be run directly in the correct folder
+	installCmd := exec.Command("poetry", "install", "--no-interaction", "--no-root")
+	installCmd.Dir = root
+	installCmd.Stdout = os.Stdout
+	installCmd.Stderr = os.Stderr
+
+	// Go runs the installation properly at start-up
+	if err := installCmd.Run(); err != nil {
+		logger.Server.Error("(StartMicroService) Failed to run poetry install: %v", err)
+	}
 
 	// ----------------------------------------------------------------
 	// Create command

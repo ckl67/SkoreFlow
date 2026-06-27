@@ -40,6 +40,12 @@ poetry add flask pdf2image Pillow
 ## Update
 
 ```shell
-pip install -r requirements.txt
-./venv/bin/pip install -r micro-service/requirements.txt
+# In micro-service directory
+poetry update
 ```
+
+## Handled by Go
+
+The package installation are handled by GO
+Via run `poetry install`, which will do following :
+“Look the configuration files, download exactly the Python dependencies required for SkoreFlow, and isolate them in a secure location so that Go code can execute them properly via `poetry run`.”
