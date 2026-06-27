@@ -6,13 +6,10 @@ import sys
 # -----------------------
 # Usage Steps
 # -----------------------
-# Activate your virtual environment:
-# source venv/bin/activate
-# Start the thumbnail service:
-# python3 app.py
+# poetry run python thumbnail-service/app.py
 # -----------------------
 # Run the test script in another terminal:
-# python test_thumbnail.py
+# python test.py
 # -----------------------
 
 
@@ -20,8 +17,8 @@ import sys
 # Configuration
 # -----------------------
 SERVICE_URL = "http://localhost:5001/createthumbnail"
-PDF_PATH = "/home/christian/skoreflow/backend/micro-service/thumbnail-service/test/storage/ballade.pdf"
-OUTPUT_PATH = "/home/christian/skoreflow/backend/micro-service/thumbnail-service/test/storage/thumbnail_ballade.png"
+PDF_PATH = "/home/christian/SkoreFlow_Project/SkoreFlow/backend/micro-service/thumbnail-service/test/storage/ballade.pdf"
+OUTPUT_PATH = "/home/christian/SkoreFlow_Project/SkoreFlow/backend/micro-service/thumbnail-service/test/storage/thumbnail_ballade.png"
 
 # -----------------------
 # Pre-checks

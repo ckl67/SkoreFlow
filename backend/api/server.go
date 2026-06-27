@@ -78,7 +78,7 @@ func (server *Server) Setup(version string, db *gorm.DB, paths *config.Paths) {
 
 // StartMicroService launches the Python process responsible for PDF → PNG conversion.
 // Behavior:
-// - Spawns the process with injected environment variables
+// - Spawns the process using Poetry to manage the virtual environment natively
 // - Pipes stdout/stderr to the main server logs
 // - Stores process reference for graceful shutdown
 //
@@ -90,28 +90,31 @@ func (server *Server) StartMicroService(paths *config.Paths) {
 	// ----------------------------------------------------------------
 	// MicroService absolute path
 	// ----------------------------------------------------------------
-	// Exemple of path construction:
+	// Example of path construction:
 	// root = /home/christian/SkoreFlow_Project/SkoreFlow/backend/micro-service
-
 	root := paths.MSAbs
 
 	// ----------------------------------------------------------------
 	// Build paths dynamically
 	// ----------------------------------------------------------------
-	// pythonExe : /home/christian/SkoreFlow_Project/SkoreFlow/backend/micro-service/venv/bin/python3
+	// We call the global 'poetry' executable instead of a hardcoded venv path.
 	// scriptPath : /home/christian/SkoreFlow_Project/SkoreFlow/backend/micro-service/thumbnail-service/app.py
-
-	pythonExe := filepath.Join(root, "venv", "bin", "python3")
+	poetryExe := "poetry"
 	scriptPath := filepath.Join(root, msConfig.MsName, "app.py")
 
 	// Optional: debug (can be removed later)
-	logger.Server.Info("(StartMicroService) python: %s", pythonExe)
+	logger.Server.Info("(StartMicroService) runner: %s", poetryExe)
 	logger.Server.Info("(StartMicroService) script: %s", scriptPath)
 
 	// ----------------------------------------------------------------
 	// Create command
 	// ----------------------------------------------------------------
-	cmd := exec.Command(pythonExe, scriptPath)
+	// Equivalent to running: poetry run python /path/to/thumbnail-service/app.py
+	cmd := exec.Command(poetryExe, "run", "python", scriptPath)
+
+	// CRITICAL for Poetry: Set the working directory to the micro-service root
+	// so Poetry can automatically locate 'pyproject.toml' and 'poetry.lock'
+	cmd.Dir = root
 
 	// Inject environment variables into the process
 	cmd.Env = append(os.Environ(),
@@ -126,8 +129,12 @@ func (server *Server) StartMicroService(paths *config.Paths) {
 	// ----------------------------------------------------------------
 	// Start process
 	// ----------------------------------------------------------------
+
+	// ADD HERE: Configure SysProcAttr to create a process group (PGID)
+	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
+
 	if err := cmd.Start(); err != nil {
-		logger.Server.Error("(StartMicroService) Flask startup error: %v", err)
+		logger.Server.Error("(StartMicroService) Flask/Poetry startup error: %v", err)
 		return
 	}
 
@@ -135,7 +142,7 @@ func (server *Server) StartMicroService(paths *config.Paths) {
 	server.MSProcess = cmd.Process
 
 	logger.Server.Info(
-		"(StartMicroService) micro-service [%s] running (PID: %d)",
+		"(StartMicroService) micro-service [%s] running via Poetry (PID: %d)",
 		msConfig.MsName,
 		server.MSProcess.Pid,
 	)
@@ -171,8 +178,11 @@ func (server *Server) ListenAndServe(addr string) {
 
 	// Stop micro-service if running
 	if server.MSProcess != nil {
-		logger.Server.Info("(ListenAndServe) stopping micro-service (PID %d)...", server.MSProcess.Pid)
-		_ = server.MSProcess.Signal(os.Interrupt)
+		logger.Server.Info("(ListenAndServe) stopping micro-service group (PID %d)...", server.MSProcess.Pid)
+
+		// Instead of: _ = server.MSProcess.Signal(os.Interrupt)
+		// We send SIGINT to the entire group (the minus sign '-' before the PID is the key)
+		_ = syscall.Kill(-server.MSProcess.Pid, syscall.SIGINT)
 	}
 
 	logger.Server.Info("(ListenAndServe) server exited cleanly")

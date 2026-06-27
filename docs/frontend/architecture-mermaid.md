@@ -1,15 +1,5 @@
 # Frontend Architecture flow
 
-## Convention
-
-| Type                           | Convention              |
-| ------------------------------ | ----------------------- |
-| Component React                | PascalCase              |
-| Hook                           | camelCase with `use`    |
-| Function                       | camelCase               |
-| Utility Files                  | camelCase               |
-| Entry Point of the application | low case (Ex: main.tsx) |
-
 ## Entry points Flow
 
 Gives just a short overview of the entry points.
@@ -63,7 +53,6 @@ ROUTER --> |/login <br> /register <br> /me <br> ...| OUTLET
 
 class TOPNAVBAR,SIDENAVBAR,OUTLET component;
 class login,logout,refreshMe,useAuth function;
-
 ```
 
 ## Architecture
@@ -111,6 +100,5 @@ SERVICES --> API
 API --> BACKEND
 
 STATE --> UI
-
 ```
 ````

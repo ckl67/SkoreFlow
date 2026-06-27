@@ -13,7 +13,7 @@ export default function TopNavbar() {
 
       {!isAuthenticated ? (
         <Link to="/login" className="C">
-          Login
+          Sign In
         </Link>
       ) : (
         <AvatarMenu />

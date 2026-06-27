@@ -39,6 +39,7 @@ Whether you're new to SkoreFlow or an experienced developer, this documentation 
 - [cors explanation](./backend/cors.md) and [dom explanation](./backend/dom.md)
 - [go and Docker paths](./backend/go.md)
 - [Installation](./backend/install.md)
+- [Micro service](./backend/micro-service.md)
 - [Database migration](./backend/database.md)
 - [Automatic Code Reloading with Air](./backend/air.md)
 - [Running the Backend](./backend/run.md)
@@ -48,8 +49,8 @@ Whether you're new to SkoreFlow or an experienced developer, this documentation 
 ### Frontend Guides
 
 - [Architecture](./frontend/architecture-base.md)
-- [Architecture Flow](./frontend/architecture-base.md)
-- [Architecture Principle](./frontend//architecture-principle.md)
+- [Architecture - Handbook](./frontend/frontend-handbook.md)
+- [Architecture - Flow](./frontend/architecture-mermaid.md)
 - [Installation](./frontend/install.md)
 - [React Guideline](./frontend/react-guide.md)
 - [Tailwind css](./frontend/tailwind.md)
@@ -61,6 +62,10 @@ Whether you're new to SkoreFlow or an experienced developer, this documentation 
 ### Shared
 
 - [Shared data](./shared/shared.md)
+
+### Sandbox
+
+- [SkoreFlow Sandbox](./skoreflow/sandbox.md)
 
 ### Contribution
 

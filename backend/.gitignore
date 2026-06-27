@@ -30,6 +30,9 @@ storage/composers/*
 # Build output directory
 build/
 
+# Build used by https://render.com/
+app/
+
 # Ignore temporary air compilation directory
 tmp/
 
