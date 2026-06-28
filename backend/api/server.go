@@ -159,6 +159,16 @@ func (server *Server) StartMicroService(paths *config.Paths) {
 	logger.Server.Info("(StartMicroService) starting micro-service [%s] on port %d...", msConfig.MsName, msConfig.MsPort)
 	logger.Server.Info("(StartMicroService) command: %v", cmd.Args)
 
+	logger.Server.Info("(DEBUG) APP_ROOT = %s", config.Config().AppRoot)
+	logger.Server.Info("(DEBUG) MSAbs = %s", paths.MSAbs)
+
+	pythonPath, err := exec.LookPath("python3")
+	if err != nil {
+		logger.Server.Error("(DEBUG) python3 not found: %v", err)
+	} else {
+		logger.Server.Info("(DEBUG) python3 = %s", pythonPath)
+	}
+
 	// *******
 
 	if err := cmd.Start(); err != nil {
