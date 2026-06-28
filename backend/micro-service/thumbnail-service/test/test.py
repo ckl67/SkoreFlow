@@ -6,8 +6,10 @@ import sys
 # -----------------------
 # Usage Steps
 # -----------------------
-# 1) Run the thumbnail-service : --> Will charge the poetry environment
-# poetry run python thumbnail-service/app.py
+# 1) Run the thumbnail-service :
+# source venv/bin/activate
+# Start the thumbnail service:
+# python3 app.py
 # -----------------------
 # 2) Run the test script in another terminal:
 # python test.py

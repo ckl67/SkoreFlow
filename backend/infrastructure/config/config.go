@@ -50,10 +50,9 @@ type DatabaseConfig struct {
 // Internal Microservice Configuration
 // Used for internal services (e.g. thumbnail generation)
 type MicroServiceConfig struct {
-	PoetryPath string `env:"MS_POETRY_PATH"`
-	MsName     string `env:"MS_NAME"`
-	MsPort     int    `env:"MS_PORT"`
-	MsRoot     string `env:"MS_ROOT"`
+	MsName string `env:"MS_NAME"`
+	MsPort int    `env:"MS_PORT"`
+	MsRoot string `env:"MS_ROOT"`
 }
 
 // Frontend Configuration
@@ -177,7 +176,6 @@ func (c ServerConfig) LogSafe() {
 		fmt.Printf("  ==> In case MailPit is used you can access to its interface: http://localhost:8025 \n")
 
 		fmt.Println("MicroService:")
-		fmt.Printf("  PoetryPath: %s\n", c.MicroService.PoetryPath)
 		fmt.Printf("  Name: %s\n", c.MicroService.MsName)
 		fmt.Printf("  Port: %d\n", c.MicroService.MsPort)
 		fmt.Printf("  Root %s:\n", c.MicroService.MsRoot)
@@ -305,10 +303,9 @@ func NewConfig() ServerConfig {
 		Smtp: SmtpConfig{},
 
 		MicroService: MicroServiceConfig{
-			PoetryPath: "poetry",
-			MsName:     "thumbnail-service",
-			MsPort:     5010,
-			MsRoot:     "",
+			MsName: "thumbnail-service",
+			MsPort: 5010,
+			MsRoot: "",
 		},
 	}
 }

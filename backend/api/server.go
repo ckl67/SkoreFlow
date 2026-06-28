@@ -70,9 +70,7 @@ func (server *Server) Setup(version string, db *gorm.DB, paths *config.Paths) {
 	}
 
 	// 3. Start Python micro-service
-	logger.Server.Info("Before StartMicroService")
 	server.StartMicroService(paths)
-	logger.Server.Info("After StartMicroService")
 
 	// 4. Register API routes
 	server.SetupRouter()
@@ -80,7 +78,7 @@ func (server *Server) Setup(version string, db *gorm.DB, paths *config.Paths) {
 
 // StartMicroService launches the Python process responsible for PDF → PNG conversion.
 // Behavior:
-// - Spawns the process using Poetry to manage the virtual environment natively
+// - Spawns the process to manage the virtual environment natively
 // - Pipes stdout/stderr to the main server logs
 // - Stores process reference for graceful shutdown
 //
@@ -99,46 +97,29 @@ func (server *Server) StartMicroService(paths *config.Paths) {
 	// ----------------------------------------------------------------
 	// Build paths dynamically
 	// ----------------------------------------------------------------
-	// We call the global 'poetry' executable instead of a hardcoded venv path.
+	// pythonExe : /home/christian/SkoreFlow_Project/SkoreFlow/backend/micro-service/venv/bin/python3
 	// scriptPath : /home/christian/SkoreFlow_Project/SkoreFlow/backend/micro-service/thumbnail-service/app.py
 
-	// PoetryPath
-	// PoetryPath (with a fallback for local development)
-	poetryExe := msConfig.PoetryPath
-	if poetryExe == "" {
-		poetryExe = "poetry" // If the variable is not defined (e.g. as a local variable), use the global command
+	pythonExe := "python3"
+
+	venvPython := filepath.Join(root, "venv", "bin", "python3")
+	if _, err := os.Stat(venvPython); err == nil {
+		pythonExe = venvPython
+		logger.Server.Info("(StartMicroService) Using venv python: %s", pythonExe)
+	} else {
+		logger.Server.Warn("(StartMicroService) Using system python (NO VENV): %s", pythonExe)
 	}
 
 	scriptPath := filepath.Join(root, msConfig.MsName, "app.py")
 
 	// Optional: debug (can be removed later)
-	logger.Server.Info("(StartMicroService) runner: %s", poetryExe)
+	logger.Server.Info("(StartMicroService) python: %s", pythonExe)
 	logger.Server.Info("(StartMicroService) script: %s", scriptPath)
-	logger.Server.Info("(StartMicroService) script: %s run python %s", poetryExe, scriptPath)
-
-	// Automatic detection/installation of Poetry by Go
-	logger.Server.Info("(StartMicroService) Checking Python dependencies with Poetry...")
-
-	// We’re setting up a ‘poetry install’ command to be run directly in the correct folder
-	installCmd := exec.Command(poetryExe, "install", "--no-interaction", "--no-root")
-	installCmd.Dir = root
-	installCmd.Stdout = os.Stdout
-	installCmd.Stderr = os.Stderr
-
-	// Go runs the installation properly at start-up
-	if err := installCmd.Run(); err != nil {
-		logger.Server.Error("(StartMicroService) Failed to run poetry install: %v", err)
-	}
 
 	// ----------------------------------------------------------------
 	// Create command
 	// ----------------------------------------------------------------
-	// Equivalent to running: poetry run python /path/to/thumbnail-service/app.py
-	cmd := exec.Command(poetryExe, "run", "python", scriptPath)
-
-	// CRITICAL for Poetry: Set the working directory to the micro-service root
-	// so Poetry can automatically locate 'pyproject.toml' and 'poetry.lock'
-	cmd.Dir = root
+	cmd := exec.Command(pythonExe, scriptPath)
 
 	// Inject environment variables into the process
 	cmd.Env = append(os.Environ(),
@@ -158,7 +139,7 @@ func (server *Server) StartMicroService(paths *config.Paths) {
 	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
 
 	if err := cmd.Start(); err != nil {
-		logger.Server.Error("(StartMicroService) Flask/Poetry startup error: %v", err)
+		logger.Server.Error("(StartMicroService) Flask/Python startup error: %v", err)
 		return
 	}
 
@@ -166,7 +147,7 @@ func (server *Server) StartMicroService(paths *config.Paths) {
 	server.MSProcess = cmd.Process
 
 	logger.Server.Info(
-		"(StartMicroService) micro-service [%s] running via Poetry (PID: %d)",
+		"(StartMicroService) micro-service [%s] running via Python (PID: %d)",
 		msConfig.MsName,
 		server.MSProcess.Pid,
 	)

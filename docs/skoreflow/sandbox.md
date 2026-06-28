@@ -91,6 +91,17 @@ Render will create this file securely and invisibly on their servers
 # You can copy file .env.render
 ```
 
+```shell
+# Model A (local venv)
+#   python = venv/bin/python3
+#   libs = within venv
+# Model B (Render)
+#   pip install -r requirements.txt
+#
+#   python = system python3
+#   libs = installed globally at build time
+```
+
 ### Limitation
 
 Render.com service use the free (Hobby) plan and will have the 15-minute idle timeout.

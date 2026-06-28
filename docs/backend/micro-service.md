@@ -18,61 +18,63 @@ for installation
 sudo apt update && sudo apt install poppler-utils
 ```
 
-### venv vs poetry
+## venv
 
-venv is Python’s standard tool for creating a virtual environment.
-It creates a folder (often named .venv or env) directly within the project directory.
-All libraries are installed there. It deals solely with isolating packages.
-Limitations: It does not manage Python versions, and it does not help manage complex dependencies
-(you need to use a separate requirements.txt file and install the packages manually using pip).
+### Remark about venv vs poetry
 
-### Poetry
-
-Poetry is a tool for dependency management and packaging in Python.
-
-#### Introduction
-
-Poetry is an ‘all-in-one’ tool. It’s not just a virtual environment manager; it’s a project and dependency manager.
-
-Where are the files?
-By default, Poetry creates the virtual environment in a centralized folder within the user directory (usually in ~/.cache/pypoetry/virtualenvs/). This environment remains strictly isolated and specific to a single project.
-Project A will not have access to the libraries of Project B.
-
-Note: You can configure Poetry to place the environment within your project, like venv, using the command: poetry config virtualenvs.in-project true.
-
-The `poetry.lock` file records the exact version of every sub-library installed assuring the same environment, down to the last bit.
-
-#### Installation
+For render.com it is much more simple to manage venv than poetry
+Also each environment manages ITS Python. Go has not to define which python to use
 
 ```shell
-# Run this command in your microservice folder: /SkoreFlow/backend/micro-service
-curl -sSL https://install.python-poetry.org | python3 -
-```
-
-```Bash
-# Next command will generate a brand-new file called pyproject.toml.
-poetry init --no-interaction
+# Model A (local venv)
+#   python = venv/bin/python3
+#   libs = within venv
+# Model B (Render)
+#   python = system python3
+#   libs = installed globally at build time
 ```
 
 ```shell
-# Add your dependencies
-poetry add flask pdf2image Pillow
+pip install -r micro-service/thumbnail-service/requirements.txt
 ```
 
-### Update
+### Create the virtual environment
 
 ```shell
-# In micro-service directory
-poetry update
+python3 -m venv venv
 ```
 
-## Handled by Go
+Activate the environment
 
-For simplification, the package installation will be handled by GO Via run `poetry install`, which will do following :
-“Look the configuration files, download exactly the Python dependencies required for SkoreFlow, and isolate them in a secure location so that Go code can execute them properly via `poetry run`.”
+```shell
+source venv/bin/activate
+```
 
-## Poetry run
+Install the dependencies
 
-By typing `poetry run python my_script.py`, Poetry doesn’t just launch Python. It first locates the virtual environment that it created specifically for this project.
+```shell
+pip install flask pdf2image Pillow
+```
 
-It then temporarily modifies your terminal’s environment variables (notably the PATH variable and Python’s `sys.path`) just for the duration of the execution. By doing this, it tells Python: “Look first in my project-specific libraries folder before looking elsewhere.”
+Create the dependencies file
+
+```shell
+pip freeze > requirements.txt
+```
+
+## In case of issue
+
+Don't hesitate to remove the venv directory, and to restart !
+
+```shell
+rm -rf venv
+```
+
+And start again with installation !
+
+## Update
+
+```shell
+pip install -r requirements.txt
+./venv/bin/pip install -r micro-service/requirements.txt
+```
