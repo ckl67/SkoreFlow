@@ -16,6 +16,8 @@ For Go Backend: Select "Web Services" on the PaaS
 Web Services — Dynamic web app. Ideal for full-stack apps, API servers, and mobile backends.
 ```
 
+Set the root directory as backend
+
 ### Prerequisite pdftoppm
 
 We have seen that pdftoppm is a prerequisite for micro-service.
@@ -38,7 +40,22 @@ Add Poppler directly to Render
 
 Compilation and Build are the same approach between dev server and PaaS
 
-Basics
+### Python
+
+The first step is the installation of python libraries, taking into account
+
+```shell
+# Model A (local venv)
+#   python = venv/bin/python3
+#   libs = within venv
+# Model B (Render)
+#   pip install -r requirements.txt
+#
+#   python = system python3
+#   libs = installed globally at build time
+```
+
+Installation of python libraries
 
 ```shell
 
@@ -51,10 +68,22 @@ build/sf-backend
 ## Render.com : directory /backen
 go build -tags netgo -ldflags '-s -w' -o app              ./cmd/server/main.go
 
+
+## We have to build
+
+pip install -r micro-service/thumbnail-service/requirements.txt &&
+
 ## run
-go build -tags netgo -ldflags '-s -w' -o app ./cmd/server/main.go
+
+pip install -r micro-service/requirements.txt && go build -tags netgo -ldflags '-s -w' -o app ./cmd/server/main.go
+
+pwd && ls && ls micro-service/thumbnail-service && pip install -r micro-service/thumbnail-service/requirements.txt && go build -tags netgo -ldflags '-s -w' -o app ./cmd/server/main.go
+
+
 app/app
 ```
+
+pwd && ls -la && find . -maxdepth 3 -type f | sed -n '1,200p'
 
 ### Directory Mapping
 
@@ -89,17 +118,6 @@ Render will create this file securely and invisibly on their servers
 
 ```shell
 # You can copy file .env.render
-```
-
-```shell
-# Model A (local venv)
-#   python = venv/bin/python3
-#   libs = within venv
-# Model B (Render)
-#   pip install -r requirements.txt
-#
-#   python = system python3
-#   libs = installed globally at build time
 ```
 
 ### Limitation

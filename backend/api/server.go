@@ -120,6 +120,7 @@ func (server *Server) StartMicroService(paths *config.Paths) {
 	// Create command
 	// ----------------------------------------------------------------
 	cmd := exec.Command(pythonExe, scriptPath)
+	cmd.Dir = root
 
 	// Inject environment variables into the process
 	cmd.Env = append(os.Environ(),
@@ -137,6 +138,28 @@ func (server *Server) StartMicroService(paths *config.Paths) {
 
 	// ADD HERE: Configure SysProcAttr to create a process group (PGID)
 	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
+
+	// *******
+
+	dir, err := os.Getwd()
+	if err != nil {
+		logger.Server.Error("(DEBUG) cannot get cwd: %v", err)
+	} else {
+		logger.Server.Info("(DEBUG) cwd = %s", dir)
+	}
+
+	logger.Server.Info("(DEBUG) scriptPath = %s", scriptPath)
+
+	if _, err := os.Stat(scriptPath); err != nil {
+		logger.Server.Error("(DEBUG) script NOT FOUND: %v", err)
+	} else {
+		logger.Server.Info("(DEBUG) script EXISTS OK")
+	}
+
+	logger.Server.Info("(StartMicroService) starting micro-service [%s] on port %d...", msConfig.MsName, msConfig.MsPort)
+	logger.Server.Info("(StartMicroService) command: %v", cmd.Args)
+
+	// *******
 
 	if err := cmd.Start(); err != nil {
 		logger.Server.Error("(StartMicroService) Flask/Python startup error: %v", err)
