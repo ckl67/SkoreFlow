@@ -110,9 +110,3 @@ pip freeze > requirements_test.txt
        "output_path": "/home/christian/SkoreFlow_Project/SkoreFlow/thumbnail-service/test/storage/thumbnail_ballade.png"
      }'
 ```
-
-./venv/bin/gunicorn app:app \
- --bind 0.0.0.0:5001 \
- --log-level info \
- --access-logfile - \
- --error-logfile -

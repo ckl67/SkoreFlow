@@ -15,8 +15,7 @@ app = Flask(__name__)
 # CONFIG (environment variables)
 # ------------------------------------------------------------
 
-MS_NAME = os.getenv("MS_NAME", "ThumbnailService")
-MS_PORT = int(os.getenv("MS_PORT", 5001))
+MS_PORT = int(os.getenv("PORT", 5001))
 
 # ------------------------------------------------------------
 # LOGGING SETUP
@@ -28,7 +27,6 @@ logging.basicConfig(
     stream=sys.stdout
 )
 
-logger = logging.getLogger(MS_NAME)
 
 # ------------------------------------------------------------
 # HEALTH CHECK
@@ -116,5 +114,5 @@ def create_thumbnail():
 # ------------------------------------------------------------
 
 if __name__ == "__main__":
-    logger.info("Starting %s on port %d", MS_NAME, MS_PORT)
+    logger.info("Starting %s on port %d", "thumbnail-service", MS_PORT)
     app.run(host="0.0.0.0", port=MS_PORT, debug=False)
