@@ -70,7 +70,9 @@ func (server *Server) Setup(version string, db *gorm.DB, paths *config.Paths) {
 	}
 
 	// 3. Start Python micro-service
+	logger.Server.Info("Before StartMicroService")
 	server.StartMicroService(paths)
+	logger.Server.Info("After StartMicroService")
 
 	// 4. Register API routes
 	server.SetupRouter()
