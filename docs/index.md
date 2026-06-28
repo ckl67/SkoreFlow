@@ -39,12 +39,15 @@ Whether you're new to SkoreFlow or an experienced developer, this documentation 
 - [cors explanation](./backend/cors.md) and [dom explanation](./backend/dom.md)
 - [go and Docker paths](./backend/go.md)
 - [Installation](./backend/install.md)
-- [Micro service](./backend/micro-service.md)
 - [Database migration](./backend/database.md)
 - [Automatic Code Reloading with Air](./backend/air.md)
 - [Running the Backend](./backend/run.md)
 - [Debugging](./backend/debug.md)
 - [Backend Testing](./backend/test.md)
+
+### Thumbnail Service
+
+- [Micro service](./thumbnail-service/installation.md)
 
 ### Frontend Guides
 

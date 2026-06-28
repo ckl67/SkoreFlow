@@ -29,9 +29,12 @@ gonic
 gopath
 gopher
 gorm
+gunicorn
+HEALTHCHECK
 kubernetes
 kühl
 ldflags
+logfile
 mailpit
 MAINLAYOUT
 microservice
@@ -42,6 +45,7 @@ netgo
 omitempty
 pdftoppm
 PGID
+pkill
 poppler
 pwreset
 pypoetry
@@ -60,6 +64,7 @@ testauto
 testcache
 topbar
 TOPNAVBAR
+tulnp
 typestrict
 USEAUTH
 venv
@@ -67,3 +72,4 @@ virtualenvs
 vite
 Vitest
 webp
+WSGI

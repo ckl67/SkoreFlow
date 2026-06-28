@@ -50,9 +50,7 @@ type DatabaseConfig struct {
 // Internal Microservice Configuration
 // Used for internal services (e.g. thumbnail generation)
 type MicroServiceConfig struct {
-	MsName string `env:"MS_NAME"`
-	MsPort int    `env:"MS_PORT"`
-	MsRoot string `env:"MS_ROOT"`
+	ThumbnailServiceURL string `env:"THUMBNAIL_SERVICE_URL"`
 }
 
 // Frontend Configuration
@@ -174,12 +172,8 @@ func (c ServerConfig) LogSafe() {
 		fmt.Printf("  Username: %s\n", c.Smtp.Username)
 		fmt.Printf("  Password: %s\n", c.Smtp.PasswordBase64) // ❌ sensitive
 		fmt.Printf("  ==> In case MailPit is used you can access to its interface: http://localhost:8025 \n")
-
 		fmt.Println("MicroService:")
-		fmt.Printf("  Name: %s\n", c.MicroService.MsName)
-		fmt.Printf("  Port: %d\n", c.MicroService.MsPort)
-		fmt.Printf("  Root %s:\n", c.MicroService.MsRoot)
-		fmt.Printf("  Full Path: %s\n", c.AppRoot+"/"+c.MicroService.MsRoot)
+		fmt.Printf("  ThumbnailServiceURL: %s\n", c.MicroService.ThumbnailServiceURL)
 
 		fmt.Println("Frontend:")
 		fmt.Printf("  Origin: %s\n", c.Frontend.Origin)
@@ -303,9 +297,7 @@ func NewConfig() ServerConfig {
 		Smtp: SmtpConfig{},
 
 		MicroService: MicroServiceConfig{
-			MsName: "thumbnail-service",
-			MsPort: 5010,
-			MsRoot: "",
+			ThumbnailServiceURL: "http://localhost:5001",
 		},
 	}
 }

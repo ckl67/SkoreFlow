@@ -6,6 +6,12 @@
     "testauto/backend"
   ],
   "scripts": {
+    "run-thumbnail-service:": "cd thumbnail-service &&  make",
+    "----": "",
+    "run-air:mode-dev": "cd backend && make air-dev",
+    "run-air:mode-test(RegToken)": "cd backend && make air-test",
+    "run:mode-test": "cd backend && make run-test",
+    "-----": "",
     "test:e2e-with-ui": "playwright test --ui",
     "test:e2e ": "playwright test",
     "lint": "eslint .",

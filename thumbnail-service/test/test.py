@@ -7,12 +7,11 @@ import sys
 # Usage Steps
 # -----------------------
 # 1) Run the thumbnail-service :
-# source venv/bin/activate
-# Start the thumbnail service:
-# python3 app.py
+# "./venv/bin/gunicorn app:app --bind 0.0.0.0:5001",
 # -----------------------
 # 2) Run the test script in another terminal:
-# python test.py
+# directory test !
+# ./venv/bin/python test.py
 # -----------------------
 
 
@@ -20,8 +19,8 @@ import sys
 # Configuration
 # -----------------------
 SERVICE_URL = "http://localhost:5001/createthumbnail"
-PDF_PATH = "/home/christian/SkoreFlow_Project/SkoreFlow/backend/micro-service/thumbnail-service/test/storage/ballade.pdf"
-OUTPUT_PATH = "/home/christian/SkoreFlow_Project/SkoreFlow/backend/micro-service/thumbnail-service/test/storage/thumbnail_ballade.png"
+PDF_PATH = "/home/christian/SkoreFlow_Project/SkoreFlow/thumbnail-service/test/storage/ballade.pdf"
+OUTPUT_PATH = "/home/christian/SkoreFlow_Project/SkoreFlow/thumbnail-service/test/storage/thumbnail_ballade.png"
 
 # -----------------------
 # Pre-checks
@@ -44,12 +43,6 @@ payload = {
     "log_level": "DEBUG"
 }
 
-# curl -X POST http://localhost:5010/createthumbnail \
-#     -H "Content-Type: application/json" \
-#     -d '{
-#       "pdf_path": "/home/.../ballade.pdf",
-#       "output_path": "/home/.../thumbnail_ballade.png"
-#     }'
 
 try:
     response = requests.post(SERVICE_URL, json=payload)

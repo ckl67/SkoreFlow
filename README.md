@@ -25,6 +25,8 @@ SkoreFlow provides a structured pipeline to:
 SkoreFlow is actively under development and improvement on
 
 - Backend:
+- Mirco-Services
+	- thumbnail-service
 - Frontend:
 - Features:
 
@@ -41,6 +43,7 @@ Contributions and feedback are welcome.
 ├── config
 ├── docs
 ├── frontend
+├── thumbnail-service
 ├── node_modules
 ├── shared
 ├── testauto
@@ -69,6 +72,8 @@ SkoreFlow/
 ├── package.json ✅ workspaces
 ├── backend/              # Go backend
 ├── frontend/             # React (Vite)
+├── thumbnail-service/    # Python 
+
 │ └── package.json
 ├── testauto/
 │ ├── backend/
@@ -90,7 +95,7 @@ SkoreFlow/
 ## Local Services
 
 Backend Go : localhost:8080
-Backend MicroService : localhost:5010
+thumbnail-service : localhost:5010
 Frontend React : localhost:5173
 MailPit SMTP : localhost:1025
 Interface Mail : localhost:8025

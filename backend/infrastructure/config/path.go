@@ -12,8 +12,6 @@ type Paths struct {
 	Root       string // /app
 	StorageRel string // storage relative path, e.g. "storage"
 	StorageAbs string // /app/storage absolute path
-	MSRel      string // Microservice relative path, e.g.
-	MSAbs      string // /Microservice absolute path
 }
 
 // NewPaths constructs a Paths struct from the given ServerConfig.
@@ -34,19 +32,10 @@ func NewPaths(cfg ServerConfig) *Paths {
 		logger.Main.Fatal("STORAGE_PATH must be relative")
 	}
 
-	if cfg.MicroService.MsRoot == "" {
-		logger.Main.Fatal("MicroService.MsRoot is not set")
-	}
-	if filepath.IsAbs(cfg.MicroService.MsRoot) {
-		logger.Main.Fatal("MicroService.MSRoot ( corresponding to the  Root of all MicroService path example : micro-service ) must be relative")
-	}
-
 	return &Paths{
 		Root:       cfg.AppRoot,
 		StorageRel: cfg.StoragePath,
 		StorageAbs: filepath.Join(cfg.AppRoot, cfg.StoragePath),
-		MSRel:      cfg.MicroService.MsRoot,
-		MSAbs:      filepath.Join(cfg.AppRoot, cfg.MicroService.MsRoot),
 	}
 }
 

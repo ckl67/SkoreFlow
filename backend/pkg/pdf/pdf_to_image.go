@@ -1,10 +1,5 @@
 package pdf
 
-// ======================================================================================
-// INFRASTRUCTURE     | utils/         | "Atomic" functions, "blind" to business logic.
-//                    |                | (Disk I/O, network calls, file manipulation).
-// ======================================================================================
-
 import (
 	"backend/infrastructure/config"
 	"backend/infrastructure/logger"
@@ -16,21 +11,41 @@ import (
 	"time"
 )
 
-// RequestToPdfToImage sends a PDF file to the Python microservice to generate an image thumbnail.
-// - pdfPath: source PDF file path
-// - thumbPath: destination image file path
-// - logLevel: verbosity for microservice logging
-// Returns true if the thumbnail was successfully generated.
+// -----------------------------------------------------------------------------
+// RequestToPdfToImage
+// Sends a PDF to Python microservice and returns success/failure
+// -----------------------------------------------------------------------------
+
 func RequestToPdfToImage(pdfPath string, thumbPath string, logLevel string) bool {
+
+	// ---------------------------------------------------------
+	// 0. Microservice URL (from config)
+	// ---------------------------------------------------------
 	// 0. Prepare microservice URL from config
 	msConfig := config.Config().MicroService
-	url := fmt.Sprintf("http://localhost:%d/createthumbnail", msConfig.MsPort)
+	url := fmt.Sprintf(
+		"%s/createthumbnail",
+		msConfig.ThumbnailServiceURL,
+	)
 
-	// 1. Ensure absolute paths to avoid working directory issues
-	absPdfPath, _ := filepath.Abs(pdfPath)
-	absThumbPath, _ := filepath.Abs(thumbPath)
+	// ---------------------------------------------------------
+	// 1. Normalize paths (avoid relative path issues)
+	// ---------------------------------------------------------
+	absPdfPath, err := filepath.Abs(pdfPath)
+	if err != nil {
+		logger.Score.Error("failed to resolve pdf path: %v", err)
+		return false
+	}
 
-	// 2. Prepare JSON payload
+	absThumbPath, err := filepath.Abs(thumbPath)
+	if err != nil {
+		logger.Score.Error("failed to resolve thumbnail path: %v", err)
+		return false
+	}
+
+	// ---------------------------------------------------------
+	// 2. Build payload
+	// ---------------------------------------------------------
 	payload := map[string]string{
 		"pdf_path":    absPdfPath,
 		"output_path": absThumbPath,
@@ -39,27 +54,62 @@ func RequestToPdfToImage(pdfPath string, thumbPath string, logLevel string) bool
 
 	jsonData, err := json.Marshal(payload)
 	if err != nil {
-		logger.Score.Error("Failed to encode JSON for microservice: %v", err)
+		logger.Score.Error("failed to marshal JSON payload: %v", err)
 		return false
 	}
 
-	// 3. Send POST request to microservice
-	client := http.Client{
-		Timeout: 60 * time.Second, // PDF -> Image conversion may be heavy
+	// ---------------------------------------------------------
+	// 3. HTTP client (timeout is critical for microservices)
+	// ---------------------------------------------------------
+	client := &http.Client{
+		Timeout: 60 * time.Second,
 	}
 
-	resp, err := client.Post(url, "application/json", bytes.NewBuffer(jsonData))
+	req, err := http.NewRequest(
+		http.MethodPost,
+		url,
+		bytes.NewBuffer(jsonData),
+	)
 	if err != nil {
-		logger.Score.Error("Python microservice unreachable: %v", err)
+		logger.Score.Error("failed to create request: %v", err)
+		return false
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	// ---------------------------------------------------------
+	// 4. Execute request
+	// ---------------------------------------------------------
+	resp, err := client.Do(req)
+	if err != nil {
+		logger.Score.Error("microservice unreachable: %v", err)
 		return false
 	}
 	defer resp.Body.Close()
 
+	// ---------------------------------------------------------
+	// 5. Status handling
+	// ---------------------------------------------------------
 	if resp.StatusCode != http.StatusOK {
-		logger.Score.Error("Microservice failed (Status: %d)", resp.StatusCode)
+		logger.Score.Error("microservice error status: %d", resp.StatusCode)
 		return false
 	}
 
-	logger.Score.Debug("Thumbnail successfully generated: %s", absThumbPath)
+	// ---------------------------------------------------------
+	// 6. Optional: decode response (useful for debugging)
+	// ---------------------------------------------------------
+	var result struct {
+		Status  string `json:"status"`
+		Message string `json:"message"`
+	}
+
+	if err := json.NewDecoder(resp.Body).Decode(&result); err == nil {
+		logger.Score.Debug("thumbnail result: %s", result.Message)
+	} else {
+		logger.Score.Debug("thumbnail generated (no JSON response parsed)")
+	}
+
+	logger.Score.Debug("thumbnail successfully generated: %s", absThumbPath)
+
 	return true
 }

@@ -1,18 +1,16 @@
 package api
 
 import (
-	"fmt"
 	"net/http"
 	"os"
-	"os/exec"
 	"os/signal"
-	"path/filepath"
 	"syscall"
 	"time"
 
 	"backend/core/models"
 	"backend/core/services"
 	"backend/infrastructure/config"
+	"backend/infrastructure/health"
 	"backend/infrastructure/logger"
 
 	"github.com/gin-gonic/gin"
@@ -31,9 +29,6 @@ import (
 // - Controllers are HTTP adapters (Gin) and delegate to services
 // - Services are reusable across interfaces (HTTP, CLI, workers)
 //
-// Notes:
-// - Integrates a Python micro-service for PDF processing
-// - Ensures proper lifecycle management of external processes
 // ===============================================================================================
 
 type Server struct {
@@ -46,9 +41,8 @@ type Server struct {
 	ScoreService    *services.ScoreService
 	ComposerService *services.ComposerService
 
-	Router    *gin.Engine
-	Version   string
-	MSProcess *os.Process // Reference to the Python micro-service process
+	Router  *gin.Engine
+	Version string
 }
 
 // Setup initializes the server state and application components.
@@ -58,132 +52,50 @@ func (server *Server) Setup(version string, db *gorm.DB, paths *config.Paths) {
 	server.Version = version
 	server.DB = db
 
-	// 1. Initialize services with db and path injection
+	// ----------------------------------------------------
+	// 1. Microservice healthcheck (CRITICAL DEPENDENCY)
+	// ----------------------------------------------------
+
+	for i := 0; i < 5; i++ {
+		err := health.CheckThumbnailService("http://localhost:5001/health")
+		if err == nil {
+			logger.Server.Info("thumbnail-service ready")
+			break
+		}
+
+		logger.Server.Warn("thumbnail-service not ready, retrying... (%d/5)", i+1)
+		time.Sleep(2 * time.Second)
+	}
+
+	err := health.CheckThumbnailService("http://localhost:5001/health")
+	if err != nil {
+		logger.Server.Error("(Setup) thumbnail-service not available: %v", err)
+		// Option A: continue anyway
+		// Option B: panic (recommended if mandatory)
+		panic(err)
+	} else {
+		logger.Server.Info("(Setup) thumbnail-service is healthy")
+	}
+
+	// ----------------------------------------------------
+	// 2. Initialize services with db and path injection
+	// ----------------------------------------------------
 	server.authService = services.NewAuthService(db, paths)
 	server.userService = services.NewUserService(db, paths)
 	server.ScoreService = services.NewScoreService(db, paths)
 	server.ComposerService = services.NewComposerService(db, paths)
 
-	// 2. Database migrations (schema sync with models)
+	// ----------------------------------------------------
+	// 3. Database migrations (schema sync with models)
+	// ----------------------------------------------------
 	if err := server.DB.AutoMigrate(&models.User{}, &models.Score{}, &models.Composer{}); err != nil {
 		logger.DB.Error("(Setup) migration failed: %v", err)
 	}
 
-	// 3. Start Python micro-service
-	server.StartMicroService(paths)
-
+	// ----------------------------------------------------
 	// 4. Register API routes
+	// ----------------------------------------------------
 	server.SetupRouter()
-}
-
-// StartMicroService launches the Python process responsible for PDF → PNG conversion.
-// Behavior:
-// - Spawns the process to manage the virtual environment natively
-// - Pipes stdout/stderr to the main server logs
-// - Stores process reference for graceful shutdown
-//
-// Notes:
-// - Prevents orphan/zombie processes by binding lifecycle to the server
-func (server *Server) StartMicroService(paths *config.Paths) {
-	msConfig := config.Config().MicroService
-
-	// ----------------------------------------------------------------
-	// MicroService absolute path
-	// ----------------------------------------------------------------
-	// Example of path construction:
-	// root = /home/christian/SkoreFlow_Project/SkoreFlow/backend/micro-service
-	root := paths.MSAbs
-
-	// ----------------------------------------------------------------
-	// Build paths dynamically
-	// ----------------------------------------------------------------
-	// pythonExe : /home/christian/SkoreFlow_Project/SkoreFlow/backend/micro-service/venv/bin/python3
-	// scriptPath : /home/christian/SkoreFlow_Project/SkoreFlow/backend/micro-service/thumbnail-service/app.py
-
-	pythonExe := "python3"
-
-	venvPython := filepath.Join(root, "venv", "bin", "python3")
-	if _, err := os.Stat(venvPython); err == nil {
-		pythonExe = venvPython
-		logger.Server.Info("(StartMicroService) Using venv python: %s", pythonExe)
-	} else {
-		logger.Server.Warn("(StartMicroService) Using system python (NO VENV): %s", pythonExe)
-	}
-
-	scriptPath := filepath.Join(root, msConfig.MsName, "app.py")
-
-	// Optional: debug (can be removed later)
-	logger.Server.Info("(StartMicroService) python: %s", pythonExe)
-	logger.Server.Info("(StartMicroService) script: %s", scriptPath)
-
-	// ----------------------------------------------------------------
-	// Create command
-	// ----------------------------------------------------------------
-	cmd := exec.Command(pythonExe, scriptPath)
-	cmd.Dir = root
-
-	// Inject environment variables into the process
-	cmd.Env = append(os.Environ(),
-		fmt.Sprintf("MS_PORT=%d", msConfig.MsPort),
-		fmt.Sprintf("MS_NAME=%s", msConfig.MsName),
-	)
-
-	// Forward logs to main process
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-
-	// ----------------------------------------------------------------
-	// Start process
-	// ----------------------------------------------------------------
-
-	// ADD HERE: Configure SysProcAttr to create a process group (PGID)
-	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
-
-	// *******
-
-	dir, err := os.Getwd()
-	if err != nil {
-		logger.Server.Error("(DEBUG) cannot get cwd: %v", err)
-	} else {
-		logger.Server.Info("(DEBUG) cwd = %s", dir)
-	}
-
-	logger.Server.Info("(DEBUG) scriptPath = %s", scriptPath)
-
-	if _, err := os.Stat(scriptPath); err != nil {
-		logger.Server.Error("(DEBUG) script NOT FOUND: %v", err)
-	} else {
-		logger.Server.Info("(DEBUG) script EXISTS OK")
-	}
-
-	logger.Server.Info("(StartMicroService) starting micro-service [%s] on port %d...", msConfig.MsName, msConfig.MsPort)
-	logger.Server.Info("(StartMicroService) command: %v", cmd.Args)
-
-	logger.Server.Info("(DEBUG) APP_ROOT = %s", config.Config().AppRoot)
-	logger.Server.Info("(DEBUG) MSAbs = %s", paths.MSAbs)
-
-	pythonPath, err := exec.LookPath("python3")
-	if err != nil {
-		logger.Server.Error("(DEBUG) python3 not found: %v", err)
-	} else {
-		logger.Server.Info("(DEBUG) python3 = %s", pythonPath)
-	}
-
-	// *******
-
-	if err := cmd.Start(); err != nil {
-		logger.Server.Error("(StartMicroService) Flask/Python startup error: %v", err)
-		return
-	}
-
-	// Store process reference for shutdown handling
-	server.MSProcess = cmd.Process
-
-	logger.Server.Info(
-		"(StartMicroService) micro-service [%s] running via Python (PID: %d)",
-		msConfig.MsName,
-		server.MSProcess.Pid,
-	)
 }
 
 // ListenAndServe starts the HTTP server and manages graceful shutdown.
@@ -213,15 +125,6 @@ func (server *Server) ListenAndServe(addr string) {
 	<-quit
 
 	logger.Server.Info("(ListenAndServe) shutting down server...")
-
-	// Stop micro-service if running
-	if server.MSProcess != nil {
-		logger.Server.Info("(ListenAndServe) stopping micro-service group (PID %d)...", server.MSProcess.Pid)
-
-		// Instead of: _ = server.MSProcess.Signal(os.Interrupt)
-		// We send SIGINT to the entire group (the minus sign '-' before the PID is the key)
-		_ = syscall.Kill(-server.MSProcess.Pid, syscall.SIGINT)
-	}
 
 	logger.Server.Info("(ListenAndServe) server exited cleanly")
 }

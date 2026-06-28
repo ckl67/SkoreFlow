@@ -60,9 +60,6 @@ Client
 ├── Makefile
 ├── go.mod
 │
-├── micro-service/      # Specific backend services
-│   ├── thumbnail-service/
-
 ```
 
 ## 🌐 API Design
