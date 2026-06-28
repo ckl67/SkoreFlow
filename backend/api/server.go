@@ -99,7 +99,14 @@ func (server *Server) StartMicroService(paths *config.Paths) {
 	// ----------------------------------------------------------------
 	// We call the global 'poetry' executable instead of a hardcoded venv path.
 	// scriptPath : /home/christian/SkoreFlow_Project/SkoreFlow/backend/micro-service/thumbnail-service/app.py
-	poetryExe := "poetry"
+
+	// PoetryPath
+	// PoetryPath (with a fallback for local development)
+	poetryExe := msConfig.PoetryPath
+	if poetryExe == "" {
+		poetryExe = "poetry" // If the variable is not defined (e.g. as a local variable), use the global command
+	}
+
 	scriptPath := filepath.Join(root, msConfig.MsName, "app.py")
 
 	// Optional: debug (can be removed later)
@@ -111,7 +118,7 @@ func (server *Server) StartMicroService(paths *config.Paths) {
 	logger.Server.Info("(StartMicroService) Checking Python dependencies with Poetry...")
 
 	// We’re setting up a ‘poetry install’ command to be run directly in the correct folder
-	installCmd := exec.Command("poetry", "install", "--no-interaction", "--no-root")
+	installCmd := exec.Command(poetryExe, "install", "--no-interaction", "--no-root")
 	installCmd.Dir = root
 	installCmd.Stdout = os.Stdout
 	installCmd.Stderr = os.Stderr

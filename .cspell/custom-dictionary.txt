@@ -44,6 +44,7 @@ pdftoppm
 PGID
 poppler
 pwreset
+pypoetry
 pyproject
 rqconfirm
 sheetcomposer
@@ -62,6 +63,7 @@ TOPNAVBAR
 typestrict
 USEAUTH
 venv
+virtualenvs
 vite
 Vitest
 webp
