@@ -10,7 +10,7 @@ Web Services — Dynamic web app. Ideal for full-stack apps, API servers, and mo
 
 ## Prerequisite pdftoppm
 
-We have seen that pdftoppm is a prerequisite for micro-service.
+We have seen that pdftoppm is a prerequisite for microservice.
 pdftoppm is the tool that pdf2image calls in the background to convert PDF pages into PNG/JPEG images.
 pdftoppm is normally installed on Linux, and the PaaS - Render server - (unprivileged container): To prevent malicious code from damaging their servers, they do not allow to use `sudo` or modify the operating system.
 

@@ -1,0 +1,31 @@
+{
+  "folders": [
+    {
+      "name": "📦 SkoreFlow (Root)",
+      "path": ".",
+    },
+    {
+      "name": "🐹 Backend (Go)",
+      "path": "backend",
+    },
+    {
+      "name": "⚛️ Frontend (TS/React)",
+      "path": "frontend",
+    },
+    {
+      "name": "🐍 Microservices",
+      "path": "microservice",
+    },
+    {
+      "name": "🎭 Test Auto (Playwright/Python)",
+      "path": "testauto",
+    },
+    {
+      "name": "📚 Documentation",
+      "path": "docs",
+    },
+  ],
+  "settings": {
+    "git.ignoredRepositories": ["backend", "frontend", "microservice", "testauto"],
+  },
+}

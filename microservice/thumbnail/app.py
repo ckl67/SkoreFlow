@@ -8,57 +8,60 @@ import shutil
 # ------------------------------------------------------------
 # Flask app
 # ------------------------------------------------------------
-
 app = Flask(__name__)
 
 # ------------------------------------------------------------
 # CONFIG (environment variables)
 # ------------------------------------------------------------
-
 MS_PORT = int(os.getenv("PORT", 5001))
 
 # ------------------------------------------------------------
 # LOGGING SETUP
 # ------------------------------------------------------------
-
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] [%(name)s] %(message)s",
-    stream=sys.stdout
+    stream=sys.stdout,
 )
+
+logger = logging.getLogger(__name__)
 
 
 # ------------------------------------------------------------
 # HEALTH CHECK
 # ------------------------------------------------------------
-
 @app.route("/health", methods=["GET"])
 def health():
     """Simple health endpoint for orchestration / monitoring"""
     return jsonify({"status": "ok"}), 200
 
+
 # ------------------------------------------------------------
 # HEALTH CHECK for render.com
 # ------------------------------------------------------------
 
+
 @app.route("/", methods=["GET"])
-def index():
-    return jsonify({
-        "service": "thumbnail-service",
-        "status": "running"
-    }), 200
+def get():
+    return jsonify({"service": "thumbnail-service", "status": "running"}), 200
+
 
 @app.route("/", methods=["HEAD"])
-def index():
-    return jsonify({
-        "service": "thumbnail-service",
-        "status": "running"
-    }), 200
+def head():
+    return jsonify({"service": "thumbnail-service", "status": "running"}), 200
+
 
 # ------------------------------------------------------------
 # THUMBNAIL GENERATION
+#
+#  curl -X POST http://localhost:5001/createthumbnail \
+#     -H "Content-Type: application/json" \
+#      -d '{
+#        "pdf_path": "/home/.../ballade.pdf",
+#        "output_path": "/home/.../thumbnail_ballade.png"
+#      }'
+#
 # ------------------------------------------------------------
-
 @app.route("/createthumbnail", methods=["POST"])
 def create_thumbnail():
     """
@@ -117,10 +120,7 @@ def create_thumbnail():
 
         logger.info("Thumbnail generated: %s", output_path)
 
-        return jsonify({
-            "status": "success",
-            "message": f"Saved to {output_path}"
-        }), 200
+        return jsonify({"status": "success", "message": f"Saved to {output_path}"}), 200
 
     except Exception as e:
         logger.exception("Thumbnail generation failed")

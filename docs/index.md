@@ -46,9 +46,10 @@ Whether you're new to SkoreFlow or an experienced developer, this documentation 
 - [Debugging](./backend/debug.md)
 - [Backend Testing](./backend/test.md)
 
-### Thumbnail Service
+### Microservice
 
-- [Micro service](./thumbnail-service/installation.md)
+- [Microservice](./microservice/microservice.md)
+  - [thumbnail](./microservice/thumbnail/installation.md)
 
 ### Frontend Guides
 

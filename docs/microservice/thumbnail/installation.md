@@ -29,7 +29,7 @@ The Gunicorn server is broadly compatible with various web frameworks, simply im
 ### Create the virtual environment
 
 ```shell
-# In directory  thumbnail-service/
+# In directory  microservice/thumbnail/
 python3 -m venv venv
 ```
 
@@ -37,6 +37,8 @@ Activate the environment
 
 ```shell
 source venv/bin/activate
+# or to exit
+deactivate
 ```
 
 Install the dependencies
@@ -64,7 +66,7 @@ And start again with installation !
 ## Update
 
 ```shell
-./venv/bin/pip install -r micro-service/requirements.txt
+./venv/bin/pip install -r microservice/requirements.txt
 ```
 
 ## Uninstall
@@ -89,12 +91,12 @@ python app.py
 
 ## For test
 
-In directory : thumbnail-service/test$
+In directory : microservice/thumbnail/test$
 
 ```shell
 python3 -m venv venv
 source venv/bin/activate
-pip install flask pdf2image Pillow gunicorn  requests
+pip install flask pdf2image Pillow gunicorn requests
 pip freeze > requirements_test.txt
 ```
 
@@ -103,10 +105,4 @@ pip freeze > requirements_test.txt
 ```shell
  curl http://localhost:5001/health
 
- curl -X POST http://localhost:5001/createthumbnail \
-    -H "Content-Type: application/json" \
-     -d '{
-       "pdf_path": "/home/christian/SkoreFlow_Project/SkoreFlow/thumbnail-service/test/storage/ballade.pdf",
-       "output_path": "/home/christian/SkoreFlow_Project/SkoreFlow/thumbnail-service/test/storage/thumbnail_ballade.png"
-     }'
 ```

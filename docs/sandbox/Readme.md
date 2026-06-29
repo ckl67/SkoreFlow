@@ -10,7 +10,7 @@ Domain name : skoreflow-app.comm
 
 - [backend](./backend.md)
 - [frontend](./frontend.md)
-- [thumbnail service](./thumbnail-service.md)
+- [thumbnail service](./microservice/thumbnail.md)
 
 ### Directory Mapping
 

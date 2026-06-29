@@ -59,22 +59,22 @@ func (server *Server) Setup(version string, db *gorm.DB, paths *config.Paths) {
 	for i := 0; i < 5; i++ {
 		err := health.CheckThumbnailService("http://localhost:5001/health")
 		if err == nil {
-			logger.Server.Info("thumbnail-service ready")
+			logger.Server.Info("microservice/thumbnail ready")
 			break
 		}
 
-		logger.Server.Warn("thumbnail-service not ready, retrying... (%d/5)", i+1)
+		logger.Server.Warn("microservice/thumbnail not ready, retrying... (%d/5)", i+1)
 		time.Sleep(2 * time.Second)
 	}
 
 	err := health.CheckThumbnailService("http://localhost:5001/health")
 	if err != nil {
-		logger.Server.Error("(Setup) thumbnail-service not available: %v", err)
+		logger.Server.Error("(Setup) microservice/thumbnail not available: %v", err)
 		// Option A: continue anyway
 		// Option B: panic (recommended if mandatory)
 		panic(err)
 	} else {
-		logger.Server.Info("(Setup) thumbnail-service is healthy")
+		logger.Server.Info("(Setup) microservice/thumbnail is healthy")
 	}
 
 	// ----------------------------------------------------

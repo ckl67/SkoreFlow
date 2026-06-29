@@ -14,13 +14,23 @@ import sys
 # ./venv/bin/python test.py
 # -----------------------
 
+#  ---------------------------------------------------------------------------------------
+#  curl http://localhost:5001/health
+#
+#  curl -X POST http://localhost:5001/createthumbnail \
+#     -H "Content-Type: application/json" \
+#      -d '{
+#        "pdf_path": "/home/christian/SkoreFlow_Project/SkoreFlow/thumbnail-service/test/storage/ballade.pdf",
+#        "output_path": "/home/christian/SkoreFlow_Project/SkoreFlow/thumbnail-service/test/storage/thumbnail_ballade.png"
+#      }'
+#  ---------------------------------------------------------------------------------------
 
 # -----------------------
 # Configuration
 # -----------------------
 SERVICE_URL = "http://localhost:5001/createthumbnail"
-PDF_PATH = "/home/christian/SkoreFlow_Project/SkoreFlow/thumbnail-service/test/storage/ballade.pdf"
-OUTPUT_PATH = "/home/christian/SkoreFlow_Project/SkoreFlow/thumbnail-service/test/storage/thumbnail_ballade.png"
+PDF_PATH = "/home/christian/SkoreFlow_Project/SkoreFlow/microservices/thumbnail/test/storage/ballade.pdf"
+OUTPUT_PATH = "/home/christian/SkoreFlow_Project/SkoreFlow/microservices/thumbnail/test/storage/thumbnail_ballade.png"
 
 # -----------------------
 # Pre-checks
@@ -37,11 +47,7 @@ if os.path.exists(OUTPUT_PATH):
 # -----------------------
 # Send the request
 # -----------------------
-payload = {
-    "pdf_path": PDF_PATH,
-    "output_path": OUTPUT_PATH,
-    "log_level": "DEBUG"
-}
+payload = {"pdf_path": PDF_PATH, "output_path": OUTPUT_PATH, "log_level": "DEBUG"}
 
 
 try:
@@ -65,4 +71,4 @@ else:
 if os.path.exists(OUTPUT_PATH):
     print(f"✅ Thumbnail generated: {OUTPUT_PATH}")
 else:
-    print(f"❌ Thumbnail not found after execution")
+    print("❌ Thumbnail not found after execution")

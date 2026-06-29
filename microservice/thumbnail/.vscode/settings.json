@@ -1,0 +1,9 @@
+{
+  // =========================================================
+  // PYTHON (Config spécifique au microservice)
+  // =========================================================
+
+  "[python]": {
+    "python.defaultInterpreterPath": "${workspaceFolder}/microservice/thumbnail/venv/bin/python"
+  }
+}
