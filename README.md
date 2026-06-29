@@ -5,7 +5,7 @@
 SkoreFlow is a backend and frontend application designed to manage, process, and serve musical scores through a clean, scalable, and layered architecture.
 SkoreFlow is the result of several iterations on earlier experimental projects, redesigned with a focus on clean architecture, scalability, and maintainability.
 
-So welcome to SkoreFlow 🎉
+Welcome to SkoreFlow 🎉
 
 ---
 
@@ -25,9 +25,10 @@ SkoreFlow provides a structured pipeline to:
 SkoreFlow is actively under development and improvement on
 
 - Backend:
-- MircoServices
+- Microservice:
 - Frontend:
 - Features:
+- Documentation:
 
 Contributions and feedback are welcome.
 
@@ -59,7 +60,7 @@ All JavaScript/TypeScript dependencies are managed **centrally at the root level
 ### Key Principles
 
 - A **single root `node_modules/`**
-- Multiple isolated projects (workspaces)
+- Multiple isolated projects (workspaces) declared in package.json
 - Shared tooling (TypeScript, ESLint, Prettier, Vitest)
 
 ### Workspaces
@@ -71,12 +72,10 @@ SkoreFlow/
 ├── package.json ✅ workspaces
 ├── backend/              # Go backend
 ├── frontend/             # React (Vite)
-├── microservice/    # Python our other
-
 │ └── package.json
+├── microservice/         # Python or other
 ├── testauto/
 │ ├── backend/
-│ │ └── package.json
 ├── docs/
 
 ```
@@ -93,11 +92,11 @@ SkoreFlow/
 
 ## Local Services
 
-Backend Go : localhost:8080
-MicroService thumbnail : localhost:5010
-Frontend React : localhost:5173
-MailPit SMTP : localhost:1025
-Interface Mail : localhost:8025
+- Backend Go : localhost:8080
+- MicroService thumbnail : localhost:5010
+- Frontend React : localhost:5173
+- MailPit SMTP : localhost:1025
+- Interface Mail : localhost:8025
 
 ## 🚀 Getting Started
 
@@ -107,6 +106,10 @@ Interface Mail : localhost:8025
 git clone https://github.com/ckl67/skoreflow.git
 cd skoreflow
 ```
+
+### visual studio code
+
+Open visual code, and open file `.code-workspace`
 
 ### Documentation
 

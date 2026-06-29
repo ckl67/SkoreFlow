@@ -21,5 +21,31 @@ Add Poppler directly to Render
 - In the Environment Variables section (not Secret Files, but the standard variables), click Add Environment Variable.
   - Add this special variable that Render uses to install Linux packages:
     - Key: RENDER_NATIVE_PACKAGES
-    - Value: poppler-utils
+      - Value: poppler-utils
 - Click Save Changes.
+
+## Sandbox
+
+On render.com
+
+### Settings
+
+- Root Directory
+  - microservice/thumbnail
+- Build Command
+  - pip install -r requirements.txt
+- Start Command
+  - gunicorn app:app --bind 0.0.0.0:$PORT
+
+### Environment Variables
+
+- Key: RENDER_NATIVE_PACKAGES
+  - Value: poppler-utils
+- key PORT
+  - 5001
+
+### url
+
+```shell
+  https://thumbnail-tgzi.onrender.com
+```

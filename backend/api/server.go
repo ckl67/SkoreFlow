@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
@@ -52,12 +53,15 @@ func (server *Server) Setup(version string, db *gorm.DB, paths *config.Paths) {
 	server.Version = version
 	server.DB = db
 
+	cfg := config.Config()
 	// ----------------------------------------------------
 	// 1. Microservice healthcheck (CRITICAL DEPENDENCY)
 	// ----------------------------------------------------
 
+	healthURL := fmt.Sprintf("%s/health", cfg.MicroService.ThumbnailServiceURL)
+
 	for i := 0; i < 5; i++ {
-		err := health.CheckThumbnailService("http://localhost:5001/health")
+		err := health.CheckThumbnailService(healthURL)
 		if err == nil {
 			logger.Server.Info("microservice/thumbnail ready")
 			break
@@ -67,7 +71,7 @@ func (server *Server) Setup(version string, db *gorm.DB, paths *config.Paths) {
 		time.Sleep(2 * time.Second)
 	}
 
-	err := health.CheckThumbnailService("http://localhost:5001/health")
+	err := health.CheckThumbnailService(healthURL)
 	if err != nil {
 		logger.Server.Error("(Setup) microservice/thumbnail not available: %v", err)
 		// Option A: continue anyway

@@ -13,6 +13,10 @@
       "path": "frontend",
     },
     {
+      "name": "📁 Shared (Test Backend - Frontend)",
+      "path": "shared",
+    },
+    {
       "name": "🐍 Microservices",
       "path": "microservice",
     },
@@ -27,5 +31,22 @@
   ],
   "settings": {
     "git.ignoredRepositories": ["backend", "frontend", "microservice", "testauto"],
+
+    "files.exclude": {
+      // Hides these folders ONLY in the root folder to avoid visual duplicates
+      // --- STRICT masking at the root only (with ./) ---
+      "./backend": true,
+      "./frontend": true,
+      "./shared": true,
+      "./microservice": true,
+      "./testauto": true,
+      "./docs": true,
+
+      // --- Hiding technical and temporary folders (New) ---
+      "**/node_modules": true,
+      "tmp": true,
+      "playwright-report": true,
+      "test-results": true,
+    },
   },
 }

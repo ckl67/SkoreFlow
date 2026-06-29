@@ -121,7 +121,6 @@ var (
 // This function exposes sensitive data (passwords, secrets).
 // Use ONLY in development or test mode.
 func (c ServerConfig) LogSafe() {
-
 	fmt.Println("-------------------- ------")
 	fmt.Println("------ SERVER CONFIG ------")
 	fmt.Println("-------------------- ------")
@@ -172,6 +171,7 @@ func (c ServerConfig) LogSafe() {
 		fmt.Printf("  Username: %s\n", c.Smtp.Username)
 		fmt.Printf("  Password: %s\n", c.Smtp.PasswordBase64) // ❌ sensitive
 		fmt.Printf("  ==> In case MailPit is used you can access to its interface: http://localhost:8025 \n")
+
 		fmt.Println("MicroService:")
 		fmt.Printf("  ThumbnailServiceURL: %s\n", c.MicroService.ThumbnailServiceURL)
 
@@ -282,7 +282,7 @@ func NewConfig() ServerConfig {
 
 		BackendListenAddress: "0.0.0.0:8080",
 
-		Frontend: FrontendConfig{ //Don't forget to configure vite.config.js file
+		Frontend: FrontendConfig{ // Don't forget to configure vite.config.js file
 			Origin:                "http://localhost:5173", //(ex: Dev http://localhost:5173 ou Prod https://app.skoreflow.com)
 			ResetPasswordPath:     "/reset/password",
 			RegisterConfirmPath:   "/register/confirm",
