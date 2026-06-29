@@ -43,6 +43,7 @@ modcache
 mvdan
 netgo
 omitempty
+oneline
 pdftoppm
 PGID
 pkill

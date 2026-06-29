@@ -28,6 +28,7 @@ Whether you're new to SkoreFlow or an experienced developer, this documentation 
 
 - [Foreword](./environment/foreword.md)
 - [Visual Studio Code settings](./environment/vscode.md)
+- [Git Survival Guide](./general/git.md)
 - [TypeScript Setup Requirements](./environment/vs-tools.md)
 - [Mail Server](./environment/mail-server.md)
 
