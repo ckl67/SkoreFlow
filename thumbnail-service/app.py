@@ -38,6 +38,24 @@ def health():
     return jsonify({"status": "ok"}), 200
 
 # ------------------------------------------------------------
+# HEALTH CHECK for render.com
+# ------------------------------------------------------------
+
+@app.route("/", methods=["GET"])
+def index():
+    return jsonify({
+        "service": "thumbnail-service",
+        "status": "running"
+    }), 200
+
+@app.route("/", methods=["HEAD"])
+def index():
+    return jsonify({
+        "service": "thumbnail-service",
+        "status": "running"
+    }), 200
+
+# ------------------------------------------------------------
 # THUMBNAIL GENERATION
 # ------------------------------------------------------------
 
