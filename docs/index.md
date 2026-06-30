@@ -26,6 +26,7 @@ Whether you're new to SkoreFlow or an experienced developer, this documentation 
 
 ### Development Environment
 
+- [single-folder](./environment/single-folder.md)
 - [Foreword](./environment/foreword.md)
 - [Visual Studio Code settings](./environment/vscode.md)
 - [Git Survival Guide](./general/git.md)
@@ -56,7 +57,7 @@ Whether you're new to SkoreFlow or an experienced developer, this documentation 
 - [Architecture](./frontend/architecture-base.md)
 - [Architecture - Handbook](./frontend/frontend-handbook.md)
 - [Architecture - Flow](./frontend/architecture-mermaid.md)
-- [Installation](./frontend/install.md)
+- [React Installation](./frontend/react-install.md)
 - [React Guideline](./frontend/react-guide.md)
 - [Tailwind css](./frontend/tailwind.md)
 
@@ -70,7 +71,10 @@ Whether you're new to SkoreFlow or an experienced developer, this documentation 
 
 ### Sandbox
 
-- [SkoreFlow Sandbox](./skoreflow/sandbox.md)
+- [SkoreFlow Sandbox](./sandbox/sandbox.md)
+  - [backend](./sandbox/backend.md)
+  - [frontend](./sandbox/frontend.md)
+  - [thumbnail service](./sandbox/microservice/thumbnail.md)
 
 ### Contribution
 

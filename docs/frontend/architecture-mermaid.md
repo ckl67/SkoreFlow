@@ -3,7 +3,7 @@
 ## Entry points Flow
 
 Gives just a short overview of the entry points.
-See lso that **AuthProvider.tsx** is the central authentication component !
+See also that **AuthProvider.tsx** is the central authentication component !
 
 ```mermaid
 graph TD

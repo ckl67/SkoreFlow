@@ -27,18 +27,48 @@ No real email delivery to external providers
 No authentication or TLS required
 Ideal for development and testing environments
 
-### Installation
+## Mailpit Accessibility in VS Code Remote SSH
+
+### Issue
+
+When running Mailpit in a Docker container on a remote Linux VM, the web UI (`localhost:8025`) was initially inaccessible from the host machine's browser, even though other services (like React/Vite on port `5173`) were automatically forwarded.
+
+### Root Cause
+
+1. **Docker Binding:** By default, Docker port mapping might not always bind explicitly to all interfaces in a way that VS Code's background listener instantly registers.
+2. **Missing SSH Tunnel:** VS Code Remote SSH did not automatically catch the container's startup event, meaning the port was active on the VM but not tunnelled to the host's `localhost`.
+
+### Solution
+
+The issue was resolved by explicitly binding the ports to all interfaces (`0.0.0.0`) and recreating the container. This allowed VS Code to trigger its **Auto Forwarded** mechanism.
+
+```bash
+# Stop and remove the existing container
+sudo docker stop mailpit
+sudo docker rm mailpit
+
+# Run with explicit 0.0.0.0 binding
+sudo docker run -d \
+  --name mailpit \
+  -p 0.0.0.0:1025:1025 \
+  -p 0.0.0.0:8025:8025 \
+  axllent/mailpit
+```
+
+## MailPit Installation
 
 As it is a general tools, it will be installed at the root of the linux machine
 
 ```shell
 
 cd ~
-sudo snap install docker
-
-sudo docker run -d   --name mailpit   -p 1025:1025   -p 8025:8025   axllent/mailpit
+sudo docker stop mailpit
+sudo docker rm mailpit
+sudo docker run -d --name mailpit -p 0.0.0.0:1025:1025 -p 0.0.0.0:8025:8025 axllent/mailpit
 
 ```
+
+In PORTS you should see Origin : **Auto Forwarded**
 
 ### Default Configuration
 

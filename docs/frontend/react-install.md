@@ -1,11 +1,19 @@
-# React Installation Guide (Vite) for Skoreflow Monorepo
+# 1. React Installation Guide (Vite) for Skoreflow Monorepo
 
 This part is just for knowledge and as remember.
 This guide explains how to install and integrate a React frontend using Vite inside the existing Skoreflow monorepo.
 
+## 1.1. Clone the Repository
+
+```bash
+git clone https://github.com/ckl67/skoreflow.git
+cd skoreflow
+```
+
+
 ---
 
-## 1. Prerequisites
+## 1.2. Prerequisites
 
 Make sure Node.js is installed using `nvm` (recommended):
 
@@ -28,7 +36,7 @@ npm -v
 
 ```
 
-## 2. Project Context (IMPORTANT)
+## 1.3. Project Context (IMPORTANT)
 
 This project uses a monorepo structure:
 
@@ -46,7 +54,7 @@ SkoreFlow/
 
 ```
 
-## 3. Create React App (Vite)
+## 1.4. Create React App (Vite)
 
 Navigate to the frontend directory:
 
@@ -60,14 +68,14 @@ npm create vite@latest . -- --template react
 
 ```
 
-## 4. Install Dependencies
+## 1.5. Install Dependencies
 
 ```shell
 # from the root
  npm install
 ```
 
-## 5. Add React Router
+## 1.6. Add React Router
 
 ```shell
  npm install react-router-dom -w frontend
@@ -77,7 +85,7 @@ npm create vite@latest . -- --template react
 
 ```
 
-## 6. Run Development Server
+## 1.7. Run Development Server
 
 ```shell
  run dev

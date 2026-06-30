@@ -10,11 +10,19 @@
   "editor.formatOnSaveMode": "file",
   "editor.renderWhitespace": "selection",
 
-  "workbench.editor.labelFormat": "short",
+  "editor.defaultFormatter": null,
+
+  // =========================================================
+  // 🚀 NPM
+  // =========================================================
 
   "npm.packageManager": "npm",
 
-  //"npm.scriptExplorerAction": "run",
+  // =========================================================
+  //  📁 WORKBENCH
+  // =========================================================
+
+  "workbench.editor.labelFormat": "short",
 
   // =========================================================
   // 📁 FILES
@@ -31,15 +39,9 @@
   // =========================================================
   // 🧹 PRETTIER
   // =========================================================
-  "prettier.requireConfig": true,
-  "editor.defaultFormatter": null,
+  "prettier.requireConfig": false,
+  "prettier.configPath": "./config/prettier/prettier.config.mjs",
 
-  // =========================================================
-  // 🧹 LANGUAGE FORMATTERS
-  // =========================================================
-  "[go]": {
-    "editor.defaultFormatter": "golang.go"
-  },
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
@@ -62,10 +64,6 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": true
   },
-  "[python]": {
-    "editor.defaultFormatter": "charliermarsh.ruff",
-    "editor.formatOnSave": true
-  },
 
   // =========================================================
   // 🧹 ESLINT (ANALYSE ONLY)
@@ -73,28 +71,13 @@
   "eslint.useFlatConfig": true,
   "eslint.validate": ["javascript", "typescript", "javascriptreact", "typescriptreact"],
   "eslint.workingDirectories": [{ "mode": "auto" }],
-
   "eslint.format.enable": false,
 
   // =========================================================
-  // Emmet React
+  // MARKDOWNLINT
   // =========================================================
-  "emmet.includeLanguages": {
-    "javascript": "javascriptreact",
-    "typescript": "typescriptreact"
-  },
-  "emmet.triggerExpansionOnTab": true,
-
-  // =========================================================
-  // Markdown Preview
-  // =========================================================
-
   "markdown.preview.breaks": true,
   "editor.semanticHighlighting.enabled": true,
-
-  // =========================================================
-  // MARKDOWNLINT (OPTIONAL)
-  // =========================================================
   "markdownlint.run": "onSave",
 
   // =========================================================
@@ -105,9 +88,12 @@
   //"editor.codeLens": false,
 
   // =========================================================
-  // DRAW.IO
+  // FILE EXCLUSION
   // =========================================================
 
-  "hediet.vscode-drawio.theme": "kennedy",
-  "hediet.vscode-drawio.appearance": "dark"
+  "files.exclude": {
+    //  "**/node_modules": true,
+    "**/tmp": true,
+    "**/test-results": true
+  }
 }

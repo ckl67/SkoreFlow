@@ -170,7 +170,7 @@ func (c ServerConfig) LogSafe() {
 		fmt.Printf("  Port: %d\n", c.Smtp.HostServerPort)
 		fmt.Printf("  Username: %s\n", c.Smtp.Username)
 		fmt.Printf("  Password: %s\n", c.Smtp.PasswordBase64) // ❌ sensitive
-		fmt.Printf("  ==> In case MailPit is used you can access to its interface: http://localhost:8025 \n")
+		fmt.Printf("  ==> In case MailPit is used you can access to its interface via local interface : http://localhost:8025 \n")
 
 		fmt.Println("MicroService:")
 		fmt.Printf("  ThumbnailServiceURL: %s\n", c.MicroService.ThumbnailServiceURL)

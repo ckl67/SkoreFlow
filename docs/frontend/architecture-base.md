@@ -39,7 +39,7 @@ The FrontEnd test is performed through Vitest and Playwright in dedicated worksp
 
 #### backend/
 
-Remember contains the Go API.
+Remember backend contains the Go API.
 
 Responsible for:
 
@@ -59,21 +59,6 @@ Responsible for:
 - Routing
 - API consumption
 - Session management
-
-#### shared/
-
-Contains TypeScript resources shared between frontend and automated tests.
-
-Examples:
-
-```text
-shared/
-├── types/
-│   └── auth.ts
-├── frontend/
-│   └── enums/
-└── backend/
-```
 
 ## Routing Strategy
 
@@ -151,6 +136,15 @@ Benefits:
 - Single source of truth
 - No duplicated TypeScript definitions
 - Consistent contracts between tests and frontend
+
+```shell
+shared/
+├── types/
+│   └── auth.ts
+├── frontend/
+│   └── enums/
+└── backend/
+```
 
 ## Authentication Strategy
 
