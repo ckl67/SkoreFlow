@@ -9,15 +9,8 @@ export default defineConfig({
     sourcemap: false,
   },
   server: {
+    host: '0.0.0.0',
     port: 5173,
-    proxy: {
-      //To connect to Backend, We use "Proxy Vite" technique as ‘workaround’ see document: cors.md
-      '/api': {
-        target: 'http://192.168.1.138:8080',
-        changeOrigin: true,
-        secure: false,
-      },
-    },
     watch: {
       // Force Vite to check regularly whether files have changed
       // Essential for shared/network folders

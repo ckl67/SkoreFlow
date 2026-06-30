@@ -4,7 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "run:mode-test": "vite --mode test",
+    "run:mode-vm-dev": "vite --mode vm.dev",
+    "run:mode-dev": "vite --mode dev",
     "run:mode": "vite",
     "run-build": "vite preview",
     "build": "vite build",

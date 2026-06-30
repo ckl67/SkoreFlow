@@ -41,6 +41,7 @@ package api
 import (
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"backend/core/controllers"
@@ -83,17 +84,16 @@ func (server *Server) SetupRouter() {
 	//  - MaxAge Tells the browser how long (12h) to cache the "Preflight" response. 3. Configuration via Environment Variables
 	//
 
-	origin := config.Config().Frontend.CorsAllowedOrigins
-	if origin != "" {
-		r.Use(cors.New(cors.Config{
-			AllowOrigins:     []string{origin},
-			AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD"},
-			AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
-			AllowCredentials: true,
-			MaxAge:           12 * time.Hour,
-		}))
-	}
-	logger.Server.Info("CORS origin READING = %q", origin)
+	origins := strings.Split(config.Config().Frontend.CorsAllowedOrigins, ",")
+
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     origins,
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
+	logger.Server.Info("CORS origin READING = %q", origins)
 
 	// Recovery middleware prevents server crashes on panic.
 	// Instead of crashing, it returns HTTP 500 and keeps the server alive.

@@ -1,9 +1,5 @@
 import axios, { Method } from 'axios';
-
-// The browser will make a request to the vite dev server (localhost:5173/api)
-// And vite will forward it to the VM via the vite.config.js file !!
-// The other solution, is to fix IP address const API_URL = 'http://localhost:8080/api';
-const API_URL = '/api';
+import { config } from './../config/config';
 
 // --------------------------------------------------------------------------------
 // Request options
@@ -48,14 +44,14 @@ interface APIResponse<T = unknown> {
 export async function apiRequest<TResponse = unknown, TRequest = unknown>(
   method: Method,
   url: string,
-  options: RequestOptions<TRequest> = {},
+  options: RequestOptions<TRequest> = {}
 ): Promise<APIResponse<TResponse>> {
   const token = localStorage.getItem('token');
 
   try {
     const res = await axios<APIResponse<TResponse>>({
       method,
-      url: API_URL + url,
+      url: config.apiUrl + url,
       data: options.data,
       headers: {
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -105,5 +101,5 @@ axios.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  },
+  }
 );

@@ -24,11 +24,16 @@ Whether you're new to SkoreFlow or an experienced developer, this documentation 
 - [MonoRepo](./general/monorepo.md)
 - [Classroom](./general/classroom.md)
 
-### Development Environment
+### visual studio code
 
-- [single-folder](./environment/single-folder.md)
 - [Foreword](./environment/foreword.md)
 - [Visual Studio Code settings](./environment/vscode.md)
+- [Remote Development, Ports, and VPN](./environment/remote-ports.md)
+- [single-folder](./environment/single-folder.md)
+- [eslint and prettier](./environment/formatting.md)
+
+### Development Environment
+
 - [Git Survival Guide](./general/git.md)
 - [TypeScript Setup Requirements](./environment/vs-tools.md)
 - [Mail Server](./environment/mail-server.md)
@@ -60,6 +65,7 @@ Whether you're new to SkoreFlow or an experienced developer, this documentation 
 - [React Installation](./frontend/react-install.md)
 - [React Guideline](./frontend/react-guide.md)
 - [Tailwind css](./frontend/tailwind.md)
+- [Deployment Guide](./frontend/deployment-guide.md)
 
 ### End to End Guides
 

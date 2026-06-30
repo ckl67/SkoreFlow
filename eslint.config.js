@@ -1,5 +1,6 @@
 // ============================================================
 // ESLint Flat Configuration (ESLint v9+)
+// Consult The [Detailed Documentation](https://ckl67.github.io/SkoreFlow/)
 // ============================================================
 //
 // This configuration is designed for a TypeScript monorepo

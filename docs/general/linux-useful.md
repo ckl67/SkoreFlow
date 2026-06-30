@@ -1,5 +1,7 @@
 # Linux useful commands
 
+[← back](./../index.md)
+
 ## directory tree
 
 ```shell
