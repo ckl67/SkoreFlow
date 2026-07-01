@@ -1,5 +1,7 @@
 # Tailwind CSS
 
+[← back](./../index.md)
+
 ## Installation de Tailwind CSS
 
 [Tailwind css](https://tailwindcss.com/), helps to build modern websites without ever leaving your HTML.

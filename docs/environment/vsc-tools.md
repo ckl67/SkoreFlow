@@ -1,5 +1,7 @@
 # 1. Visual Studio Tools
 
+[← back](./../index.md)
+
 ## 1.3. Formatting & Linting
 
 ### 1.3.1. Formatting
@@ -10,6 +12,7 @@
 ### 1.3.2. Linting
 
 - ESLint is used for **code quality only**
+- It is a foundational tool used to ensure code quality, catch bugs early, and maintain a unified coding standard across all JavaScript and TypeScript packages.
 - No formatting rules inside ESLint
 
 ### 1.3.3. Vitest

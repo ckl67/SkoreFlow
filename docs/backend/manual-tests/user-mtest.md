@@ -1,5 +1,7 @@
 # Registration, Login, and Password Reset Tests
 
+[← back](./../../index.md)
+
 This document provides instructions for testing the registration, login, and password reset functionalities of the SkoreFlow backend. These tests are essential to ensure that the authentication system is working correctly and securely.
 2 approach to testing:
 
@@ -287,7 +289,7 @@ curl -X DELETE "http://localhost:8080/api/admin/users/3" \
  -H "Authorization: Bearer $TOKEN_ADMIN" | jq
 ```
 
-## Cleaning upavatar files
+## Cleaning avatar files
 
 Create a avatar file for testing, then delete it after the test:
 

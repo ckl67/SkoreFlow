@@ -1,5 +1,7 @@
 # 🛠️ Git Survival Guide — Essential Commands
 
+[← back](./../index.md)
+
 | Category                        | Action                                                             | Main command                                          |
 | :------------------------------ | :----------------------------------------------------------------- | :---------------------------------------------------- |
 | **Everyday basics**             | Check status                                                       | `git status`                                          |

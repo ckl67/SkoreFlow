@@ -1,5 +1,7 @@
 # 🤝 How to Contribute to SkoreFlow
 
+[← back](./../index.md)
+
 ## 👥 Mode Collaboration (Direct Access)
 
 If you are a member of the core team.

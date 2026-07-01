@@ -1,5 +1,7 @@
 # JS / TypeScript Ecosystem --- Mental Model Guide
 
+[← back](./../index.md)
+
 ## 1. Overview
 
 The JavaScript ecosystem is composed of multiple independent layers:

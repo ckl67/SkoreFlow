@@ -1,5 +1,21 @@
 {
   // =========================================================
+  // 👉 Be care that .vscode files will be ignored in subdirectories !
+  //    They would only be taken into account in case
+  //    the specific directory is open !
+  // =========================================================
+  //
+  // =========================================================
+  // FILE EXCLUSION
+  // =========================================================
+
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/tmp": true,
+    "**/test-results": true
+  },
+
+  // =========================================================
   // 🧠 GENERAL
   // =========================================================
   "editor.tabSize": 2,
@@ -40,7 +56,7 @@
   // 🧹 PRETTIER
   // =========================================================
   "prettier.requireConfig": false,
-  "prettier.configPath": "./config/prettier/prettier.config.mjs",
+  "prettier.configPath": "./prettier.config.mjs",
 
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
@@ -84,16 +100,6 @@
   // LENS
   // =========================================================
 
-  "mermaidChart.showGenerateDiagramCodeLens": false,
+  "mermaidChart.showGenerateDiagramCodeLens": false
   //"editor.codeLens": false,
-
-  // =========================================================
-  // FILE EXCLUSION
-  // =========================================================
-
-  "files.exclude": {
-    //  "**/node_modules": true,
-    "**/tmp": true,
-    "**/test-results": true
-  }
 }

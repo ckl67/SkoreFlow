@@ -1,5 +1,7 @@
 # Setup Manual composer tests
 
+[← back](./../../index.md)
+
 ```shell
 
 ADMIN_EMAIL="admin@admin.com"

@@ -1,5 +1,7 @@
 # Frontend Architecture flow
 
+[← back](./../index.md)
+
 ## Entry points Flow
 
 Gives just a short overview of the entry points.

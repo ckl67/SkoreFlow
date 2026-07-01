@@ -1,5 +1,7 @@
 # 1. Automatic Code Reloading with Air
 
+[← back](./../index.md)
+
 Go is a compiled language. By default, this means you need to stop, rebuild, and restart the application manually.
 To automate this process (commonly called "Hot Reload"), the standard tool is Air.
 

@@ -1,5 +1,7 @@
 # Test
 
+[← back](./../index.md)
+
 ## Install
 
 Make sur you have [playwright](https://playwright.dev/)

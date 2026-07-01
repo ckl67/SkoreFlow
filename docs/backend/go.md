@@ -1,5 +1,7 @@
 # Go language
 
+[← back](./../index.md)
+
 ## Introduction
 
 [Go language](https://go.dev/) is an expressive and concise programming language.

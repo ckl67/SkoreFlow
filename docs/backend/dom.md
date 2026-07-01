@@ -1,5 +1,7 @@
 # DOM (Document Object Model)
 
+[← back](./../index.md)
+
 The DOM (Document Object Model) is the bridge between a web page and your code (JavaScript).
 Here is the breakdown:
 

@@ -1,5 +1,7 @@
 # SMTP Server
 
+[← back](./../index.md)
+
 ## MailPit Overview (Development Email Server)
 
 [Mailpit](https://mailpit.axllent.org/) is a lightweight local SMTP server designed for development and testing purposes.

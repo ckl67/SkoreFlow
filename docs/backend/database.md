@@ -1,5 +1,7 @@
 # Database Migration Strategy (GORM AutoMigrate)
 
+[← back](./../index.md)
+
 SkoreFlow currently relies on `GORM AutoMigrate()` for schema evolution.
 
 `AutoMigrate()` is convenient for development and small/medium project evolution, but it has important limitations that developers must understand.

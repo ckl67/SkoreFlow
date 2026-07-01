@@ -1,5 +1,7 @@
 # 🌐 CORS Configuration Guide - SkoreFlow Backend
 
+[← back](./../index.md)
+
 ## What is CORS?
 
 CORS (Cross-Origin Resource Sharing) is a browser security mechanism.

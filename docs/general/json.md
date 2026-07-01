@@ -1,5 +1,7 @@
 # JSON Fundamentals for REST APIs (Go / Gin)
 
+[← back](./../index.md)
+
 ## What Is JSON, Formally?
 
 The JSON standard (RFC 8259) defines a JSON document simply as: **a JSON value**.

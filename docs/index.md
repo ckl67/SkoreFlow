@@ -12,6 +12,10 @@ Whether you're new to SkoreFlow or an experienced developer, this documentation 
 
 ## Table of Contents
 
+### Foreword
+
+- [Foreword](./environment/foreword.md)
+
 ### General
 
 - [Linux useful commands](./general/linux-useful.md)
@@ -26,7 +30,6 @@ Whether you're new to SkoreFlow or an experienced developer, this documentation 
 
 ### visual studio code
 
-- [Foreword](./environment/foreword.md)
 - [Visual Studio Code settings](./environment/vscode.md)
 - [Remote Development, Ports, and VPN](./environment/remote-ports.md)
 - [single-folder](./environment/single-folder.md)

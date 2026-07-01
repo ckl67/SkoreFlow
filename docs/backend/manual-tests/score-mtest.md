@@ -1,5 +1,7 @@
 # Setup Manual score tests
 
+[← back](./../../index.md)
+
 ## List of all users
 
 ```shell

@@ -1,5 +1,7 @@
 # Contributing Guide
 
+[← back](./../index.md)
+
 This document explains the step by step to set up the development environment and follow the contribution workflow for the SkoreFlow backend project.
 
 ## Clone the Repository

@@ -1,5 +1,7 @@
 # SkoreFlow Debug Setup Guide (Go + VS Code)
 
+[← back](./../index.md)
+
 ## Overview
 
 This document explains how to properly configure and use debugging for the SkoreFlow backend using VS Code and Delve (dlv).
@@ -31,7 +33,7 @@ go install github.com/go-delve/delve/cmd/dlv@latest
 
 SkoreFlow uses a **Go module inside the backend folder**:
 
-```
+```text
 SkoreFlow/
 └── backend/
     ├── go.mod
@@ -94,7 +96,7 @@ Therefore, debugging must be **explicit and deterministic**.
 
 Example:
 
-```
+```shell
 /home/christian/SkoreFlow_Project/SkoreFlow
 ```
 
@@ -108,13 +110,13 @@ Example:
 
 If editing:
 
-```
+```shell
 backend/cmd/cli/main.go
 ```
 
 Then:
 
-```
+```shell
 ${fileDirname} = backend/cmd/cli
 ```
 

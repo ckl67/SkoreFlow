@@ -1,5 +1,7 @@
 # SkoreFlow Frontend Architecture
 
+[← back](./../index.md)
+
 ## Overview
 
 The SkoreFlow frontend is a React + TypeScript application built with Vite.

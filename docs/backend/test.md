@@ -1,5 +1,7 @@
 # Auto testing
 
+[← back](./../index.md)
+
 This page provides instructions on how to run automated tests for the SkoreFlow backend.
 Automated testing is crucial for ensuring the reliability and stability of the application as it evolves.
 
