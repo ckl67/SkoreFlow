@@ -72,4 +72,9 @@ Message : **_Your free instance will spin down with inactivity, which can delay 
 
 ## Service test
 
-https://skoreflow-backend.onrender.com
+```shell
+
+https://skoreflow-backend.onrender.com/health
+https://skoreflow-backend.onrender.com/api
+
+```

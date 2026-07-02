@@ -90,6 +90,6 @@ Frontend
 ========
   # Backend address
   - VITE_API_URL          = http://localhost:8080/api
-  - VITE_API_URL          = https://skoreflow.onrender.com/api
+  - VITE_API_URL          = https://skoreflow-backend.onrender.com/api
 
 ```

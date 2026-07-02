@@ -18,6 +18,10 @@ SkoreFlow provides a structured pipeline to:
 - Process files (storage, thumbnails, normalization, score annotations)
 - Expose a robust REST API for frontend and integrations
 
+## 🧪 Sandbox
+
+Skoreflow can currently be tested in a [Sandbox](https://skoreflow-frontend.onrender.com/)
+
 ---
 
 ## 🚧 Project Status
