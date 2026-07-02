@@ -46,7 +46,9 @@ On render.com
 - key PORT
   - 5001
 
-### url
+### Test the service
+
+Test that service is running
 
 ```shell
   https://thumbnail-tgzi.onrender.com

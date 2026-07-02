@@ -6,15 +6,14 @@
 
 For Go Backend: Select "Web Services" on the PaaS
 
-```text
-Web Services — Dynamic web app. Ideal for full-stack apps, API servers, and mobile backends.
-```
+Set
 
-```shell
-
-Set the root directory as backend
-
-```
+- name : Skoreflow Backend
+- root directory : backend
+- build command : `go build -tags netgo -ldflags '-s -w' -o app ./cmd/server/main.go`
+- Secret file : .env --> copy the corresponding backend file
+- Start Command : `./app`
+- Specify : For hobby projects
 
 ### Compilation and Build
 
@@ -70,3 +69,7 @@ Render will create this file securely and invisibly on their servers
 
 Render.com service use the free (Hobby) plan and will have the 15-minute idle timeout.
 Message : **_Your free instance will spin down with inactivity, which can delay requests by 50 seconds or more._**
+
+## Service test
+
+https://skoreflow-backend.onrender.com

@@ -8,6 +8,51 @@ Currently choice : [Render](https://render.com/)
 
 Domain name : skoreflow-app.comm
 
+## Remember
+
+Render build command is : `npm install && npm run build`
+In package.json this corresponds to : `vite build`
+
+```javascript
+  "scripts": {
+    ...
+    "build": "vite build",
+    ...
+  },
+```
+
+So `npm install && npm run build` could be replaced by `npm install && npm vite build`
+however, with `npm run build` npm automatically adds node_modules/.bin
+
+Below the order of precedence of configuration : From lowest to highest:
+
+```text
+    .env
+      ↓
+    .env.local
+        ↓
+    .env.<mode>
+         ↓
+    .env.<mode>.local
+            ↓
+    System environment variables
+```
+
+When Vite starts with : `vite build` it will merge **_(automatically)_** `import.meta.env.VITE_API_URL` during the build.
+Vite just replace before build.
+
+vite also integrates the possibility to read `.env` file thanks to mode
+
+```text
+vite --mode test
+
+Will load in order :
+  .env
+  .env.local
+  .env.test
+  .env.test.local
+```
+
 ## Configuration
 
 - [backend](./backend.md)

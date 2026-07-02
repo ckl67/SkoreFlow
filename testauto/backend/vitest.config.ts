@@ -1,4 +1,4 @@
-import base from '../../config/vitest/vitest.base';
+import base from '../../vitest.base';
 import { defineConfig, mergeConfig } from 'vitest/config';
 
 export default mergeConfig(
@@ -8,5 +8,5 @@ export default mergeConfig(
       environment: 'node',
       include: ['**/*.test.ts'],
     },
-  }),
+  })
 );

@@ -75,8 +75,8 @@ func (server *Server) Setup(version string, db *gorm.DB, paths *config.Paths) {
 	if err != nil {
 		logger.Server.Error("(Setup) microservice/thumbnail not available: %v", err)
 		// Option A: continue anyway
-		// Option B: panic (recommended if mandatory)
-		panic(err)
+		// Option B: panic (Not recommended)
+		// panic(err)
 	} else {
 		logger.Server.Info("(Setup) microservice/thumbnail is healthy")
 	}
