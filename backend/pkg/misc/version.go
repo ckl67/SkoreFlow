@@ -30,5 +30,7 @@ func PrintAsciiVersion(version string) {
 `
 	asciiArt := strings.ReplaceAll(rawArt, "$", "`")
 
-	fmt.Printf("%s%s\n\n", asciiArt, version)
+	fmt.Printf("%s\n", asciiArt)
+	fmt.Printf("Backend - Version : %s\n\n", version)
+
 }

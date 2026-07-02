@@ -90,7 +90,7 @@
   "eslint.format.enable": false,
 
   // =========================================================
-  // MARKDOWNLINT
+  // MARKDOWN
   // =========================================================
   "markdown.preview.breaks": true,
   "editor.semanticHighlighting.enabled": true,
@@ -99,7 +99,11 @@
   // =========================================================
   // LENS
   // =========================================================
-
-  "mermaidChart.showGenerateDiagramCodeLens": false
+  "mermaidChart.showGenerateDiagramCodeLens": false,
   //"editor.codeLens": false,
+
+  // =========================================================
+  // PYTHON
+  // =========================================================
+  "python.terminal.activateEnvironment": false
 }

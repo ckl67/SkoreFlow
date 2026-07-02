@@ -53,7 +53,11 @@ Whether you're new to SkoreFlow or an experienced developer, this documentation 
 - [Automatic Code Reloading with Air](./backend/air.md)
 - [Running the Backend](./backend/run.md)
 - [Debugging](./backend/debug.md)
-- [Backend Testing](./backend/test.md)
+- [Backend Testing (curl)](./backend/test.md)
+  - [smoke](./backend/manual-tests/smoke-mtest.md)
+  - [register and login](./backend/manual-tests/user-mtest.md)
+  - [composer](./backend/manual-tests/composer-mtest.md)
+  - [score](./backend/manual-tests/score-mtest.md)
 
 ### Microservice
 
