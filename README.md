@@ -1,6 +1,6 @@
 # 🎼 SkoreFlow
 
-> **From upload to structured music data — cleanly processed.**
+**From upload to structured music data — cleanly processed.**
 
 SkoreFlow is a backend and frontend application designed to manage, process, and serve musical scores through a clean, scalable, and layered architecture.
 SkoreFlow is the result of several iterations on earlier experimental projects, redesigned with a focus on clean architecture, scalability, and maintainability.
@@ -44,7 +44,6 @@ Contributions and feedback are welcome.
 .
 
 ├── backend
-├── config
 ├── docs
 ├── frontend
 ├── microservice
@@ -84,7 +83,7 @@ SkoreFlow/
 
 ```
 
-📌 Rules to Follow
+### Rules to Follow
 
 - Always run npm install from the root
 - Always specify the workspace using -w
@@ -94,7 +93,7 @@ SkoreFlow/
   - Vitest → testauto/backend
   - React → frontend
 
-## Local Services
+## 📍Local Services
 
 - Backend Go : localhost:8080
 - MicroService thumbnail : localhost:5010
@@ -115,12 +114,13 @@ cd skoreflow
 
 Open visual code, and open file `.code-workspace`
 
-### Documentation
+## 📖 Documentation
 
 - The [Detailed Documentation](https://ckl67.github.io/SkoreFlow/) will cover architecture, API, and development guidelines.
-- The document can also be consulted locally in visual studio code via the integrated browser[Local document](http://127.0.0.1:3000/docs/index.html#/)
+- The document can also be consulted locally in 'visual studio code' via the integrated browser[SkoreFlow document](http://127.0.0.1:3000/docs/index.html#/)
+- **_It is essential that the "Live Server" has been started before manually ! `ctrl Shift p` --> `Live Premier Start Server`_**
 
-## 📌 Future Improvements or Bug detection
+## 🔮Future Improvements or Bug detection
 
 - Improvements or highlighting a BUG can be done via [Github Issue](https://github.com/ckl67/SkoreFlow/issues)
 

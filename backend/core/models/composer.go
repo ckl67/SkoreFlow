@@ -52,6 +52,14 @@ func (c *Composer) Update(db *gorm.DB) error {
 	return db.Save(c).Error
 }
 
+// ExistsByName checks whether a Composer exists with the given SafeName.
+// Returns true if found, false otherwise.
+func (u *Composer) ExistsByName(db *gorm.DB, name string) (bool, error) {
+	var count int64
+	err := db.Model(&Composer{}).Where("(name LIKE ? OR safe_name LIKE ?)", name, name).Count(&count).Error
+	return count > 0, err
+}
+
 // Delete permanently removes the composer from the database.
 // Uses Unscoped() to bypass soft delete if enabled.
 // Returns the number of affected rows.

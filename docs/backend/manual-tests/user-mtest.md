@@ -91,7 +91,7 @@ TOKEN_USER=$(curl -s -X POST http://localhost:8080/api/login \
  -d "{
     \"email\":\"${EMAIL}\",
     \"password\":\"password123\"
-  }" | jq -r '.token')
+  }" | jq -r '.data.token')
 
 echo "JWT Token: $TOKEN_USER"
 ```
@@ -144,7 +144,7 @@ TOKEN_USER=$(curl -s -X POST http://localhost:8080/api/login \
  -d "{
     \"email\":\"${EMAIL}\",
     \"password\":\"newPassword123\"
-  }" | jq -r '.token')
+  }" | jq -r '.data.token')
 echo "JWT Token: $TOKEN_USER"
 ```
 
@@ -177,11 +177,11 @@ To update the user's profile information, you can use the following command with
 
 TOKEN_USER1=$(curl -X POST http://localhost:8080/api/login \
  -H "Content-Type: application/json" \
- -d '{"email":"user1@test.com","password":"password123"}' | jq -r '.token')
+ -d '{"email":"user1@test.com","password":"password123"}' | jq -r '.data.token')
 
 TOKEN_USER2=$(curl -X POST http://localhost:8080/api/login \
  -H "Content-Type: application/json" \
- -d '{"email":"user2.updated@test.com","password":"password123"}' | jq -r '.token')
+ -d '{"email":"user2.updated@test.com","password":"password123"}' | jq -r '.data.token')
 
 
 echo "JWT Token1 : $TOKEN_USER1"
@@ -217,7 +217,7 @@ TOKEN_ADMIN=$(curl -s -X POST http://localhost:8080/api/login \
  -d "{
     \"email\":\"${ADMIN_EMAIL}\",
     \"password\":\"${ADMIN_PASSWORD}\"
-  }" | jq -r '.token')
+  }" | jq -r '.data.token')
 
 echo "JWT Token: $TOKEN_ADMIN"
 
@@ -313,7 +313,7 @@ TOKEN_ADMIN=$(curl -s -X POST http://localhost:8080/api/login \
  -d "{
     \"email\":\"${ADMIN_EMAIL}\",
     \"password\":\"${ADMIN_PASSWORD}\"
-  }" | jq -r '.token')
+  }" | jq -r '.data.token')
 
 
 curl -H "Authorization: Bearer $TOKEN_ADMIN" "http://localhost:8080/api/admin/users" | jq

@@ -15,7 +15,7 @@ import (
 // Notes:
 // - Uses a lightweight existence check to avoid unnecessary DB errors
 // - Designed to run safely on every application startup
-func Load(db *gorm.DB, name string, email string, password string, role int, avatar string) {
+func LoadUser(db *gorm.DB, name string, email string, password string, role int, avatar string) {
 	var user models.User
 
 	// 1. Check if account exists (silent check)
@@ -50,4 +50,35 @@ func Load(db *gorm.DB, name string, email string, password string, role int, ava
 	}
 
 	logger.DB.Info("%s user created with email: %s", name, email)
+}
+
+func LoadComposer(db *gorm.DB, name string, epoch string, externalUrl string, picturePath string) {
+	var Composer models.Composer
+
+	// 1. Check if composer exists (silent check)
+	// Avoids triggering "record not found" on an empty database
+	exist, _ := Composer.ExistsByName(db, name)
+
+	if exist {
+		logger.DB.Info("%s Composer already exists", name)
+		return
+	}
+
+	// 2. Build  Composer model
+	newComposer := models.Composer{
+		Name:        name,
+		SafeName:    format.SanitizeName(name),
+		Epoch:       epoch,
+		ExternalURL: externalUrl,
+		PicturePath: picturePath,
+		IsVerified:  true,
+	}
+
+	// 3. Persist Composer
+	err := newComposer.Create(db)
+	if err != nil {
+		logger.DB.Error("cannot create %s Composer: %v", name, err)
+	}
+
+	logger.DB.Info("%s Composer created with Name : %s", name, err)
 }

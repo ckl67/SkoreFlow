@@ -71,7 +71,7 @@ cleandb:
 	rm storage/database.db
 
 
-## runHR: Automate the Hot Reload process thanks to the standard Air tool
+## run: Automate the Hot Reload process thanks to the standard Air tool
 air:
 	@echo "==> Running Hot Reload (air) main.go (Version: $(VERSION))..."
 	APP_ENV=production \

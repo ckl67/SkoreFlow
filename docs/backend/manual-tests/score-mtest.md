@@ -2,25 +2,15 @@
 
 [← back](../../doc.md)
 
-## List of all users
+With prefilled database
+
+## Login
 
 ```shell
 
-ADMIN_EMAIL="admin@admin.com"
-ADMIN_PASSWORD="skoreflow"
-TOKEN_ADMIN=$(curl -s -X POST http://localhost:8080/api/login \
- -H "Content-Type: application/json" \
- -d "{
-    \"email\":\"${ADMIN_EMAIL}\",
-    \"password\":\"${ADMIN_PASSWORD}\"
-  }" | jq -r '.token')
-
-
-curl -H "Authorization: Bearer $TOKEN_ADMIN" http://localhost:8080/api/admin/users | jq
-
 TOKEN_USER2=$(curl -X POST http://localhost:8080/api/login \
  -H "Content-Type: application/json" \
- -d '{"email":"user2@test.com","password":"password123"}' | jq -r '.token')
+ -d '{"email":"user2@test.com","password":"password123"}' | jq -r '.data.token')
 
 echo "JWT Token: $TOKEN_USER2"
 
