@@ -1,6 +1,6 @@
 # Go language
 
-[← back](./../index.md)
+[← back](../doc.md)
 
 ## Introduction
 

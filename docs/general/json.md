@@ -1,6 +1,6 @@
 # JSON Fundamentals for REST APIs (Go / Gin)
 
-[← back](./../index.md)
+[← back](../doc.md)
 
 ## What Is JSON, Formally?
 

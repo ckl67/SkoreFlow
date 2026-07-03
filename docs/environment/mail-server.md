@@ -1,6 +1,6 @@
 # SMTP Server
 
-[← back](./../index.md)
+[← back](../doc.md)
 
 ## MailPit Overview (Development Email Server)
 

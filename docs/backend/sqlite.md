@@ -1,6 +1,6 @@
 # sqlitebrowser
 
-[← back](./../index.md)
+[← back](../doc.md)
 
 sqlitebrowser is a graphical tool that allows you to interact with SQLite databases. It provides an intuitive interface for browsing, querying, and managing your SQLite databases without needing to use command-line tools.
 

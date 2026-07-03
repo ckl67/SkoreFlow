@@ -1,6 +1,6 @@
 # SkoreFlow Frontend Architecture
 
-[← back](./../index.md)
+[← back](../doc.md)
 
 ## Overview
 

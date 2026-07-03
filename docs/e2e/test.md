@@ -1,6 +1,6 @@
 # Test
 
-[← back](./../index.md)
+[← back](../doc.md)
 
 ## Install
 

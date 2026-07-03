@@ -1,6 +1,6 @@
 # Setup Manual composer tests
 
-[← back](./../../index.md)
+[← back](./../../doc.md)
 
 ```shell
 

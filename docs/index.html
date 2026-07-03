@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Ma Documentation</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+    <!-- Themes
+      Other themes : https://dev.to/silviaodwyer/7-stunning-docsify-themes-to-check-out-58na
+
+      <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify/themes/dark.css" />
+      <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify/themes/pure.css" />
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-simple-dark.css">
+      -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-simple-dark.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/themeable.css"
+    />
+  </head>
+  <body>
+    <div id="app">Loading...</div>
+    <script>
+      window.$docsify = {
+        name: 'SkoreFlow Documentation',
+        homepage: 'doc.md',
+        loadSidebar: false,
+
+        themeable: {
+          readyTransition: true,
+          responsiveTables: true,
+        },
+
+        plugins: [
+          function (hook) {
+            // Replace the Markdown "<-back" button which is not compatible with Docsify
+            // Docsify cannot handle the link [](./../backend)
+            // And Markdown cannot handle simple links like [](backend/test.md)
+            // Solution the next function will
+            //  - create a new button for web navigation
+            //  - delete the "<-back" button from markdown
+            // All 2 worlds can cohabitate !!
+
+            hook.doneEach(function () {
+              // 👉 HOME PAGE = do nothing
+              const path = location.hash.replace('#/', '').replace('#', '');
+              if (path === '' || path === '/') return;
+
+              // removes ONLY the back markdown
+              document.querySelectorAll('.markdown-section a').forEach((a) => {
+                const href = a.getAttribute('href') || '';
+                const cleanHref = href.split('?')[0];
+                const text = a.textContent.trim().toLowerCase();
+                if (
+                  text.includes('back') &&
+                  (cleanHref.includes('../doc') ||
+                    cleanHref.endsWith('/doc') ||
+                    cleanHref.includes('/doc.md'))
+                ) {
+                  a.remove();
+                }
+              });
+
+              // custom button
+              if (document.querySelector('.skore-back')) return;
+              const container = document.querySelector('.markdown-section');
+              if (!container) return;
+
+              const btn = document.createElement('a');
+              btn.textContent = '← back home';
+              btn.className = 'skore-back';
+
+              btn.style.display = 'inline-block';
+              btn.style.marginBottom = '2px';
+              btn.style.color = '#60a5fa';
+              btn.style.cursor = 'pointer';
+
+              btn.onclick = (e) => {
+                e.preventDefault();
+                if (history.length > 1) {
+                  history.back();
+                } else {
+                  location.hash = '/';
+                }
+              };
+              container.prepend(btn);
+            });
+          },
+        ],
+      };
+    </script>
+    <!-- The Docsify engine -->
+    <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
+  </body>
+</html>

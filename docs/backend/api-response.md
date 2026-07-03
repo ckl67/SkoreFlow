@@ -1,6 +1,6 @@
 # Skoreflow API Response Standard
 
-[← back](./../index.md)
+[← back](../doc.md)
 
 ## Overview
 

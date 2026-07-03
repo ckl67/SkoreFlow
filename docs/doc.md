@@ -14,7 +14,7 @@ Whether you're new to SkoreFlow or an experienced developer, this documentation 
 
 ### Foreword
 
-- [Foreword](./environment/foreword.md)
+- <span id="ref-foreword"></span>[Foreword](./environment/foreword.md)
 
 ### General
 

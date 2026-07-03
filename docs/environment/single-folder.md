@@ -1,6 +1,6 @@
 # VS Code Workspace Decision (Monorepo Setup)
 
-[← back](./../index.md)
+[← back](../doc.md)
 
 This project uses a **single-folder VS Code setup (Open Folder mode)** instead of a multi-root `.code-workspace`.
 The main reason after several attempt is that something will always missing in a specific `.code-workspace`, and we risk

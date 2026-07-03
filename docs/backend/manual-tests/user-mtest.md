@@ -1,6 +1,6 @@
 # Registration, Login, and Password Reset Tests
 
-[← back](./../../index.md)
+[← back](../../doc.md)
 
 This document provides instructions for testing the registration, login, and password reset functionalities of the SkoreFlow backend. These tests are essential to ensure that the authentication system is working correctly and securely.
 2 approach to testing:

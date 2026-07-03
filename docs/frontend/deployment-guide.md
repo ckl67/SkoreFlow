@@ -1,6 +1,6 @@
 # Vite Environment Variables & Deployment Guide
 
-[← back](./../index.md)
+[← back](../doc.md)
 
 ## 1. Overview
 

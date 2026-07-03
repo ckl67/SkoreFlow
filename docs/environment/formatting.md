@@ -1,6 +1,6 @@
 # ESLint and Prettier Configuration Guide
 
-[← back](./../index.md)
+[← back](../doc.md)
 
 ESLint is a foundational tool used to ensure code quality, catch bugs early, and maintain a unified coding standard across all JavaScript and TypeScript packages.
 

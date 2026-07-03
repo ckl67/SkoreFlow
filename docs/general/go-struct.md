@@ -1,6 +1,6 @@
 # 1. Go Struct Tags & Field Mapping
 
-[← back](./../index.md)
+[← back](../doc.md)
 
 In Go, Struct Tags are small pieces of metadata attached to struct fields.
 They are strings _(enclosed in backticks)_ that provide instructions to external libraries—like encoding/json for API responses or gorm for database mapping—on how to handle each field.

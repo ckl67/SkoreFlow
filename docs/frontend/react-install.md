@@ -1,6 +1,6 @@
 # 1. React Installation Guide (Vite) for Skoreflow Monorepo
 
-[← back](./../index.md)
+[← back](../doc.md)
 
 This part is just for knowledge and as remember.
 This guide explains how to install and integrate a React frontend using Vite inside the existing Skoreflow monorepo.

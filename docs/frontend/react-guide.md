@@ -1,6 +1,6 @@
 # Introduction
 
-[← back](./../index.md)
+[← back](../doc.md)
 
 [React introduction](https://react.dev/learn)
 

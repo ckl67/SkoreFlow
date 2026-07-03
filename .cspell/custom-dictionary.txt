@@ -57,6 +57,7 @@ sheetcomposer
 shellcheck
 shfmt
 SIDENAVBAR
+skore
 Skoreflow
 sonate
 sqlitebrowser

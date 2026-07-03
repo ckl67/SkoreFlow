@@ -118,6 +118,7 @@ Open visual code, and open file `.code-workspace`
 ### Documentation
 
 - The [Detailed Documentation](https://ckl67.github.io/SkoreFlow/) will cover architecture, API, and development guidelines.
+- The document can also be consulted locally in visual studio code via the integrated browser[Local document](http://127.0.0.1:3000/docs/index.html#/)
 
 ## 📌 Future Improvements or Bug detection
 

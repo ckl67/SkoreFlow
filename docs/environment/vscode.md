@@ -1,6 +1,6 @@
 # 1. VS Code Setup Guide – SkoreFlow (Linux)
 
-[← back](./../index.md)
+[← back](../doc.md)
 
 This guide explains how to configure a clean and consistent development environment for the **SkoreFlow monorepo**.
 

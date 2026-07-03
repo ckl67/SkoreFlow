@@ -1,6 +1,6 @@
 # Frontend
 
-[← back](./../index.md)
+[← back](../doc.md)
 
 For your React frontend: Select "Static Sites"
 

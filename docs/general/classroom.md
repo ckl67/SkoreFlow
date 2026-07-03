@@ -1,6 +1,6 @@
 # Classroom
 
-[← back](./../index.md)
+[← back](../doc.md)
 
 Some video which could be helpful
 

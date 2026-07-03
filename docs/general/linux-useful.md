@@ -1,6 +1,6 @@
 # Linux useful commands
 
-[← back](./../index.md)
+[← back](../doc.md)
 
 ## directory tree
 

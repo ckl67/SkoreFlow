@@ -1,6 +1,6 @@
 # JS / TypeScript Ecosystem --- Mental Model Guide
 
-[← back](./../index.md)
+[← back](../doc.md)
 
 ## 1. Overview
 

@@ -1,6 +1,6 @@
 # thumbnail-service
 
-[← back](./../../index.md)
+[← back](../../doc.md)
 
 ## Service
 

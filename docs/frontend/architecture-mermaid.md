@@ -1,6 +1,6 @@
 # Frontend Architecture flow
 
-[← back](./../index.md)
+[← back](../doc.md)
 
 ## Entry points Flow
 

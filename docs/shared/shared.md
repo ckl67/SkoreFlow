@@ -1,6 +1,6 @@
 # Shared
 
-[← back](./../index.md)
+[← back](../doc.md)
 
 Directory to share information between backend, frontend and testauto
 

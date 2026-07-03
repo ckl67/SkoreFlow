@@ -50,6 +50,11 @@
     "davidanson.vscode-markdownlint",
     "hediet.vscode-drawio",
 
+    // For documentation view via show preview
+    // Open the docs/index.html file the menu : "Show Preview"
+    "ritwickdey.liveserve",
+    "ms-vscode.live-server",
+
     // =========================================================
     // 🔤 QUALITY / SPELLING
     // =========================================================

@@ -1,6 +1,6 @@
 # Tailwind CSS
 
-[← back](./../index.md)
+[← back](../doc.md)
 
 ## Installation de Tailwind CSS
 

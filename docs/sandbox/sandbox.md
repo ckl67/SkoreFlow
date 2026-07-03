@@ -1,6 +1,6 @@
 # Principle
 
-[← back](./../index.md)
+[← back](../doc.md)
 
 Roadmap for deploying SkoreFlow will use a Platform as a Service - PaaS
 

@@ -1,6 +1,6 @@
 # Microservice
 
-[← back](./../../index.md)
+[← back](../../doc.md)
 
 ## Principle
 

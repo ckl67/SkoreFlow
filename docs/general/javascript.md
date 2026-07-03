@@ -1,6 +1,6 @@
 # JavaScript `{}` — Object Creation vs Destructuring
 
-[← back](./../index.md)
+[← back](../doc.md)
 
 In JavaScript, curly braces `{}` are **overloaded syntax**.
 Their meaning depends entirely on the context in which they are used. The two most common interpretations are:

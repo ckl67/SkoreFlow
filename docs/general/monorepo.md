@@ -1,6 +1,6 @@
 # 1. Monorepo
 
-[← back](./../index.md)
+[← back](../doc.md)
 
 ## 1.1. Monorepo Rules (IMPORTANT)
 

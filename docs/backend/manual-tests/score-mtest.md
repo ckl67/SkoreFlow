@@ -1,6 +1,6 @@
 # Setup Manual score tests
 
-[← back](./../../index.md)
+[← back](../../doc.md)
 
 ## List of all users
 

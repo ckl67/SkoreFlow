@@ -1,6 +1,6 @@
 # Remote Development, Ports, and VPN (Host ↔ VM) — Practical Model
 
-[← back](./../index.md)
+[← back](../doc.md)
 
 This document explains what is happening when you develop inside a remote Ubuntu VM from VS Code on a Windows host, and why networking issues (localhost, ports, CORS, curl failures) occur.
 

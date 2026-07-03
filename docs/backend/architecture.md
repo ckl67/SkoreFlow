@@ -1,6 +1,6 @@
 # 🎼 SkoreFlow Backend
 
-[← back](./../index.md)
+[← back](../doc.md)
 
 ## 🧱 Architecture
 

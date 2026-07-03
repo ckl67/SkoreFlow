@@ -1,6 +1,6 @@
 # Common HTTP Status Codes
 
-[← back](./../index.md)
+[← back](../doc.md)
 
 ✅ 2xx — Success
 

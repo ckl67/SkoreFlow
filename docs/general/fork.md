@@ -1,6 +1,6 @@
 # 🤝 How to Contribute to SkoreFlow
 
-[← back](./../index.md)
+[← back](../doc.md)
 
 ## 👥 Mode Collaboration (Direct Access)
 

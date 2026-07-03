@@ -1,6 +1,6 @@
 # 1. Visual Studio Tools
 
-[← back](./../index.md)
+[← back](../doc.md)
 
 ## 1.3. Formatting & Linting
 

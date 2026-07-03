@@ -1,6 +1,6 @@
 # SkoreFlow Debug Setup Guide (Go + VS Code)
 
-[← back](./../index.md)
+[← back](../doc.md)
 
 ## Overview
 

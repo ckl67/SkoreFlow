@@ -1,6 +1,6 @@
 # SkoreFlow Frontend Handbook
 
-[← back](./../index.md)
+[← back](../doc.md)
 
 From React Fundamentals to Production Architecture
 
