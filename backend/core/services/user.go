@@ -10,6 +10,7 @@ package services
 import (
 	"errors"
 	"fmt"
+	"io"
 	"mime/multipart"
 	"os"
 	"path/filepath"
@@ -354,6 +355,20 @@ func (s *UserService) UpdateProfile(uid uint32, input forms.UpdateProfileRequest
 
 // UploadAvatar uploads and assigns a new avatar to a user.
 func (s *UserService) UploadAvatar(uid uint32, file *multipart.FileHeader) (*models.User, error) {
+	if file == nil {
+		return nil, apperrors.ErrImageFormatInvalid
+	}
+
+	f, err := file.Open()
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+
+	return s.StoreAvatar(uid, f, file.Filename)
+}
+
+func (s *UserService) StoreAvatar(uid uint32, reader io.Reader, filename string) (*models.User, error) {
 	var user models.User
 
 	if err := user.FindByID(s.db, uid); err != nil {
@@ -361,7 +376,7 @@ func (s *UserService) UploadAvatar(uid uint32, file *multipart.FileHeader) (*mod
 	}
 
 	// Minimal tests on files required because service call be called from everywhere !!
-	ext := strings.ToLower(filepath.Ext(file.Filename))
+	ext := strings.ToLower(filepath.Ext(filename))
 	if ext == "" {
 		return nil, apperrors.ErrImageFormatInvalid
 	}
@@ -379,7 +394,7 @@ func (s *UserService) UploadAvatar(uid uint32, file *multipart.FileHeader) (*mod
 	fullFilePath := s.paths.StorageAbsPath(filePath)
 	logger.User.Debug("(UploadAvatar) Absolute path %s", fullFilePath)
 
-	if err := filedir.SaveFile(file, fullFilePath); err != nil {
+	if err := filedir.SaveFile(fullFilePath, reader); err != nil {
 		return nil, err
 	}
 

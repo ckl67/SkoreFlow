@@ -11,7 +11,7 @@
     "// BACKEND DEV //": "",
     "🐹🌀backend:air": "cd backend && make air-dev",
     "🐹backend:run": "cd backend && make run",
-    "// BACKEND TEST SEED //": "",
+    "// BACKEND TEST (SEED DATA) //": "",
     "🐹🌀🧪backend:air (RegToken)": "cd backend && make air-test",
     "🐹🧪backend:run (RegToken)": "cd backend && make run-test",
     "// FRONTEND DEV VM (Via Workspaces) //": "",

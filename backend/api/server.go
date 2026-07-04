@@ -35,7 +35,7 @@ import (
 type Server struct {
 	DB *gorm.DB
 
-	sfPath *config.Paths
+	Path *config.Paths
 
 	authService     *services.AuthService
 	userService     *services.UserService
@@ -48,7 +48,7 @@ type Server struct {
 
 // Setup initializes the server state and application components.
 func (server *Server) Setup(version string, db *gorm.DB, paths *config.Paths) {
-	server.sfPath = paths
+	server.Path = paths
 
 	server.Version = version
 	server.DB = db

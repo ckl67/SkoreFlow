@@ -4,6 +4,7 @@ import (
 	"backend/infrastructure/config"
 	"backend/infrastructure/database"
 	"backend/infrastructure/database/seed"
+	"backend/infrastructure/logger"
 )
 
 // Start orchestrates the application setup and launches the server.
@@ -35,7 +36,27 @@ func Start(version string) {
 		seed.LoadUser(appServer.DB, "moderator2", "moderator2@test.com", "password123", config.RoleModerator, "users/moderator.png")
 
 		// Some Composers
-		seed.LoadComposer(appServer.DB, "Wolfgang Amadeus Mozart", "Classical period", "https://fr.wikipedia.org/wiki/Wolfgang_Amadeus_Mozart", "")
+		csc := seed.ComposerSeedContext{
+			DB:    appServer.DB,
+			Paths: appServer.Path,
+		}
+		if err := seed.LoadComposer(csc,
+			"Wolfgang Amadeus Mozart",
+			"Classical period",
+			"https://fr.wikipedia.org/wiki/Wolfgang_Amadeus_Mozart",
+			"test-mode/resources/composers/Mozart.png",
+		); err != nil {
+			logger.DB.Fatal("Seed failed: %v", err)
+		}
+
+		if err := seed.LoadComposer(csc, "Ludwig van Beethoven",
+			"Classical period",
+			"https://fr.wikipedia.org/wiki/Ludwig_van_Beethoven",
+			"test-mode/resources/composers/Beethoven.png",
+		); err != nil {
+			logger.DB.Fatal("Seed failed: %v", err)
+		}
+
 	}
 
 	// 4. Port Configuration

@@ -1,13 +1,27 @@
 package seed
 
 import (
+	"backend/core/apperrors"
 	"backend/core/models"
+	"backend/infrastructure/config"
 	"backend/infrastructure/logger"
+	"backend/pkg/filedir"
 	"backend/pkg/format"
+	"backend/pkg/media"
 	"backend/pkg/security"
+	"fmt"
+	"os"
+	"path/filepath"
+	"strings"
 
 	"gorm.io/gorm"
 )
+
+// Structure
+type ComposerSeedContext struct {
+	DB    *gorm.DB
+	Paths *config.Paths
+}
 
 // Load initializes seed data after database connection.
 // Essentially admin
@@ -52,33 +66,69 @@ func LoadUser(db *gorm.DB, name string, email string, password string, role int,
 	logger.DB.Info("%s user created with email: %s", name, email)
 }
 
-func LoadComposer(db *gorm.DB, name string, epoch string, externalUrl string, picturePath string) {
-	var Composer models.Composer
+// LoadComposer
+func LoadComposer(ctx ComposerSeedContext, name, epoch, externalURL, picturePath string) error {
+	var composer models.Composer
 
 	// 1. Check if composer exists (silent check)
 	// Avoids triggering "record not found" on an empty database
-	exist, _ := Composer.ExistsByName(db, name)
-
+	exist, _ := composer.ExistsByName(ctx.DB, name)
 	if exist {
 		logger.DB.Info("%s Composer already exists", name)
-		return
+		return nil
 	}
 
-	// 2. Build  Composer model
+	// 2 File Storage
+	file, err := os.Open(picturePath)
+	if err != nil {
+		// For debug
+		wd, _ := os.Getwd()
+		logger.DB.Info("WORKDIR = %s", wd)
+
+		abs, _ := filepath.Abs(picturePath)
+		logger.DB.Info("INPUT IMAGE PATH = %s", picturePath)
+		logger.DB.Info("RESOLVED IMAGE PATH = %s", abs)
+
+		return fmt.Errorf("cannot open seed image %q: %w", picturePath, err)
+	}
+	defer file.Close()
+
+	safeName := format.SanitizeName(name)
+	ext := strings.ToLower(filepath.Ext(picturePath))
+	if ext == "" {
+		return apperrors.ErrImageFormatInvalid
+	}
+
+	if _, ok := media.AllowedImageExt[ext]; !ok {
+		logger.Composer.Debug("(LoadComposer) invalid format: %s", ext)
+		return apperrors.ErrImageFormatInvalid
+	}
+
+	// Build storage path
+	filePath := ctx.Paths.ComposerPicturePath(safeName, ext)
+	fullPath := ctx.Paths.StorageAbsPath(filePath)
+
+	if err := filedir.SaveFile(fullPath, file); err != nil {
+		return err
+	}
+
+	// 3. Build  Composer model
 	newComposer := models.Composer{
 		Name:        name,
-		SafeName:    format.SanitizeName(name),
+		SafeName:    safeName,
 		Epoch:       epoch,
-		ExternalURL: externalUrl,
-		PicturePath: picturePath,
+		ExternalURL: externalURL,
+		PicturePath: filePath,
 		IsVerified:  true,
 	}
 
-	// 3. Persist Composer
-	err := newComposer.Create(db)
+	// 4. Persist Composer
+	err = newComposer.Create(ctx.DB)
 	if err != nil {
 		logger.DB.Error("cannot create %s Composer: %v", name, err)
+		return err
 	}
 
-	logger.DB.Info("%s Composer created with Name : %s", name, err)
+	logger.DB.Info("%s Composer created", name)
+	return nil
 }

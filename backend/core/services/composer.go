@@ -12,6 +12,7 @@ package services
 
 import (
 	"errors"
+	"io"
 	"mime/multipart"
 	"os"
 	"path/filepath"
@@ -289,46 +290,70 @@ func (s *ComposerService) MergeComposers(uid uint32, userRole int, sourceID uint
 	return nil
 }
 
-// ProcessComposerStorage
-// Handles image upload and storage for a composer.
+// ProcessComposerStorage handles HTTP file upload for a composer image.
+//
 // Responsibilities:
-// - Validate file extension
-// - Create storage directories
-// - Save file to disk
-// - Update model path
+// - Extract file content from multipart upload
+// - Delegate validation + storage to StoreComposerImage
+//
+// This function acts as an HTTP adapter layer between:
+// HTTP layer (multipart.FileHeader)
+// and domain storage logic (io.Reader based service)
 func (s *ComposerService) ProcessComposerStorage(composer *models.Composer, file *multipart.FileHeader) error {
 	if file == nil {
 		return nil
 	}
 
-	logger.Composer.Debug("(ProcessComposerStorage Service) processing file: %s for composer: %s", file.Filename, composer.Name)
+	f, err := file.Open()
+	if err != nil {
+		return err
+	}
+	defer f.Close()
 
-	// Minimal tests on files required because service call be called from everywhere !!
-	ext := strings.ToLower(filepath.Ext(file.Filename))
+	return s.StoreComposerImage(composer, f, file.Filename)
+}
+
+// StoreComposerImage handles validation and persistence of a composer image.
+//
+// Responsibilities:
+// - Validate file extension against allowed image types
+// - Compute storage path using application path configuration
+// - Update composer entity with relative image path
+// - Persist file to filesystem via filedir storage layer
+//
+// This function is agnostic of HTTP and works with any io.Reader source:
+// - HTTP upload (via ProcessComposerStorage)
+// - Seed data
+// - Tests / mocks
+func (s *ComposerService) StoreComposerImage(
+	composer *models.Composer,
+	reader io.Reader,
+	filename string,
+) error {
+
+	ext := strings.ToLower(filepath.Ext(filename))
 	if ext == "" {
 		return apperrors.ErrImageFormatInvalid
 	}
 
 	if _, ok := media.AllowedImageExt[ext]; !ok {
-		logger.Composer.Debug("(ProcessComposerStorage Service) invalid format: %s", ext)
+		logger.Composer.Debug("(StoreComposerImage) invalid format: %s", ext)
 		return apperrors.ErrImageFormatInvalid
 	}
 
-	// Build storage paths - Relative
-	// filePath = composer/mozart.png
+	// Build storage path
 	filePath := s.paths.ComposerPicturePath(composer.SafeName, ext)
 	composer.PicturePath = filePath
 
-	// Absolute path
 	fullPath := s.paths.StorageAbsPath(filePath)
 
-	logger.Composer.Debug("(ProcessComposerStorage Service) File relative : %s File absolute %s", filePath, fullPath)
+	logger.Composer.Debug(
+		"(StoreComposerImage) File relative: %s File absolute: %s",
+		filePath,
+		fullPath,
+	)
 
-	if err := filedir.SaveFile(file, fullPath); err != nil {
-		return err
-	}
-
-	return nil
+	return filedir.SaveFile(fullPath, reader)
 }
 
 // Deletes a composer and associated assets.
@@ -359,7 +384,6 @@ func (s *ComposerService) DeleteComposer(uid uint32, composerID uint, userRole i
 }
 
 // deleteComposerOrchestrator
-
 // Handles full deletion lifecycle:
 //
 // 1. Delete physical files

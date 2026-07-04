@@ -6,10 +6,8 @@ package filedir
 // ======================================================================================
 
 import (
-	"errors"
 	"fmt"
 	"io"
-	"mime/multipart"
 	"os"
 	"path/filepath"
 
@@ -49,18 +47,6 @@ func CreateDir(path string) error {
 	return nil
 }
 
-// OsCreateFile writes a multipart file to disk without additional checks.
-func OsCreateFile(fullpath string, file multipart.File) error {
-	f, err := os.OpenFile(fullpath, os.O_WRONLY|os.O_CREATE, 0o666)
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-
-	_, err = io.Copy(f, file)
-	return err
-}
-
 // CleanEmptyDirs recursively removes empty directories.
 // Stops at root or when folder is not empty.
 func CleanEmptyDirs(dirPath string) {
@@ -85,64 +71,25 @@ func CleanEmptyDirs(dirPath string) {
 	}
 }
 
-// SaveFileToDisk writes a multipart file to disk, flushes buffers, and closes file explicitly.
-// Critical for ensuring external services (Python microservice) read complete files.
-func SaveFileToDisk(fullpath string, file multipart.File) error {
-	out, err := os.Create(fullpath)
-	if err != nil {
-		return err
-	}
-
-	if _, err := io.Copy(out, file); err != nil {
-		out.Close()
-		return err
-	}
-
-	if err := out.Sync(); err != nil {
-		out.Close()
-		return err
-	}
-
-	return out.Close()
-}
-
-// SaveFile saves a file from FileHeader to disk safely.
-// - Ensures directory exists
-// - otherwise will create the full path
-// - Validates file size (<2MB)
-// - Flushes content to disk
-func SaveFile(fileHeader *multipart.FileHeader, fullPath string) error {
-	src, err := fileHeader.Open()
-	if err != nil {
-		return err
-	}
-	defer src.Close()
-
+// SaveFile saves file to disk safely.
+func SaveFile(fullPath string, src io.Reader) error {
 	dir := filepath.Dir(fullPath)
+
 	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
 		return fmt.Errorf("unable to create directory tree %s: %v", fullPath, err)
 	}
 
-	if fileHeader.Size > 2<<20 { // 2MB
-		return errors.New("file too large")
-	}
-
-	dst, err := os.Create(fullPath)
+	out, err := os.Create(fullPath)
 	if err != nil {
 		return err
 	}
+	defer out.Close()
 
-	if _, err := io.Copy(dst, src); err != nil {
-		dst.Close()
+	if _, err := io.Copy(out, src); err != nil {
 		return err
 	}
 
-	if err := dst.Sync(); err != nil {
-		dst.Close()
-		return err
-	}
-
-	return dst.Close()
+	return out.Sync()
 }
 
 // CreateDirTree will create the full path

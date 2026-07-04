@@ -9,6 +9,7 @@ package services
 
 import (
 	"errors"
+	"io"
 	"mime/multipart"
 	"os"
 	"path/filepath"
@@ -363,6 +364,25 @@ func (s *ScoreService) ProcessScoreStorage(score *models.Score, file *multipart.
 		return nil
 	}
 
+	f, err := file.Open()
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	return s.StoreScoreFile(score, f, file.Filename)
+}
+
+func (s *ScoreService) StoreScoreFile(
+	score *models.Score,
+	reader io.Reader,
+	filename string,
+) error {
+
+	if reader == nil {
+		return nil
+	}
+
 	fullFilePath := s.paths.StorageAbsPath(score.FilePath)
 	fullThumbnailPath := s.paths.StorageAbsPath(score.ThumbnailPath)
 
@@ -370,7 +390,8 @@ func (s *ScoreService) ProcessScoreStorage(score *models.Score, file *multipart.
 	logger.Score.Debug("fullThumbnailPath Absolute : %s", fullThumbnailPath)
 
 	// Create file and full path directory
-	if err := filedir.SaveFile(file, fullFilePath); err != nil {
+	// Save main file
+	if err := filedir.SaveFile(fullFilePath, reader); err != nil {
 		return err
 	}
 
@@ -381,17 +402,26 @@ func (s *ScoreService) ProcessScoreStorage(score *models.Score, file *multipart.
 
 	// Remove old thumbnail
 	if err := filedir.RemoveFileIfExists(fullThumbnailPath); err != nil {
-		logger.Score.Error("(ProcessComposerStorage Service) delete file failed: %v", err)
+		logger.Score.Error("(StoreScoreFile Service) delete file failed: %v", err)
 		return err
 	}
 
 	// Async thumbnail generation
-	go func() {
-		time.Sleep(100 * time.Millisecond)
-		pdf.RequestToPdfToImage(fullFilePath, fullThumbnailPath, logger.GetModuleLevel("score"))
-	}()
+	go s.GenerateThumbnailAsync(fullFilePath, fullThumbnailPath)
 
 	return nil
+
+}
+
+// GenerateThumbnailAsync
+func (s *ScoreService) GenerateThumbnailAsync(fullFilePath, fullThumbnailPath string) {
+	time.Sleep(100 * time.Millisecond)
+
+	pdf.RequestToPdfToImage(
+		fullFilePath,
+		fullThumbnailPath,
+		logger.GetModuleLevel("score"),
+	)
 }
 
 // deleteScoreOrchestrator handles full deletion lifecycle (files + DB + cleanup).
