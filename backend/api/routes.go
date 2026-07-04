@@ -209,11 +209,10 @@ func (server *Server) SetupRouter() {
 			// - POST → complex searches (large payload, advanced filters)
 
 			// Upload
-			protected.POST("/scores/upload", scoreCtrl.CreateScore)
+			protected.POST("/scores", scoreCtrl.CreateScore)
 
 			// Search & listing
 			protected.GET("/scores", scoreCtrl.GetScoresPage)
-			protected.POST("/scores/search", scoreCtrl.GetScoresPage)
 
 			// CRUD operations
 			protected.GET("/scores/:id", scoreCtrl.GetScore)
@@ -226,10 +225,9 @@ func (server *Server) SetupRouter() {
 			// -----------------------------------------------------------------------------------
 			// COMPOSERS
 			// -----------------------------------------------------------------------------------
-			protected.POST("/composers/upload", composerCtrl.CreateComposer)
+			protected.POST("/composers", composerCtrl.CreateComposer)
 
 			protected.GET("/composers", composerCtrl.GetComposersPage)
-			protected.POST("/composers/search", composerCtrl.GetComposersPage)
 
 			protected.GET("/composers/:id", composerCtrl.GetComposer)
 			protected.PUT("/composers/:id", composerCtrl.UpdateComposer)

@@ -253,7 +253,7 @@ curl -i -X POST http://localhost:8080/api/admin/createuser \
 To list all users as an admin, you can use the following command:
 
 ```shell
-curl -H "Authorization: Bearer $TOKEN_ADMIN" http://localhost:8080/api/admin/users/all | jq
+curl -H "Authorization: Bearer $TOKEN_ADMIN" http://localhost:8080/api/admin/users | jq
 ```
 
 ### User details by admin

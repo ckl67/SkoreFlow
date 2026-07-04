@@ -8,6 +8,7 @@ import { request } from './api.js';
 import { API_URL } from '../config.js';
 
 import { UpdateProfilerRequest, ProfileUserResponse } from '../../../shared/types/user.js';
+import { UpdateMailRequest, UpdateMailResponse } from '../../../shared/types/user';
 
 // --------------------------------------------------------------------------------
 // createUser
@@ -48,18 +49,9 @@ interface UserPublicResponse {
 
 // -------------------
 
-interface UpdateMailRequest {
-  email: string;
-}
-
-interface UpdateMailResponse {
-  message: string;
-  email: string;
-  pending_email: string;
-  token_email: string;
-}
-
 // -------------------
+
+interface UploadAvatarRequest {}
 
 interface UploadAvatarResponse {
   message: string;

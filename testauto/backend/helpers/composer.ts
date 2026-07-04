@@ -1,81 +1,65 @@
 // --------------------------------------------------------------------------------
 // HELPERS
 // --------------------------------------------------------------------------------
+import FormData from 'form-data';
+import fs from 'fs';
 
 import { API_URL } from '../config.js';
-
-import { createReadStream } from 'node:fs';
-import FormData from 'form-data';
 import { request } from './api.js';
 
-// --------------------------------------------------------------------------------
-// createComposer
-// --------------------------------------------------------------------------------
-//
-//  Go Form
-//	  Name        string                `form:"name"`
-//	  ExternalURL string                `form:"externalURL"`
-//	  Epoch       string                `form:"epoch"`
-//	  File        *multipart.FileHeader `form:"uploadFile"`
-//	  IsVerified  *bool                 `form:"isVerified"`
-//
-//  Example Curl
-//    curl -X POST http://localhost:8080/api/composers/upload \
-//      -H "Authorization: Bearer $TOKEN_USER2" \
-//      -F "name=Beethoven" \
-//      -F "epoch=Classical" \
-//      -F "uploadFile=@resources/composers/Beethoven.png"
-//
-//    createComposer({
-//      name: "Supertramp",
-//      externalURL: "https://fr.wikipedia.org/wiki/Supertramp",
-//      epoch: "Moderne",
-//      uploadFile: "resources/composers/Supertramp.png",
-//      isVerified: true},
-//      TOKEN
-//    );
-// --------------------------------------------------------------------------------
-
-// --------------------------------------------------------------------------------
-// TYPES
-// --------------------------------------------------------------------------------
-
-interface RequestOptions {
-  name?: string;
-  externalURL?: string;
-  epoch?: string;
-  uploadFile?: string;
-  isVerified?: boolean;
-}
-
-interface ApiMessage {
-  message: string;
-}
+import { CreateComposerPayload, CreateComposerResponse } from '../../../shared/types/composer';
 
 // --------------------------------------------------------------------------------
 // createComposer
-// Vitest
-// expect(res.data?.message).toBe('Composer created successfully');
+// --------------------------------------------------------------------------------
+
+// --------------------------------------------------------------------------------
+// Create Composer
+// Usage in Vitest
+// const res = await CreateComposer(...)
+// --------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
+// Create Composer
+// Usage in Vitest
+// const res = await CreateComposer(...)
 // --------------------------------------------------------------------------------
 async function createComposer(
-  { name, externalURL, epoch, uploadFile, isVerified }: RequestOptions,
-  token: string,
+  { name, externalURL, epoch }: CreateComposerPayload,
+  filePath: string,
+  token: string
 ) {
+  if (!name || !filePath) {
+    throw new Error('name and uploadFile are required');
+  }
+
   const form = new FormData();
 
-  if (name) form.append('name', name);
-  if (externalURL) form.append('externalURL', externalURL);
-  if (epoch) form.append('epoch', epoch);
-  if (isVerified !== undefined) form.append('isVerified', String(isVerified));
-  if (uploadFile) form.append('uploadFile', createReadStream(uploadFile));
+  form.append('name', name);
+  form.append('uploadFile', fs.createReadStream(filePath));
 
-  //console.log(`\n Creating Composer: ${name} (File: ${uploadFile || 'None'})`);
+  if (externalURL) {
+    form.append('externalURL', externalURL);
+  }
 
-  const res = await request<ApiMessage>('POST', `${API_URL}/composers/upload`, {
+  if (epoch) {
+    form.append('epoch', epoch);
+  }
+
+  // In function request :
+  //    headers: {
+  //      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  //      ...(headers || {}),
+  // We will construct
+  //    Authorization: Bearer xxx
+  //    Content-Type: multipart/form-data; boundary=
+
+  const res = await request<CreateComposerResponse>('POST', `${API_URL}/composers`, {
     token,
     data: form,
     headers: form.getHeaders(),
   });
+
+  console.log('\n Composer Creation response:', res.status, res.data);
 
   return res;
 }

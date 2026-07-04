@@ -21,6 +21,7 @@ import (
 	"strconv"
 
 	"backend/core/apperrors"
+	"backend/core/dto"
 	"backend/core/forms"
 	"backend/core/services"
 	"backend/infrastructure/logger"
@@ -44,7 +45,8 @@ func (ctrl *ComposerController) CreateComposer(c *gin.Context) {
 	uid := c.GetUint32("user_id")
 	userRole := c.GetInt("user_role")
 
-	logger.Composer.Debug("(CreateComposer) Created by User ID: %d with User Role: %d\n", uid, userRole)
+	logger.Composer.Debug("(CreateComposer) Request by User ID: %d with User Role: %d\n", uid, userRole)
+	logger.Composer.Debug("(CreateComposer) Request Form Data: %v\n", c.Request.Form)
 
 	// 2. Form binding
 	var form forms.CreateComposerRequest
@@ -77,9 +79,10 @@ func (ctrl *ComposerController) CreateComposer(c *gin.Context) {
 	}
 
 	// 5. Response
-	responses.SUCCESS(c, http.StatusCreated, gin.H{
-		"message": "Composer created successfully",
-	})
+	response := dto.CreateComposerResponse{
+		Message: "Composer created successfully",
+	}
+	responses.SUCCESS(c, http.StatusCreated, response)
 }
 
 // GetComposersPage fetches a paginated list of composers with optional search filters

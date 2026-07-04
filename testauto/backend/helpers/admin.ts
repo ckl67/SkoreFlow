@@ -5,6 +5,8 @@
 import { request } from './api.js';
 import { API_URL } from '../config.js';
 
+import { AdminCreateUserRequest, AdminCreateUserResponse } from '../../../shared/types/admin';
+
 // --------------------------------------------------------------------------------
 // TYPES
 // --------------------------------------------------------------------------------
@@ -19,17 +21,6 @@ interface UserPublicResponse {
 }
 
 // ---------------------------
-
-interface AdminCreateUserRequest {
-  username: string;
-  email: string;
-  password: string;
-}
-
-interface AdminCreateUserResponse {
-  message: string;
-  user_id: number;
-}
 
 // ---------------------------
 
@@ -85,7 +76,7 @@ interface AdminDeleteUserResponse {
 // --------------------------------------------------------------------------------
 async function adminCreateUser(
   { username, email, password }: AdminCreateUserRequest,
-  token: string,
+  token: string
 ) {
   if (!username || !email || !password) {
     throw new Error('email and password are required');
@@ -114,7 +105,7 @@ async function adminCreateUser(
 //
 async function adminGetUsersPage(
   { page = 1, limit = 10, sort = 'id asc' }: AdminGetUsersPageRequest = {},
-  token: string,
+  token: string
 ) {
   const params = new URLSearchParams();
 
