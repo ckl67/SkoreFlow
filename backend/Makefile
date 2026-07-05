@@ -3,6 +3,9 @@ BINARY_NAME=sf-backend
 GO=go
 MAIN_FILE=./cmd/server/main.go
 
+# Principle
+# `make` executes each line of a recipe in a completely independent sub-shell (a process).
+#
 # Default environment Variables
 #  APP_ENV = : development, production
 #  SMTP_ENABLED = :  true / false
@@ -26,7 +29,7 @@ VERSION=$(shell git describe --tags --always --dirty)
 LDFLAGS=-ldflags="-X main.Version=$(VERSION)"
 
 # Makefile Rules
-.PHONY: all build run run-test run-dev cleandb air air-test air-dev clean tidy reset help version
+.PHONY: all build run run-test run-dev clean-build air air-test air-dev clean tidy reset help version
 
 ## all: Clean, organize modules, and compile
 all: tidy build
@@ -66,10 +69,9 @@ run:
 	PROTECTION_LEVEL=full \
 	$(GO) run $(LDFLAGS) $(MAIN_FILE)
 
-cleandb:
-	@echo "Clean Database ...."
-	rm storage/database.db
-
+clean:
+	@echo "Clean DB and Storage files"
+	cd ../testauto/backend/ && 	bash auto-test.sh --clean
 
 ## run: Automate the Hot Reload process thanks to the standard Air tool
 air:
@@ -102,7 +104,7 @@ tidy:
 	$(GO) mod tidy
 
 ## clean: Remove the local binary
-clean:
+clean-build:
 	@echo "==> Removing binary..."
 	rm -f build/$(BINARY_NAME)
 

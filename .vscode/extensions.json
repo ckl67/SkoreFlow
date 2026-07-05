@@ -9,7 +9,8 @@
     "vitest.explorer",
     "christian-kohler.npm-intellisense",
     "usernamehw.errorlens",
-    "phil294.search-plusplus",
+    // "phil294.search-plusplus", --> BUG Search++: to old. User rater
+    // gruntfuggly.todo-tree
 
     // =========================================================
     // ⚛️ FRONTEND (React)

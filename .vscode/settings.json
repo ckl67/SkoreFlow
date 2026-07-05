@@ -12,7 +12,8 @@
   "files.exclude": {
     "**/node_modules": true,
     "**/tmp": true,
-    "**/test-results": true
+    "**/test-results": true,
+    "**/.vite-temp": true
   },
 
   // =========================================================

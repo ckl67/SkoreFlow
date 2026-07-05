@@ -154,6 +154,7 @@ if [ "$CLEAN_DB_FILES" = true ]; then
 		cp -r "$BACKEND_DIR/storage/assets/avatars/moderator.png" "$BACKEND_DIR/storage/users"
 		cp -r "$BACKEND_DIR/storage/assets/avatars/composer.png" "$BACKEND_DIR/storage/composers/default.png"
 	fi
+	exit
 else
 	echo "-->> NO Physical cleanup of Database and Storage"
 fi

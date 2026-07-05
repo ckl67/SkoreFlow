@@ -16,3 +16,8 @@
 📌
 🔮 Improvements
 🎯
+☠️
+🧹 Clean Up
+🗑️
+✨
+🎯
