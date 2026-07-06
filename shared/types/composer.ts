@@ -17,38 +17,39 @@
 //     filePath: string,
 // )
 
-export interface CreateComposerPayload {
+export type CreateComposerPayload = {
   name: string;
   externalURL?: string;
   epoch?: string;
-}
+};
 
-export interface CreateComposerResponse {
+export type CreateComposerResponse = {
   message: string;
-}
+  id: number;
+};
 
 // ---------------------------
 
-export interface ComposerPublicResponse {
+export type ComposerPublicResponse = {
   id: number;
   name: string;
   picture_path: string;
   external_url: string;
   epoch: string;
   isVerified: boolean;
-}
+};
 
 // ---------------------------
 
-export interface GetComposersPageRequest {
+export type GetComposersPageRequest = {
   page?: number;
   limit?: number;
   sort?: string;
   name?: string;
   isVerified?: boolean;
-}
+};
 
-export interface GetComposersPageResponse {
+export type GetComposersPageResponse = {
   message: string;
   limit: number;
   page: number;
@@ -56,11 +57,24 @@ export interface GetComposersPageResponse {
   total_rows: number;
   total_pages: number;
   composers: ComposerPublicResponse[];
-}
+};
 
 // ---------------------------
 
-export interface GetComposersResponse {
+export type GetComposersResponse = {
   message: string;
   composer: ComposerPublicResponse;
-}
+};
+
+// ---------------------------
+
+export type UpdateComposerRequestPayload = {
+  externalURL?: string;
+  epoch?: string;
+  isVerified?: boolean;
+};
+
+export type UpdateComposerResponse = {
+  message: string;
+  composer: ComposerPublicResponse;
+};

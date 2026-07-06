@@ -46,7 +46,7 @@ func NewComposerService(db *gorm.DB, paths *config.Paths) *ComposerService {
 
 // CreateComposer
 // Creates a new composer entity with optional image upload.
-func (s *ComposerService) CreateComposer(uid uint32, userRole int, req forms.CreateComposerRequest, file *multipart.FileHeader) error {
+func (s *ComposerService) CreateComposer(uid uint32, userRole int, req forms.CreateComposerRequest) (*models.Composer, error) {
 	logger.Composer.Debug("(CreateComposer Service) UID=%d Role=%d Name=%s", uid, userRole, req.Name)
 
 	// 1. Authorization check
@@ -58,7 +58,7 @@ func (s *ComposerService) CreateComposer(uid uint32, userRole int, req forms.Cre
 	// 2. Mandatory fields validation
 	if req.Name == "" {
 		logger.Composer.Debug("(CreateComposer Service): name is required")
-		return apperrors.ErrComposerMandatory
+		return nil, apperrors.ErrComposerMandatory
 	}
 
 	safeName := format.SanitizeName(req.Name)
@@ -79,29 +79,29 @@ func (s *ComposerService) CreateComposer(uid uint32, userRole int, req forms.Cre
 				"(CreateComposer Service): Unauthorized composer validation : user=%d role=%d required=[%d,%d] name=%s",
 				uid, userRole, config.RoleAdmin, config.RoleModerator, req.Name,
 			)
-			return apperrors.ErrAccessForbidden
+			return nil, apperrors.ErrAccessForbidden
 		}
 
 		composer.IsVerified = req.IsVerified
 	}
 
 	// 4. File processing (optional)
-	if err := s.ProcessComposerStorage(&composer, file); err != nil {
-		return err
+	if err := s.ProcessComposerStorage(&composer, req.File); err != nil {
+		return nil, err
 	}
 
 	// 5. Database persistence
 	if err := composer.Create(s.db); err != nil {
 		if strings.Contains(err.Error(), "UNIQUE") {
 			logger.Composer.Error("(CreateComposer Service) duplicate entry: %v", err)
-			return apperrors.ErrComposerAlreadyExists
+			return nil, apperrors.ErrComposerAlreadyExists
 		}
 		logger.Composer.Error("(CreateComposer Service) DB error: %v", err)
-		return err
+		return nil, err
 	}
 
 	logger.Composer.Debug("(CreateComposer Service) composer created: %s", composer.SafeName)
-	return nil
+	return &composer, nil
 }
 
 // GetComposersPage
@@ -156,7 +156,7 @@ func (s *ComposerService) GetComposer(ComposerID uint) (*models.Composer, error)
 }
 
 // Updates an existing composer entity.
-func (s *ComposerService) UpdateComposer(uid uint32, userRole int, ComposerID uint, form forms.UpdateComposerRequest, file *multipart.FileHeader) (*models.Composer, error) {
+func (s *ComposerService) UpdateComposer(uid uint32, userRole int, ComposerID uint, form forms.UpdateComposerRequest) (*models.Composer, error) {
 	composer, err := models.FindComposerByID(s.db, ComposerID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -173,18 +173,26 @@ func (s *ComposerService) UpdateComposer(uid uint32, userRole int, ComposerID ui
 		return nil, apperrors.ErrAccessForbidden
 	}
 
-	if form.Name != "" {
-		composer.Name = form.Name
-		composer.SafeName = format.SanitizeName(form.Name)
+	// Name cannot be changed because this would say
+	// * delete old picture file
+	// * check if new name is not an existing name !
+	if form.Epoch != nil {
+		composer.Epoch = *form.Epoch
+	}
+
+	if form.ExternalURL != nil {
+		composer.ExternalURL = *form.ExternalURL
 	}
 
 	if form.IsVerified != nil {
 		composer.IsVerified = *form.IsVerified
 	}
 
-	// Optional file update
-	if err := s.ProcessComposerStorage(composer, file); err != nil {
-		return nil, err
+	if form.File != nil {
+		// Will store file + update  "composer.PicturePath"
+		if err := s.ProcessComposerStorage(composer, form.File); err != nil {
+			return nil, err
+		}
 	}
 
 	if err := composer.Update(s.db); err != nil {

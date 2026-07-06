@@ -19,6 +19,10 @@ The document can also be consulted locally in 'visual studio code' via the integ
 
 - <span id="ref-foreword"></span>[Foreword](./environment/foreword.md)
 
+### User Guide
+
+- [User Guide](./skoreFlow/user-guide.md)
+
 ### visual studio code
 
 - [Visual Studio Code settings](./environment/vscode.md)

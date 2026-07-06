@@ -1,25 +1,25 @@
-import type { UserPublicResponse } from './auth';
+import type { UserPublicResponse } from './user';
 
-export interface AdminCreateUserRequest {
+export type AdminCreateUserRequest = {
   username: string;
   email: string;
   password: string;
-}
+};
 
-export interface AdminCreateUserResponse {
+export type AdminCreateUserResponse = {
   message: string;
   user_id: number;
-}
+};
 
 // ---------------------------
 
-export interface AdminGetUsersPageRequest {
+export type AdminGetUsersPageRequest = {
   page?: number;
   limit?: number;
   sort?: string;
-}
+};
 
-export interface AdminGetUsersPageResponse {
+export type AdminGetUsersPageResponse = {
   message: string;
   limit: number;
   page: number;
@@ -27,13 +27,32 @@ export interface AdminGetUsersPageResponse {
   total_rows: number;
   total_pages: number;
   users: UserPublicResponse[];
-}
+};
 
 // ---------------------------
 
-export interface AdminGetUserResponse {
+export type AdminGetUserResponse = {
   message: string;
   user: UserPublicResponse;
-}
+};
 
 // ---------------------------
+
+export type AdminUpdateUserRequest = {
+  username?: string;
+  email?: string;
+  password?: string;
+  role?: number;
+  isVerified?: boolean;
+};
+
+export type AdminUpdateUserResponse = {
+  message: string;
+  user: UserPublicResponse;
+};
+
+// ---------------------------
+
+export type AdminDeleteUserResponse = {
+  message: string;
+};

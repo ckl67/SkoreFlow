@@ -1,21 +1,47 @@
-import type { UserPublicResponse } from './auth';
-
-export interface UpdateProfilerRequest {
+export type UserPublicResponse = {
+  id: number;
   username: string;
-}
+  email: string;
+  avatar: string;
+  role: number;
+  isVerified: boolean;
+};
 
-export interface ProfileUserResponse {
+// -------------------
+
+export type UpdateProfilerRequest = {
+  username: string;
+};
+
+// -------------------
+
+export type ProfileUserResponse = {
   message: string;
   user: UserPublicResponse;
-}
+};
 
-export interface UpdateMailRequest {
+// -------------------
+
+export type UpdateMailRequest = {
   email: string;
-}
+};
 
-export interface UpdateMailResponse {
+export type UpdateMailResponse = {
   message: string;
   email: string;
   pending_email: string;
   token_email: string;
-}
+};
+
+// -------------------
+
+export type UploadAvatarResponse = {
+  message: string;
+  user: UserPublicResponse;
+};
+
+// -------------------
+
+export type DeleteAvatarResponse = {
+  message: string;
+};

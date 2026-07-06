@@ -7,6 +7,7 @@ import { API_URL } from '../config.js';
 
 // --------------------------------------------------------------------------------
 // TYPES
+// THIS SERVICE CAN ONLY BE USED FOR TEST PERSPECTIVE !!
 // --------------------------------------------------------------------------------
 
 interface ResetTokenResponse {

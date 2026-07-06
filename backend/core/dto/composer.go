@@ -13,6 +13,7 @@ type ComposerPublicResponse struct {
 
 type CreateComposerResponse struct {
 	Message string `json:"message"`
+	Id      uint32 `json:"id"`
 }
 
 type GetComposersPageResponse struct {

@@ -230,7 +230,7 @@ func (server *Server) SetupRouter() {
 			protected.GET("/composers", composerCtrl.GetComposersPage) // vitest
 			protected.GET("/composers/:id", composerCtrl.GetComposer)  // vitest
 
-			protected.PUT("/composers/:id", composerCtrl.UpdateComposer)
+			protected.PUT("/composers/:id", composerCtrl.UpdateComposer) // vitest
 			protected.DELETE("/composers/:id", composerCtrl.DeleteComposer)
 
 			protected.PUT("/composers/merge", composerCtrl.MergeComposers)

@@ -2,7 +2,9 @@ import path from 'path';
 import { beforeAll, describe, expect, it } from 'vitest';
 
 import { login } from '../helpers/auth.js';
-import { createComposer, GetComposersPage, GetComposer } from '../helpers/composer';
+import { createComposer } from '../helpers/composer';
+import { GetComposersPage, GetComposer } from '../helpers/composer';
+import { updateComposer } from '../helpers/composer';
 
 // ----------------------------------------------------------------------------
 // LOCAL HELPER
@@ -259,7 +261,7 @@ describe('🎼 Composer API - From the User Point of view', () => {
   });
 
   // ----------------------------------------------------------------------------
-  // LIST USER
+  // LIST COMPOSER
   // ----------------------------------------------------------------------------
 
   it('should get one composer by id', async () => {
@@ -280,6 +282,140 @@ describe('🎼 Composer API - From the User Point of view', () => {
     const res = await GetComposer(999999, TOKEN_ADMIN);
 
     expect(res.status).toBe(404);
+  });
+
+  // ----------------------------------------------------------------------------
+  // UPDATE COMPOSER
+  // Update of name is not authorized !!
+  // ----------------------------------------------------------------------------
+
+  it('should update a composer as moderator', async () => {
+    const composer = makeComposer('Iron Maiden');
+
+    const createRes = await createComposer(
+      composer,
+      path.resolve(__dirname, '../resources/composers/Frédéric Chopin.png'),
+      TOKEN_USER1
+    );
+
+    const composerId = createRes.data.data!.id;
+
+    const res = await updateComposer(
+      composerId,
+      {
+        externalURL: 'https://updated.test',
+        epoch: 'Romantic,Classic,Rock',
+        isVerified: false,
+      },
+      undefined,
+      TOKEN_MODERATOR1
+    );
+
+    expect(res.status).toBe(200);
+
+    expect(res.data.data!.composer.id).toBe(composerId);
+    expect(res.data.data!.composer.external_url).toBe('https://updated.test');
+    expect(res.data.data!.composer.epoch).toContain('Romantic');
+  });
+
+  // ----------------------------------------------------------------------------
+  it('should verify a composer as admin', async () => {
+    const composer = makeComposer('verify');
+
+    const createRes = await createComposer(
+      composer,
+      path.resolve(__dirname, '../resources/composers/Frédéric Chopin.png'),
+      TOKEN_USER1
+    );
+
+    const composerId = createRes.data.data!.id;
+
+    const res = await updateComposer(
+      composerId,
+      {
+        isVerified: true,
+      },
+      undefined,
+      TOKEN_ADMIN
+    );
+
+    expect(res.status).toBe(200);
+    expect(res.data.data!.composer.isVerified).toBe(true);
+  });
+
+  // ----------------------------------------------------------------------------
+
+  it('should reject update from normal user', async () => {
+    const composer = makeComposer('forbidden');
+
+    const createRes = await createComposer(
+      composer,
+      path.resolve(__dirname, '../resources/composers/Frédéric Chopin.png'),
+      TOKEN_USER1
+    );
+
+    const composerId = createRes.data.data!.id;
+
+    const res = await updateComposer(
+      composerId,
+      {
+        isVerified: false,
+      },
+      undefined,
+      TOKEN_USER1
+    );
+
+    expect(res.status).toBe(403);
+  });
+
+  // ----------------------------------------------------------------------------
+
+  it('should return 404 when updating unknown composer', async () => {
+    const res = await updateComposer(
+      999999,
+      {
+        isVerified: false,
+      },
+      undefined,
+      TOKEN_ADMIN
+    );
+
+    expect(res.status).toBe(404);
+  });
+
+  // ----------------------------------------------------------------------------
+
+  it('should unverify a composer', async () => {
+    const composer = makeComposer('verified');
+
+    const createRes = await createComposer(
+      composer,
+      path.resolve(__dirname, '../resources/composers/Frédéric Chopin.png'),
+      TOKEN_USER1
+    );
+
+    const composerId = createRes.data.data!.id;
+
+    await updateComposer(
+      composerId,
+      {
+        isVerified: true,
+      },
+      undefined,
+      TOKEN_ADMIN
+    );
+
+    const res = await updateComposer(
+      composerId,
+      {
+        isVerified: false,
+      },
+      undefined,
+      TOKEN_ADMIN
+    );
+
+    expect(res.status).toBe(200);
+    expect(res.data.data!.composer.isVerified).toBe(false);
   });
 
   // ----------------------------------------------------------------------------

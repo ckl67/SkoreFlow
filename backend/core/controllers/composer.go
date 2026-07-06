@@ -62,7 +62,7 @@ func (ctrl *ComposerController) CreateComposer(c *gin.Context) {
 	}
 
 	// 4. Service call (passing file handle to service)
-	err := ctrl.service.CreateComposer(uid, userRole, form, form.File)
+	composerCreated, err := ctrl.service.CreateComposer(uid, userRole, form)
 	if err != nil {
 		logger.Composer.Error("(CreateComposer Controller) Error returned by service: %v", err)
 		switch err {
@@ -81,6 +81,7 @@ func (ctrl *ComposerController) CreateComposer(c *gin.Context) {
 	// 5. Response
 	response := dto.CreateComposerResponse{
 		Message: "Composer created successfully",
+		Id:      composerCreated.ID,
 	}
 	responses.SUCCESS(c, http.StatusCreated, response)
 }
@@ -230,7 +231,7 @@ func (ctrl *ComposerController) UpdateComposer(c *gin.Context) {
 	logger.Composer.Debug("(Controller UpdateComposer) : initiated by user %d - role %d for Composer ID %d", uid, userRole, composerID)
 
 	// 3. Service execution
-	updatedComposer, err := ctrl.service.UpdateComposer(uid, userRole, uint(composerID), form, form.File)
+	updatedComposer, err := ctrl.service.UpdateComposer(uid, userRole, uint(composerID), form)
 	if err != nil {
 		switch {
 		case errors.Is(err, apperrors.ErrComposerNotFound):
@@ -243,11 +244,15 @@ func (ctrl *ComposerController) UpdateComposer(c *gin.Context) {
 		return
 	}
 
-	// 4. Success response
-	responses.SUCCESS(c, http.StatusOK, gin.H{
-		"message": fmt.Sprintf("Composer '%s' (ID: %d) updated", updatedComposer.Name, updatedComposer.ID),
-		"id":      composerID,
-	})
+	message := fmt.Sprintf("Composer %d updated successfully", updatedComposer.ID)
+
+	response := dto.GetComposerResponse{
+		Message:  message,
+		Composer: dto.ToComposerPublicResponse(updatedComposer),
+	}
+
+	responses.SUCCESS(c, http.StatusOK, response)
+
 }
 
 // DeleteComposer handles the removal of a composer (database and file system)

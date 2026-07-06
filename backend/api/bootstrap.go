@@ -57,6 +57,14 @@ func Start(version string) {
 			logger.DB.Fatal("Seed failed: %v", err)
 		}
 
+		if err := seed.LoadComposer(csc, "Supertramp",
+			"Rock gradual, Pop, Art Rock, Blues-rock",
+			"https://fr.wikipedia.org/wiki/Supertramp",
+			"../testauto/backend/resources/composers/Supertramp.png",
+		); err != nil {
+			logger.DB.Fatal("Seed failed: %v", err)
+		}
+
 	}
 
 	// 4. Port Configuration

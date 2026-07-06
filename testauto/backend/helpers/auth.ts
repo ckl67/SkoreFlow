@@ -15,61 +15,15 @@ import {
   ConfirmRegistrationResponse,
 } from '../../../shared/types/auth.js';
 
-// --------------------------------------------------------------------------------
-// TYPES
-// --------------------------------------------------------------------------------
+import {
+  ResendRegistrationRequest,
+  ResendRegistrationResponse,
+} from '../../../shared/types/auth.js';
 
-// -------------------
-
-interface ResendRegistrationRequest {
-  email: string;
-}
-
-interface ResendRegistrationResponse {
-  message: string;
-  token: string; // Only for test
-}
-
-// -------------------
-
-// -------------------
-
-interface LogoutResponse {
-  message: string;
-}
-// -------------------
-
-interface ForgotPasswordRequest {
-  email: string;
-}
-
-interface ForgotPasswordResponse {
-  message: string;
-  token: string; // Only for test
-}
-
-// -------------------
-
-interface ResetPasswordRequest {
-  token: string;
-  password: string;
-}
-
-interface ResetPasswordResponse {
-  message: string;
-  id: number;
-}
-
-// -------------------
-
-interface ConfirmUpdateMailRequest {
-  token: string;
-}
-
-interface ConfirmUpdateMailResponse {
-  message: string;
-  id: number;
-}
+import { LogoutResponse } from '../../../shared/types/auth.js';
+import { ForgotPasswordRequest, ForgotPasswordResponse } from '../../../shared/types/auth.js';
+import { ResetPasswordRequest, ResetPasswordResponse } from '../../../shared/types/auth.js';
+import { ConfirmUpdateMailRequest, ConfirmUpdateMailResponse } from '../../../shared/types/auth.js';
 
 // --------------------------------------------------------------------------------
 // login(email, password)
@@ -151,7 +105,7 @@ async function confirmRegistration(data: ConfirmRegistrationRequest) {
     `${API_URL}/auth/register/confirm`,
     {
       data,
-    },
+    }
   );
 
   console.log('\n Confirm Registration response:', res.status, res.data);

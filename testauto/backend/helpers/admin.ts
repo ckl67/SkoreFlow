@@ -6,50 +6,10 @@ import { request } from './api.js';
 import { API_URL } from '../config.js';
 
 import { AdminCreateUserRequest, AdminCreateUserResponse } from '../../../shared/types/admin';
-import {
-  AdminGetUsersPageRequest,
-  AdminGetUsersPageResponse,
-  AdminGetUserResponse,
-} from '../../../shared/types/admin';
-
-// --------------------------------------------------------------------------------
-// TYPES
-// --------------------------------------------------------------------------------
-
-interface UserPublicResponse {
-  id: number;
-  username: string;
-  email: string;
-  avatar: string;
-  role: number;
-  isVerified: boolean;
-}
-
-// ---------------------------
-
-// ---------------------------
-
-interface AdminUpdateUserRequest {
-  username?: string;
-  email?: string;
-  password?: string;
-  role?: number;
-  isVerified?: boolean;
-}
-
-interface AdminUpdateUserResponse {
-  message: string;
-  user: UserPublicResponse;
-}
-
-// ---------------------------
-
-interface AdminDeleteUserResponse {
-  message: string;
-}
-
-// ---------------------------
-// ---------------------------
+import { AdminGetUsersPageRequest, AdminGetUsersPageResponse } from '../../../shared/types/admin';
+import { AdminGetUserResponse } from '../../../shared/types/admin';
+import { AdminUpdateUserRequest, AdminUpdateUserResponse } from '../../../shared/types/admin';
+import { AdminDeleteUserResponse } from '../../../shared/types/admin';
 
 // --------------------------------------------------------------------------------
 // Create User

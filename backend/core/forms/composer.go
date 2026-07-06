@@ -85,9 +85,8 @@ type CreateComposerRequest struct {
 
 // UpdateComposerRequest defines the payload for updating a composer.
 type UpdateComposerRequest struct {
-	Name        string                `form:"name"`
-	ExternalURL string                `form:"externalURL"`
-	Epoch       string                `form:"epoch"`
+	ExternalURL *string               `form:"externalURL"`
+	Epoch       *string               `form:"epoch"`
 	File        *multipart.FileHeader `form:"uploadFile"`
 	IsVerified  *bool                 `form:"isVerified"`
 }

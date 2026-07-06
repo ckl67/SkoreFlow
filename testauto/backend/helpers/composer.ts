@@ -14,6 +14,11 @@ import {
   GetComposersResponse,
 } from '../../../shared/types/composer';
 
+import {
+  UpdateComposerRequestPayload,
+  UpdateComposerResponse,
+} from '../../../shared/types/composer';
+
 // --------------------------------------------------------------------------------
 // Create Composer
 // Usage in Vitest
@@ -24,8 +29,8 @@ async function createComposer(
   filePath: string,
   token: string
 ) {
-  if (!name || !filePath) {
-    throw new Error('name and uploadFile are required');
+  if (!name) {
+    throw new Error('name is required');
   }
 
   const form = new FormData();
@@ -103,7 +108,64 @@ async function GetComposer(ComposerId: number, token: string) {
 }
 
 // --------------------------------------------------------------------------------
+// Update Composer
+// --------------------------------------------------------------------------------
+async function updateComposer(
+  ComposerId: number,
+  { externalURL, epoch, isVerified }: UpdateComposerRequestPayload,
+  filePath: string | undefined,
+  token: string
+) {
+  const form = new FormData();
+
+  if (filePath) {
+    form.append('uploadFile', fs.createReadStream(filePath));
+  }
+
+  if (isVerified !== undefined) {
+    form.append('isVerified', String(isVerified));
+  }
+
+  if (externalURL) {
+    form.append('externalURL', externalURL);
+  }
+
+  if (epoch) {
+    form.append('epoch', epoch);
+  }
+
+  console.log(
+    '\n Composer Update request:',
+    'externalURL:',
+    externalURL,
+    'epoch:',
+    epoch,
+    'isVerified:',
+    isVerified,
+    'filePath:',
+    filePath
+  );
+
+  // In function request :
+  //    headers: {
+  //      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  //      ...(headers || {}),
+  // We will construct
+  //    Authorization: Bearer xxx
+  //    Content-Type: multipart/form-data; boundary=
+  const res = await request<UpdateComposerResponse>('PUT', `${API_URL}/composers/${ComposerId}`, {
+    token,
+    data: form,
+    headers: form.getHeaders(),
+  });
+
+  console.log('\n Composer Update response:', res.status, res.data);
+
+  return res;
+}
+
+// --------------------------------------------------------------------------------
 // EXPORT (ESM)
 // --------------------------------------------------------------------------------
 
-export { createComposer, GetComposersPage, GetComposer };
+export { createComposer, GetComposersPage, GetComposer, updateComposer };

@@ -1,48 +1,89 @@
-export interface RegisterRequest {
+import type { UserPublicResponse } from './user';
+
+export type RegisterRequest = {
   username: string;
   email: string;
   password: string;
-}
+};
 
 // token should never be returned !!
-export interface RegisterResponse {
+export type RegisterResponse = {
   message: string;
   isVerified: boolean;
   token: string; // Only for test
-}
+};
 
 // ----------------------------------------
 
-export interface LoginRequest {
+export type LoginRequest = {
   email: string;
   password: string;
-}
+};
 
-export interface UserPublicResponse {
-  id: number;
-  username: string;
-  email: string;
-  avatar: string;
-  role: number;
-  isVerified: boolean;
-}
-
-export interface LoginResponse {
+export type LoginResponse = {
   message: string;
   token: string;
   user: UserPublicResponse;
-}
+};
 
 // -------------------
 
-// -------------------
-
-export interface ConfirmRegistrationRequest {
+export type ConfirmRegistrationRequest = {
   token: string;
-}
+};
 
-export interface ConfirmRegistrationResponse {
+export type ConfirmRegistrationResponse = {
   message: string;
   user_id: number;
   isVerified: boolean;
-}
+};
+
+// -------------------
+
+export type ResendRegistrationRequest = {
+  email: string;
+};
+
+export type ResendRegistrationResponse = {
+  message: string;
+  token: string; // Only for test
+};
+
+// -------------------
+
+export type LogoutResponse = {
+  message: string;
+};
+// -------------------
+
+export type ForgotPasswordRequest = {
+  email: string;
+};
+
+export type ForgotPasswordResponse = {
+  message: string;
+  token: string; // Only for test
+};
+
+// -------------------
+
+export type ResetPasswordRequest = {
+  token: string;
+  password: string;
+};
+
+export type ResetPasswordResponse = {
+  message: string;
+  id: number;
+};
+
+// -------------------
+
+export type ConfirmUpdateMailRequest = {
+  token: string;
+};
+
+export type ConfirmUpdateMailResponse = {
+  message: string;
+  id: number;
+};

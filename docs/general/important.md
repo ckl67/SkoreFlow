@@ -6,6 +6,7 @@
 
 The JavaScript ecosystem is composed of multiple independent layers:
 
+```text
     +---------------------------+
     |        Your Code          |
     |  (TS / JS / TSX files)    |
@@ -34,6 +35,7 @@ The JavaScript ecosystem is composed of multiple independent layers:
     |   Module Resolution       |
     | Node / Node16 / Bundler   |
     +---------------------------+
+```
 
 ---
 
