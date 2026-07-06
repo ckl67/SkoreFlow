@@ -29,12 +29,12 @@ import (
 // - FilePath and ThumbnailPath store full file paths.
 
 type Score struct {
-	ID            uint   `gorm:"primary_key;auto_increment" json:"id"`
+	ID            uint32 `gorm:"primary_key;auto_increment" json:"id"`
 	SafeScoreName string `gorm:"size:255;uniqueIndex:idx_score_user"`
 	ScoreName     string `gorm:"size:255;not null" json:"score_name"`
 
 	// Foreign key to Composer
-	ComposerID uint     `gorm:"not null;index;uniqueIndex:idx_score_user" json:"composer_id"`
+	ComposerID uint32   `gorm:"not null;index;uniqueIndex:idx_score_user" json:"composer_id"`
 	Composer   Composer `gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;" json:"composer"`
 
 	ReleaseDate     time.Time `gorm:"column:release_date;index;not null" json:"release_date"`
@@ -74,7 +74,7 @@ func (s *Score) UpdateFields(db *gorm.DB, id uint, data interface{}) error {
 }
 
 // ScoreExists checks if a score already exists for a given user and composer.
-func ScoreExists(db *gorm.DB, safeName string, composerID uint, userID uint32) (bool, error) {
+func ScoreExists(db *gorm.DB, safeName string, composerID uint32, userID uint32) (bool, error) {
 	var count int64
 
 	err := db.Model(&Score{}).

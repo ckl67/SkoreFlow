@@ -19,10 +19,19 @@ The document can also be consulted locally in 'visual studio code' via the integ
 
 - <span id="ref-foreword"></span>[Foreword](./environment/foreword.md)
 
+### visual studio code
+
+- [Visual Studio Code settings](./environment/vscode.md)
+- [Remote Development, Ports, and VPN](./environment/remote-ports.md)
+- [single-folder](./environment/single-folder.md)
+- [eslint and prettier](./environment/formatting.md)
+
 ### General
 
 - [Linux useful commands](./general/linux-useful.md)
+- [Go Language](./general/go.md)
 - [Go Structure](./general/go-struct.md)
+- [JWT](./general/jwt.md)
 - [HTTP Status Codes](./general/http_status_codes.md)
 - [API Response Standard](./backend/api-response.md)
 - [Javascript - ecosystem](./general/javascript_ecosystem.md)
@@ -30,13 +39,6 @@ The document can also be consulted locally in 'visual studio code' via the integ
 - [JSON Handling](./general/json.md)
 - [MonoRepo](./general/monorepo.md)
 - [Classroom](./general/classroom.md)
-
-### visual studio code
-
-- [Visual Studio Code settings](./environment/vscode.md)
-- [Remote Development, Ports, and VPN](./environment/remote-ports.md)
-- [single-folder](./environment/single-folder.md)
-- [eslint and prettier](./environment/formatting.md)
 
 ### Development Environment
 

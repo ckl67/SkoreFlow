@@ -217,23 +217,6 @@ func (ctrl *UserController) UploadAvatar(c *gin.Context) {
 	responses.SUCCESS(c, http.StatusOK, response)
 }
 
-// Returns the full list of users.
-// Typically restricted or monitored (admin/audit usage).
-func (ctrl *UserController) AdmGetUsers(c *gin.Context) {
-	userID := c.GetUint32("user_id")
-	userRole := c.GetInt("user_role")
-
-	logger.User.Info("User %d (role %d) requests all users", userID, userRole)
-
-	users, err := ctrl.userService.GetAllUsers()
-	if err != nil {
-		responses.FAIL(c, http.StatusInternalServerError, err)
-		return
-	}
-
-	responses.SUCCESS(c, http.StatusOK, users)
-}
-
 // GetUsersPage fetches a paginated list of composers with optional search filters
 func (ctrl *UserController) AdminGetUsersPage(c *gin.Context) {
 	uid := c.GetUint32("user_id")

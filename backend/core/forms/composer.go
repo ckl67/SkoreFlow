@@ -64,7 +64,7 @@ import (
 // GetComposersPageRequest defines pagination and filtering for composers listing.
 type GetComposersPageRequest struct {
 	PaginatedRequest
-	Search     *string `form:"search" json:"search"`
+	Name       *string `form:"name" json:"name"`
 	IsVerified *bool   `form:"isVerified" json:"isVerified"`
 }
 

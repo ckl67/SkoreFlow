@@ -228,7 +228,7 @@ echo "JWT Token: $TOKEN_ADMIN"
 To create a new user as an admin, you can use the following command:
 
 ```shell
-curl -i -X POST http://localhost:8080/api/admin/createuser \
+curl -i -X POST http://localhost:8080/api/admin/users \
  -H "Authorization: Bearer $TOKEN_ADMIN" \
  -H "Content-Type: application/json" \
  -d '{
@@ -237,7 +237,7 @@ curl -i -X POST http://localhost:8080/api/admin/createuser \
   "password":"password123"
 }'
 
-curl -i -X POST http://localhost:8080/api/admin/createuser \
+curl -i -X POST http://localhost:8080/api/admin/users \
  -H "Authorization: Bearer $TOKEN_ADMIN" \
  -H "Content-Type: application/json" \
  -d '{

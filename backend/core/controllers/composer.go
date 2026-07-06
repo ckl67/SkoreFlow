@@ -23,6 +23,7 @@ import (
 	"backend/core/apperrors"
 	"backend/core/dto"
 	"backend/core/forms"
+	"backend/core/models"
 	"backend/core/services"
 	"backend/infrastructure/logger"
 	"backend/pkg/responses"
@@ -46,7 +47,6 @@ func (ctrl *ComposerController) CreateComposer(c *gin.Context) {
 	userRole := c.GetInt("user_role")
 
 	logger.Composer.Debug("(CreateComposer) Request by User ID: %d with User Role: %d\n", uid, userRole)
-	logger.Composer.Debug("(CreateComposer) Request Form Data: %v\n", c.Request.Form)
 
 	// 2. Form binding
 	var form forms.CreateComposerRequest
@@ -96,7 +96,7 @@ func (ctrl *ComposerController) GetComposersPage(c *gin.Context) {
 	}
 
 	logger.Score.Debug("(Controller GetComposersPage) : User: %d | Search: %v (IsVerified = %v) | Page: %d | PageSize: %d | SortBy: %s",
-		uid, form.Search, form.IsVerified, form.Page, form.Limit, form.SortBy)
+		uid, form.Name, form.IsVerified, form.Page, form.Limit, form.SortBy)
 
 	pageData, err := ctrl.service.GetComposersPage(uid, form)
 	if err != nil {
@@ -104,7 +104,46 @@ func (ctrl *ComposerController) GetComposersPage(c *gin.Context) {
 		return
 	}
 
-	responses.SUCCESS(c, http.StatusOK, pageData)
+	//responses.SUCCESS(c, http.StatusOK, pageData)
+
+	// Cast to composers
+	// Pagination.Rows is stored as interface{} because the same Pagination
+	// structure is reused for different entities (composers, scores, composers, ...).
+	//
+	// Here we know that GetComposersPage() populated Rows with []*models.Composers,
+	// so we perform a type assertion to recover the concrete type.
+	//
+	// The "ok" value prevents a panic if Rows contains an unexpected type.
+	// This is mandatory to avoid a panic and a program stop !!
+	//
+	// Example
+	// var x interface{} --> x contains something but we don't know what
+	// Could be
+	//		x = 123
+	//		x = "hello"
+	//    x = []*models.Composers{}
+	// To get the right value
+	// 	composers, ok := x.([]*models.Composers)
+
+	var composers []*models.Composer
+	var ok bool
+	composers, ok = pageData.Rows.([]*models.Composer)
+	if !ok {
+		responses.FAIL(c, http.StatusInternalServerError, fmt.Errorf("invalid composers type"))
+		return
+	}
+
+	response := dto.GetComposersPageResponse{
+		Message:    "composers retrieved successfully",
+		Page:       pageData.Page,
+		Limit:      pageData.Limit,
+		TotalRows:  pageData.TotalRows,
+		TotalPages: pageData.TotalPages,
+		Composers:  dto.ToComposersPublicResponse(composers),
+	}
+
+	responses.SUCCESS(c, http.StatusOK, response)
+
 }
 
 // GetComposer retrieves detailed information for a single composer
@@ -127,7 +166,13 @@ func (ctrl *ComposerController) GetComposer(c *gin.Context) {
 		return
 	}
 
-	responses.SUCCESS(c, http.StatusOK, composer)
+	response := dto.GetComposerResponse{
+		Message:  "Composer retrieved successfully",
+		Composer: dto.ToComposerPublicResponse(composer),
+	}
+
+	responses.SUCCESS(c, http.StatusOK, response)
+
 }
 
 // Merge Composer from source to target in all the scores

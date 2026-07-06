@@ -225,11 +225,11 @@ func (server *Server) SetupRouter() {
 			// -----------------------------------------------------------------------------------
 			// COMPOSERS
 			// -----------------------------------------------------------------------------------
-			protected.POST("/composers", composerCtrl.CreateComposer)
+			protected.POST("/composers", composerCtrl.CreateComposer) // vitest
 
-			protected.GET("/composers", composerCtrl.GetComposersPage)
+			protected.GET("/composers", composerCtrl.GetComposersPage) // vitest
+			protected.GET("/composers/:id", composerCtrl.GetComposer)  // vitest
 
-			protected.GET("/composers/:id", composerCtrl.GetComposer)
 			protected.PUT("/composers/:id", composerCtrl.UpdateComposer)
 			protected.DELETE("/composers/:id", composerCtrl.DeleteComposer)
 

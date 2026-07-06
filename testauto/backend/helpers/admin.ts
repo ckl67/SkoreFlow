@@ -6,6 +6,11 @@ import { request } from './api.js';
 import { API_URL } from '../config.js';
 
 import { AdminCreateUserRequest, AdminCreateUserResponse } from '../../../shared/types/admin';
+import {
+  AdminGetUsersPageRequest,
+  AdminGetUsersPageResponse,
+  AdminGetUserResponse,
+} from '../../../shared/types/admin';
 
 // --------------------------------------------------------------------------------
 // TYPES
@@ -21,29 +26,6 @@ interface UserPublicResponse {
 }
 
 // ---------------------------
-
-// ---------------------------
-
-interface AdminGetUsersPageRequest {
-  page?: number;
-  limit?: number;
-  sort?: string;
-}
-
-interface AdminGetUsersPageResponse {
-  message: string;
-  limit: number;
-  page: number;
-  sort?: string;
-  total_rows: number;
-  total_pages: number;
-  users: UserPublicResponse[];
-}
-
-interface AdminGetUserResponse {
-  message: string;
-  user: UserPublicResponse;
-}
 
 // ---------------------------
 

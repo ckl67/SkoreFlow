@@ -2,9 +2,16 @@
 
 [← back](./../../doc.md)
 
+## Introduction
+
+This document provides instructions for testing the composers functionalities of the SkoreFlow backend.
+These tests are essential to ensure curl testing before vitest !
+
+## Prerequisite
+
+User Login to get token
+
 ```shell
-
-
 
 TOKEN_USER2=$(curl -X POST http://localhost:8080/api/login \
  -H "Content-Type: application/json" \
@@ -16,16 +23,29 @@ curl -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/me | jq
 
 ```
 
-## Create a composer
+## Create of a composer
 
 ```shell
-curl -X POST "http://localhost:8080/api/composers/upload" \
+curl -X POST "http://localhost:8080/api/composers" \
   -H "Authorization: Bearer $TOKEN_USER2" \
-  -H "Content-Type: application/json" \
-  -d '{ \
-    "name": "Beethoven",\
-    "description": "Classical"\
-    "uploadFile": "@resources/composers/Beethoven.png"\
-  }'
+  -F "name=Beethoven 2" \
+  -F "epoch=Classical" \
+  -F "externalURL=" \
+  -F "isVerified=true" \
+  -F "uploadFile=@../testauto/backend/resources/composers/Beethoven.png"
 
+```
+
+### Composer listing
+
+To list all composers
+
+```shell
+curl -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/composers | jq
+```
+
+To list 1 composer
+
+```shell
+curl -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/composers/1 | jq
 ```

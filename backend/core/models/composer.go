@@ -26,7 +26,7 @@ import (
 // - UpdatedAt is set on insert and updated on each modification.
 
 type Composer struct {
-	ID          uint      `gorm:"primaryKey;autoIncrement" json:"id"`
+	ID          uint32    `gorm:"primaryKey;autoIncrement" json:"id"`
 	Name        string    `gorm:"size:255;not null" json:"name"`
 	SafeName    string    `gorm:"size:255;uniqueIndex" json:"safe_name"`
 	PicturePath string    `gorm:"column:thumbnail_path;not null" json:"picture_path"`

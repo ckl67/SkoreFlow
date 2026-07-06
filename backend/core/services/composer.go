@@ -127,14 +127,14 @@ func (s *ComposerService) GetComposersPage(uid uint32, form forms.GetComposersPa
 
 	var composer models.Composer
 
-	result, err := composer.List(s.db, &pagination, form.Search, form.IsVerified, uid)
+	result, err := composer.List(s.db, &pagination, form.Name, form.IsVerified, uid)
 	if err != nil {
 		logger.Composer.Error("Failed to list composers: %v", err)
 		return nil, err
 	}
 
 	if result == nil || len(result.Rows.([]*models.Composer)) == 0 {
-		logger.Composer.Warn("No composers found for search: %s", *form.Search)
+		logger.Composer.Warn("No composers found for search: %s", *form.Name)
 	}
 
 	return result, err
