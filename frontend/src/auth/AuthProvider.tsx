@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState } from 'react';
-import type { UserPublicResponse } from '../../../shared/types/auth';
+import type { UserPublicResponse } from '../../../shared/types/user';
 import type { ProfileUserResponse } from '../../../shared/types/user';
 
 import { apiRequest } from '../api/client';

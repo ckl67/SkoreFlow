@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="3xDQYAC0QjJy17-5WhtZ" name="Auth">
-        <mxGraphModel dx="3038" dy="392" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2336" pageHeight="1654" background="light-dark(#FFFFFF,#1F1F1F)" math="0" shadow="0">
+        <mxGraphModel dx="3090" dy="479" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2336" pageHeight="1654" background="light-dark(#FFFFFF,#1F1F1F)" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -459,7 +459,7 @@
         </mxGraphModel>
     </diagram>
     <diagram id="yHOX4tz7DHjwfyBpmQtD" name="Composer">
-        <mxGraphModel dx="702" dy="392" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2336" pageHeight="1654" math="0" shadow="0">
+        <mxGraphModel dx="754" dy="479" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2336" pageHeight="1654" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>

@@ -1,13 +1,24 @@
-Has to be written completely !!
+<style>
+  body {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+  }
+</style>
 
-# Usage
+[← back](./summary.md)
 
-## User
+# Composer
 
-## Composer
+## Creation
 
 Everybody can create a composer.
 But only Moderators or Admin, can
 
 - update the composer
 - make the composer available `(IsVerified=true)`, so that other users can select that composer
+
+## Update
+
+## Merge
+
+## Delete

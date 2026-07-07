@@ -4,7 +4,7 @@
 📦 SkoreFlow (Root)
 🐹 Backend (Go)
 ⚛️ Frontend (TS/React)
-🐍 Microservices
+🐍 Microservices (It's a snake even we could believe its a duck )
 🎭 Test Auto (Playwright/Python)
 📚 📖 Documentation
 🧪 Test
@@ -21,3 +21,4 @@
 🗑️
 ✨
 🎯
+↑ ↓ → ←

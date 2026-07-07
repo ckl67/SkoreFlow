@@ -81,6 +81,8 @@ npm create vite@latest . -- --template react
 ```shell
  npm install react-router-dom -w frontend
  npm install axios -w frontend
+ # For icon
+ npm install lucide-react -w frontend
 
  npm install axios -w testauto/backend
 

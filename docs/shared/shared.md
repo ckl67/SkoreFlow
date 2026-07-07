@@ -2,7 +2,8 @@
 
 [← back](../doc.md)
 
-Directory to share information between backend, frontend and testauto
+Directory to share information between frontend and testauto
+It defines the interface - or type between the vitest and the frontend
 
 ```shell
 ├── ...

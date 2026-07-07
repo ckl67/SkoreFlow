@@ -21,7 +21,7 @@ The document can also be consulted locally in 'visual studio code' via the integ
 
 ### User Guide
 
-- [User Guide](./skoreFlow/user-guide.md)
+- [User Guide](./user-guide/cover-page.md)
 
 ### visual studio code
 
@@ -54,7 +54,7 @@ The document can also be consulted locally in 'visual studio code' via the integ
 
 - [Architecture](./backend/architecture.md)
 - [API Response Standard](./backend/api-response.md)
-- [Some specificities - Architecture Diagram](./backend/architecture.dio)
+- [Some specificities - Architecture Diagram](./backend/architecture.dio) _(To change the theme in drawio - Ctrl Shift P : "Drawio - Change Theme")_
 - [cors explanation](./backend/cors.md) and [dom explanation](./backend/dom.md)
 - [go and Docker paths](./backend/go.md)
 - [Installation](./backend/install.md)
@@ -85,7 +85,8 @@ The document can also be consulted locally in 'visual studio code' via the integ
 
 ### End to End Guides
 
-- [e2e Testing](./e2e/test.md)
+- [Playwright Testing](./e2e/playwright.md)
+- [Manual Testing](./e2e/manual.md)
 
 ### Shared
 

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import FormInput from '../components/FormInput';
 import SubmitButton from '../components/SubmitButton';
 import { useDevFillLogin } from '../hooks/useDevFillLogin';
@@ -72,6 +73,14 @@ export default function LoginPage() {
 
         {/* ACTION */}
         <SubmitButton label="Login" onClick={handleLogin} />
+
+        {/* 2. On ajoute le lien vers l'inscription ici */}
+        <p className="text-sm text-center text-gray-600">
+          Don't have an account?{' '}
+          <Link to="/register" className="font-medium text-blue-600 hover:underline">
+            Sign up
+          </Link>
+        </p>
       </div>
     </div>
   );

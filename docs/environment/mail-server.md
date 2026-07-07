@@ -12,11 +12,13 @@ It captures outgoing emails sent by an application and provides a web interface 
 Instead of sending emails over the internet, the application is configured to send emails to a local SMTP server (MailPit).
 MailPit intercepts these emails and stores them in memory, making them accessible through a web UI.
 
-Application (Backend)
-↓ SMTP
-MailPit Server
-↓
-Web Interface (Email Viewer)
+```text
+  Application (Backend)
+        ↓ SMTP
+  MailPit Server
+        ↓
+  Web Interface (Email Viewer)
+```
 
 It allows developers to manually or automatically verify email content and interaction flows without relying on real email providers.
 
@@ -62,15 +64,24 @@ sudo docker run -d \
 As it is a general tools, it will be installed at the root of the linux machine
 
 ```shell
-
 cd ~
 sudo docker stop mailpit
 sudo docker rm mailpit
 sudo docker run -d --name mailpit -p 0.0.0.0:1025:1025 -p 0.0.0.0:8025:8025 axllent/mailpit
-
 ```
 
 In PORTS you should see Origin : **Auto Forwarded**
+
+## MailPit Run
+
+```shell
+#Status
+sudo docker ps -a -f name=mailpit
+
+# Run
+sudo docker start mailpit
+# http://localhost:8025
+```
 
 ### Default Configuration
 

@@ -44,7 +44,7 @@ build:
 	CGO_ENABLED=0 $(GO) build $(LDFLAGS) -o build/$(BINARY_NAME) $(MAIN_FILE)
 
 run-test:
-	@echo "==> Running DEV - (TEST = TRUE Send Registration Token) (SMTP = FALSE) environment (Version: $(VERSION))...."
+	@echo "==> Running TEST - (TEST = TRUE Send Registration Token) (SMTP = FALSE) environment (Version: $(VERSION))...."
 	APP_ENV=development \
 	TEST_MODE=true \
 	SMTP_ENABLED=false \
@@ -119,10 +119,12 @@ help:
 	@echo "Available commands:"
 	@echo "  make build       : Compile the project with version injection"
 	@echo "  make run         : Run (Prod) with version injection"
-	@echo "  make run-test    : Run (Dev+Test) with version injection"
+	@echo "  make run-dev     : Run (Dev) with version injection"
+	@echo "  make run-test    : Run (Test) with version injection"
 	@echo "  make cleandb     : Clean Database"
 	@echo "  make air         : Run (Prod) with air allowing hot reload"
-	@echo "  make air-test    : Run (Dev+Test) with air in test mode"
+	@echo "  make air-dev     : Run (Dev) with air in test mode"
+	@echo "  make air-test    : Run (Test) with air in test mode"
 	@echo "  make version     : Show the version to be injected"
 	@echo "  make tidy        : Clean up dependencies"
 	@echo "  make reset       : Clear cache and reinstall everything"

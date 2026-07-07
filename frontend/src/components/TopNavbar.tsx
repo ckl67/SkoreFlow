@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../auth/ useAuth';
 import AvatarMenu from './AvatarMenu';
+import { User } from 'lucide-react';
 
 export default function TopNavbar() {
   const { isAuthenticated } = useAuth();
@@ -12,8 +13,12 @@ export default function TopNavbar() {
       </Link>
 
       {!isAuthenticated ? (
-        <Link to="/login" className="C">
-          Sign In
+        <Link
+          to="/login"
+          className="text-slate-400 hover:text-indigo-500 transition-colors duration-200 p-2 rounded-full hover:bg-slate-100"
+          title="Sign in"
+        >
+          <User className="w-6 h-6" />
         </Link>
       ) : (
         <AvatarMenu />

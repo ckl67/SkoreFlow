@@ -135,11 +135,12 @@ func (s *AuthService) Login(email, password string) (*models.User, string, error
 func (s *AuthService) ConfirmRegistration(token string) (*models.User, error) {
 	var user models.User
 
+	logger.Login.Debug("(Service) ConfirmRegistration: Attempting to confirm registration with token: %s", token)
 	// 1. Retrieve user by token
 	if err := user.FindByToken(s.db, token); err != nil {
 		return nil, apperrors.ErrAuthInvalidToken
 	}
-
+	logger.Login.Debug("(Service) ConfirmRegistration: User found: %s", user.Email)
 	// 2. Validate expiration
 	if time.Now().After(user.PasswordResetExpire) {
 		return nil, apperrors.ErrAuthTokenExpired
@@ -180,7 +181,6 @@ func (s *AuthService) SendRegistration(email string) (string, error) {
 
 	cfg := config.Config()
 
-
 	if !cfg.Smtp.Enabled {
 		if cfg.TestMode {
 			logger.Login.Info("SMTP disabled, skipping email send for %s", email)
@@ -196,7 +196,7 @@ func (s *AuthService) SendRegistration(email string) (string, error) {
 		cfg.Frontend.RegisterConfirmPath,
 	)
 
-	logger.Login.Debug("HtmlBody : %s",htmlBody)
+	logger.Login.Debug("HtmlBody : %s", htmlBody)
 
 	if err := mail.SendHTMLMail(email, "Confirm Your SkoreFlow Registration", htmlBody); err != nil {
 		return user.PasswordReset, apperrors.ErrSmtpFailed

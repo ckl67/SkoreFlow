@@ -133,6 +133,8 @@ func (ctrl *AuthController) ConfirmRegistration(c *gin.Context) {
 		return
 	}
 
+	logger.Login.Debug("Attempting to confirm registration with token: %s", form.Token)
+
 	user, err := ctrl.authService.ConfirmRegistration(form.Token)
 	if err != nil {
 		logger.Login.Warn("Registration confirmation failed: %v", err)
