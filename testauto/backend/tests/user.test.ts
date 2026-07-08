@@ -33,13 +33,13 @@ const INVALID_AVATAR = path.join(__dirname, '../resources/avatars/invalid.txt');
 const LARGE_AVATAR = path.join(__dirname, '../resources/avatars/avatar-too-large.jpg');
 
 // ----------------------------------------------------------------------------
-// INTERFACE
+// TYPE
 // ----------------------------------------------------------------------------
-interface TestUser {
+type TestUser = {
   username: string;
   email: string;
   password: string;
-}
+};
 // ----------------------------------------------------------------------------
 // LOCAL HELPER
 // ----------------------------------------------------------------------------
@@ -296,7 +296,7 @@ describe('👤 User  API - From the User Point of view', () => {
     // Upload Avatar
     const uploadRes = await uploadAvatar(
       path.join(__dirname, '../resources/avatars/avatar-man1.png'),
-      TOKEN_USER2,
+      TOKEN_USER2
     );
     expect(uploadRes.status).toBe(200);
 

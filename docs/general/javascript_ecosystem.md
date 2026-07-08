@@ -61,7 +61,7 @@ Uses import, export, and explicit Type Definitions.
 import axios from "axios";
 import { addition } from './math.js';
 
-interface User {
+type User ={
 name: string;
 }
 
@@ -76,7 +76,7 @@ Files end in .tsx. It combines logic, types, and UI structure.
 
 ```TypeScript
 
-interface GreetProps {
+type GreetProps ={
 name: string;
 }
 

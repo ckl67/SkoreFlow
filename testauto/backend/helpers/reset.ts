@@ -10,9 +10,9 @@ import { API_URL } from '../config.js';
 // THIS SERVICE CAN ONLY BE USED FOR TEST PERSPECTIVE !!
 // --------------------------------------------------------------------------------
 
-interface ResetTokenResponse {
+type ResetTokenResponse = {
   token: string;
-}
+};
 
 // --------------------------------------------------------------------------------
 // getResetToken

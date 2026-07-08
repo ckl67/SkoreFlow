@@ -85,15 +85,15 @@ import axios, { Method } from 'axios';
 // TYPES
 // --------------------------------------------------------------------------------
 
-// 1. THE CONTRACT (Interface)
+// 1. THE CONTRACT
 // <T = unknown> is a generic placeholder.
 // It says: "This object will handle some data of type T."
 // By defaulting to 'unknown', we prevent accidental use of 'any'.
-interface RequestOptions<T = unknown> {
+type RequestOptions<T = unknown> = {
   token?: string;
   data?: T; // If you send data, it should match the type T
   headers?: Record<string, string>;
-}
+};
 
 // THE WRAPPER (Response structure)
 // This ensures every API call returns a consistent object shape.
@@ -102,19 +102,19 @@ interface RequestOptions<T = unknown> {
 // res = await request<LoginResponse>('POST', `${API_URL}/login`, { data: {email,password }
 
 // Return of GO backend API
-interface APIResponse<T = unknown> {
+type APIResponse<T = unknown> = {
   success: boolean;
   data?: T;
   error?: {
     message: string;
   };
-}
+};
 
 // Return of function request
-interface HttpResponse<T = unknown> {
+type HttpResponse<T = unknown> = {
   status: number;
   data: APIResponse<T>;
-}
+};
 // --------------------------------------------------------------------------------
 // request
 // --------------------------------------------------------------------------------
@@ -134,7 +134,7 @@ interface HttpResponse<T = unknown> {
 async function request<T = unknown>(
   method: Method,
   url: string,
-  { token, data, headers }: RequestOptions = {},
+  { token, data, headers }: RequestOptions = {}
 ): Promise<HttpResponse<T>> {
   try {
     const res = await axios({

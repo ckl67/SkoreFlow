@@ -4,21 +4,21 @@ import { config } from './../config/config';
 // --------------------------------------------------------------------------------
 // Request options
 // --------------------------------------------------------------------------------
-interface RequestOptions<TRequest = unknown> {
+type RequestOptions<TRequest = unknown> = {
   data?: TRequest;
   headers?: Record<string, string>;
-}
+};
 
 // --------------------------------------------------------------------------------
 // Backend response shape (Go)
 // --------------------------------------------------------------------------------
-interface APIResponse<T = unknown> {
+type APIResponse<T = unknown> = {
   success: boolean;
   data?: T;
   error?: {
     message: string;
   };
-}
+};
 
 // --------------------------------------------------------------------------------
 // apiRequest

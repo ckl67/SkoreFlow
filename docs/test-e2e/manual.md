@@ -11,9 +11,10 @@ Run in NPM SCRIPTS
 - frontend in dev
   - ⚛️🖥️frontend or ⚛️frontend
 - mailpit
+  - See for [Prerequisites](./../environment/mail-server.md)
   - Server
-    - Start: `sudo docker start mailpit`
-      - Status: `sudo docker ps -a -f name=mailpit`
+    - Start: `docker start mailpit`
+      - Status: `docker ps -a -f name=mailpit`
   - Web
     - url : `http://localhost:8025`
 - Web Client in VSC

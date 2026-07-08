@@ -7,6 +7,19 @@
 [Mailpit](https://mailpit.axllent.org/) is a lightweight local SMTP server designed for development and testing purposes.
 It captures outgoing emails sent by an application and provides a web interface to inspect them without delivering them to real recipients.
 
+## Prerequisites
+
+To ensure that `docker start mailpit` works without `sudo`, you must make sure your Linux user has permission to use Docker.
+If you haven’t already done so, open your terminal once and for all and run these two commands:
+
+```shell
+# 1. Create the `docker` group (it often already exists)
+sudo groupadd docker
+
+# 2. Add your current user ($USER) to this group
+sudo usermod -aG docker $USER
+```
+
 ### How It Works
 
 Instead of sending emails over the internet, the application is configured to send emails to a local SMTP server (MailPit).

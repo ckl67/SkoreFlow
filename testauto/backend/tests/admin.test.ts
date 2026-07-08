@@ -30,14 +30,14 @@ console.log('__filename', __filename);
 console.log('__dirname', __dirname);
 
 // ----------------------------------------------------------------------------
-// INTERFACE
+// TYPE
 // ----------------------------------------------------------------------------
 
-interface TestUser {
+type TestUser = {
   username: string;
   email: string;
   password: string;
-}
+};
 
 // ----------------------------------------------------------------------------
 // LOCAL HELPER
@@ -78,7 +78,7 @@ describe('👤 User API from admin perspective ', () => {
     const u = makeUser();
     const res = await adminCreateUser(
       { username: u.username, email: u.email, password: 'password123' },
-      TOKEN_ADMIN,
+      TOKEN_ADMIN
     );
     expect(res.status).toBe(201);
     expect(res.data.data!.user_id).toBeGreaterThan(0);
@@ -112,7 +112,7 @@ describe('👤 User API from admin perspective ', () => {
         page: 1,
         limit: 50,
       },
-      TOKEN_ADMIN,
+      TOKEN_ADMIN
     );
 
     expect(res.status).toBe(200);
@@ -136,7 +136,7 @@ describe('👤 User API from admin perspective ', () => {
         limit: 10,
         sort: 'id asc',
       },
-      TOKEN_ADMIN,
+      TOKEN_ADMIN
     );
 
     expect(res.status).toBe(200);
@@ -159,7 +159,7 @@ describe('👤 User API from admin perspective ', () => {
         limit: 10,
         sort: 'id desc',
       },
-      TOKEN_ADMIN,
+      TOKEN_ADMIN
     );
 
     expect(res.status).toBe(200);
@@ -182,7 +182,7 @@ describe('👤 User API from admin perspective ', () => {
         limit: 10,
         sort: 'drop table users',
       },
-      TOKEN_ADMIN,
+      TOKEN_ADMIN
     );
 
     expect(res.status).toBe(200);
@@ -199,7 +199,7 @@ describe('👤 User API from admin perspective ', () => {
         limit: 5,
         sort: 'id asc',
       },
-      TOKEN_ADMIN,
+      TOKEN_ADMIN
     );
 
     const page2 = await adminGetUsersPage(
@@ -208,7 +208,7 @@ describe('👤 User API from admin perspective ', () => {
         limit: 5,
         sort: 'id asc',
       },
-      TOKEN_ADMIN,
+      TOKEN_ADMIN
     );
 
     expect(page1.status).toBe(200);
@@ -248,7 +248,7 @@ describe('👤 User API from admin perspective ', () => {
     const u = makeUser();
     const createRes = await adminCreateUser(
       { username: u.username, email: u.email, password: 'password123' },
-      TOKEN_ADMIN,
+      TOKEN_ADMIN
     );
 
     expect(createRes.status).toBe(201);
@@ -285,7 +285,7 @@ describe('👤 User API from admin perspective ', () => {
         email: u.email,
         password: u.password,
       },
-      TOKEN_ADMIN,
+      TOKEN_ADMIN
     );
 
     const userId = createRes.data.data!.user_id;
@@ -300,7 +300,7 @@ describe('👤 User API from admin perspective ', () => {
         isVerified: true,
       },
       userId,
-      TOKEN_ADMIN,
+      TOKEN_ADMIN
     );
 
     expect(updateRes.status).toBe(200);
@@ -321,7 +321,7 @@ describe('👤 User API from admin perspective ', () => {
         email: u.email,
         password: u.password,
       },
-      TOKEN_ADMIN,
+      TOKEN_ADMIN
     );
 
     const userId = createRes.data.data!.user_id;
@@ -334,7 +334,7 @@ describe('👤 User API from admin perspective ', () => {
         isVerified: true,
       },
       userId,
-      TOKEN_ADMIN,
+      TOKEN_ADMIN
     );
 
     expect(updateRes.status).toBe(409);
@@ -353,7 +353,7 @@ describe('👤 User API from admin perspective ', () => {
         email: u.email,
         password: u.password,
       },
-      TOKEN_ADMIN,
+      TOKEN_ADMIN
     );
 
     const userId = createRes.data.data!.user_id;
@@ -366,7 +366,7 @@ describe('👤 User API from admin perspective ', () => {
         isVerified: true,
       },
       userId,
-      TOKEN_ADMIN,
+      TOKEN_ADMIN
     );
 
     expect(updateRes.status).toBe(409);
@@ -385,7 +385,7 @@ describe('👤 User API from admin perspective ', () => {
         isVerified: true,
       },
       999999,
-      TOKEN_ADMIN,
+      TOKEN_ADMIN
     );
 
     expect(updateRes.status).toBe(404);

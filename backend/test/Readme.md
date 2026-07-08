@@ -13,7 +13,7 @@ VS Code scans the folder and applies these rules:
 
 ## Rules within the file
 
-The tests to e appear in the VS Code interface, it is not enough for the file to be named \_test.go.
+The tests to be appearing in the VS Code interface, it is not enough for the file to be named \_test.go.
 The functions within it must also comply with Go syntax:
 
 - The function name must begin with ‘Test’ followed by a capital letter (e.g. TestCompute).

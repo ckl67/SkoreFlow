@@ -40,6 +40,7 @@ The document can also be consulted locally in 'visual studio code' via the integ
 - [API Response Standard](./backend/api-response.md)
 - [Javascript - ecosystem](./general/javascript_ecosystem.md)
 - [Javascript - some particularities](./general/javascript.md)
+- [Type vs Interface in TypeScript](./general/type-vs-interface.md)
 - [JSON Handling](./general/json.md)
 - [MonoRepo](./general/monorepo.md)
 - [Classroom](./general/classroom.md)

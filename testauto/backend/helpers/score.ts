@@ -35,7 +35,7 @@ import { request } from './api.js';
 // TYPES
 // --------------------------------------------------------------------------------
 
-interface RequestOptions {
+type RequestOptions = {
   uploadFile: string;
   composer?: string;
   scoreName: string;
@@ -43,11 +43,11 @@ interface RequestOptions {
   categories?: string;
   tags?: string;
   informationText?: string;
-}
+};
 
-interface ApiMessage {
+type ApiMessage = {
   message: string;
-}
+};
 // --------------------------------------------------------------------------------
 // createScore
 // --------------------------------------------------------------------------------
@@ -61,7 +61,7 @@ async function createScore(
     uploadFile,
     composer,
   }: RequestOptions,
-  token: string,
+  token: string
 ) {
   const form = new FormData();
 

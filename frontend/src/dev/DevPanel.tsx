@@ -1,18 +1,12 @@
-// ----------------------------------------------------------------------------
-// INTERFACE
-// ----------------------------------------------------------------------------
-
-interface TestUser {
-  username: string;
-  email: string;
-  password: string;
-}
+import { DevUser } from './DevProvider';
+import { useDev } from './useDev';
+import { useState } from 'react';
 
 // ----------------------------------------------------------------------------
 // LOCAL HELPER
 // ----------------------------------------------------------------------------
 
-function makeUser(prefix = 'user'): TestUser {
+function makeUser(prefix = 'user'): DevUser {
   const id = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
   return {
@@ -24,15 +18,25 @@ function makeUser(prefix = 'user'): TestUser {
 
 // ----------------------------------------------------------------------------
 // DevPanel
-//   ↓ (dispatchEvent)
-// window event "dev:fill-login"
-//    ↓
-// LoginPage (useEffect listener)
-//    ↓
-// setEmail / setPassword
 // ----------------------------------------------------------------------------
 
 export default function DevPanel() {
+  const { lastRegisteredUser, setLastRegisteredUser } = useDev();
+
+  const [isOpen, setIsOpen] = useState(false);
+
+  if (!isOpen) {
+    return (
+      <button
+        className="fixed bottom-4 right-4 rounded-full bg-gray-800 p-3 shadow-lg hover:scale-105 transition-transform"
+        onClick={() => setIsOpen(true)}
+        title="Open Dev Tools"
+      >
+        🛠️
+      </button>
+    );
+  }
+
   function fillUser1() {
     window.dispatchEvent(
       new CustomEvent('dev:fill-login', {
@@ -40,7 +44,7 @@ export default function DevPanel() {
           email: 'user1@test.com',
           password: 'password123',
         },
-      }),
+      })
     );
   }
   //---
@@ -48,15 +52,31 @@ export default function DevPanel() {
     window.dispatchEvent(
       new CustomEvent('dev:fill-login', {
         detail: {
-          email: 'admin@test.com',
-          password: 'password123',
+          email: 'admin@admin.com',
+          password: 'skoreflow',
         },
-      }),
+      })
     );
   }
   // ---
+  function fillLastRegisteredUser() {
+    if (!lastRegisteredUser) return;
+
+    window.dispatchEvent(
+      new CustomEvent('dev:fill-login', {
+        detail: {
+          email: lastRegisteredUser.email,
+          password: lastRegisteredUser.password,
+        },
+      })
+    );
+  }
+  // ---
+
   function fillRegister() {
     const randomUser = makeUser();
+    setLastRegisteredUser(randomUser);
+
     console.log('Dispatch register');
     window.dispatchEvent(
       new CustomEvent('dev:fill-register', {
@@ -65,39 +85,61 @@ export default function DevPanel() {
           email: randomUser.email,
           password: randomUser.password,
         },
-      }),
+      })
     );
   }
   // ---
-
   return (
-    <div className="fixed bottom-4 right-4 w-72 rounded-lg border bg-gray-100 p-4 shadow-lg">
-      <h3 className="mb-4 text-lg font-bold">🛠 Development Tools</h3>
+    <div className="fixed bottom-4 right-4 w-64 rounded-lg border bg-white p-3 shadow-xl text-xs text-gray-700">
+      <div className="flex items-center justify-between mb-2 border-b pb-1">
+        <span className="font-bold text-gray-900">🛠️ Dev Tools</span>
+        <button className="text-gray-400 hover:text-gray-600 px-1" onClick={() => setIsOpen(false)}>
+          ✕
+        </button>
+      </div>
 
-      <section className="mb-4">
-        <h4 className="mb-2 font-semibold">Register</h4>
-
+      {/* Quick Actions section */}
+      <div className="grid grid-cols-2 gap-1 mb-2">
         <button
-          className="w-full rounded border px-3 py-2 bg-gray-200 hover:bg-gray-100"
+          className="rounded border bg-gray-50 p-1 hover:bg-gray-100 font-medium text-left"
+          onClick={fillUser1}
+        >
+          👤 User1
+        </button>
+        <button
+          className="rounded border bg-gray-50 p-1 hover:bg-gray-100 font-medium text-left"
+          onClick={fillAdmin}
+        >
+          🔑 Admin
+        </button>
+        <button
+          className="col-span-2 rounded border bg-indigo-50 p-1 hover:bg-indigo-100 font-medium text-center text-indigo-700"
           onClick={fillRegister}
         >
-          Fill Random Register
+          🎲 Random Register
         </button>
-      </section>
+      </div>
 
-      <section>
-        <h4 className="mb-2 font-semibold">Login</h4>
-
-        <div className="flex flex-col gap-2">
-          <button className="rounded border px-3 py-2 hover:bg-gray-100" onClick={fillUser1}>
-            Fill User1
-          </button>
-
-          <button className="rounded border px-3 py-2 hover:bg-gray-100" onClick={fillAdmin}>
-            Fill Admin
+      {/* Information about the last logged-in user */}
+      {lastRegisteredUser && (
+        <div className="space-y-1 bg-gray-50 p-1.5 rounded border border-dashed text-[11px] leading-tight">
+          <div className="truncate">
+            <strong>U:</strong> {lastRegisteredUser.username}
+          </div>
+          <div className="truncate">
+            <strong>E:</strong> {lastRegisteredUser.email}
+          </div>
+          <div className="truncate">
+            <strong>P:</strong> {lastRegisteredUser.password}
+          </div>
+          <button
+            className="w-full mt-1 py-0.5 bg-gray-200 rounded hover:bg-gray-300 text-[10px] uppercase font-bold tracking-wider"
+            onClick={fillLastRegisteredUser}
+          >
+            Inject Last
           </button>
         </div>
-      </section>
+      )}
     </div>
   );
 }
