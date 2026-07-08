@@ -95,16 +95,28 @@ func (server *Server) SetupRouter() {
 	}))
 	logger.Server.Info("CORS origin READING = %q", origins)
 
-	// Recovery middleware prevents server crashes on panic.
-	// Instead of crashing, it returns HTTP 500 and keeps the server alive.
-	r.Use(gin.Logger())
-	r.Use(gin.Recovery())
+	// Gin Logger
+	// r.Use(gin.Logger()) — The Logger
+	// This middleware is used to log requests arriving at your server.
+	// It writes log entries to the console for each interaction.
+	// It displays the time, the HTTP status (200, 404, 500…), and the response time
+
+	// r.Use(gin.Recovery()) — The Life Jacket
+	// This middleware is used to intercept panics (fatal errors in Go) to prevent your server from shutting down completely.
+
+	// r.Use(gin.Logger()): Enables the default logger on all routes.
+	// r.Use(gin.LoggerWithConfig(...)): Enables a second logger on all routes (which duplicates the first one), except for /health and /version.
+
+	// r.Use(gin.Logger()) <-- has been removed otherwise we will have double logs
+	//	POST /api/login
+	//	POST /api/login
 
 	// Custom logger configuration:
 	// Skip noisy endpoints (health checks, version)
 	r.Use(gin.LoggerWithConfig(gin.LoggerConfig{
 		SkipPaths: []string{"/health", "/version"},
 	}))
+	r.Use(gin.Recovery())
 
 	// -------------------------------------------------------------------------------------------
 	// 4. Controller instantiation

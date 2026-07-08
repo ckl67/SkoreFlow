@@ -19,9 +19,10 @@ import { AuthProvider } from './auth/AuthProvider';
 // -------------------------------------------
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
+  // StrictMode is automatically ignored in the production build.
   <React.StrictMode>
     <AuthProvider>
       <RouterProvider router={router} />
     </AuthProvider>
-  </React.StrictMode>,
+  </React.StrictMode>
 );

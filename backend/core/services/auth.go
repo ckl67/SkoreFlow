@@ -135,12 +135,13 @@ func (s *AuthService) Login(email, password string) (*models.User, string, error
 func (s *AuthService) ConfirmRegistration(token string) (*models.User, error) {
 	var user models.User
 
-	logger.Login.Debug("(Service) ConfirmRegistration: Attempting to confirm registration with token: %s", token)
+	logger.Login.Debug("(ConfirmRegistration-Service): Attempting to confirm registration by finding the token we got by email token=%s", token)
 	// 1. Retrieve user by token
 	if err := user.FindByToken(s.db, token); err != nil {
 		return nil, apperrors.ErrAuthInvalidToken
 	}
-	logger.Login.Debug("(Service) ConfirmRegistration: User found: %s", user.Email)
+	logger.Login.Debug("(ConfirmRegistration-Service): User found thanks to token : %s", user.Email)
+
 	// 2. Validate expiration
 	if time.Now().After(user.PasswordResetExpire) {
 		return nil, apperrors.ErrAuthTokenExpired

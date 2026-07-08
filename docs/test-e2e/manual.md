@@ -11,7 +11,11 @@ Run in NPM SCRIPTS
 - frontend in dev
   - ⚛️🖥️frontend or ⚛️frontend
 - mailpit
-  - vsc : Browser Integrated Browser
-    - Status: `sudo docker ps -a -f name=mailpit`
+  - Server
     - Start: `sudo docker start mailpit`
+      - Status: `sudo docker ps -a -f name=mailpit`
+  - Web
     - url : `http://localhost:8025`
+- Web Client in VSC
+  - Ctr + Shift + p
+    - Browser : Open Integrated Browser

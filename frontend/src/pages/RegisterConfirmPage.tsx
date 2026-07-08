@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { apiRequest } from '../api/client';
@@ -12,18 +12,32 @@ export default function RegisterConfirmPage() {
   const [params] = useSearchParams();
   const navigate = useNavigate();
 
+  // When the user arrives on the page, `status` is immediately set to 'loading'.
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
 
   const token = params.get('token');
 
+  const hasConfirmed = useRef(false);
+
+  // ----------------
+
   useEffect(() => {
+    console.log('Calling confirmRegistration');
+
     if (!token) {
       setStatus('error');
       return;
     }
-
+    // Standard protection for effects that should only run once per session.
+    // Even if React runs the effect twice during development, only one POST request will be sent.
+    if (hasConfirmed.current) {
+      return;
+    }
+    hasConfirmed.current = true;
     confirmAccount(token);
   }, [token]);
+
+  // ----------------
 
   async function confirmAccount(token: string) {
     try {
@@ -36,7 +50,7 @@ export default function RegisterConfirmPage() {
         '/auth/register/confirm',
         {
           data: payload,
-        },
+        }
       );
 
       if (!res.success || !res.data) {
@@ -52,11 +66,17 @@ export default function RegisterConfirmPage() {
 
   if (status === 'loading') {
     return <div>Confirming your account...</div>;
-    <Link to="/login">Login</Link>;
   }
 
   if (status === 'error') {
-    return <div>Invalid or expired confirmation link.</div>;
+    return (
+      <div>
+        This confirmation link is invalid, has expired, or has already been used.
+        <br>
+          If you haven't activated your account yet, you can request a new confirmation email..
+        </br>
+      </div>
+    );
   }
 
   return (

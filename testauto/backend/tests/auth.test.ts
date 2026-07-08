@@ -67,20 +67,64 @@ describe('👤 Authentication  API - From the User Point of view', () => {
   // CONFIRM REGISTRATION + LOGIN
   // ----------------------------------------------------------------------------
   it('should confirm registration of user and login', async () => {
-    const user = makeUser();
+    const user1 = makeUser();
 
-    const resReg = await register(user);
-    expect(resReg.status).toBe(201);
-    const token = resReg.data.data!.token;
+    // Register (Mode Test = Return the token)
+    const resReg1 = await register(user1);
+    expect(resReg1.status).toBe(201);
+    const token1 = resReg1.data.data!.token;
 
-    const res = await confirmRegistration({
-      token,
+    // We use the token to confirm registration via : api.POST("/auth/register/confirm"
+    const res1 = await confirmRegistration({
+      token: token1,
     });
-    expect(res.status).toBe(200);
-    expect(res.data.data!.isVerified).toBe(true);
+    expect(res1.status).toBe(200);
+    expect(res1.data.data!.isVerified).toBe(true);
 
-    const resLogin = await login({ email: user.email, password: user.password });
-    expect(resLogin.status).toBe(200);
+    // We finalize with a login
+    const resLogin1 = await login({ email: user1.email, password: user1.password });
+    expect(resLogin1.status).toBe(200);
+
+    /// --- Twice again to test double sequence
+    const user2 = makeUser();
+
+    // Register (Mode Test = Return the token)
+    const resReg2 = await register(user2);
+    expect(resReg2.status).toBe(201);
+    const token2 = resReg2.data.data!.token;
+
+    // We use the token to confirm registration via : api.POST("/auth/register/confirm"
+    const res2 = await confirmRegistration({
+      token: token2,
+    });
+    expect(res2.status).toBe(200);
+    expect(res2.data.data!.isVerified).toBe(true);
+
+    // We finalize with a login
+    const resLogin2 = await login({ email: user2.email, password: user2.password });
+    expect(resLogin2.status).toBe(200);
+  });
+
+  it('should fail second confirmation ', async () => {
+    const user1 = makeUser();
+
+    // Register (Mode Test = Return the token)
+    const resReg1 = await register(user1);
+    expect(resReg1.status).toBe(201);
+    const token1 = resReg1.data.data!.token;
+
+    // We use the token to confirm registration via : api.POST("/auth/register/confirm"
+    const res1 = await confirmRegistration({
+      token: token1,
+    });
+    expect(res1.status).toBe(200);
+    expect(res1.data.data!.isVerified).toBe(true);
+
+    // Same confirmation
+    const res2 = await confirmRegistration({
+      token: token1,
+    });
+    expect(res2.status).toBe(400);
   });
 
   // ----------------------------------------------------------------------------

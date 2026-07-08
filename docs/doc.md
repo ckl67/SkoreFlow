@@ -83,10 +83,10 @@ The document can also be consulted locally in 'visual studio code' via the integ
 - [Tailwind css](./frontend/tailwind.md)
 - [Deployment Guide](./frontend/deployment-guide.md)
 
-### End to End Guides
+### End to End Test Guides
 
-- [Playwright Testing](./e2e/playwright.md)
-- [Manual Testing](./e2e/manual.md)
+- [Manual Testing](./test-e2e/manual.md)
+- [Playwright Testing](./test-e2e/playwright.md)
 
 ### Shared
 

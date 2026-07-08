@@ -137,7 +137,17 @@ func (ctrl *AuthController) ConfirmRegistration(c *gin.Context) {
 
 	user, err := ctrl.authService.ConfirmRegistration(form.Token)
 	if err != nil {
+
 		logger.Login.Warn("Registration confirmation failed: %v", err)
+
+		if errors.Is(err, apperrors.ErrAuthInvalidToken) {
+			responses.FAIL(c, http.StatusBadRequest, apperrors.ErrAuthInvalidToken)
+			return
+		}
+		if errors.Is(err, apperrors.ErrAuthTokenExpired) {
+			responses.FAIL(c, http.StatusBadRequest, apperrors.ErrAuthTokenExpired)
+			return
+		}
 
 		// Unified error for security reasons
 		responses.FAIL(c, http.StatusBadRequest, apperrors.ErrAuthTokenInvalidExpired)

@@ -5,6 +5,7 @@ import MainLayout from '../layouts/MainLayout';
 import LoginPage from '../pages/LoginPage';
 import RegisterPage from '../pages/RegisterPage';
 import MePage from '../pages/MePage';
+import RegisterPendingPage from '../pages/RegisterPendingPage';
 
 import ProtectedRoute from '../components/ProtectedRoute';
 import RegisterConfirmPage from '../pages/RegisterConfirmPage';
@@ -29,6 +30,10 @@ export const router = createBrowserRouter([
       {
         path: 'register/confirm',
         element: <RegisterConfirmPage />,
+      },
+      {
+        path: '/register/pending',
+        element: <RegisterPendingPage />,
       },
       {
         path: '/me',
