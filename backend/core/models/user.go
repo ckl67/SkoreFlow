@@ -19,7 +19,7 @@ import (
 
 type User struct {
 	ID                     uint32    `gorm:"primaryKey;autoIncrement" json:"id"`
-	Username               string    `gorm:"size:100;not null;uniqueIndex" json:"username"`
+	Username               string    `gorm:"size:100;not null;uniqueIndex" json:"username"` // SanitizeName and unique !
 	Email                  string    `gorm:"size:100;not null;uniqueIndex" json:"email"`
 	PendingEmail           string    `gorm:"size:100" json:"pending_email"`
 	EmailChangeToken       string    `gorm:"size:255" json:"-"`

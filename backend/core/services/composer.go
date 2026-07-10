@@ -26,6 +26,7 @@ import (
 	"backend/pkg/filedir"
 	"backend/pkg/format"
 	"backend/pkg/media"
+	"backend/pkg/storagepath"
 
 	"gorm.io/gorm"
 )
@@ -33,11 +34,11 @@ import (
 // ComposerService handles business logic related to composers.
 type ComposerService struct {
 	db    *gorm.DB
-	paths *config.Paths
+	paths *storagepath.Paths
 }
 
 // NewComposerService creates a new ComposerService instance.
-func NewComposerService(db *gorm.DB, paths *config.Paths) *ComposerService {
+func NewComposerService(db *gorm.DB, paths *storagepath.Paths) *ComposerService {
 	return &ComposerService{
 		db:    db,
 		paths: paths,
@@ -322,17 +323,7 @@ func (s *ComposerService) ProcessComposerStorage(composer *models.Composer, file
 }
 
 // StoreComposerImage handles validation and persistence of a composer image.
-//
-// Responsibilities:
-// - Validate file extension against allowed image types
-// - Compute storage path using application path configuration
-// - Update composer entity with relative image path
-// - Persist file to filesystem via filedir storage layer
-//
 // This function is agnostic of HTTP and works with any io.Reader source:
-// - HTTP upload (via ProcessComposerStorage)
-// - Seed data
-// - Tests / mocks
 func (s *ComposerService) StoreComposerImage(
 	composer *models.Composer,
 	reader io.Reader,
@@ -350,18 +341,14 @@ func (s *ComposerService) StoreComposerImage(
 	}
 
 	// Build storage path
-	filePath := s.paths.ComposerPicturePath(composer.SafeName, ext)
-	composer.PicturePath = filePath
+	relativePath := s.paths.ComposerPictureRel(composer.SafeName, ext)
+	logger.Composer.Debug("(StoreComposerImage) Relative path %s", relativePath)
+	composer.PicturePath = relativePath
 
-	fullPath := s.paths.StorageAbsPath(filePath)
+	absolutePath := s.paths.ResolveDataRoot(relativePath)
+	logger.Composer.Debug("(StoreComposerImage) Absolute path %s", absolutePath)
 
-	logger.Composer.Debug(
-		"(StoreComposerImage) File relative: %s File absolute: %s",
-		filePath,
-		fullPath,
-	)
-
-	return filedir.SaveFile(fullPath, reader)
+	return filedir.SaveFile(absolutePath, reader)
 }
 
 // Deletes a composer and associated assets.
@@ -405,9 +392,9 @@ func (s *ComposerService) deleteComposerOrchestrator(composer *models.Composer) 
 	var hasDeletionError bool
 
 	// Absolute path
-	fullFilePath := s.paths.StorageAbsPath(composer.PicturePath)
+	absolutePath := s.paths.ResolveDataRoot(composer.PicturePath)
 
-	paths := []string{fullFilePath}
+	paths := []string{absolutePath}
 
 	for _, path := range paths {
 		if path == "" {

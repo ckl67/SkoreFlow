@@ -156,6 +156,24 @@ describe('👤 Authentication  API - From the User Point of view', () => {
   });
 
   // ----------------------------------------------------------------------------
+  // FAIL WITH DUPLICATE USERNAME BUT SAME MAIL
+  // ----------------------------------------------------------------------------
+  it('should fail with same username but different email', async () => {
+    const user = makeUser();
+
+    const user1 = {
+      username: user.username,
+      email: `${user.username}-new@test.com`,
+      password: user.password,
+    };
+    const res1 = await register(user);
+    expect(res1.status).toBe(201);
+
+    const res2 = await register(user1);
+    expect(res2.status).toBe(400);
+  });
+
+  // ----------------------------------------------------------------------------
   // FAIL WITH INVALID TOKEN
   // ----------------------------------------------------------------------------
   it('should reject invalid token', async () => {

@@ -10,6 +10,7 @@ import (
 	"backend/infrastructure/config"
 	"backend/infrastructure/database"
 	"backend/infrastructure/logger"
+	"backend/pkg/storagepath"
 
 	"gorm.io/gorm"
 )
@@ -54,7 +55,10 @@ func main() {
 
 	db := database.ConnectDB(cfg)
 
-	paths := config.NewPaths(cfg)
+	paths := storagepath.NewPaths(
+		cfg.ProjectRoot,
+		cfg.DataRoot,
+	)
 
 	if *listUsersFlag {
 		listUsers(db)
@@ -86,7 +90,7 @@ func listUsers(db *gorm.DB) {
 }
 
 // Cleanup orphan files
-func runAvatarCleanup(db *gorm.DB, paths *config.Paths) {
+func runAvatarCleanup(db *gorm.DB, paths *storagepath.Paths) {
 	logger.Main.Info("Starting avatar cleanup...")
 
 	// ------------------------------------------------------------------------
@@ -128,7 +132,7 @@ func runAvatarCleanup(db *gorm.DB, paths *config.Paths) {
 	// ------------------------------------------------------------------------
 	// 4. Avatar directory
 	// ------------------------------------------------------------------------
-	avatarDir := paths.StorageAbsPath("users")
+	avatarDir := paths.ResolveDataRoot("users")
 
 	files, err := os.ReadDir(avatarDir)
 	if err != nil {

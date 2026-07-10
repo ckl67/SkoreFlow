@@ -40,13 +40,6 @@ Client
 │   ├── logger/
 │   └── config/
 │
-├── storage/            # File storage (local or cloud)
-│   ├── scores/
-│   │   ├── uploaded-scores/
-│   │   └── thumbnails/
-│   ├── composers/
-│   └── assets/
-│
 ├── pkg/                # Shared utilities (pure, reusable)
 │   ├── file/
 │   ├── format/
@@ -62,6 +55,17 @@ Client
 ├── Makefile
 ├── go.mod
 │
+
+# and beside
+
+├── storage/            # File storage (local or cloud)
+│   ├── scores/
+│   │   ├── uploaded-scores/
+│   │   └── thumbnails/
+│   ├── composers/
+│   └── assets/
+│
+
 ```
 
 ## 🌐 API Design
@@ -147,19 +151,19 @@ Reusable helpers are separated from business logic.
 ## Rule path for SkoreFlow
 
 To avoid confusion and ensure consistency, we define a clear structure for our file storage in SkoreFlow, both in local development and within Docker containers.
-We use environment variables to set the root path and storage path, and we construct absolute paths using Go's `filepath.Join` to ensure portability across different environments.
+We use environment variables to set the root path and data path
 
 ```go
 //In local
-APP_ROOT=/home/<linux user>/SkoreFlow_Project/SkoreFlow/backend
-STORAGE_PATH=storage
+PROJECT_ROOT=/home/<linux user>/SkoreFlow_Project/SkoreFlow/backend
+DATA_ROOT=/var/storage
 
 //In Docker
-APP_ROOT=/app
-STORAGE_PATH=storage
+PROJECT_ROOT=/app
+DATA_ROOT=storage
 ```
 
-In database the data are stored relative to the **StoragePath=storage/**
+In database the data are stored relative to the **DataRoot=storage/**
 
 See **path.go** for more details.
 

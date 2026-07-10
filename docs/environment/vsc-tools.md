@@ -41,15 +41,18 @@ go install mvdan.cc/sh/v3/cmd/shfmt@latest
 ## 1.6. TypeScript Setup (Tests & Scripts)
 
 This project uses **TypeScript** mainly for test automation (`testauto/`) and scripting.
+Furthermore, by 2026, ts-node is obsolete for running TypeScript directly in Node.js.
 
 From the root:
 
 ```bash
-npm install --save-dev typescript ts-node @types/node typescript-eslint
+## Finally tsx not use because of usage of integrated vitest !
+npm install --save-dev typescript tsx @types/node typescript-eslint
+
 ```
 
 - `typescript` → compiler
-- `ts-node` → run `.ts` files directly
+- `tsx` → run .ts files directly (fast, support ESM)
 - `@types/node` → Node.js types
 
 typescript-eslint contents :
@@ -94,17 +97,16 @@ Minimal recommended config:
 
 ## 1.8. Run TypeScript
 
-Instead of:
-
-```bash
-node script.js
-```
-
 Use:
 
 ```bash
-npx ts-node script.ts
+# If installed
+npx tsx script.ts
+# Or better
+npx vitest run tests/stress.test.ts
 ```
+
+Vitest handles the execution and on-the-fly compilation of the .ts files directly
 
 ## 1.9. Types for Libraries
 
@@ -134,5 +136,4 @@ Each workspace can have its own `tsconfig.json` if needed.
 - Clean separation of concerns
 - All tools : Prettier - ESLint - .. based on npm (vsc will first use local npm, and if not present will use integrated vsc tools )
 - TypeScript is used for tests and scripts
-- Runs with `ts-node` (no build step)
 - Strict mode enabled for safety

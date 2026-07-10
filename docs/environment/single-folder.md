@@ -3,7 +3,7 @@
 [← back](../doc.md)
 
 This project uses a **single-folder VS Code setup (Open Folder mode)** instead of a multi-root `.code-workspace`.
-The main reason after several attempt is that something will always missing in a specific `.code-workspace`, and we risk
+The main reason after several attempts is that something will always be missing in a specific `.code-workspace`, and we risk
 to switch from one workspace to another workspace !!
 
 ## Why this choice was made

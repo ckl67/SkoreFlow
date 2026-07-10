@@ -11,21 +11,7 @@
 #   --> allows for exceptions using '!'
 
 # 1) Ignore everything inside storage
-storage/*
-
-# 2) Allow 'composers' and 'assets' directories
-!storage/composers/
-!storage/assets/
-!storage/users/
-
-# 3) Ignore all contents inside
-storage/users/*
-storage/composers/*
-
-# 4) Re-allow assets within
-!storage/users/admin.png
-!storage/users/default.png
-!storage/composers/default.png
+backend/storage/
 
 # Build output directory
 build/

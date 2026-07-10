@@ -13,6 +13,7 @@ import (
 	"backend/infrastructure/config"
 	"backend/infrastructure/health"
 	"backend/infrastructure/logger"
+	"backend/pkg/storagepath"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -35,20 +36,18 @@ import (
 type Server struct {
 	DB *gorm.DB
 
-	Path *config.Paths
-
 	authService     *services.AuthService
 	userService     *services.UserService
 	ScoreService    *services.ScoreService
 	ComposerService *services.ComposerService
+	SeederService   *services.SeederService
 
 	Router  *gin.Engine
 	Version string
 }
 
 // Setup initializes the server state and application components.
-func (server *Server) Setup(version string, db *gorm.DB, paths *config.Paths) {
-	server.Path = paths
+func (server *Server) Setup(version string, db *gorm.DB) {
 
 	server.Version = version
 	server.DB = db
@@ -84,10 +83,17 @@ func (server *Server) Setup(version string, db *gorm.DB, paths *config.Paths) {
 	// ----------------------------------------------------
 	// 2. Initialize services with db and path injection
 	// ----------------------------------------------------
+
+	paths := storagepath.NewPaths(
+		cfg.ProjectRoot,
+		cfg.DataRoot,
+	)
+
 	server.authService = services.NewAuthService(db, paths)
 	server.userService = services.NewUserService(db, paths)
 	server.ScoreService = services.NewScoreService(db, paths)
 	server.ComposerService = services.NewComposerService(db, paths)
+	server.SeederService = services.NewSeederService(db, paths)
 
 	// ----------------------------------------------------
 	// 3. Database migrations (schema sync with models)

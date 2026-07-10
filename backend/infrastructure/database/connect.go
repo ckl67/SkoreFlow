@@ -3,7 +3,7 @@ package database
 import (
 	"fmt"
 	"os"
-	"path"
+	"path/filepath"
 
 	"backend/infrastructure/config"
 	"backend/infrastructure/logger"
@@ -43,7 +43,7 @@ func ConnectDB(cfg config.ServerConfig) *gorm.DB {
 
 	case "postgres":
 		dsn := fmt.Sprintf(
-			"host=%s port=%d user=%s dbname=%s password=%s sslmode=disable",
+			"host=%s port=%d user=%s DB name=%s password=%s ssl mode=disable",
 			cfg.Database.Host,
 			cfg.Database.Port,
 			cfg.Database.User,
@@ -53,17 +53,29 @@ func ConnectDB(cfg config.ServerConfig) *gorm.DB {
 		db, err = gorm.Open(postgres.Open(dsn), dbConfig)
 
 	default: // SQLite as fallback
-		if _, err := os.Stat(cfg.StoragePath); os.IsNotExist(err) {
-			_ = os.Mkdir(cfg.StoragePath, os.ModePerm)
+		logger.DB.Warn("SQLite is suitable for development and testing, but not recommended for production environments.")
+
+		// MkdirAll ensures that the DataRoot directory exists before attempting to create the SQLite database file.
+		// It can create multiple levels of directories if they do not exist.
+		if err := os.MkdirAll(cfg.DataRoot, 0755); err != nil {
+			logger.DB.Fatal("unable to create data directory: %v", err)
 		}
 
-		dbPath := path.Join(cfg.StoragePath, "database.db")
+		// Check if the DataRoot directory exists before proceeding to create the SQLite database file.
+		if _, err := os.Stat(cfg.DataRoot); err != nil {
+			logger.DB.Fatal("DataRoot does not exist: %v", err)
+		}
+
+		dbPath := filepath.Join(cfg.DataRoot, "database.db")
+		logger.DB.Info("SQLite database file path: %s", dbPath)
 		db, err = gorm.Open(sqlite.Open(dbPath), dbConfig)
+
 	}
 
 	// Error handling using our custom module-based logger
 	if err != nil {
-		logger.DB.Error("(connectDB) : database connection failed: %v", err)
+		logger.DB.Fatal("(connectDB) : database connection failed: %v", err)
+
 	} else {
 		logger.DB.Info("(connectDB) : Database connected successfully")
 	}

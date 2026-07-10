@@ -27,8 +27,12 @@ The document can also be consulted locally in 'visual studio code' via the integ
 
 - [Visual Studio Code settings](./environment/vscode.md)
 - [Remote Development, Ports, and VPN](./environment/remote-ports.md)
-- [single-folder](./environment/single-folder.md)
+- [VSC Workspace](./environment/single-folder.md)
 - [eslint and prettier](./environment/formatting.md)
+
+### SkoreFlow
+
+- [Naming Conventions](./skoreflow/naming-conventions.md)
 
 ### General
 

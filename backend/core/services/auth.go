@@ -23,6 +23,7 @@ import (
 	"backend/pkg/format"
 	"backend/pkg/mail"
 	"backend/pkg/security"
+	"backend/pkg/storagepath"
 
 	"gorm.io/gorm"
 )
@@ -37,11 +38,11 @@ import (
 // AuthService handles authentication and account lifecycle operations.
 type AuthService struct {
 	db    *gorm.DB
-	paths *config.Paths
+	paths *storagepath.Paths
 }
 
 // NewAuthService creates a new AuthService instance.
-func NewAuthService(db *gorm.DB, paths *config.Paths) *AuthService {
+func NewAuthService(db *gorm.DB, paths *storagepath.Paths) *AuthService {
 	return &AuthService{
 		db:    db,
 		paths: paths,

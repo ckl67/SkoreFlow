@@ -6,10 +6,17 @@ package format
 // ======================================================================================
 
 import (
+	"path/filepath"
 	"regexp"
 	"strings"
 
 	"github.com/mozillazg/go-unidecode"
+)
+
+// The regexes are compiled ONLY ONCE when the package starts up
+var (
+	reUnsafeChars = regexp.MustCompile(`[^a-z0-9\-.]+`)
+	reMultiHyphen = regexp.MustCompile(`-+`)
 )
 
 // SanitizeUserEmail trims spaces and converts email to lowercase.
@@ -33,32 +40,47 @@ func ToASCII(input string) string {
 
 // SanitizeName converts a string into a "safe" format suitable for filenames, URLs, etc.
 // Example: "École #1.pdf" -> "ecole-1.pdf"
+// SanitizeName converts a string into a "safe" format suitable for filenames, URLs, etc.
 func SanitizeName(name string) string {
-	// 1 Transliterate Unicode → ASCII
+	// 1 & 2 & 3: Transliterate, lowercase and trim spaces directly
+	// Transliterate Unicode → ASCII
 	s := unidecode.Unidecode(name)
-
-	// 2 Lowercase
+	// Lowercase
 	s = strings.ToLower(s)
-
-	// 3 Trim spaces
+	//  Trim spaces
 	s = strings.TrimSpace(s)
 
-	// 4 Replace spaces and underscores with hyphen
+	// 4. Replace spaces and underscores with hyphen
 	s = strings.ReplaceAll(s, " ", "-")
 	s = strings.ReplaceAll(s, "_", "-")
 
-	// 5 Keep only [a-z0-9-.]
-	re := regexp.MustCompile(`[^a-z0-9\-.]+`)
-	s = re.ReplaceAllString(s, "")
+	// 5. Keep only [a-z0-9-.] (uses the pre-compiled global regex)
+	s = reUnsafeChars.ReplaceAllString(s, "")
 
-	// 6 Collapse consecutive hyphens
-	re2 := regexp.MustCompile(`-+`)
-	s = re2.ReplaceAllString(s, "-")
+	// 6. Collapse consecutive hyphens
+	s = reMultiHyphen.ReplaceAllString(s, "-")
 
-	// 7 Limit length
+	// 7. Optional: Remove any extra dashes at the beginning or end
+	s = strings.Trim(s, "-")
+
+	// 8. Set the length limit sensibly (max. 255 bytes for file systems such as ext4 and NTFS)
 	if len(s) > 255 {
-		s = s[:255]
+		s = truncateSafe(s, 255)
 	}
 
 	return s
+}
+
+// truncateSafe truncates the string whilst preserving the extension where possible
+func truncateSafe(s string, maxLen int) string {
+	ext := filepath.Ext(s)
+	if len(ext) >= maxLen {
+		return s[:maxLen] // An extreme case where the extension is longer than the limit
+	}
+
+	// We remove the ‘name’ part and reattach the extension
+	allowedNameLen := maxLen - len(ext)
+	namePart := s[:allowedNameLen]
+
+	return strings.TrimSuffix(namePart, "-") + ext
 }

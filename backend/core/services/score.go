@@ -25,6 +25,7 @@ import (
 	"backend/pkg/filedir"
 	"backend/pkg/format"
 	"backend/pkg/pdf"
+	"backend/pkg/storagepath"
 
 	"gorm.io/gorm"
 )
@@ -33,11 +34,11 @@ import (
 
 type ScoreService struct {
 	db    *gorm.DB
-	paths *config.Paths
+	paths *storagepath.Paths
 }
 
 // NewScoreService creates a new instance of ScoreService.
-func NewScoreService(db *gorm.DB, paths *config.Paths) *ScoreService {
+func NewScoreService(db *gorm.DB, paths *storagepath.Paths) *ScoreService {
 	return &ScoreService{
 		db:    db,
 		paths: paths,
@@ -124,12 +125,12 @@ func (s *ScoreService) CreateScore(uid uint32, form forms.CreateScoreRequest, fi
 	}
 
 	// 4. Build storage paths - Relative
-	// filePath = scores/uploaded-scores/user-1/mozart/prelude.pdf
-	filePath := s.paths.ScorePDFStorageRel(uid, composer.SafeName, safeScoreName)
-	thumbnailPath := s.paths.ScoreThumbnailStorageRel(uid, composer.SafeName, safeScoreName)
+	// relativePath = scores/uploaded-scores/user-1/mozart/prelude.pdf
+	relativePath := s.paths.ScorePdfRel(uid, composer.SafeName, safeScoreName)
+	relativeThumbnailPath := s.paths.ScoreThumbnailRel(uid, composer.SafeName, safeScoreName)
 
-	logger.Score.Debug("(CreateScore) filePath Relative %s", filePath)
-	logger.Score.Debug("(CreateScore) thumbnailPath Relative %s", thumbnailPath)
+	logger.Score.Debug("(CreateScore) relativePath %s", relativePath)
+	logger.Score.Debug("(CreateScore) thumbnailPath %s", relativeThumbnailPath)
 
 	// 5. Parse release date
 	releaseDate, err := createDate(form.ReleaseDate)
@@ -147,8 +148,8 @@ func (s *ScoreService) CreateScore(uid uint32, form forms.CreateScoreRequest, fi
 		UploaderID:  uid,
 		ReleaseDate: releaseDate,
 
-		FilePath:      filePath,
-		ThumbnailPath: thumbnailPath,
+		FilePath:      relativePath,
+		ThumbnailPath: relativeThumbnailPath,
 
 		InformationText: form.InformationText,
 		Tags:            format.ParseSemicolonList(form.Tags),
@@ -383,31 +384,31 @@ func (s *ScoreService) StoreScoreFile(
 		return nil
 	}
 
-	fullFilePath := s.paths.StorageAbsPath(score.FilePath)
-	fullThumbnailPath := s.paths.StorageAbsPath(score.ThumbnailPath)
+	absoluteScorePath := s.paths.ResolveDataRoot(score.FilePath)
+	absoluteThumbnailPath := s.paths.ResolveDataRoot(score.ThumbnailPath)
 
-	logger.Score.Debug("fullFilePath Absolute : %s", fullFilePath)
-	logger.Score.Debug("fullThumbnailPath Absolute : %s", fullThumbnailPath)
+	logger.Score.Debug("absoluteScorePath : %s", absoluteScorePath)
+	logger.Score.Debug("absoluteThumbnailPath : %s", absoluteThumbnailPath)
 
 	// Create file and full path directory
 	// Save main file
-	if err := filedir.SaveFile(fullFilePath, reader); err != nil {
+	if err := filedir.SaveFile(absoluteScorePath, reader); err != nil {
 		return err
 	}
 
 	// Create the thumbnail directory : full path
-	if err := filedir.CreateDirTree(fullThumbnailPath); err != nil {
+	if err := filedir.CreateDirTree(absoluteThumbnailPath); err != nil {
 		return err
 	}
 
 	// Remove old thumbnail
-	if err := filedir.RemoveFileIfExists(fullThumbnailPath); err != nil {
+	if err := filedir.RemoveFileIfExists(absoluteThumbnailPath); err != nil {
 		logger.Score.Error("(StoreScoreFile Service) delete file failed: %v", err)
 		return err
 	}
 
 	// Async thumbnail generation
-	go s.GenerateThumbnailAsync(fullFilePath, fullThumbnailPath)
+	go s.GenerateThumbnailAsync(absoluteScorePath, absoluteThumbnailPath)
 
 	return nil
 
@@ -437,8 +438,8 @@ func (s *ScoreService) deleteScoreOrchestrator(score *models.Score) error {
 	// Example :
 	// rel = scores/uploaded-scores/user-1/mozart/prelude.pdf
 	// return =  /home/christian/SkoreFlow_Project/SkoreFlow/backend/storage/scores/uploaded-scores/user-1/mozart/prelude.pdf
-	fullFilePath := s.paths.StorageAbsPath(score.FilePath)
-	fullThumbnailPath := s.paths.StorageAbsPath(score.ThumbnailPath)
+	fullFilePath := s.paths.ResolveDataRoot(score.FilePath)
+	fullThumbnailPath := s.paths.ResolveDataRoot(score.ThumbnailPath)
 
 	paths := []string{fullFilePath, fullThumbnailPath}
 

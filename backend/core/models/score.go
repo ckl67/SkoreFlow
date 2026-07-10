@@ -30,8 +30,8 @@ import (
 
 type Score struct {
 	ID            uint32 `gorm:"primary_key;auto_increment" json:"id"`
-	SafeScoreName string `gorm:"size:255;uniqueIndex:idx_score_user"`
 	ScoreName     string `gorm:"size:255;not null" json:"score_name"`
+	SafeScoreName string `gorm:"size:255;uniqueIndex:idx_score_user"`
 
 	// Foreign key to Composer
 	ComposerID uint32   `gorm:"not null;index;uniqueIndex:idx_score_user" json:"composer_id"`

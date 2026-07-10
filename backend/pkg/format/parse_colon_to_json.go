@@ -13,7 +13,7 @@ import (
 // ParseSemicolonList converts a string of items separated by semicolons or commas into a JSON array string.
 // - Empty input returns "[]"
 // - Leading/trailing spaces are trimmed
-// Example: "Classique;Baroque" -> '["Classique","Baroque"]'
+// Example: "Classical;Baroque" -> '["Classical","Baroque"]'
 // Example: "A,B,C" -> '["A","B","C"]'
 func ParseSemicolonList(input string) string {
 	if input == "" {

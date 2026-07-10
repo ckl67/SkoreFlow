@@ -63,12 +63,12 @@ We use environment variables to set the root path and storage path, and we const
 
 ```go
 //In local
-APP_ROOT=/home/<linux user>/SkoreFlow_Project/SkoreFlow/backend
-STORAGE_PATH=storage
+PROJECT_ROOT=/home/<linux user>/SkoreFlow_Project/SkoreFlow/backend
+DATA_ROOT=storage
 
 //In Docker
-APP_ROOT=/app
-STORAGE_PATH=storage
+PROJECT_ROOT=/app
+DATA_ROOT=storage
 ```
 
 For example, in your Dockerfile:
@@ -77,8 +77,8 @@ For example, in your Dockerfile:
 FROM golang:1.20
 WORKDIR /app
 
-ENV APP_ROOT=/app
-ENV STORAGE_PATH=storage
+ENV PROJECT_ROOT=/app
+ENV DATA_ROOT=storage
 
 COPY . .
 RUN go build -o main .

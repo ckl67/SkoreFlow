@@ -76,8 +76,8 @@ type ServerConfig struct {
 	ProtectionLevel string `env:"PROTECTION_LEVEL"` // none, basic, full.
 
 	// Paths
-	AppRoot     string `env:"APP_ROOT"`     //	APP_ROOT=/app or APP_ROOT=/home/<linux user>/SkoreFlow_Project/SkoreFlow/backend
-	StoragePath string `env:"STORAGE_PATH"` // STORAGE_PATH=storage
+	ProjectRoot string `env:"PROJECT_ROOT"` //	PROJECT_ROOT=/app or PROJECT_ROOT=/home/<linux user>/SkoreFlow_Project/SkoreFlow/backend
+	DataRoot    string `env:"DATA_ROOT"`    // DATA_ROOT=storage
 
 	// Admin Email
 	AdminEmail    string `env:"ADMIN_EMAIL"`
@@ -141,9 +141,8 @@ func (c ServerConfig) LogSafe() {
 	if c.AppEnv == "development" {
 
 		fmt.Println("Paths:")
-		fmt.Printf("  StoragePath: %s\n", c.StoragePath)
-		fmt.Printf("  AppRoot: %s\n", c.AppRoot)
-		fmt.Printf("  StoragePath (joined): %s\n", c.AppRoot+"/"+c.StoragePath)
+		fmt.Printf("  ProjectRoot: %s\n", c.ProjectRoot)
+		fmt.Printf("  DataRoot: %s\n", c.DataRoot)
 
 		fmt.Println("Admin Mail:")
 		fmt.Printf("  AdminEmail: %s\n", c.AdminEmail)
@@ -273,8 +272,8 @@ func NewConfig() ServerConfig {
 	return ServerConfig{
 		AppEnv:          "",
 		ProtectionLevel: "full",
-		AppRoot:         "",
-		StoragePath:     "",
+		ProjectRoot:     "",
+		DataRoot:        "",
 
 		AdminEmail:    "admin@admin.com",
 		AdminPassword: "",

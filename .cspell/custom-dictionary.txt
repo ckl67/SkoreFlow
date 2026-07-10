@@ -13,6 +13,8 @@ createthumbnail
 createuser
 DEVPANEL
 dotenv
+École
+Élève
 esbenp
 ESMTP
 Flexbox
@@ -44,8 +46,10 @@ MAINLAYOUT
 microservice
 mkhl
 modcache
+mozillazg
 mvdan
 netgo
+NTFS
 omitempty
 oneline
 pdftoppm
@@ -65,6 +69,7 @@ skore
 Skoreflow
 sonate
 sqlitebrowser
+storagepath
 stretchr
 subfolders
 Supertramp
@@ -74,6 +79,7 @@ topbar
 TOPNAVBAR
 tulnp
 typestrict
+unidecode
 unverify
 USEAUTH
 usermod

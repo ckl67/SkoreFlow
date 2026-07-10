@@ -27,6 +27,7 @@ import (
 	"backend/pkg/mail"
 	"backend/pkg/media"
 	"backend/pkg/security"
+	"backend/pkg/storagepath"
 
 	"gorm.io/gorm"
 )
@@ -34,11 +35,11 @@ import (
 // UserService handles user-related business logic and orchestration.
 type UserService struct {
 	db    *gorm.DB
-	paths *config.Paths
+	paths *storagepath.Paths
 }
 
 // NewUserService creates a new instance of UserService.
-func NewUserService(db *gorm.DB, paths *config.Paths) *UserService {
+func NewUserService(db *gorm.DB, paths *storagepath.Paths) *UserService {
 	return &UserService{
 		db:    db,
 		paths: paths,
@@ -70,7 +71,7 @@ func (s *UserService) GetAllUsers() ([]models.User, error) {
 func (s *UserService) AdminCreateUser(input forms.AdminCreateUserRequest) (*models.User, error) {
 	// 1. Normalize input
 	email := format.SanitizeUserEmail(input.Email)
-	username := format.SafeFileName(input.Username)
+	username := format.SanitizeName(input.Username)
 
 	// 2. Check email uniqueness
 	exists, err := new(models.User).ExistsByEmail(s.db, email)
@@ -387,18 +388,16 @@ func (s *UserService) StoreAvatar(uid uint32, reader io.Reader, filename string)
 	}
 
 	// Relative Path (stored in DB)
-	filePath := s.paths.UserAvatarStorageRel(uid)
-	logger.User.Debug("(UploadAvatar) Relative path %s", filePath)
+	relativePath := s.paths.UserAvatarRel(uid)
+	logger.User.Debug("(UploadAvatar) Relative path %s", relativePath)
 
-	// Absolute Path
-	fullFilePath := s.paths.StorageAbsPath(filePath)
-	logger.User.Debug("(UploadAvatar) Absolute path %s", fullFilePath)
+	absolutePath := s.paths.ResolveDataRoot(relativePath)
+	logger.User.Debug("(UploadAvatar) Absolute path %s", absolutePath)
 
-	if err := filedir.SaveFile(fullFilePath, reader); err != nil {
+	if err := filedir.SaveFile(absolutePath, reader); err != nil {
 		return nil, err
 	}
-
-	user.Avatar = filePath
+	user.Avatar = relativePath
 
 	if err := user.Update(s.db); err != nil {
 		return nil, err
@@ -431,9 +430,9 @@ func (s *UserService) AdminDeleteUser(targetUID uint32, adminID uint32) error {
 	// Delete avatar if not default
 	if user.Avatar != "" && user.Avatar != "users/default.png" {
 
-		fullPath := s.paths.StorageAbsPath(user.Avatar)
+		absolutePath := s.paths.ResolveDataRoot(user.Avatar)
 
-		err := filedir.RemoveFileIfExists(fullPath)
+		err := filedir.RemoveFileIfExists(absolutePath)
 
 		if err != nil && !os.IsNotExist(err) {
 			logger.User.Error(
@@ -478,7 +477,7 @@ func (s *UserService) DeleteAvatarFile(userID uint32) error {
 	}
 
 	// Absolute Path
-	fullPath := s.paths.StorageAbsPath(relativePath)
+	fullPath := s.paths.ResolveDataRoot(relativePath)
 
 	err := filedir.RemoveFileIfExists(fullPath)
 
