@@ -10,6 +10,7 @@ This document provides instructions for testing the registration, login, and pas
 
 ```shell
 # Variable setting
+
 EMAIL="christian.klugesherz@gmail.com"
 DB_PATH="./storage/database.db"
 AVATAR_FILE="/home/christian/SkoreFlow_Project/SkoreFlow/testauto/backend/users/avatar-ckl.png"

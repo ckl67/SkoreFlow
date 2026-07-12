@@ -26,6 +26,7 @@ Client
 .
 ├── api/                # HTTP layer (bootstrap, router, server)
 ├── cmd/                # Entry points (server / CLI)
+├── assets/             # Common assets to avoid unnecessary duplication (Read Only)
 ├── core/               # Business logic (domain-centric)
 │   ├── controllers/
 │   ├── services/
@@ -58,12 +59,22 @@ Client
 
 # and beside
 
-├── storage/            # File storage (local or cloud)
-│   ├── scores/
-│   │   ├── uploaded-scores/
-│   │   └── thumbnails/
-│   ├── composers/
-│   └── assets/
+storage/  #  Persistent runtime data (excluded from Git)
+├── database.db
+├── scores/
+│   ├── uploaded-scores/
+│   │   ├── Mozart/
+│   │   │   └── Mozart.png
+│   ├── thumbnails/
+│   │   ├── Mozart/
+│   │   │   └── Mozart.png
+├── composers
+│   ├── mozart
+│   └── bach
+├── users/
+│   ├── user-1.png
+│   ├── user-15.png
+│   └── ...
 │
 
 ```

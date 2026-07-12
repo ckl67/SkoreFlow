@@ -24,6 +24,7 @@ import (
 	"backend/pkg/mail"
 	"backend/pkg/security"
 	"backend/pkg/storagepath"
+	"backend/shared"
 
 	"gorm.io/gorm"
 )
@@ -86,7 +87,7 @@ func (s *AuthService) Register(form forms.RegisterRequest) (*models.User, error)
 		Email:      email,
 		Password:   hashedPassword,
 		Avatar:     "users/default.png",
-		Role:       config.RoleUser,
+		Role:       shared.RoleUser,
 		IsVerified: false,
 	}
 

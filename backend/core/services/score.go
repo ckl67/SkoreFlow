@@ -20,12 +20,12 @@ import (
 	"backend/core/domain"
 	"backend/core/forms"
 	"backend/core/models"
-	"backend/infrastructure/config"
 	"backend/infrastructure/logger"
 	"backend/pkg/filedir"
 	"backend/pkg/format"
 	"backend/pkg/pdf"
 	"backend/pkg/storagepath"
+	"backend/shared"
 
 	"gorm.io/gorm"
 )
@@ -62,9 +62,9 @@ func (s *ScoreService) findOrCreateComposer(name string) (*models.Composer, erro
 	// 2. If not found → create
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		composer = &models.Composer{
-			Name:        strings.TrimSpace(name),
-			SafeName:    safeName,
-			PicturePath: "composers/default.png", // default fallback
+			Name:     strings.TrimSpace(name),
+			SafeName: safeName,
+			Picture:  "composers/default.png", // default fallback
 		}
 
 		if err := composer.Create(s.db); err != nil {
@@ -254,7 +254,7 @@ func (s *ScoreService) DeleteScore(uid uint32, scoreID uint, userRole int) error
 	}
 
 	// 2. Authorization
-	isAdmin := userRole == config.RoleAdmin
+	isAdmin := userRole == shared.RoleAdmin
 	isOwner := score.UploaderID == uid
 
 	if !isAdmin && !isOwner {
@@ -282,7 +282,7 @@ func (s *ScoreService) GetScore(uid uint32, scoreID uint, userRole int) (*models
 		return nil, err
 	}
 
-	isAdmin := userRole == config.RoleAdmin
+	isAdmin := userRole == shared.RoleAdmin
 	isOwner := score.UploaderID == uid
 
 	if !isAdmin && !isOwner {

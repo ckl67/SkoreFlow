@@ -21,12 +21,12 @@ import (
 	"backend/core/apperrors"
 	"backend/core/forms"
 	"backend/core/models"
-	"backend/infrastructure/config"
 	"backend/infrastructure/logger"
 	"backend/pkg/filedir"
 	"backend/pkg/format"
 	"backend/pkg/media"
 	"backend/pkg/storagepath"
+	"backend/shared"
 
 	"gorm.io/gorm"
 )
@@ -51,8 +51,8 @@ func (s *ComposerService) CreateComposer(uid uint32, userRole int, req forms.Cre
 	logger.Composer.Debug("(CreateComposer Service) UID=%d Role=%d Name=%s", uid, userRole, req.Name)
 
 	// 1. Authorization check
-	isAdmin := userRole == config.RoleAdmin
-	isModerator := userRole == config.RoleModerator
+	isAdmin := userRole == shared.RoleAdmin
+	isModerator := userRole == shared.RoleModerator
 
 	// Everyone can create a composer, but only admin and moderator can validate verification
 
@@ -70,7 +70,7 @@ func (s *ComposerService) CreateComposer(uid uint32, userRole int, req forms.Cre
 		SafeName:    safeName,
 		Epoch:       req.Epoch,
 		ExternalURL: req.ExternalURL,
-		PicturePath: "composers/default.png",
+		Picture:     "composers/default.png",
 		IsVerified:  false,
 	}
 
@@ -78,7 +78,7 @@ func (s *ComposerService) CreateComposer(uid uint32, userRole int, req forms.Cre
 		if !isAdmin && !isModerator {
 			logger.Composer.Warn(
 				"(CreateComposer Service): Unauthorized composer validation : user=%d role=%d required=[%d,%d] name=%s",
-				uid, userRole, config.RoleAdmin, config.RoleModerator, req.Name,
+				uid, userRole, shared.RoleAdmin, shared.RoleModerator, req.Name,
 			)
 			return nil, apperrors.ErrAccessForbidden
 		}
@@ -166,8 +166,8 @@ func (s *ComposerService) UpdateComposer(uid uint32, userRole int, ComposerID ui
 		return nil, err
 	}
 
-	isAdmin := userRole == config.RoleAdmin
-	isModerator := userRole == config.RoleModerator
+	isAdmin := userRole == shared.RoleAdmin
+	isModerator := userRole == shared.RoleModerator
 
 	if !isAdmin && !isModerator {
 		logger.Composer.Warn("Unauthorized update attempt: user=%d role=%d", uid, userRole)
@@ -190,7 +190,7 @@ func (s *ComposerService) UpdateComposer(uid uint32, userRole int, ComposerID ui
 	}
 
 	if form.File != nil {
-		// Will store file + update  "composer.PicturePath"
+		// Will store file + update  "composer.Picture"
 		if err := s.ProcessComposerStorage(composer, form.File); err != nil {
 			return nil, err
 		}
@@ -207,8 +207,8 @@ func (s *ComposerService) UpdateComposer(uid uint32, userRole int, ComposerID ui
 func (s *ComposerService) MergeComposers(uid uint32, userRole int, sourceID uint, targetID uint) error {
 
 	// Authorizations
-	isAdmin := userRole == config.RoleAdmin
-	isModerator := userRole == config.RoleModerator
+	isAdmin := userRole == shared.RoleAdmin
+	isModerator := userRole == shared.RoleModerator
 
 	if !isAdmin && !isModerator {
 		logger.Composer.Warn("Unauthorized Merge attempt: user=%d role=%d", uid, userRole)
@@ -343,7 +343,7 @@ func (s *ComposerService) StoreComposerImage(
 	// Build storage path
 	relativePath := s.paths.ComposerPictureRel(composer.SafeName, ext)
 	logger.Composer.Debug("(StoreComposerImage) Relative path %s", relativePath)
-	composer.PicturePath = relativePath
+	composer.Picture = relativePath
 
 	absolutePath := s.paths.ResolveDataRoot(relativePath)
 	logger.Composer.Debug("(StoreComposerImage) Absolute path %s", absolutePath)
@@ -361,8 +361,8 @@ func (s *ComposerService) DeleteComposer(uid uint32, composerID uint, userRole i
 		return err
 	}
 
-	isAdmin := userRole == config.RoleAdmin
-	isModerator := userRole == config.RoleModerator
+	isAdmin := userRole == shared.RoleAdmin
+	isModerator := userRole == shared.RoleModerator
 
 	if !isAdmin && !isModerator {
 		logger.Composer.Warn("Unauthorized deletion attempt: user=%d role=%d", uid, userRole)
@@ -392,7 +392,7 @@ func (s *ComposerService) deleteComposerOrchestrator(composer *models.Composer) 
 	var hasDeletionError bool
 
 	// Absolute path
-	absolutePath := s.paths.ResolveDataRoot(composer.PicturePath)
+	absolutePath := s.paths.ResolveDataRoot(composer.Picture)
 
 	paths := []string{absolutePath}
 

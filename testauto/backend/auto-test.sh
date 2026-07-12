@@ -61,6 +61,8 @@ export APP_ENV=development
 export SMTP_ENABLED=false    # Will deactivate SMTP server
 export PROTECTION_LEVEL=none # Will bypass for example : RateLimiter()
 export TEST_MODE=true        # Will automatically seed test users on server startup + authorize all requests without smtp authentication for easier testing of protected routes.
+export PROJECT_ROOT=/home/christian/SkoreFlow_Project/SkoreFlow/backend
+export DATA_ROOT=/home/christian/SkoreFlow_Project/SkoreFlow/backend/storage
 
 # --- SHELL GLOBAL VARIABLES ---
 RUN_STRESS=false
@@ -128,32 +130,17 @@ if [ "$KILL_PROCESS" = true ]; then
 fi
 
 SCRIPT_DIR=$(pwd)
-BACKEND_DIR="../../backend"
+
+echo "PROJECT_ROOT = $PROJECT_ROOT"
+echo "DATA_ROOT =  $DATA_ROOT"
+echo "SCRIPT_DIR = $SCRIPT_DIR"
 
 if [ "$CLEAN_DB_FILES" = true ]; then
 
 	echo "Physical cleanup of Database and Storage"
 
 	# Physical cleanup of Database and Storage
-	rm -f "$BACKEND_DIR/storage/database.db"
-	rm -rf "$BACKEND_DIR/storage/users/"*
-	rm -rf "$BACKEND_DIR/storage/scores/uploaded-scores/"*
-	rm -rf "$BACKEND_DIR/storage/scores/thumbnails/"*
-	rm -rf "$BACKEND_DIR/storage/composers/"*
-
-	# Ensure directory structure exists
-	mkdir -p "$BACKEND_DIR/storage/users"
-	mkdir -p "$BACKEND_DIR/storage/scores/uploaded-scores"
-	mkdir -p "$BACKEND_DIR/storage/scores/thumbnails"
-	mkdir -p "$BACKEND_DIR/storage/composers"
-
-	# Restore default assets for composers (portraits)
-	if [ -d "$BACKEND_DIR/storage/assets" ]; then
-		cp -r "$BACKEND_DIR/storage/assets/avatars/admin.png" "$BACKEND_DIR/storage/users"
-		cp -r "$BACKEND_DIR/storage/assets/avatars/default.png" "$BACKEND_DIR/storage/users"
-		cp -r "$BACKEND_DIR/storage/assets/avatars/moderator.png" "$BACKEND_DIR/storage/users"
-		cp -r "$BACKEND_DIR/storage/assets/avatars/composer.png" "$BACKEND_DIR/storage/composers/default.png"
-	fi
+	rm -rf "$DATA_ROOT/storage/*"
 	exit
 else
 	echo "-->> NO Physical cleanup of Database and Storage"
@@ -165,9 +152,8 @@ fi
 
 echo "Starting Backend Server..."
 
-# Switch to backend directory to handle relative paths in Go (microservices, etc.)
 # Main MUST BE RUN FROM THE ROOT PROJECT !!!
-cd "$BACKEND_DIR" || exit
+cd "$PROJECT_ROOT" || exit
 echo "Must be RUN FROM THE Project Root Directory !!! (Check it below !!!)"
 pwd
 

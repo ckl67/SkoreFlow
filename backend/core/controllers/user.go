@@ -450,3 +450,15 @@ func (ctrl *UserController) DeleteAvatar(c *gin.Context) {
 	responses.SUCCESS(c, http.StatusOK, response)
 
 }
+
+func (ctrl *UserController) GetAvatar(c *gin.Context) {
+	userID := c.GetUint32("user_id")
+	file, err := ctrl.userService.AvatarFile(userID)
+	logger.User.Debug("(Ctrl-GetAvatar) AvatarFile : %s", file)
+	if err != nil {
+		responses.FAIL(c, http.StatusNotFound, err)
+		return
+	}
+
+	c.File(file)
+}

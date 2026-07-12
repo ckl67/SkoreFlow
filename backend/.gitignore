@@ -11,7 +11,7 @@
 #   --> allows for exceptions using '!'
 
 # 1) Ignore everything inside storage
-backend/storage/
+storage/
 
 # Build output directory
 build/

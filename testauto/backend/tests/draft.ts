@@ -37,7 +37,7 @@ it('should update user N°3', async () => {
       role: u.role,
       isVerified: true,
     },
-    TOKEN_ADMIN,
+    TOKEN_ADMIN
   );
 
   console.log('DEBUG users:', res.data);
@@ -90,7 +90,7 @@ it('should manage profile', async () => {
 // AVATAR
 // ----------------------------------------------------------------------------
 it('should upload avatar', async () => {
-  const res = await userLoadAvatar('./resources/avatars/user.png', TOKEN_USER1);
+  const res = await userLoadAvatar('./resources/users/user.png', TOKEN_USER1);
   expect(res.status).toBe(200);
 });
 
@@ -135,7 +135,7 @@ it('should delete unverified user', async () => {
       role: 0,
       isVerified: false,
     },
-    TOKEN_ADMIN,
+    TOKEN_ADMIN
   );
 
   const res = await request('DELETE', `${API_URL}/admin/users/${id}`, {

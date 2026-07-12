@@ -19,7 +19,7 @@ import (
 // - JSON tags (json:"...") define API serialization.
 //
 // File Storage:
-// - PicturePath stores the full file path to the composer's image.
+// - Picture stores the full file path to the composer's image.
 //
 // Timestamps:
 // - CreatedAt is set on insert.
@@ -29,7 +29,7 @@ type Composer struct {
 	ID          uint32    `gorm:"primaryKey;autoIncrement" json:"id"`
 	Name        string    `gorm:"size:255;not null" json:"name"`
 	SafeName    string    `gorm:"size:255;uniqueIndex" json:"safe_name"`
-	PicturePath string    `gorm:"column:thumbnail_path;not null" json:"picture_path"`
+	Picture     string    `gorm:"column:thumbnail_path;not null" json:"picture"`
 	ExternalURL string    `gorm:"size:255" json:"external_url"`
 	Epoch       string    `gorm:"size:255" json:"epoch"`
 	IsVerified  bool      `gorm:"default:false" json:"is_verified"`

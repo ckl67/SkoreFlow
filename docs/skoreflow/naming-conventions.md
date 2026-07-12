@@ -28,8 +28,16 @@ composers/mozart/portrait.png
 
 Recommended names:
 
+Without specification, it corresponds to the file location like mostly relative !
+
 ```go
-PicturePath
+Picture
+Avatar
+```
+
+Otherwise we specify relative or absolute
+
+```go
 DataRoot
 RelativePath
 ```

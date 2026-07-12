@@ -51,7 +51,7 @@ func (p *Paths) ComposerPictureRel(composerSafeName, ext string) string {
 }
 
 // UserAvatarRel constructs the relative storage path for user Avatar Picture
-// name = user.username is unique
+// user
 func (p *Paths) UserAvatarRel(userID uint32) string {
 	return filepath.Join(
 		"users",
@@ -98,5 +98,6 @@ func (p *Paths) ResolveDataRoot(rel string) string {
 //
 // only when you need to open the file.
 func (p *Paths) ResolveAssetRoot(rel string) string {
+	logger.User.Debug("Path Found : %s", filepath.Join(p.AppRoot, "assets", rel))
 	return filepath.Join(p.AppRoot, "assets", rel)
 }

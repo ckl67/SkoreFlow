@@ -28,9 +28,9 @@ const __dirname = path.dirname(__filename);
 // console.log('__filename', __filename);
 // console.log('__dirname', __dirname);
 
-const VALID_AVATAR = path.join(__dirname, '../resources/avatars/avatar-man2.png');
-const INVALID_AVATAR = path.join(__dirname, '../resources/avatars/invalid.txt');
-const LARGE_AVATAR = path.join(__dirname, '../resources/avatars/avatar-too-large.jpg');
+const VALID_AVATAR = path.join(__dirname, '../resources/users/avatar-man2.png');
+const INVALID_AVATAR = path.join(__dirname, '../resources/users/invalid.txt');
+const LARGE_AVATAR = path.join(__dirname, '../resources/users/avatar-too-large.jpg');
 
 // ----------------------------------------------------------------------------
 // TYPE
@@ -295,7 +295,7 @@ describe('👤 User  API - From the User Point of view', () => {
     TOKEN_USER2 = resLogin.data.data!.token;
     // Upload Avatar
     const uploadRes = await uploadAvatar(
-      path.join(__dirname, '../resources/avatars/avatar-man1.png'),
+      path.join(__dirname, '../resources/users/avatar-man1.png'),
       TOKEN_USER2
     );
     expect(uploadRes.status).toBe(200);
@@ -323,7 +323,7 @@ describe('👤 User  API - From the User Point of view', () => {
 
     const token = loginRes.data.data!.token;
 
-    await uploadAvatar(path.join(__dirname, '../resources/avatars/avatar-man2.png'), token);
+    await uploadAvatar(path.join(__dirname, '../resources/users/avatar-man2.png'), token);
 
     let res = await DeleteAvatar(token);
     expect(res.status).toBe(200);

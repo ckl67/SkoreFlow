@@ -76,6 +76,7 @@ The document can also be consulted locally in 'visual studio code' via the integ
 ### Microservice
 
 - [Microservice](./microservice/microservice.md)
+- [gunicorn](./microservice/gunicorn.md)
   - [thumbnail](./microservice/thumbnail/installation.md)
 
 ### Frontend Guides

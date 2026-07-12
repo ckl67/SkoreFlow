@@ -4,6 +4,7 @@ import (
 	"backend/infrastructure/config"
 	"backend/infrastructure/database"
 	"backend/infrastructure/logger"
+	"backend/shared"
 )
 
 // Start orchestrates the application setup and launches the server.
@@ -24,15 +25,15 @@ func Start(version string) {
 	// For users
 	// 	file is not saved in the DataRoot Directory !
 	// 	We will use ResolveAssetRoot returns the get the absolute path in the Assets, for displaying the file
-	appServer.SeederService.User("admin", cfg.AdminEmail, cfg.AdminPassword, config.RoleAdmin, "assets/icon/admin.png")
+	appServer.SeederService.User("admin", cfg.AdminEmail, cfg.AdminPassword, shared.RoleAdmin, "users/admin.png")
 
 	if config.Config().TestMode {
 		// Users
-		appServer.SeederService.User("user1", "user1@test.com", "password123", config.RoleUser, "assets/icon/default.png")
-		appServer.SeederService.User("user2", "user2@test.com", "password123", config.RoleUser, "assets/icon/default.png")
-		appServer.SeederService.User("user3", "user3@test.com", "password123", config.RoleUser, "assets/icon/default.png")
-		appServer.SeederService.User("moderator1", "moderator1@test.com", "password123", config.RoleModerator, "assets/icon/moderator.png")
-		appServer.SeederService.User("moderator2", "moderator2@test.com", "password123", config.RoleModerator, "assets/icon/moderator.png")
+		appServer.SeederService.User("user1", "user1@test.com", "password123", shared.RoleUser, "users/default.png")
+		appServer.SeederService.User("user2", "user2@test.com", "password123", shared.RoleUser, "users/default.png")
+		appServer.SeederService.User("user3", "user3@test.com", "password123", shared.RoleUser, "users/default.png")
+		appServer.SeederService.User("moderator1", "moderator1@test.com", "password123", shared.RoleModerator, "users/moderator.png")
+		appServer.SeederService.User("moderator2", "moderator2@test.com", "password123", shared.RoleModerator, "users/moderator.png")
 
 		if err := appServer.SeederService.Composer(
 			"Wolfgang Amadeus Mozart",

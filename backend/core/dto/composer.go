@@ -5,7 +5,7 @@ import "backend/core/models"
 type ComposerPublicResponse struct {
 	ID          uint32 `json:"id"`
 	Name        string `json:"name"`
-	PicturePath string `json:"picture_path"`
+	Picture     string `json:"picture"`
 	ExternalURL string `json:"external_url"`
 	Epoch       string `json:"epoch"`
 	IsVerified  bool   `json:"isVerified"`
@@ -37,7 +37,7 @@ func ToComposerPublicResponse(composer *models.Composer) ComposerPublicResponse 
 	return ComposerPublicResponse{
 		ID:          composer.ID,
 		Name:        composer.Name,
-		PicturePath: composer.PicturePath,
+		Picture:     composer.Picture,
 		ExternalURL: composer.ExternalURL,
 		Epoch:       composer.Epoch,
 		IsVerified:  composer.IsVerified,

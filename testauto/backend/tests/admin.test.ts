@@ -25,9 +25,9 @@ const __dirname = path.dirname(__filename);
 // With  "type": "module" we are using ESM (ECMAScript Modules) and not CommonJS --> So __filename and __dirname are not existing
 // we have to use : import.meta.url
 
-console.log('file', import.meta.url);
-console.log('__filename', __filename);
-console.log('__dirname', __dirname);
+console.log('import.meta.url = ', import.meta.url);
+console.log('__filename = ', __filename);
+console.log('__dirname = ', __dirname);
 
 // ----------------------------------------------------------------------------
 // TYPE
@@ -448,7 +448,7 @@ describe('👤 User API from admin perspective ', () => {
 
     const token = loginRes.data.data!.token;
 
-    await uploadAvatar(path.join(__dirname, '../resources/avatars/avatar-man1.png'), token);
+    await uploadAvatar(path.join(__dirname, '../resources/users/avatar-man1.png'), token);
 
     const deleteRes = await adminDeleteUser(userId, TOKEN_ADMIN);
 
@@ -460,16 +460,6 @@ describe('👤 User API from admin perspective ', () => {
   it('will create an orphan file - to be deleted later', async () => {
     // For clean run
     //  go run ./cmd/cli/main.go -cleanup-avatars
-
-    const sourceAvatar = path.join(__dirname, '../resources/avatars/avatar-man1.png');
-    const orphanAvatar = path.join(__dirname, '../../../backend/storage/users/orphan-test.png');
-
-    // console.log('__dirname:', __dirname);
-    console.log('sourceAvatar:', sourceAvatar);
-    console.log('orphanAvatar:', orphanAvatar);
-
-    fs.copyFileSync(sourceAvatar, orphanAvatar);
-    expect(fs.existsSync(orphanAvatar)).toBe(true);
 
     console.log('\n --------------------------------------------');
     console.log(' You can clean the avatar orphan file with command');

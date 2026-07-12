@@ -28,6 +28,7 @@ import (
 	"backend/pkg/media"
 	"backend/pkg/security"
 	"backend/pkg/storagepath"
+	"backend/shared"
 
 	"gorm.io/gorm"
 )
@@ -100,7 +101,7 @@ func (s *UserService) AdminCreateUser(input forms.AdminCreateUserRequest) (*mode
 		Username:            username,
 		Email:               email,
 		Password:            hashedPassword,
-		Role:                config.RoleUser,
+		Role:                shared.RoleUser,
 		Avatar:              "users/default.png",
 		PasswordReset:       "",
 		PasswordResetExpire: time.Time{},
@@ -533,4 +534,23 @@ func (s *UserService) AdminGetUsersPage(uid uint32, form forms.AdminGetUsersPage
 	}
 
 	return result, err
+}
+
+// =====================================
+//
+//	c.File("/storage/users/user-42.png")
+func (s *UserService) AvatarFile(userID uint32) (string, error) {
+
+	var user models.User
+
+	if err := user.FindByID(s.db, userID); err != nil {
+		return "", apperrors.ErrUserNotFound
+	}
+
+	if asset, ok := shared.GetDefaultAvatar(user.Avatar); ok {
+		return s.paths.ResolveAssetRoot(asset), nil
+	}
+
+	return s.paths.ResolveDataRoot(user.Avatar), nil
+
 }

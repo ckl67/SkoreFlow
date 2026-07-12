@@ -4,7 +4,7 @@
 
 This directory contains all resources used when the backend application is started in **Test Mode**.
 
-Test Mode automatically seeds the database of the backend with predefined data **_(users, composers, scores, avatars, etc.)_** and copies the required assets into the storage directory.
+Test Mode automatically seeds the database of the backend with predefined data **_(users, composers, scores, etc.)_** and copies the required assets into the storage directory.
 
 To start the application in Test Mode, run:
 
@@ -20,12 +20,12 @@ TEST_MODE=true
 
 ## Directory Structure
 
-- `resources/avatars/`
-  - Sample user avatars
+- `resources/users/`
+  - user avatars
 - `resources/composers/`
   - Composer profile pictures used during database seeding
 - `resources/scores/`
-  - Sample PDF scores organized by composer
+  - PDF scores organized by composer
 
 ## Notes
 

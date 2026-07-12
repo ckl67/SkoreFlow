@@ -213,6 +213,9 @@ func (server *Server) SetupRouter() {
 			protected.POST("/me/avatar", userCtrl.UploadAvatar)   // vitest
 			protected.DELETE("/me/avatar", userCtrl.DeleteAvatar) // vitest
 
+			protected.GET("/me/avatar", userCtrl.GetAvatar) //
+			protected.HEAD("/me/avatar", userCtrl.GetAvatar)
+
 			// -----------------------------------------------------------------------------------
 			// SCORES (Music scores)
 			// -----------------------------------------------------------------------------------
@@ -258,6 +261,8 @@ func (server *Server) SetupRouter() {
 				adminRoutes.POST("/admin/users", userCtrl.AdminCreateUser)       // vitest
 				adminRoutes.PUT("/admin/users/:id", userCtrl.AdminUpdateUser)    // vitest
 				adminRoutes.DELETE("/admin/users/:id", userCtrl.AdminDeleteUser) // vitest
+
+				protected.GET("/admin/users/:id/avatar", userCtrl.GetAvatar)
 
 				// For now, only for vitest
 				if config.Config().TestMode {

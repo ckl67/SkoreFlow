@@ -33,7 +33,7 @@ func NewSeederService(db *gorm.DB, paths *storagepath.Paths) *SeederService {
 
 // User
 // For default avatars no file are saved
-func (s *SeederService) User(name string, email string, password string, role int, avatarAssetRel string) error {
+func (s *SeederService) User(name string, email string, password string, role int, avatar string) error {
 	var user models.User
 
 	// 1. Check if user exists (silent check)
@@ -43,25 +43,11 @@ func (s *SeederService) User(name string, email string, password string, role in
 		return nil
 	}
 
-	// Check the file
-	ext := strings.ToLower(filepath.Ext(avatarAssetRel))
-	if ext == "" {
-		return apperrors.ErrImageFormatInvalid
-	}
-
-	if _, ok := media.AllowedImageExt[ext]; !ok {
-		logger.Main.Debug("(User) avatarAssetRel invalid format: %s", ext)
-		return apperrors.ErrImageFormatInvalid
-	}
-
 	// 2. Hash password before persistence
 	hashedPassword, err := security.HashPassword(password)
 	if err != nil {
 		logger.Main.Error("cannot hash password: %v", err)
 	}
-
-	// Build storage path
-	relativePath := s.paths.UserAvatarRel(user.ID)
 
 	// 3. Build admin user model
 	newUser := models.User{
@@ -69,7 +55,7 @@ func (s *SeederService) User(name string, email string, password string, role in
 		Email:      format.SanitizeUserEmail(email),
 		Password:   hashedPassword,
 		Role:       role,
-		Avatar:     relativePath,
+		Avatar:     avatar,
 		IsVerified: true,
 	}
 
@@ -136,7 +122,7 @@ func (s *SeederService) Composer(name, epoch, externalURL, picturePath string) e
 		SafeName:    safeName,
 		Epoch:       epoch,
 		ExternalURL: externalURL,
-		PicturePath: relativePath,
+		Picture:     relativePath,
 		IsVerified:  true,
 	}
 

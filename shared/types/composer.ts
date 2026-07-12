@@ -33,7 +33,7 @@ export type CreateComposerResponse = {
 export type ComposerPublicResponse = {
   id: number;
   name: string;
-  picture_path: string;
+  picture: string;
   external_url: string;
   epoch: string;
   isVerified: boolean;
