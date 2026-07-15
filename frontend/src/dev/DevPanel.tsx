@@ -48,6 +48,28 @@ export default function DevPanel() {
     );
   }
   //---
+  function fillUser2() {
+    window.dispatchEvent(
+      new CustomEvent('dev:fill-login', {
+        detail: {
+          email: 'user2@test.com',
+          password: 'password123',
+        },
+      })
+    );
+  }
+  //---
+  function fillModerator() {
+    window.dispatchEvent(
+      new CustomEvent('dev:fill-login', {
+        detail: {
+          email: 'moderator1@test.com',
+          password: 'password123',
+        },
+      })
+    );
+  }
+  //---
   function fillAdmin() {
     window.dispatchEvent(
       new CustomEvent('dev:fill-login', {
@@ -100,18 +122,35 @@ export default function DevPanel() {
 
       {/* Quick Actions section */}
       <div className="grid grid-cols-2 gap-1 mb-2">
+        {/*------*/}
         <button
           className="rounded border bg-gray-50 p-1 hover:bg-gray-100 font-medium text-left"
           onClick={fillUser1}
         >
           👤 User1
         </button>
+        {/*------*/}
+        <button
+          className="rounded border bg-gray-50 p-1 hover:bg-gray-100 font-medium text-left"
+          onClick={fillUser2}
+        >
+          👤 User2
+        </button>
+        {/*------*/}
+        <button
+          className="rounded border bg-gray-50 p-1 hover:bg-gray-100 font-medium text-left"
+          onClick={fillModerator}
+        >
+          🛡️ Moderator
+        </button>
+        {/*------*/}
         <button
           className="rounded border bg-gray-50 p-1 hover:bg-gray-100 font-medium text-left"
           onClick={fillAdmin}
         >
           🔑 Admin
         </button>
+        {/*------*/}
         <button
           className="col-span-2 rounded border bg-indigo-50 p-1 hover:bg-indigo-100 font-medium text-center text-indigo-700"
           onClick={fillRegister}

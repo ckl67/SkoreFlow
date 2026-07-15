@@ -88,6 +88,7 @@ The document can also be consulted locally in 'visual studio code' via the integ
 - [React Guideline](./frontend/react-guide.md)
 - [Tailwind css](./frontend/tailwind.md)
 - [Deployment Guide](./frontend/deployment-guide.md)
+- [React DevTools](./frontend/react-devtools.md)
 
 ### End to End Test Guides
 

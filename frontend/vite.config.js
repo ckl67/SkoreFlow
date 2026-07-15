@@ -5,6 +5,9 @@ import tailwindcss from '@tailwindcss/vite';
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  css: {
+    devSourcemap: true, // <-- Added: Allows you to view your original Tailwind classes in the browser inspector
+  },
   build: {
     sourcemap: false,
   },

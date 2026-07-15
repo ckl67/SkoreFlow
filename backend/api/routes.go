@@ -214,6 +214,7 @@ func (server *Server) SetupRouter() {
 			protected.DELETE("/me/avatar", userCtrl.DeleteAvatar) // vitest
 
 			protected.GET("/me/avatar", userCtrl.GetAvatar) //
+			// Browsers do not use the HEAD method to display an image.
 			protected.HEAD("/me/avatar", userCtrl.GetAvatar)
 
 			// -----------------------------------------------------------------------------------

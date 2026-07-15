@@ -4,6 +4,8 @@ import { RouterProvider } from 'react-router-dom';
 import { router } from './router/router';
 import { AuthProvider } from './auth/AuthProvider';
 import { DevProvider } from './dev/DevProvider';
+import './core/logger/config';
+
 // -------------------------------------------
 // REACT MECHANICS NOTE:
 // -------------------------------------------

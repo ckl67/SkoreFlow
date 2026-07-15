@@ -452,6 +452,12 @@ func (ctrl *UserController) DeleteAvatar(c *gin.Context) {
 }
 
 func (ctrl *UserController) GetAvatar(c *gin.Context) {
+	logger.User.Debug(
+		"(GetAvatar) method=%s url=%s",
+		c.Request.Method,
+		c.Request.URL,
+	)
+
 	userID := c.GetUint32("user_id")
 	file, err := ctrl.userService.AvatarFile(userID)
 	logger.User.Debug("(Ctrl-GetAvatar) AvatarFile : %s", file)

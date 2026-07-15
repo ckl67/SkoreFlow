@@ -22,3 +22,9 @@
 ✨
 🎯
 ↑ ↓ → ←
+👤 User2
+🔑 Admin
+🎲 Random
+🛡️ Moderator <- (Ou ⚖️ / 🔨)
+🧑‍✈️ / 👩‍✈️ Officer
+🧑‍🔧 Maintenance

@@ -103,3 +103,31 @@ axios.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+export async function apiBinaryRequest(method: Method, url: string): Promise<Blob> {
+  const token = localStorage.getItem('token');
+
+  console.log('(apiBinaryRequest) gotten url:', url);
+  console.log('(apiBinaryRequest) API URL =', config.apiUrl);
+  console.log('(apiBinaryRequest) url =', config.apiUrl + url);
+  const res = await axios({
+    method,
+    url: config.apiUrl + url,
+    responseType: 'blob',
+    headers: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
+
+  console.log('(apiBinaryRequest) status =', res.status);
+  console.log('(apiBinaryRequest) content-type =', res.headers['content-type']);
+  console.log('(apiBinaryRequest) blob =', res.data);
+
+  return res.data;
+}
+
+//export async function apiDownloadRequest(method: Method, url: string): Promise<Blob> {
+//
+//
+//  return nil;
+//}

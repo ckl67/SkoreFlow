@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from './../auth/ useAuth';
+import { useAvatar } from './../hooks/useAvatar';
 
 export default function AvatarMenu() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -33,15 +34,28 @@ export default function AvatarMenu() {
     return null;
   }
 
+  const avatarURL = useAvatar(user?.id);
+  console.log('AvatarMenu render avatarURL :  useAvatar(user?.id) =', avatarURL);
+
   return (
     // 3. We attach the ref to the relative parent div
+    // Because wa are using a Hook
+    // We must ensure that we no longer have: <img src="/api/me/avatar" />
+    // Only : <img src={avatarURL}
     <div className="relative" ref={menuRef}>
       {/* Avatar button */}
       <button onClick={() => setMenuOpen(!menuOpen)} className="flex items-center gap-2">
         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 hover:bg-blue-200">
           {user.username.charAt(0).toUpperCase() || '?'}
         </div>
-        <span>{user.username}</span>
+
+        {avatarURL ? (
+          <img src={avatarURL} alt="Avatar" className="h-10 w-10 rounded-full object-cover" />
+        ) : (
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200">
+            {user.username.charAt(0).toUpperCase()}
+          </div>
+        )}
       </button>
 
       {/* Dropdown menu */}
