@@ -12,11 +12,15 @@ echo "JWT Token: $TOKEN_USER2"
 
 curl -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/me | jq
 
+curl -H "Authorization: Bearer $TOKEN_USER2" http://192.168.1.138:8080/api/me | jq
+
+
+
 ```
 
 ## Get
 
-To list all composers
+To Get avatar
 
 ```shell
 curl -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/me/avatar
@@ -26,7 +30,7 @@ file avatar.png
 # Header
 curl -I -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/me/avatar
 
-# In VM environnement
+# Header in VM environnement
 curl -I -H "Authorization: Bearer $TOKEN_USER2" http://192.168.1.138:8080/api/me/avatar
 
 

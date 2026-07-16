@@ -118,7 +118,113 @@ Common mistakes:
 - trailing slash (/)
 - typo in the domain name
 
-## Real Issue Encountered
+## Schematic
+
+```txt
+          Windows (192.168.1.141)
+        ┌──────────────────────────────┐
+        │          VSCode              │
+        │          Firefox             │
+        └──────────────┬───────────────┘
+                       │ SSH
+                       ▼
+        Ubuntu VM (192.168.1.138)
+        ┌──────────────────────────────┐
+        │ backend Go :8080             │
+        │ Vite dev server :5173        │
+        └──────────────────────────────┘
+```
+
+- The backend is running on the VM ✅
+- The Vite server is also running on the VM ✅
+- Firefox is on Windows ✅
+
+So when Firefox opens: `http://192.168.1.138:5173` that’s perfectly normal It’s Vite.
+
+- Local development on the VM
+  - Frontend: `http://localhost:5173`
+  - API: `http://localhost:8080`
+
+- Development on Windows using VSCode Remote
+  - Frontend: `http://192.168.1.138:5173`
+  - API: `http://192.168.1.138:8080`
+
+- Access from another computer on the network
+  - Frontend: `http://192.168.1.138:5173`
+  - API: `http://192.168.1.138:8080`
+
+```mermaid
+sequenceDiagram
+    autonumber
+
+    participant User as 👤 User
+    participant Browser as 🌍 Browser
+    participant Frontend as ⚛️ Frontend (Vite)<br/>Origin = http://localhost:5173
+    participant Backend as 🐹 Backend (Go / Gin)<br/>API = http://localhost:8080/api <br/> ⚙️ CORS_ALLOWED_ORIGINS: http://localhost:5173
+
+    User->>Browser: Click "Login"
+
+    Browser->>Frontend: Execute loginUser()
+
+    Note over Frontend: axios.post("/login")<br/>Authorization / JSON request
+
+    Frontend-->>Browser: Build HTTP request
+
+    Note over Browser: Different Origin detected<br/>5173 → 8080
+
+    Browser->>Backend: OPTIONS /api/login<br/>Origin: http://localhost:5173<br/>Access-Control-Request-Method: POST<br/>Access-Control-Request-Headers: Authorization, Content-Type
+
+    alt Origin allowed
+        Backend-->>Browser: 204 No Content<br/>Access-Control-Allow-Origin: http://localhost:5173<br/>Access-Control-Allow-Methods: POST<br/>Access-Control-Allow-Headers: Authorization, Content-Type
+
+        Note over Browser: ✅ CORS validation succeeded
+
+        Browser->>Backend: POST /api/login
+        Note right of Browser: Authorization, JSON body
+
+        Backend-->>Browser: 200 OK + JSON
+
+        Browser-->>Frontend: Deliver response
+
+        Frontend-->>User: Login successful
+
+    else Origin NOT allowed
+        Backend-->>Browser: 403 Forbidden<br/>or missing Access-Control-Allow-Origin
+
+        Note over Browser: ❌ Browser blocks the response
+
+        Browser-->>Frontend: Network Error (CORS)
+
+        Frontend-->>User: Login failed
+    end
+```
+
+## Overview
+
+```mermaid
+flowchart LR
+
+    U[👤 User]
+
+    subgraph Browser
+        F[Frontend JavaScript]
+        C[CORS Security Check]
+    end
+
+    B[(Backend API)]
+
+    U --> F
+    F --> C
+    C -->|OPTIONS| B
+    B -->|Access-Control-Allow-Origin| C
+    C -->|Allowed| B
+    B -->|JSON Response| C
+    C -->|Response delivered| F
+
+    style C fill:#222299
+```
+
+## A Real Issue Encountered
 
 Observed Behavior
 

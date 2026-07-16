@@ -4,7 +4,9 @@ import { useAuth } from './../auth/ useAuth';
 import { useAvatar } from './../hooks/useAvatar';
 
 export default function AvatarMenu() {
+  // Open the menu
   const [menuOpen, setMenuOpen] = useState(false);
+
   const { user, logout } = useAuth();
 
   // 1. Create a reference to cover the entire menu (button + dropdown)

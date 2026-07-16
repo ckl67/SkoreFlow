@@ -84,15 +84,22 @@ func (server *Server) SetupRouter() {
 	//  - MaxAge Tells the browser how long (12h) to cache the "Preflight" response. 3. Configuration via Environment Variables
 	//
 
-	origins := strings.Split(config.Config().Frontend.CorsAllowedOrigins, ",")
+	rawOrigins := strings.Split(config.Config().Frontend.CorsAllowedOrigins, ",")
 
-	r.Use(cors.New(cors.Config{
+	origins := make([]string, 0, len(rawOrigins))
+	for _, origin := range rawOrigins {
+		origins = append(origins, strings.TrimSpace(origin))
+	}
+
+	corsMiddleware := cors.New(cors.Config{
 		AllowOrigins:     origins,
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
-	}))
+	})
+
+	r.Use(corsMiddleware)
 	logger.Server.Info("CORS origin READING = %q", origins)
 
 	// Gin Logger
@@ -269,9 +276,12 @@ func (server *Server) SetupRouter() {
 				if config.Config().TestMode {
 					fmt.Println("=================================")
 					fmt.Println("BE CARE ROOT NOT ALLOWED IN PROD")
-					fmt.Println("=================================")
+					fmt.Println("     ONLY IN TEST MODE ")
+					fmt.Println("		- /test/reset-token/:email")
+					fmt.Println("		- /test/expire-token")
 					adminRoutes.GET("/test/reset-token/:email", authCtrl.AdmGetResetToken) // vitest : Currently NOT USED
 					adminRoutes.POST("/test/expire-token", authCtrl.AdmExpireToken)        // vitest - used in auth.ts
+					fmt.Println("=================================")
 				}
 			}
 		}

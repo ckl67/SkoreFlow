@@ -71,7 +71,7 @@ run:
 
 clean:
 	@echo "Clean DB and Storage files"
-	cd ../testauto/backend/ && 	bash auto-test.sh --clean
+	cd ../testauto/backend/ && bash auto-test.sh --clean
 
 ## run: Automate the Hot Reload process thanks to the standard Air tool
 air:

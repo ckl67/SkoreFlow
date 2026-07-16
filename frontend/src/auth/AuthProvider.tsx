@@ -2,6 +2,7 @@ import { createContext, useEffect, useState } from 'react';
 import type { UserPublicResponse } from '../../../shared/types/user';
 import type { ProfileUserResponse } from '../../../shared/types/user';
 import { apiRequest } from '../api/client';
+import { logger } from './../core/logger/logger';
 
 // Context handle 3 thinks
 // * Global State : user - token - isAuthenticated
@@ -46,6 +47,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // The use of an arrow function () => localStorage.getItem(...) is known as the ‘Lazy Initial State’.
   // React will read localStorage (which is a slow operation) just once when the application starts,
   // and not every time the component is re-rendered.
+
+  logger.debug('auth', 'AuthProvider Start');
+
   const [token, setToken] = useState<string | null>(() => {
     return localStorage.getItem('token');
   });

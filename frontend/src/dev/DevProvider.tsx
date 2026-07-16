@@ -1,4 +1,5 @@
 import { createContext, useState } from 'react';
+import { logger } from './../core/logger/logger';
 
 export type DevUser = {
   username: string;
@@ -22,6 +23,8 @@ export function DevProvider({ children }: { children: React.ReactNode }) {
   // The use of an arrow function () is known as the ‘Lazy Initial State’.
   // React will read localStorage (which is a slow operation) just once when the application starts,
   // and not every time the component is re-rendered.
+
+  logger.debug('dev', 'DevProvider Start');
 
   const [lastRegisteredUser, setLastRegisteredUserState] = useState<DevUser | null>(() => {
     const stored = localStorage.getItem('devUser');

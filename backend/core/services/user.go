@@ -548,7 +548,7 @@ func (s *UserService) AvatarFile(userID uint32) (string, error) {
 	}
 
 	if asset, ok := shared.GetDefaultAvatar(user.Avatar); ok {
-		logger.User.Debug("(AvatarFile) asset=%s", asset)
+		logger.User.Debug("(AvatarFile) user.Avatar %s  asset=%s", user.Avatar, asset)
 		return s.paths.ResolveAssetRoot(asset), nil
 	}
 

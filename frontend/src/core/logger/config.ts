@@ -6,7 +6,7 @@ logger.setModuleLevel('avatar', 'debug');
 logger.setModuleLevel('user', 'debug');
 logger.setModuleLevel('composer', 'debug');
 logger.setModuleLevel('score', 'debug');
-logger.setModuleLevel('router', 'info');
+logger.setModuleLevel('router', 'debug');
 logger.setModuleLevel('layout', 'info');
 logger.setModuleLevel('http', 'info');
 logger.setModuleLevel('dev', 'debug');

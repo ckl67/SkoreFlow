@@ -2,6 +2,7 @@
 apperrors
 AUTOINCREMENT
 automatique
+autonumber
 autotests
 AVATARMENU
 axios

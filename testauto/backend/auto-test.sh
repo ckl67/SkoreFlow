@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # ---------------------------------------------------------------------------------------------------------------
 # EXECUTION GUIDE
 # ---------------------------------------------------------------------------------------------------------------
@@ -55,14 +57,60 @@ Usage:
 
 "
 
-# --- BACKEND ENVIRONNEMENT VARIABLES ---
+# --- Create environment variables from .env file ---
+# Like the Make file, we will after adapt some environment variable to
+# match with the auto-test.sh
+
+SCRIPT_DIR=$(pwd)
+ENV_FILE="$SCRIPT_DIR/../../backend/.env"
+echo "$ENV_FILE"
+
+if [ ! -f "$ENV_FILE" ]; then
+	echo "ERROR: Missing environment file: $ENV_FILE"
+	exit 1
+fi
+
+echo "Loading environment from $ENV_FILE"
+# shellcheck source=/dev/null
+source "$ENV_FILE"
+
+# Check the mandatory paths
+if [ -z "$PROJECT_ROOT" ]; then
+	echo "ERROR: PROJECT_ROOT is not defined"
+	exit 1
+fi
+
+if [ -z "$DATA_ROOT" ]; then
+	echo "ERROR: DATA_ROOT is not defined"
+	exit 1
+fi
+
+echo "PROJECT_ROOT=$PROJECT_ROOT"
+echo "DATA_ROOT=$DATA_ROOT"
+
+# --- Adapt the environment variables ---
+# export will create the environment variables
+# later we can read them like : echo $APP_ENV
 
 export APP_ENV=development
 export SMTP_ENABLED=false    # Will deactivate SMTP server
 export PROTECTION_LEVEL=none # Will bypass for example : RateLimiter()
 export TEST_MODE=true        # Will automatically seed test users on server startup + authorize all requests without smtp authentication for easier testing of protected routes.
-export PROJECT_ROOT=/home/christian/SkoreFlow_Project/SkoreFlow/backend
-export DATA_ROOT=/home/christian/SkoreFlow_Project/SkoreFlow/backend/storage
+# export PROJECT_ROOT=/home/christian/SkoreFlow_Project/SkoreFlow/backend
+# export DATA_ROOT=/home/christian/SkoreFlow_Project/SkoreFlow/backend/storage
+
+echo "======================"
+echo "At the start"
+echo "======================"
+echo "APP_ENV=$APP_ENV"
+echo "SMTP_ENABLED=$SMTP_ENABLED"
+echo "PROTECTION_LEVEL=$PROTECTION_LEVEL"
+echo "TEST_MODE=$TEST_MODE"
+echo "PROJECT_ROOT=$PROJECT_ROOT"
+echo "DATA_ROOT=$DATA_ROOT"
+echo "======================"
+echo "Might be set differently later !"
+echo "======================"
 
 # --- SHELL GLOBAL VARIABLES ---
 RUN_STRESS=false
@@ -115,10 +163,12 @@ echo "Cleaning environment..."
 
 # Kill any lingering processes on backend ports (Go: 8080, Flask Microservice: 5010)
 if fuser 8080/tcp >/dev/null 2>&1; then
+	echo "Kill backend ..."
 	fuser -k 8080/tcp
 fi
 
 if fuser 5010/tcp >/dev/null 2>&1; then
+	echo "Kill microservice  ..."
 	fuser -k 5010/tcp
 fi
 
@@ -129,8 +179,6 @@ if [ "$KILL_PROCESS" = true ]; then
 	exit 1
 fi
 
-SCRIPT_DIR=$(pwd)
-
 echo "PROJECT_ROOT = $PROJECT_ROOT"
 echo "DATA_ROOT =  $DATA_ROOT"
 echo "SCRIPT_DIR = $SCRIPT_DIR"
@@ -140,7 +188,8 @@ if [ "$CLEAN_DB_FILES" = true ]; then
 	echo "Physical cleanup of Database and Storage"
 
 	# Physical cleanup of Database and Storage
-	rm -rf "$DATA_ROOT/storage/*"
+	# If DATA_ROOT is empty or undefined, an error is displayed and the command terminates immediately.
+	rm -rf "${DATA_ROOT:?}"/*
 	exit
 else
 	echo "-->> NO Physical cleanup of Database and Storage"
