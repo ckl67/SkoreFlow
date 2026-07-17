@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"log"
+	"os"
 	"strings"
 	"sync"
 
@@ -121,9 +122,9 @@ var (
 // This function exposes sensitive data (passwords, secrets).
 // Use ONLY in development or test mode.
 func (c ServerConfig) LogSafe() {
-	fmt.Println("-------------------- ------")
-	fmt.Println("------ SERVER CONFIG ------")
-	fmt.Println("-------------------- ------")
+	fmt.Printf("-----------------------------------------\n")
+	fmt.Printf("------------- SERVER CONFIG -------------\n")
+	fmt.Printf("-----------------------------------------\n")
 
 	fmt.Println("Environment runtime (infra)")
 	fmt.Printf("    Environment Mode (production/development)- (appEnv) :%s\n", c.AppEnv)
@@ -135,14 +136,14 @@ func (c ServerConfig) LogSafe() {
 	}
 
 	fmt.Println("Feature flags")
-	fmt.Printf("    Protection Level (none/basic/full) - (ProtectionLevel) :%s\n", c.ProtectionLevel)
+	fmt.Printf("    Protection Level (none/basic/full) :%s\n", c.ProtectionLevel)
 	fmt.Printf("    SMTP Enabled: %t\n", c.Smtp.Enabled)
 
 	if c.AppEnv == "development" {
 
 		fmt.Println("Paths:")
 		fmt.Printf("  ProjectRoot: %s\n", c.ProjectRoot)
-		fmt.Printf("  DataRoot: %s\n", c.DataRoot)
+		fmt.Printf("  DataRoot   : %s\n", c.DataRoot)
 
 		fmt.Println("Admin Mail:")
 		fmt.Printf("  AdminEmail: %s\n", c.AdminEmail)
@@ -181,9 +182,21 @@ func (c ServerConfig) LogSafe() {
 		fmt.Printf("  UpdateMailConfirmPath: %s\n", c.Frontend.UpdateMailConfirmPath)
 		fmt.Printf("  CORS Origins: %s\n", c.Frontend.CorsAllowedOrigins)
 
+		// Help to setup the ProjectRoot
+		fmt.Printf("Help to setup the Project Root Directory  \n")
+		cwd, err := os.Getwd()
+		if err != nil {
+			logger.Main.Error("   Cannot get current directory: %v\n", err)
+		} else {
+			fmt.Printf("   Current working directory: %s\n", cwd)
+		}
+
+		fmt.Printf("   ProjectRoot              : %s\n", c.ProjectRoot)
+
 	}
 
-	fmt.Println("--------------------------------------")
+	fmt.Printf("-----------------------------------------\n")
+
 }
 
 // Builder Entry Point

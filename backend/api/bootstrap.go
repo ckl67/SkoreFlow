@@ -5,8 +5,6 @@ import (
 	"backend/infrastructure/database"
 	"backend/infrastructure/logger"
 	"backend/shared"
-	"os"
-	"path/filepath"
 )
 
 // Start orchestrates the application setup and launches the server.
@@ -30,51 +28,6 @@ func Start(version string) {
 	appServer.SeederService.User("admin", cfg.AdminEmail, cfg.AdminPassword, shared.RoleAdmin, "users/admin.png")
 
 	if config.Config().TestMode {
-
-		// Test presence of the users assets
-		// Useful for deployment diagnostics
-		cwd, err := os.Getwd()
-		if err != nil {
-			logger.Main.Error("Cannot get current directory: %v", err)
-		} else {
-			logger.Main.Info("Current working directory: %s", cwd)
-		}
-
-		logger.Main.Info("ProjectRoot: %s", cfg.ProjectRoot)
-
-		path := filepath.Join(cfg.ProjectRoot, "assets/users")
-
-		logger.Main.Info("Checking assets directory: %s", path)
-
-		// Check parent directories step by step
-		for _, dir := range []string{
-			cfg.ProjectRoot,
-			filepath.Join(cfg.ProjectRoot, "assets"),
-			filepath.Join(cfg.ProjectRoot, "assets/users"),
-		} {
-			info, err := os.Stat(dir)
-
-			if err != nil {
-				logger.Main.Error("Missing path: %s (%v)", dir, err)
-				continue
-			}
-
-			logger.Main.Info(
-				"Found path: %s (directory=%v)",
-				dir,
-				info.IsDir(),
-			)
-		}
-
-		entries, err := os.ReadDir(path)
-		if err != nil {
-			logger.Main.Error("Cannot read assets: %v", err)
-			return
-		}
-
-		for _, e := range entries {
-			logger.Main.Info("Asset found: %s", e.Name())
-		}
 		// Users
 		appServer.SeederService.User("user1", "user1@test.com", "password123", shared.RoleUser, "users/default.png")
 		appServer.SeederService.User("user2", "user2@test.com", "password123", shared.RoleUser, "users/default.png")
