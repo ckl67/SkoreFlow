@@ -1,5 +1,6 @@
 import axios, { Method } from 'axios';
 import { config } from './../config/config';
+import { logger } from './../core/logger/logger';
 
 // --------------------------------------------------------------------------------
 // Request options
@@ -59,6 +60,10 @@ export async function apiRequest<TResponse = unknown, TRequest = unknown>(
       },
     });
 
+    logger.debug('api', '(apiRequest) status =', res.status);
+    logger.debug('api', '(apiRequest) content-type =', res.headers['content-type']);
+    logger.debug('api', '(apiRequest) data =', res.data);
+
     return res.data;
   } catch (err) {
     if (axios.isAxiosError(err)) {
@@ -89,7 +94,6 @@ export async function apiRequest<TResponse = unknown, TRequest = unknown>(
 //      you are explicitly telling Axios: “I am deliberately creating a new Promise that is `Rejected` with this error”.
 //  This is what allows the error to continue on its way to the `catch (err)` block in your `apiRequest` function.
 //  Without this `Promise.reject(error)`, your `try { await axios(...) }` would think that everything went smoothly!
-
 axios.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -104,12 +108,15 @@ axios.interceptors.response.use(
   }
 );
 
+// In JavaScript, a Blob (which stands for Binary Large Object) represents a block of raw, immutable data.
+// Setting `responseType: 'blob'` tells Axios not to attempt to parse the API response as text or JSON
+// (which it does by default), but to retrieve the data directly in its original binary form.
 export async function apiBinaryRequest(method: Method, url: string): Promise<Blob> {
   const token = localStorage.getItem('token');
 
-  console.log('(apiBinaryRequest) gotten url:', url);
-  console.log('(apiBinaryRequest) API URL =', config.apiUrl);
-  console.log('(apiBinaryRequest) url =', config.apiUrl + url);
+  //logger.debug('api', '(apiBinaryRequest) gotten url:', url);
+  //logger.debug('api', '(apiBinaryRequest) API URL =', config.apiUrl);
+  logger.debug('api', '(apiBinaryRequest) method url =', config.apiUrl + url);
   const res = await axios({
     method,
     url: config.apiUrl + url,
@@ -119,9 +126,9 @@ export async function apiBinaryRequest(method: Method, url: string): Promise<Blo
     },
   });
 
-  console.log('(apiBinaryRequest) status =', res.status);
-  console.log('(apiBinaryRequest) content-type =', res.headers['content-type']);
-  console.log('(apiBinaryRequest) blob =', res.data);
+  logger.debug('api', '(apiBinaryRequest) status =', res.status);
+  logger.debug('api', '(apiBinaryRequest) content-type =', res.headers['content-type']);
+  logger.debug('api', '(apiBinaryRequest) blob =', res.data);
 
   return res.data;
 }

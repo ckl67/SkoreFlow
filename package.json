@@ -15,9 +15,9 @@
     "  🐹🌀🧪backend:air (RegToken)": "cd backend && make air-test",
     "  🐹🧪backend:run (RegToken)": "cd backend && make run-test",
     "-- FRONTEND DEV VM --": "",
-    "  ⚛️🖥️frontend:dev-vm": "npm run run:mode-vm-dev -w frontend",
+    "  ⚛️🖥️frontend:dev-vm": "npm run ▶️🖥️run:mode-vm-dev -w frontend",
     "-- FRONTEND DEV LOCAL": "",
-    "  ⚛️frontend:dev": "npm run run:mode-dev -w frontend",
+    "  ⚛️frontend:dev": "npm run ▶️run:mode-dev -w frontend",
     "-- DEV TOOLS --": "",
     "  📫 mailpit:start": "docker start mailpit",
     "-- BACKEND AUTO TEST --": "",
@@ -29,9 +29,9 @@
     "// TESTING AND OVERALL QUALITY --- //": "",
     "test:e2e-with-ui": "playwright test --ui",
     "test:e2e": "playwright test",
-    "// ⚙️ OTHER //": "",
-    "lint": "eslint .",
-    "format": "prettier --write ."
+    "--OTHER--": "",
+    "🕵️lint": "eslint .",
+    "🪮format": "prettier --write ."
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",

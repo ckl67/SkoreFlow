@@ -4,15 +4,13 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "// --- FRONTEND DEV VM (Debug Panel) --- //": "",
-    "run:mode-vm-dev": "vite --mode vm.dev",
-    "// --- FRONTEND DEV LOCAL (Debug Panel) --- //": "",
-    "run:mode-dev": "vite --mode dev",
-    "// --- FRONTEND DEV LOCAL --- //": "",
-    "run:mode": "vite",
-    "// --- FRONTEND BUILD (.env) --- //": "",
-    "build": "vite build",
-    "run-build": "vite preview"
+    "--FRONTEND DEV VM (Debug Panel)--": "",
+    "▶️🖥️run:mode-vm-dev": "vite --mode vm.dev",
+    "--FRONTEND DEV LOCAL (Debug Panel)--": "",
+    "▶️run:mode-dev": "vite --mode dev",
+    "--FRONTEND BUILD DEV VM--": "",
+    "🔨🚧🖥️build": "vite build --mode vm.dev",
+    "🚀🚧🖥️run-build": "vite preview"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.1",

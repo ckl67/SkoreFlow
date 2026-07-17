@@ -281,6 +281,24 @@ r := gin.New()
 }
 ```
 
+## A Cache Issue Encountered
+
+### Avatar Cache Handling
+
+The `/api/me/avatar` endpoint returns the avatar of the currently authenticated user.
+Since the response depends on the JWT token, the resource must not be cached and reused between different users.
+
+A browser cache issue was observed where switching users could display the previous user's avatar because the URL remained identical (`/api/me/avatar`).
+
+The endpoint now sends appropriate HTTP cache headers:
+
+- `Cache-Control: private, no-store`
+- `Vary: Authorization`
+
+This ensures that browsers do not reuse a cached avatar response for another authenticated user.
+
+During development, clearing the browser cache may be required after changing cache policies, as existing cached entries can persist.
+
 ## Proxy Vite tackle the problem differently?
 
 The **Proxy Vite** technique is a ‘workaround’ to completely bypass this CORS protocol during development:

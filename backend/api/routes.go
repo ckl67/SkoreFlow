@@ -270,7 +270,7 @@ func (server *Server) SetupRouter() {
 				adminRoutes.PUT("/admin/users/:id", userCtrl.AdminUpdateUser)    // vitest
 				adminRoutes.DELETE("/admin/users/:id", userCtrl.AdminDeleteUser) // vitest
 
-				protected.GET("/admin/users/:id/avatar", userCtrl.GetAvatar)
+				protected.GET("/admin/users/:id/avatar", userCtrl.AdminGetAvatar)
 
 				// For now, only for vitest
 				if config.Config().TestMode {

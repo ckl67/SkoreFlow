@@ -1,15 +1,17 @@
 import { apiBinaryRequest } from '../api/client';
+import { logger } from './../core/logger/logger';
 
 export async function getAvatar() {
   const blob = await apiBinaryRequest('GET', '/me/avatar');
 
-  console.log(blob);
+  logger.debug('avatar', '(getAvatar) blob', blob);
 
   return blob;
 }
 
-export function getUserAvatar(id: number) {
-  console.log('getMyAvatar()');
+export async function getUserAvatar(id: number) {
+  const blob = await apiBinaryRequest('GET', `/admin/users/${id}/avatar`);
+  logger.debug('avatar', '(getUserAvatar) blob', blob);
 
-  return apiBinaryRequest('GET', `/admin/users/${id}/avatar`);
+  return blob;
 }

@@ -6,7 +6,6 @@ import { useAvatar } from './../hooks/useAvatar';
 export default function AvatarMenu() {
   // Open the menu
   const [menuOpen, setMenuOpen] = useState(false);
-
   const { user, logout } = useAuth();
 
   // 1. Create a reference to cover the entire menu (button + dropdown)
@@ -47,10 +46,6 @@ export default function AvatarMenu() {
     <div className="relative" ref={menuRef}>
       {/* Avatar button */}
       <button onClick={() => setMenuOpen(!menuOpen)} className="flex items-center gap-2">
-        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 hover:bg-blue-200">
-          {user.username.charAt(0).toUpperCase() || '?'}
-        </div>
-
         {avatarURL ? (
           <img src={avatarURL} alt="Avatar" className="h-10 w-10 rounded-full object-cover" />
         ) : (

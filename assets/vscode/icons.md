@@ -28,3 +28,10 @@
 🛡️ Moderator <- (Ou ⚖️ / 🔨)
 🧑‍✈️ / 👩‍✈️ Officer
 🧑‍🔧 Maintenance
+🔨 🛠️
+🔨 Build
+🚀 Run Build
+▶️ Run
+🚧 dev
+🕵️🚨 linter ( Linter is a valuable development tool that helps to improve and enhance code quality)
+🪮 Formatter

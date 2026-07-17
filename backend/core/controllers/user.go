@@ -452,14 +452,57 @@ func (ctrl *UserController) DeleteAvatar(c *gin.Context) {
 }
 
 func (ctrl *UserController) GetAvatar(c *gin.Context) {
-	logger.User.Debug(
-		"(GetAvatar) method=%s url=%s",
-		c.Request.Method,
-		c.Request.URL,
-	)
+	//logger.User.Debug(
+	//	"(GetAvatar) method=%s url=%s",
+	//	c.Request.Method,
+	//	c.Request.URL,
+	//)
+
+	// To avoid the cash !
+	// In the case of a resource such as /me/avatar, which represents the currently authenticated user,
+	// It should never be cached by default.
+	// 	User A logs out, User B logs in, but the browser reuses the first user’s image from its cache.
+	//  This is typical behavior if the server does not provide appropriate caching instructions for a resource that depends on authentication.
+
+	c.Header("Vary", "Authorization")
+	c.Header("Cache-Control", "private, no-store")
+	c.Header("Pragma", "no-cache")
+	c.Header("Expires", "0")
+	c.Header("Vary", "Authorization")
 
 	userID := c.GetUint32("user_id")
+
 	file, err := ctrl.userService.AvatarFile(userID)
+	logger.User.Debug("(Ctrl-GetAvatar) AvatarFile : %s", file)
+	if err != nil {
+		responses.FAIL(c, http.StatusNotFound, err)
+		return
+	}
+
+	c.File(file)
+}
+
+func (ctrl *UserController) AdminGetAvatar(c *gin.Context) {
+
+	// To avoid the cash !
+	// In the case of a resource such as /me/avatar, which represents the currently authenticated user,
+	// It should never be cached by default.
+	// 	User A logs out, User B logs in, but the browser reuses the first user’s image from its cache.
+	//  This is typical behavior if the server does not provide appropriate caching instructions for a resource that depends on authentication.
+
+	c.Header("Vary", "Authorization")
+	c.Header("Cache-Control", "no-store, no-cache, must-revalidate")
+	c.Header("Pragma", "no-cache")
+	c.Header("Expires", "0")
+
+	uidString := c.Param("id")
+	uid, err := strconv.ParseUint(uidString, 10, 32)
+	if err != nil || uid <= 0 {
+		responses.FAIL(c, http.StatusBadRequest, fmt.Errorf("invalid user id"))
+		return
+	}
+
+	file, err := ctrl.userService.AvatarFile(uint32(uid))
 	logger.User.Debug("(Ctrl-GetAvatar) AvatarFile : %s", file)
 	if err != nil {
 		responses.FAIL(c, http.StatusNotFound, err)
