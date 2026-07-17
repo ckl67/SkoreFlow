@@ -9,8 +9,11 @@
     "--FRONTEND DEV LOCAL (Debug Panel)--": "",
     "▶️run:mode-dev": "vite --mode dev",
     "--FRONTEND BUILD DEV VM--": "",
-    "🔨🚧🖥️build": "vite build --mode vm.dev",
-    "🚀🚧🖥️run-build": "vite preview"
+    "🔨🚧🖥️build-vm": "vite build --mode vm.dev",
+    "🚀🚧🖥️run-build-vm": "vite preview",
+    "--FRONTEND BUILD (Mandatory npm)--": "",
+    "dev": "vite",
+    "build": "vite build"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.1",
