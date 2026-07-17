@@ -5,6 +5,8 @@ import (
 	"backend/infrastructure/database"
 	"backend/infrastructure/logger"
 	"backend/shared"
+	"os"
+	"path/filepath"
 )
 
 // Start orchestrates the application setup and launches the server.
@@ -28,6 +30,21 @@ func Start(version string) {
 	appServer.SeederService.User("admin", cfg.AdminEmail, cfg.AdminPassword, shared.RoleAdmin, "users/admin.png")
 
 	if config.Config().TestMode {
+
+		// Test presence of the users assets
+		// Useful for deployment
+		path := filepath.Join(cfg.ProjectRoot, "assets/users")
+
+		entries, err := os.ReadDir(path)
+		if err != nil {
+			logger.Main.Error("Cannot read assets: %v", err)
+			return
+		}
+
+		for _, e := range entries {
+			logger.Main.Info("Asset found: %s", e.Name())
+		}
+
 		// Users
 		appServer.SeederService.User("user1", "user1@test.com", "password123", shared.RoleUser, "users/default.png")
 		appServer.SeederService.User("user2", "user2@test.com", "password123", shared.RoleUser, "users/default.png")
