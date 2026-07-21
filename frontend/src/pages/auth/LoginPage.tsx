@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import FormInput from '../components/FormInput';
-import SubmitButton from '../components/SubmitButton';
-import { useDevFillLogin } from '../hooks/useDevFillLogin';
-import type { LoginRequest } from '../../../shared/types/auth';
-import { useLogin } from '../hooks/useLogin';
+import FormInput from '../../components/forms/FormInput';
+import SubmitButton from '../../components/forms/SubmitButton';
+import { useDevFillLogin } from '../../hooks/dev/useDevFillLogin';
+import type { LoginRequest } from '../../../../shared/types/auth';
+import { useLogin } from '../../hooks/auth/useLogin';
 
 export default function LoginPage() {
   // STATE
@@ -74,7 +74,7 @@ export default function LoginPage() {
         {/* ACTION */}
         <SubmitButton label="Login" onClick={handleLogin} />
 
-        {/* 2. On ajoute le lien vers l'inscription ici */}
+        {/* 2. Add the registration link here */}
         <p className="text-sm text-center text-gray-600">
           Don't have an account?{' '}
           <Link to="/register" className="font-medium text-blue-600 hover:underline">

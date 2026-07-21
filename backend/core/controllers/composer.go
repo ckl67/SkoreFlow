@@ -150,13 +150,13 @@ func (ctrl *ComposerController) GetComposersPage(c *gin.Context) {
 // GetComposer retrieves detailed information for a single composer
 func (ctrl *ComposerController) GetComposer(c *gin.Context) {
 	idParam := c.Param("id")
-	composerID, err := strconv.ParseUint(idParam, 10, 32)
+	cid, err := strconv.ParseUint(idParam, 10, 32)
 	if err != nil {
 		responses.FAIL(c, http.StatusBadRequest, apperrors.ErrComposerInvalidID)
 		return
 	}
 
-	composer, err := ctrl.service.GetComposer(uint(composerID))
+	composer, err := ctrl.service.GetComposer(uint(cid))
 	if err != nil {
 		switch err {
 		case apperrors.ErrComposerNotFound:
@@ -215,7 +215,7 @@ func (ctrl *ComposerController) UpdateComposer(c *gin.Context) {
 
 	// 1. Retrieve and validate ID from URL
 	idParam := c.Param("id")
-	composerID, err := strconv.ParseUint(idParam, 10, 32)
+	cid, err := strconv.ParseUint(idParam, 10, 32)
 	if err != nil {
 		responses.FAIL(c, http.StatusBadRequest, errors.New("Composer ID must be a valid number"))
 		return
@@ -228,10 +228,10 @@ func (ctrl *ComposerController) UpdateComposer(c *gin.Context) {
 		return
 	}
 
-	logger.Composer.Debug("(Controller UpdateComposer) : initiated by user %d - role %d for Composer ID %d", uid, userRole, composerID)
+	logger.Composer.Debug("(Controller UpdateComposer) : initiated by user %d - role %d for Composer ID %d", uid, userRole, cid)
 
 	// 3. Service execution
-	updatedComposer, err := ctrl.service.UpdateComposer(uid, userRole, uint(composerID), form)
+	updatedComposer, err := ctrl.service.UpdateComposer(uid, userRole, uint(cid), form)
 	if err != nil {
 		switch {
 		case errors.Is(err, apperrors.ErrComposerNotFound):
@@ -263,14 +263,14 @@ func (ctrl *ComposerController) DeleteComposer(c *gin.Context) {
 
 	// 1. Validate ID
 	idParam := c.Param("id")
-	composerID, err := strconv.ParseUint(idParam, 10, 32)
+	cid, err := strconv.ParseUint(idParam, 10, 32)
 	if err != nil {
 		responses.FAIL(c, http.StatusBadRequest, errors.New("invalid ID"))
 		return
 	}
 
 	// 2. Service execution
-	err = ctrl.service.DeleteComposer(uid, uint(composerID), userRole)
+	err = ctrl.service.DeleteComposer(uid, uint(cid), userRole)
 	if err != nil {
 		switch {
 		case errors.Is(err, apperrors.ErrFileDeletion):
@@ -293,4 +293,27 @@ func (ctrl *ComposerController) DeleteComposer(c *gin.Context) {
 
 	// 3. Success response
 	responses.SUCCESS(c, http.StatusOK, gin.H{"message": "Composer deleted successfully"})
+}
+
+func (ctrl *ComposerController) GetComposerPicture(c *gin.Context) {
+	// We are Not in the same situation than for Avatar
+	// Because the same reference will always return the same picture
+	// So we can ask for a very long cover 24 x 3600 secondes = 86400
+	c.Header("Cache-Control", "public, max-age=86400")
+
+	cidString := c.Param("id")
+	cid, err := strconv.ParseUint(cidString, 10, 32)
+	if err != nil || cid <= 0 {
+		responses.FAIL(c, http.StatusBadRequest, fmt.Errorf("invalid composer id"))
+		return
+	}
+
+	file, err := ctrl.service.ComposerPictureFile(uint32(cid))
+	logger.User.Debug("(Ctrl-GetComposerPicture) ComposerPictureFile : %s", file)
+	if err != nil {
+		responses.FAIL(c, http.StatusNotFound, err)
+		return
+	}
+
+	c.File(file)
 }

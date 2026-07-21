@@ -214,15 +214,16 @@ func (server *Server) SetupRouter() {
 			// -----------------------------------------------------------------------------------
 			// User self-management
 			// -----------------------------------------------------------------------------------
+			// Return Json
 			protected.GET("/me", userCtrl.GetProfile)             // vitest
 			protected.PUT("/me/profile", userCtrl.UpdateProfile)  // vitest
 			protected.PUT("/me/mail", userCtrl.UpdateMail)        // vitest
 			protected.POST("/me/avatar", userCtrl.UploadAvatar)   // vitest
 			protected.DELETE("/me/avatar", userCtrl.DeleteAvatar) // vitest
 
-			protected.GET("/me/avatar", userCtrl.GetAvatar) //
-			// Browsers do not use the HEAD method to display an image.
-			protected.HEAD("/me/avatar", userCtrl.GetAvatar)
+			// Return Data
+			protected.GET("/me/avatar", userCtrl.GetAvatar)  //
+			protected.HEAD("/me/avatar", userCtrl.GetAvatar) //
 
 			// -----------------------------------------------------------------------------------
 			// SCORES (Music scores)
@@ -248,6 +249,8 @@ func (server *Server) SetupRouter() {
 			// -----------------------------------------------------------------------------------
 			// COMPOSERS
 			// -----------------------------------------------------------------------------------
+
+			// Return Json
 			protected.POST("/composers", composerCtrl.CreateComposer) // vitest
 
 			protected.GET("/composers", composerCtrl.GetComposersPage) // vitest
@@ -258,21 +261,24 @@ func (server *Server) SetupRouter() {
 
 			protected.PUT("/composers/merge", composerCtrl.MergeComposers)
 
+			// Return Data
+			protected.GET("/composers/:id/picture", composerCtrl.GetComposerPicture)
+			protected.HEAD("/composers/:id/picture", composerCtrl.GetComposerPicture)
+
 			// -----------------------------------------------------------------------------------
 			// ADMIN ROUTES (restricted)
 			// -----------------------------------------------------------------------------------
 			adminRoutes := protected.Group("/")
 			adminRoutes.Use(middlewares.AdminOnlyMiddleware())
 			{
+				// Return Json
 				adminRoutes.GET("/admin/users", userCtrl.AdminGetUsersPage)      // vitest
 				adminRoutes.GET("/admin/users/:id", userCtrl.AdminGetUser)       // vitest
 				adminRoutes.POST("/admin/users", userCtrl.AdminCreateUser)       // vitest
 				adminRoutes.PUT("/admin/users/:id", userCtrl.AdminUpdateUser)    // vitest
 				adminRoutes.DELETE("/admin/users/:id", userCtrl.AdminDeleteUser) // vitest
 
-				protected.GET("/admin/users/:id/avatar", userCtrl.AdminGetAvatar)
-
-				// For now, only for vitest
+				// Only for vitest
 				if config.Config().TestMode {
 					fmt.Println("=================================")
 					fmt.Println("BE CARE ROOT NOT ALLOWED IN PROD")
@@ -283,6 +289,10 @@ func (server *Server) SetupRouter() {
 					adminRoutes.POST("/test/expire-token", authCtrl.AdmExpireToken)        // vitest - used in auth.ts
 					fmt.Println("=================================")
 				}
+
+				// Return Data
+				protected.GET("/admin/users/:id/avatar", userCtrl.AdminGetAvatar)
+
 			}
 		}
 	}

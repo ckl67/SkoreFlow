@@ -6,7 +6,7 @@
 </style>
 
 <div align="center">
-  <p style="bold; font-size: 60px;">SKOREFLOW</p>
+  <p style="bold; font-size: 60px;">SkoreFlow</p>
   <p style="bold; font-size: 30px;">User Guide</p>
   <br>
   <br>

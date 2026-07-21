@@ -54,6 +54,15 @@
   "cSpell.enabled": true,
 
   // =========================================================
+  // 🔹 Emmet configuration pour JSX / React
+  // =========================================================
+  "emmet.includeLanguages": {
+    "javascript": "javascriptreact",
+    "typescript": "typescriptreact"
+  },
+  "emmet.triggerExpansionOnTab": true,
+
+  // =========================================================
   // 🧹 PRETTIER
   // =========================================================
   "prettier.requireConfig": false,

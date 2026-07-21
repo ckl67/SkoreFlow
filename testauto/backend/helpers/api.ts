@@ -131,13 +131,16 @@ type HttpResponse<T = unknown> = {
  * - RequestOptions uses T for the 'data' sent (input)
  * - Promise<HttpResponse<T>> ensures the returned 'data' is LoginResponse (output)
  */
+// Last and not the least, for test facilities, we have decided to return
+//  Promise<HttpResponse<T>> rather then  Promise<T>
 async function request<T = unknown>(
   method: Method,
   url: string,
   { token, data, headers }: RequestOptions = {}
 ): Promise<HttpResponse<T>> {
   try {
-    const res = await axios({
+    // Axios returns <APIResponse<T>>
+    const res = await axios<APIResponse<T>>({
       method,
       url,
       data,

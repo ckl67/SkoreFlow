@@ -1,9 +1,7 @@
 import { createContext, useEffect, useState } from 'react';
 import type { UserPublicResponse } from '../../../shared/types/user';
-import type { ProfileUserResponse } from '../../../shared/types/user';
-import { apiRequest } from '../api/client';
+import { getProfile } from '../services/users/userService';
 import { logger } from './../core/logger/logger';
-
 // Context handle 3 thinks
 // * Global State : user - token - isAuthenticated
 // * Actions: login - logout - refreshMe
@@ -22,25 +20,15 @@ type AuthContextType = {
 export const AuthContext = createContext<AuthContextType | null>(null);
 
 // --------------------------------------------------------------------------------
-// Note for SkoreFlow Architecture:
-// Even though this is declared as a standard JavaScript function, the Capital letter 'A'
-// turns it into a React Component.
-// When used as a JSX tag (<AuthProvider>...</AuthProvider>),
-// React automatically takes everything nested inside it and passes
-// it as the 'children' argument.
 // --------------------------------------------------------------------------------
 // The left-hand side { children }:
-//  This is pure JavaScript.
 //  We’re telling the function: “You’ll receive an object (the React properties/props),
-//  and I want you to extract the children variable from it”.
 //
 // The right-hand side: { children: React.ReactNode }:
 //  This is TypeScript.
-//  We add a safety check by saying:
-//  “Please note, I’m specifying that this `children` must be of type `React.ReactNode`”.
-//
+//  Saying that `children` is a `React.ReactNode` means that you’re free to place absolutely anything
+//  that React is capable of rendering on screen within the tags of your `AuthProvider`.
 // React don't need that we clarify the output, it is deduced via the return
-//
 // --------------------------------------------------------------------------------
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Within the AuthProvider component, the code retrieves the login details:
@@ -101,18 +89,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   async function refreshMe() {
     if (!token) return;
 
-    const res = await apiRequest<ProfileUserResponse>('GET', '/me');
+    try {
+      const res = await getProfile();
+      logger.debug('auth', 'refreshMe :', res);
 
-    console.log('refreshMe :', res);
-
-    if (!res.success || !res.data) {
-      throw new Error(res.error?.message ?? 'Login failed');
-    }
-
-    if (res.data) {
-      setUser(res.data.user);
-      localStorage.setItem('user', JSON.stringify(res.data.user));
-    } else {
+      if (res.user) {
+        // ReRender
+        setUser(res.user);
+        localStorage.setItem('user', JSON.stringify(res.user));
+      } else {
+        logout();
+      }
+    } catch (error) {
+      logger.error('auth', 'Failed getProfile', error);
       logout();
     }
   }

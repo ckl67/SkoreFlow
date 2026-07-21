@@ -1,13 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { apiRequest } from '../api/client';
+import { registerService } from '../../services/auth/authService';
+import FormInput from '../../components/forms/FormInput';
+import SubmitButton from '../../components/forms/SubmitButton';
+import { useDevFillRegister } from '../../hooks/dev/useDevFillRegister';
 
-import FormInput from '../components/FormInput';
-import SubmitButton from '../components/SubmitButton';
-import { useDevFillRegister } from '../hooks/useDevFillRegister';
-
-import type { RegisterRequest, RegisterResponse } from '../../../shared/types/auth';
+import type { RegisterRequest } from '../../../../shared/types/auth';
 
 export default function Register() {
   // 1. STATE
@@ -29,9 +28,7 @@ export default function Register() {
     };
 
     try {
-      const res = await apiRequest<RegisterResponse, RegisterRequest>('POST', '/auth/register', {
-        data: payload,
-      });
+      const res = await registerService(payload);
 
       console.log('Register :', res);
 
@@ -39,11 +36,7 @@ export default function Register() {
         state: { email },
       });
 
-      if (!res.success || !res.data) {
-        alert(res.error!.message);
-        throw new Error(res.error?.message ?? 'Register failed');
-      }
-      alert(res.data.message);
+      alert(res.message);
     } catch (err) {
       if (err instanceof Error) {
         alert(err.message);

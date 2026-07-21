@@ -49,3 +49,15 @@ To list 1 composer
 ```shell
 curl -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/composers/1 | jq
 ```
+
+### Get Picture
+
+```shell
+
+# Header in VM environnement
+curl -I -H "Authorization: Bearer $TOKEN_USER2" http://192.168.1.138:8080/api/composers/1/picture
+
+curl -H "Authorization: Bearer $TOKEN_USER2" -o avatar.png http://localhost:8080/api/me/avatar
+file avatar.png
+
+```

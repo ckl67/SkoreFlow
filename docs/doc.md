@@ -10,11 +10,7 @@ It will also address the development environment, to cover the necessary tools, 
 
 Whether you're new to SkoreFlow or an experienced developer, this documentation will help you get started and contribute effectively to the project.
 
-The document can also be consulted locally in 'visual studio code' via the integrated browser [SkoreFlow document](http://127.0.0.1:3000/docs/index.html#/)
-
-It is essential that the "Live Server" has been started before manually !
-
-`ctrl Shift p` --> `Live Premier Start Server`
+The document can also be consulted locally in 'visual studio code' via the integrated browser [SkoreFlow document](http://127.0.0.1:3000/docs/index.html#/) - For that, it is essential that the "Live Server" has been started before manually : `ctrl Shift p` --> `Live Premier Start Server`
 
 ## Table of Contents
 
@@ -29,13 +25,15 @@ It is essential that the "Live Server" has been started before manually !
 ### visual studio code
 
 - [Visual Studio Code settings](./environment/vscode.md)
-- [Remote Development, Ports, and VPN](./environment/remote-ports.md)
+- [Remote Development](./environment/remote-ports.md)
 - [VSC Workspace](./environment/single-folder.md)
 - [eslint and prettier](./environment/formatting.md)
 
 ### SkoreFlow
 
 - [Naming Conventions](./skoreflow/naming-conventions.md)
+- [Backend Frontend Responsibilities](./skoreflow/responsibilities.md)
+- [Rest return](./skoreflow/rest-response.md)
 
 ### General
 

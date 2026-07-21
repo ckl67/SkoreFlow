@@ -1,5 +1,5 @@
 import { DevUser } from './DevProvider';
-import { useDev } from './useDev';
+import { useDev } from '../hooks/dev/useDev';
 import { useState } from 'react';
 
 // ----------------------------------------------------------------------------

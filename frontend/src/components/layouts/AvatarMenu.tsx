@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from './../auth/ useAuth';
-import { useAvatar } from './../hooks/useAvatar';
+import { useAuth } from '../../hooks/auth/useAuth';
+import { useAvatar } from '../../hooks/users/useAvatar';
 
 export default function AvatarMenu() {
   // Open the menu

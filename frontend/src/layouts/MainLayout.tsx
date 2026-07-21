@@ -1,8 +1,8 @@
 import { Outlet } from 'react-router-dom';
 import { config } from './../config/config';
 
-import TopNavbar from '../components/TopNavbar';
-import SideNavbar from '../components/SideNavbar';
+import TopNavbar from '../components/layouts/TopNavbar';
+import SideNavbar from '../components/layouts/SideNavbar';
 import DevPanel from '../dev/DevPanel';
 
 // +----------------------+

@@ -452,18 +452,9 @@ func (ctrl *UserController) DeleteAvatar(c *gin.Context) {
 }
 
 func (ctrl *UserController) GetAvatar(c *gin.Context) {
-	//logger.User.Debug(
-	//	"(GetAvatar) method=%s url=%s",
-	//	c.Request.Method,
-	//	c.Request.URL,
-	//)
-
-	// To avoid the cash !
 	// In the case of a resource such as /me/avatar, which represents the currently authenticated user,
-	// It should never be cached by default.
-	// 	User A logs out, User B logs in, but the browser reuses the first user’s image from its cache.
-	//  This is typical behavior if the server does not provide appropriate caching instructions for a resource that depends on authentication.
-
+	// for the same route we can have different Avatar
+	// This is the reason that we have to avoid to store the picture in the cash !
 	c.Header("Vary", "Authorization")
 	c.Header("Cache-Control", "private, no-store")
 	c.Header("Pragma", "no-cache")
@@ -483,17 +474,14 @@ func (ctrl *UserController) GetAvatar(c *gin.Context) {
 }
 
 func (ctrl *UserController) AdminGetAvatar(c *gin.Context) {
-
-	// To avoid the cash !
 	// In the case of a resource such as /me/avatar, which represents the currently authenticated user,
-	// It should never be cached by default.
-	// 	User A logs out, User B logs in, but the browser reuses the first user’s image from its cache.
-	//  This is typical behavior if the server does not provide appropriate caching instructions for a resource that depends on authentication.
-
+	// for the same route we can have different Avatar
+	// This is the reason that we have to avoid to store the picture in the cash !
 	c.Header("Vary", "Authorization")
-	c.Header("Cache-Control", "no-store, no-cache, must-revalidate")
+	c.Header("Cache-Control", "private, no-store")
 	c.Header("Pragma", "no-cache")
 	c.Header("Expires", "0")
+	c.Header("Vary", "Authorization")
 
 	uidString := c.Param("id")
 	uid, err := strconv.ParseUint(uidString, 10, 32)

@@ -35,29 +35,40 @@ func Start(version string) {
 		appServer.SeederService.User("moderator1", "moderator1@test.com", "password123", shared.RoleModerator, "users/moderator.png")
 		appServer.SeederService.User("moderator2", "moderator2@test.com", "password123", shared.RoleModerator, "users/moderator.png")
 
-		if err := appServer.SeederService.Composer(
-			"Wolfgang Amadeus Mozart",
-			"Classical period",
-			"https://fr.wikipedia.org/wiki/Wolfgang_Amadeus_Mozart",
-			"../testauto/backend/resources/composers/Mozart.png",
-		); err != nil {
-			logger.Main.Fatal("Seed failed: %v", err)
+		// 1. Définition du tableau (Slice de structs) avec tous vos compositeurs
+		composers := []struct {
+			Name  string
+			Genre string
+			Wiki  string
+			Img   string
+		}{
+			{"Wolfgang Amadeus Mozart", "Classical period", "https://fr.wikipedia.org/wiki/Wolfgang_Amadeus_Mozart", "Mozart.png"},
+			{"Ludwig van Beethoven", "Classical period", "https://fr.wikipedia.org/wiki/Ludwig_van_Beethoven", "Beethoven.png"},
+			{"Supertramp", "Rock gradual, Pop, Art Rock, Blues-rock", "https://fr.wikipedia.org/wiki/Supertramp", "Supertramp.png"},
+			{"NightWish", "Hard Rock, Art Rock", "https://fr.wikipedia.org/wiki/Nightwish", ""},
+			{"Frédéric Chopin", "romantic", "https://fr.wikipedia.org/wiki/Fr%C3%A9d%C3%A9ric_Chopin", "Frédéric Chopin.png"},
+			{"Pink Floyd", "rock progressif", "https://fr.wikipedia.org/wiki/Pink_Floyd", "Pink Floyd.jpeg"},
+			{"Helloween", "hard Rock", "https://fr.wikipedia.org/wiki/Helloween", "Helloween.png"},
+			{"Heino", "musique traditionnelle allemande", "https://fr.wikipedia.org/wiki/Heino_(chanteur)", "Heino.png"},
+			{"Ernst Mosch", "musique traditionnelle allemande", "", ""},
+			{"Barclay James Harvest", "rock", "https://fr.wikipedia.org/wiki/Barclay_James_Harvest", "BarclayJamesHarvest.png"},
+			{"Iron Maiden", "hard rock", "https://fr.wikipedia.org/wiki/Iron_Maiden", "Iron Maiden.png"},
+			{"Kamelot", "hard rock", "https://fr.wikipedia.org/wiki/Kamelot", "Kamelot.png"},
+			{"AC/DC", "hard rock", "https://fr.wikipedia.org/wiki/AC/DC", "ACDC.png"},
 		}
 
-		if err := appServer.SeederService.Composer("Ludwig van Beethoven",
-			"Classical period",
-			"https://fr.wikipedia.org/wiki/Ludwig_van_Beethoven",
-			"../testauto/backend/resources/composers/Beethoven.png",
-		); err != nil {
-			logger.Main.Fatal("Seed failed: %v", err)
-		}
+		basePath := "../testauto/backend/resources/composers/"
 
-		if err := appServer.SeederService.Composer("Supertramp",
-			"Rock gradual, Pop, Art Rock, Blues-rock",
-			"https://fr.wikipedia.org/wiki/Supertramp",
-			"../testauto/backend/resources/composers/Supertramp.png",
-		); err != nil {
-			logger.Main.Fatal("Seed failed: %v", err)
+		// 2. Boucle unique qui exécute le seeder pour chaque élément
+		for _, c := range composers {
+			imgPath := ""
+			if c.Img != "" {
+				imgPath = basePath + c.Img
+			}
+
+			if err := appServer.SeederService.Composer(c.Name, c.Genre, c.Wiki, imgPath); err != nil {
+				logger.Main.Fatal("Seed failed: %v", err)
+			}
 		}
 
 	}

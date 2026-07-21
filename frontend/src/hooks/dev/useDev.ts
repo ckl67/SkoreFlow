@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { DevContext } from './DevProvider';
+import { DevContext } from '../../dev/DevProvider';
 
 export function useDev() {
   const context = useContext(DevContext);

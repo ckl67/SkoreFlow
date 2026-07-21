@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-import type { LoginRequest } from '../../../shared/types/auth';
+import type { LoginRequest } from '../../../../shared/types/auth';
 
 type DevFillLoginEvent = CustomEvent<LoginRequest>;
 

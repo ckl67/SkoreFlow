@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { getAvatar, getUserAvatar } from '../services/avatarService';
-import { logger } from './../core/logger/logger';
+import { logger } from '../../core/logger/logger';
+import { getComposerPicture } from '../../services/composers/composerService';
 
 // Remember
 // Always pairing:
@@ -8,8 +8,8 @@ import { logger } from './../core/logger/logger';
 // with:
 // URL.revokeObjectURL(...)
 
-export function useAvatar(userId?: number) {
-  logger.debug('avatar', 'Before rendering', userId);
+export function useComposersPicture(id: number) {
+  logger.debug('composer', 'Before rendering', id);
   // render
   const [url, setURL] = useState<string | null>(null);
 
@@ -17,14 +17,15 @@ export function useAvatar(userId?: number) {
     let objectURL: string | null = null;
 
     async function load() {
-      logger.debug('avatar', 'Loading avatar for user', userId);
+      logger.debug('composer', 'Loading Picture for Composer', id);
 
-      const blob = await getAvatar();
+      const blob = await getComposerPicture(id);
 
       objectURL = URL.createObjectURL(blob);
-      logger.debug('avatar', 'Created object URL', objectURL);
+      logger.debug('composer', 'Created object URL', objectURL);
 
       setURL(objectURL);
+      return;
     }
 
     // setURL
@@ -32,11 +33,11 @@ export function useAvatar(userId?: number) {
 
     return () => {
       if (objectURL) {
-        logger.debug('avatar', 'revoke', objectURL);
+        logger.debug('composer', 'revoke', objectURL);
         URL.revokeObjectURL(objectURL);
       }
     };
-  }, [userId]);
+  }, [id]);
 
   return url;
 }

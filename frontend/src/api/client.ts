@@ -24,9 +24,6 @@ type APIResponse<T = unknown> = {
 // --------------------------------------------------------------------------------
 // apiRequest
 //    Promise<APIResponse<TResponse>>
-//      guarantee that `apiRequest` will immediately return a Promise. You cannot use its result directly --> pending
-//      However, I can promise that once it has been resolved (Fulfilled), you will find an object that will always have
-//      the `APIResponse` structure, and inside it, the data will be exactly of the `<TResponse>` type that you requested."
 //
 // --------------------------------------------------------------------------------
 // Putting ‘async’ in front of your function forces it to return a promise, no matter what happens.
@@ -40,16 +37,23 @@ type APIResponse<T = unknown> = {
 //      the promise changes to ‘Rejected’.
 //      `await` then throws an exception, which stops the normal flow and
 //      sends the code directly to the `catch` block (`err`).
+//
+//  `await` cannot be used directly within a React component
+//      Example
+//        const res1 = await GetComposersPage();
+//      A React component is not asynchronous.
+//      We must use `useEffect()`.
 // --------------------------------------------------------------------------------
 
 export async function apiRequest<TResponse = unknown, TRequest = unknown>(
   method: Method,
   url: string,
   options: RequestOptions<TRequest> = {}
-): Promise<APIResponse<TResponse>> {
+): Promise<TResponse> {
   const token = localStorage.getItem('token');
 
   try {
+    // Axios returns <APIResponse<TResponse>>
     const res = await axios<APIResponse<TResponse>>({
       method,
       url: config.apiUrl + url,
@@ -64,25 +68,54 @@ export async function apiRequest<TResponse = unknown, TRequest = unknown>(
     logger.debug('api', '(apiRequest) content-type =', res.headers['content-type']);
     logger.debug('api', '(apiRequest) data =', res.data);
 
-    return res.data;
-  } catch (err) {
-    if (axios.isAxiosError(err)) {
-      return (
-        (err.response?.data as APIResponse<TResponse>) ?? {
-          success: false,
-          error: {
-            message: err.message || 'Unknown network error',
-          },
-        }
-      );
+    // If the server returns a 200 status code but with `success: false` or no data
+    // the server returns a failure (success: false),
+    // ?? (null coalescing operator):
+    //    It checks whether the left-hand side is null or undefined.
+
+    // new Error() instantiates a standard JavaScript error object.
+    //    --> but also the stack trace (the call stack that specifies exactly on which line and in which file the error occurred).
+    // `throw` immediately stops the execution of the current function.
+    //    --> Control is then passed to the nearest `try...catch` block that encloses this call.
+
+    if (!res.data.success) {
+      throw new Error(res.data.error?.message ?? 'API request failed');
     }
 
-    return {
-      success: false,
-      error: {
-        message: 'Unexpected error',
-      },
-    };
+    // The server responds with `success: true` but without any data, even though there should be some.
+    if (res.data.data === undefined) {
+      throw new Error('Missing response data');
+    }
+
+    // Here, TypeScript knows that `res.data.data` exists and is of type `TResponse`
+    return res.data.data;
+  } catch (err) {
+    // -- Ensure that the code calling this function always receives a standard Error instance, with the most explicit message possible --
+
+    // Axios HTTP/Network Error Handling
+    //  If the HTTP request fails (server 500, no network connection, 404, etc.), Axios throws a specific error.
+    //    Debug log: It writes the basic Axios error message to your logs (e.g. "Request failed with status code 404").
+    //    Extracting the API response: It attempts to cast (as) the body of the server’s JSON response to TypeScript `APIResponse`
+    //      Re-raising the error with cascading fallbacks (??):
+    //        Priority 1: The custom message returned by your backend API (apiError?.error?.message, e.g. “Email already in use”).
+    //        Priority 2: If the backend has not provided any JSON or message, it uses the standard Axios message (err.message, e.g. "Network Error").
+    //        Priority 3: If even that does not exist, it uses 'Unknown network error'.
+    if (axios.isAxiosError(err)) {
+      logger.debug('api', '(apiRequest) err =', err.message);
+      const apiError = err.response?.data as APIResponse<unknown> | undefined;
+
+      throw new Error(apiError?.error?.message ?? err.message ?? 'Unknown network error');
+    }
+
+    // If it is not an Axios error, but a standard JavaScript error (e.g. a TypeError, invalid syntax, or a manual `throw new Error(...)`
+    // thrown within the `try` block), it passes it through as it is without modifying it.
+    if (err instanceof Error) {
+      throw err;
+    }
+
+    // If this very rare situation occurs, this final block catches the odd object and turns
+    // it into a genuine error with the message ‘Unexpected error’.
+    throw new Error('Unexpected error');
   }
 }
 
@@ -98,6 +131,7 @@ axios.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
+      logger.debug('api', '(interceptors called) err =', error.message);
       localStorage.removeItem('token');
       localStorage.removeItem('user');
 
@@ -114,8 +148,6 @@ axios.interceptors.response.use(
 export async function apiBinaryRequest(method: Method, url: string): Promise<Blob> {
   const token = localStorage.getItem('token');
 
-  //logger.debug('api', '(apiBinaryRequest) gotten url:', url);
-  //logger.debug('api', '(apiBinaryRequest) API URL =', config.apiUrl);
   logger.debug('api', '(apiBinaryRequest) method url =', config.apiUrl + url);
   const res = await axios({
     method,
@@ -132,9 +164,3 @@ export async function apiBinaryRequest(method: Method, url: string): Promise<Blo
 
   return res.data;
 }
-
-//export async function apiDownloadRequest(method: Method, url: string): Promise<Blob> {
-//
-//
-//  return nil;
-//}

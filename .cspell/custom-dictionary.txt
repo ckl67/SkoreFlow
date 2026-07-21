@@ -56,6 +56,7 @@ modcache
 mozillazg
 mvdan
 netgo
+Nighwish
 NTFS
 omitempty
 oneline

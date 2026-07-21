@@ -1,12 +1,8 @@
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Link } from 'react-router-dom';
-import { apiRequest } from '../api/client';
+import { confirmRegistrationService } from '../../services/auth/authService';
 
-import type {
-  ConfirmRegistrationRequest,
-  ConfirmRegistrationResponse,
-} from '../../../shared/types/auth';
+import type { ConfirmRegistrationRequest } from '../../../../shared/types/auth';
 
 export default function RegisterConfirmPage() {
   const [params] = useSearchParams();
@@ -44,19 +40,7 @@ export default function RegisterConfirmPage() {
       const payload: ConfirmRegistrationRequest = {
         token,
       };
-
-      const res = await apiRequest<ConfirmRegistrationResponse, ConfirmRegistrationRequest>(
-        'POST',
-        '/auth/register/confirm',
-        {
-          data: payload,
-        }
-      );
-
-      if (!res.success || !res.data) {
-        throw new Error(res.error?.message);
-      }
-
+      const res = await confirmRegistrationService(payload);
       setStatus('success');
     } catch (err) {
       console.error(err);

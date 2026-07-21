@@ -3,6 +3,8 @@ package shared
 import "backend/infrastructure/logger"
 
 var defaultAvatars = map[string]string{
+	//	Database 							Project Root
+	// 										backend/assets/users
 	"users/default.png":   "users/default.png",
 	"users/moderator.png": "users/moderator.png",
 	"users/admin.png":     "users/admin.png",

@@ -303,7 +303,7 @@ func (s *ComposerService) MergeComposers(uid uint32, userRole int, sourceID uint
 //
 // Responsibilities:
 // - Extract file content from multipart upload
-// - Delegate validation + storage to StoreComposerImage
+// - Delegate validation + storage to StoreComposerPicture
 //
 // This function acts as an HTTP adapter layer between:
 // HTTP layer (multipart.FileHeader)
@@ -319,12 +319,12 @@ func (s *ComposerService) ProcessComposerStorage(composer *models.Composer, file
 	}
 	defer f.Close()
 
-	return s.StoreComposerImage(composer, f, file.Filename)
+	return s.StoreComposerPicture(composer, f, file.Filename)
 }
 
-// StoreComposerImage handles validation and persistence of a composer image.
+// StoreComposerPicture handles validation and persistence of a composer image.
 // This function is agnostic of HTTP and works with any io.Reader source:
-func (s *ComposerService) StoreComposerImage(
+func (s *ComposerService) StoreComposerPicture(
 	composer *models.Composer,
 	reader io.Reader,
 	filename string,
@@ -336,17 +336,17 @@ func (s *ComposerService) StoreComposerImage(
 	}
 
 	if _, ok := media.AllowedImageExt[ext]; !ok {
-		logger.Composer.Debug("(StoreComposerImage) invalid format: %s", ext)
+		logger.Composer.Debug("(StoreComposerPicture) invalid format: %s", ext)
 		return apperrors.ErrImageFormatInvalid
 	}
 
 	// Build storage path
 	relativePath := s.paths.ComposerPictureRel(composer.SafeName, ext)
-	logger.Composer.Debug("(StoreComposerImage) Relative path %s", relativePath)
+	logger.Composer.Debug("(StoreComposerPicture) Relative path %s", relativePath)
 	composer.Picture = relativePath
 
 	absolutePath := s.paths.ResolveDataRoot(relativePath)
-	logger.Composer.Debug("(StoreComposerImage) Absolute path %s", absolutePath)
+	logger.Composer.Debug("(StoreComposerPicture) Absolute path %s", absolutePath)
 
 	return filedir.SaveFile(absolutePath, reader)
 }
@@ -429,4 +429,29 @@ func (s *ComposerService) deleteComposerOrchestrator(composer *models.Composer) 
 	}
 
 	return nil
+}
+
+// =====================================
+//
+//	c.File("/storage/composers/mozart/mozart.png")
+//
+// =====================================
+func (s *ComposerService) ComposerPictureFile(composerID uint32) (string, error) {
+
+	composer, err := models.FindComposerByID(s.db, (uint)(composerID))
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return "", apperrors.ErrComposerNotFound
+		}
+		return "", err
+	}
+
+	if asset, ok := shared.GetDefaultComposerPicture(composer.Picture); ok {
+		logger.Composer.Debug("(ComposerPictureFile) composer.ComposerPicture %s  asset=%s", composer.Picture, asset)
+		return s.paths.ResolveAssetRoot(asset), nil
+	}
+
+	logger.Composer.Debug("(ComposerPictureFile) ComposerPicture=%s", composer.Picture)
+	return s.paths.ResolveDataRoot(composer.Picture), nil
+
 }

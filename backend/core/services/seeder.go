@@ -82,40 +82,46 @@ func (s *SeederService) Composer(name, epoch, externalURL, picturePath string) e
 		return nil
 	}
 
-	// 2 File Storage
-	file, err := os.Open(picturePath)
-	if err != nil {
-		// For debug
-		wd, _ := os.Getwd()
-		logger.Main.Info("WORKDIR = %s", wd)
-
-		abs, _ := filepath.Abs(picturePath)
-		logger.Main.Info("INPUT IMAGE PATH = %s", picturePath)
-		logger.Main.Info("RESOLVED IMAGE PATH = %s", abs)
-
-		return fmt.Errorf("cannot open seed image %q: %w", picturePath, err)
-	}
-	defer file.Close()
-
 	safeName := format.SanitizeName(name)
-	ext := strings.ToLower(filepath.Ext(picturePath))
-	if ext == "" {
-		return apperrors.ErrImageFormatInvalid
+
+	var relativePath string
+	if picturePath != "" {
+
+		// 2 File Storage
+		file, err := os.Open(picturePath)
+		if err != nil {
+			// For debug
+			wd, _ := os.Getwd()
+			logger.Main.Info("WORKDIR = %s", wd)
+
+			abs, _ := filepath.Abs(picturePath)
+			logger.Main.Info("INPUT IMAGE PATH = %s", picturePath)
+			logger.Main.Info("RESOLVED IMAGE PATH = %s", abs)
+
+			return fmt.Errorf("cannot open seed image %q: %w", picturePath, err)
+		}
+		defer file.Close()
+
+		ext := strings.ToLower(filepath.Ext(picturePath))
+		if ext == "" {
+			return apperrors.ErrImageFormatInvalid
+		}
+
+		if _, ok := media.AllowedImageExt[ext]; !ok {
+			logger.Main.Debug("(LoadComposer) invalid format: %s", ext)
+			return apperrors.ErrImageFormatInvalid
+		}
+
+		// Build storage path
+		relativePath = s.paths.ComposerPictureRel(safeName, ext)
+		absolutePath := s.paths.ResolveDataRoot(relativePath)
+
+		if err := filedir.SaveFile(absolutePath, file); err != nil {
+			return err
+		}
+	} else {
+		relativePath = "composers/default.png"
 	}
-
-	if _, ok := media.AllowedImageExt[ext]; !ok {
-		logger.Main.Debug("(LoadComposer) invalid format: %s", ext)
-		return apperrors.ErrImageFormatInvalid
-	}
-
-	// Build storage path
-	relativePath := s.paths.ComposerPictureRel(safeName, ext)
-	absolutePath := s.paths.ResolveDataRoot(relativePath)
-
-	if err := filedir.SaveFile(absolutePath, file); err != nil {
-		return err
-	}
-
 	// 3. Build  Composer model
 	newComposer := models.Composer{
 		Name:        name,
@@ -127,7 +133,7 @@ func (s *SeederService) Composer(name, epoch, externalURL, picturePath string) e
 	}
 
 	// 4. Persist Composer
-	err = newComposer.Create(s.db)
+	err := newComposer.Create(s.db)
 	if err != nil {
 		logger.Main.Error("cannot create %s Composer: %v", name, err)
 		return err

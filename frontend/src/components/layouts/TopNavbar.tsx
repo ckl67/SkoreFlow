@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { useAuth } from '../auth/ useAuth';
+import { useAuth } from '../../hooks/auth/useAuth';
 import AvatarMenu from './AvatarMenu';
 import { User } from 'lucide-react';
 

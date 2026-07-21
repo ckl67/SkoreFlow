@@ -146,6 +146,15 @@ Rerender
 ### Hooks
 
 Hooks are special React functions.
+`await` cannot be used directly within a React component
+Example
+
+```tsx
+const res1 = await GetComposersPage();
+```
+
+A React component is not asynchronous.
+We must use `useEffect()`.
 
 Examples:
 

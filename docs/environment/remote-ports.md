@@ -1,4 +1,4 @@
-# Remote Development, Ports, and VPN (Host ↔ VM) — Practical Model
+# Remote Development
 
 [← back](../doc.md)
 
@@ -72,30 +72,6 @@ You are likely using one of these:
 ```shell
 http://192.168.1.138:8080
 ```
-
-## 🔐 VPN impact (important)
-
-With VPN (corporate / Fortinet / etc.)
-
-A VPN can:
-
-🟡 Modify routing
-
-- Redirect traffic
-- Block local LAN access
-- Split traffic (split tunneling)
-  🟡 Create “fake local networks”
-- Windows may see different subnet
-- VM remains on physical LAN
-  ⚠️ Symptom observed
-  Windows: curl localhost:8080 → FAIL
-  VM: curl localhost:8080 → OK
-  Windows: curl 192.168.1.138:8080 → OK
-
-👉 This confirms:
-
-VPN does NOT expose VM services via localhost
-Only LAN IP works
 
 ## VS Code “Ports” Window (Remote Development) — Explanation
 

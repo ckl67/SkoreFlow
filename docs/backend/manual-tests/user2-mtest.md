@@ -13,14 +13,9 @@ echo "JWT Token: $TOKEN_USER2"
 curl -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/me | jq
 
 curl -H "Authorization: Bearer $TOKEN_USER2" http://192.168.1.138:8080/api/me | jq
-
-
-
 ```
 
-## Get
-
-To Get avatar
+## Get avatar
 
 ```shell
 curl -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/me/avatar

@@ -104,3 +104,9 @@ Why?
 | Left-hand side (`=`)  | Destructuring   |
 | Function argument     | Object creation |
 | Function parameter    | Destructuring   |
+
+## string and literal
+
+'...' → normal string
+"..." → normal string
+`...` → template literal (interpolation)

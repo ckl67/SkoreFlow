@@ -1,5 +1,5 @@
-import { apiBinaryRequest } from '../api/client';
-import { logger } from './../core/logger/logger';
+import { apiBinaryRequest } from '../../api/client';
+import { logger } from '../../core/logger/logger';
 
 export async function getAvatar() {
   const blob = await apiBinaryRequest('GET', '/me/avatar');
