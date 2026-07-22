@@ -35,19 +35,20 @@ func Start(version string) {
 		appServer.SeederService.User("moderator1", "moderator1@test.com", "password123", shared.RoleModerator, "users/moderator.png")
 		appServer.SeederService.User("moderator2", "moderator2@test.com", "password123", shared.RoleModerator, "users/moderator.png")
 
-		// 1. Définition du tableau (Slice de structs) avec tous vos compositeurs
+		// 1. Define the array (slice of structs) containing all your compositors
 		composers := []struct {
 			Name  string
 			Genre string
 			Wiki  string
 			Img   string
 		}{
+			// cspell:disable
 			{"Wolfgang Amadeus Mozart", "Classical period", "https://fr.wikipedia.org/wiki/Wolfgang_Amadeus_Mozart", "Mozart.png"},
 			{"Ludwig van Beethoven", "Classical period", "https://fr.wikipedia.org/wiki/Ludwig_van_Beethoven", "Beethoven.png"},
 			{"Supertramp", "Rock gradual, Pop, Art Rock, Blues-rock", "https://fr.wikipedia.org/wiki/Supertramp", "Supertramp.png"},
 			{"NightWish", "Hard Rock, Art Rock", "https://fr.wikipedia.org/wiki/Nightwish", ""},
 			{"Frédéric Chopin", "romantic", "https://fr.wikipedia.org/wiki/Fr%C3%A9d%C3%A9ric_Chopin", "Frédéric Chopin.png"},
-			{"Pink Floyd", "rock progressif", "https://fr.wikipedia.org/wiki/Pink_Floyd", "Pink Floyd.jpeg"},
+			{"Pink Floyd", "rock progressive", "https://fr.wikipedia.org/wiki/Pink_Floyd", "Pink Floyd.jpeg"},
 			{"Helloween", "hard Rock", "https://fr.wikipedia.org/wiki/Helloween", "Helloween.png"},
 			{"Heino", "musique traditionnelle allemande", "https://fr.wikipedia.org/wiki/Heino_(chanteur)", "Heino.png"},
 			{"Ernst Mosch", "musique traditionnelle allemande", "", ""},
@@ -55,11 +56,11 @@ func Start(version string) {
 			{"Iron Maiden", "hard rock", "https://fr.wikipedia.org/wiki/Iron_Maiden", "Iron Maiden.png"},
 			{"Kamelot", "hard rock", "https://fr.wikipedia.org/wiki/Kamelot", "Kamelot.png"},
 			{"AC/DC", "hard rock", "https://fr.wikipedia.org/wiki/AC/DC", "ACDC.png"},
+			// cspell:enable
 		}
-
 		basePath := "../testauto/backend/resources/composers/"
 
-		// 2. Boucle unique qui exécute le seeder pour chaque élément
+		// 2. A single loop that runs the seeder for each element
 		for _, c := range composers {
 			imgPath := ""
 			if c.Img != "" {

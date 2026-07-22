@@ -85,10 +85,14 @@ But the impact is very minor.
 
 In Devtools section : Debugger
 
-☑ Ignore known third-party scripts / `Ignorer les script tiers connus`
+<!-- cspell:disable -->
+
+☑ Ignore known third-party scripts / `Ignorer les scripts tiers connus`
 ☑ Hide ignored sources / `masquer les sources ignorées`
 ☑ Automatic line breaks /`Retour à la ligne automatique`
 
 ☐ Disable JavaScript / `Désactiver javascript`
 ☐ Map source code / `cartographie le code source`
 ☐ Inline variable preview (depending on preference) / `Aperçu de variable en ligne`
+
+<!-- cspell:enable -->

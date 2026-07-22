@@ -9,11 +9,10 @@ import { getComposerPicture } from '../../services/composers/composerService';
 // URL.revokeObjectURL(...)
 
 export function useComposersPicture(id: number) {
-  logger.debug('composer', 'Before rendering', id);
-  // render
   const [url, setURL] = useState<string | null>(null);
 
   useEffect(() => {
+    logger.debug('composer', 'Rendering (useComposersPicture) Loading Picture for Composer', id);
     let objectURL: string | null = null;
 
     async function load() {

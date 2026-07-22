@@ -4,6 +4,7 @@ package format
 // INFRASTRUCTURE     | utils/         | "Atomic" functions, "blind" to business logic.
 //                    |                | (Disk I/O, network calls, file manipulation).
 // ======================================================================================
+// cspell:ignore École Élève
 
 import (
 	"path/filepath"
