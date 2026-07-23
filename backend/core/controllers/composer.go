@@ -310,8 +310,33 @@ func (ctrl *ComposerController) GetComposerPicture(c *gin.Context) {
 		return
 	}
 
-	file, err := ctrl.service.ComposerPictureFile(uint32(cid))
-	logger.Composer.Debug("(Ctrl-GetComposerPicture) ComposerPictureFile : %s", file)
+	file, err := ctrl.service.ComposerPictureData(uint32(cid))
+	logger.Composer.Debug("(Ctrl-GetComposerPicture) ComposerPictureData : %s", file)
+	if err != nil {
+		responses.FAIL(c, http.StatusNotFound, err)
+		return
+	}
+
+	c.File(file)
+}
+
+func (ctrl *ComposerController) GetComposerThumbnail(c *gin.Context) {
+	// We are Not in the same situation than for Avatar
+	// Because the same reference will always return the same picture
+	// So we can ask for a very long cover 24 x 3600 secondes = 86400
+	logger.Composer.Debug("(Ctrl-GetComposerThumbnail) We stay in ")
+
+	c.Header("Cache-Control", "public, max-age=86400")
+
+	cidString := c.Param("id")
+	cid, err := strconv.ParseUint(cidString, 10, 32)
+	if err != nil || cid <= 0 {
+		responses.FAIL(c, http.StatusBadRequest, fmt.Errorf("invalid composer id"))
+		return
+	}
+
+	file, err := ctrl.service.ComposerThumbnailData(uint32(cid))
+	logger.Composer.Debug("(Ctrl-GetComposerThumbnail) ComposerThumbnailData : %s", file)
 	if err != nil {
 		responses.FAIL(c, http.StatusNotFound, err)
 		return

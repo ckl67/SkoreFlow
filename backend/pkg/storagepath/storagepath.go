@@ -39,6 +39,19 @@ func NewPaths(appRoot string, dataRoot string) *Paths {
 // ComposerPictureRel constructs the relative storage path for composers.
 // composers
 // │   ├── beethoven
+// │   │   └── uploaded.png
+func (p *Paths) ComposerUploadedRel(composerSafeName, ext string) string {
+	filename := "uploaded" + ext
+	return filepath.Join(
+		"composers",
+		composerSafeName,
+		filename,
+	)
+}
+
+// ComposerPictureRel constructs the relative storage path for composers.
+// composers
+// │   ├── beethoven
 // │   │   └── picture.png
 func (p *Paths) ComposerPictureRel(composerSafeName, ext string) string {
 	filename := "picture" + ext
@@ -52,7 +65,7 @@ func (p *Paths) ComposerPictureRel(composerSafeName, ext string) string {
 // composers
 // │   ├── beethoven
 // │   │   └── thumbnail.png
-func (p *Paths) ComposerPictureThumbnailRel(composerSafeName, ext string) string {
+func (p *Paths) ComposerThumbnailRel(composerSafeName, ext string) string {
 	filename := "thumbnail" + ext
 	return filepath.Join(
 		"composers",

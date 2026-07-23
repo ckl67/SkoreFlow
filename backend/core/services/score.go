@@ -408,14 +408,14 @@ func (s *ScoreService) StoreScoreFile(
 	}
 
 	// Async thumbnail generation
-	go s.GenerateThumbnailAsync(absoluteScorePath, absoluteThumbnailPath, media.ScoreSize)
+	go s.GenerateResizedImage(absoluteScorePath, absoluteThumbnailPath, media.ScoreSize)
 
 	return nil
 
 }
 
-// GenerateThumbnailAsync
-func (s *ScoreService) GenerateThumbnailAsync(fullFilePath string, fullThumbnailPath string, maxSize int) {
+// GenerateResizedImage
+func (s *ScoreService) GenerateResizedImage(fullFilePath string, fullThumbnailPath string, maxSize int) {
 	time.Sleep(100 * time.Millisecond)
 
 	media.RequestThumbnail(

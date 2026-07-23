@@ -271,6 +271,8 @@ func (server *Server) SetupRouter() {
 			// Return Data
 			protected.GET("/composers/:id/picture", composerCtrl.GetComposerPicture)
 			protected.HEAD("/composers/:id/picture", composerCtrl.GetComposerPicture)
+			protected.GET("/composers/:id/thumbnail", composerCtrl.GetComposerThumbnail)
+			protected.HEAD("/composers/:id/thumbnail", composerCtrl.GetComposerThumbnail)
 
 			// -----------------------------------------------------------------------------------
 			// ADMIN ROUTES (restricted)

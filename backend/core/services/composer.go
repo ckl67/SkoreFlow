@@ -26,7 +26,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"time"
 
 	"gorm.io/gorm"
 )
@@ -340,39 +339,60 @@ func (s *ComposerService) StoreComposerPicture(
 		return apperrors.ErrImageFormatInvalid
 	}
 
+	// ---------------------------------------------------------
+	// Build storage paths
+	// ---------------------------------------------------------
 	// Build storage path
 	// (composers)
 	// │   ├── beethoven
+	// │   │   └── uploaded.png
 	// │   │   └── picture.png
 	// │   │   └── thumbnail.png
 
-	relativePath := s.paths.ComposerPictureRel(composer.SafeName, ext)
-	logger.Composer.Debug("(StoreComposerPicture) Relative path %s", relativePath)
-	composer.Picture = relativePath
+	uploadedRelativePath := s.paths.ComposerUploadedRel(composer.SafeName, ext)
+	pictureRelativePath := s.paths.ComposerPictureRel(composer.SafeName, ".png")
+	thumbnailRelativePath := s.paths.ComposerThumbnailRel(composer.SafeName, ".png")
 
-	absolutePath := s.paths.ResolveDataRoot(relativePath)
-	logger.Composer.Debug("(StoreComposerPicture) Absolute path %s", absolutePath)
+	uploadedPath := s.paths.ResolveDataRoot(uploadedRelativePath)
+	picturePath := s.paths.ResolveDataRoot(pictureRelativePath)
+	thumbnailPath := s.paths.ResolveDataRoot(thumbnailRelativePath)
 
-	// Save original image
-	if err := filedir.SaveFile(absolutePath, reader); err != nil {
-		logger.Composer.Debug(
-			"(StoreComposerPicture) failed to save image",
-		)
+	composer.Picture = pictureRelativePath
+
+	// ---------------------------------------------------------
+	// 1. Save uploaded image
+	// ---------------------------------------------------------
+
+	if err := filedir.SaveFile(uploadedPath, reader); err != nil {
 		return err
 	}
 
-	// Save thumbnail
-	thumbnailRelativePath := s.paths.ComposerPictureThumbnailRel(composer.SafeName, ext)
-	thumbnailAbsolutePath := s.paths.ResolveDataRoot(thumbnailRelativePath)
-	logger.Composer.Debug("(StoreComposerPicture) Thumbnail Relative path %s", thumbnailRelativePath)
-	logger.Composer.Debug("(StoreComposerPicture) Thumbnail Absolute path %s", thumbnailAbsolutePath)
+	// ---------------------------------------------------------
+	// 2. Generate normalized picture
+	// ---------------------------------------------------------
 
-	s.GenerateThumbnailAsync(
-		absolutePath,
-		thumbnailAbsolutePath,
+	if err := s.GenerateResizedImage(
+		uploadedPath,
+		picturePath,
+		media.ComposerSize,
+	); err != nil {
+		return err
+	}
+
+	// ---------------------------------------------------------
+	// 3. Generate thumbnail
+	// ---------------------------------------------------------
+
+	if err := s.GenerateResizedImage(
+		picturePath,
+		thumbnailPath,
 		media.ComposerSizeThumb,
-	)
+	); err != nil {
+		return err
+	}
+
 	return nil
+
 }
 
 // Deletes a composer and associated assets.
@@ -456,11 +476,12 @@ func (s *ComposerService) deleteComposerOrchestrator(composer *models.Composer) 
 }
 
 // =====================================
+// Provide the data information of the Picture
 // composers
 // │   ├── beethoven
-// │   │   └── picture.png//
+// │   │   └── picture.png
 // =====================================
-func (s *ComposerService) ComposerPictureFile(composerID uint32) (string, error) {
+func (s *ComposerService) ComposerPictureData(composerID uint32) (string, error) {
 
 	composer, err := models.FindComposerByID(s.db, (uint)(composerID))
 	if err != nil {
@@ -471,24 +492,55 @@ func (s *ComposerService) ComposerPictureFile(composerID uint32) (string, error)
 	}
 
 	if asset, ok := shared.GetDefaultComposerPicture(composer.Picture); ok {
-		logger.Composer.Debug("(ComposerPictureFile) composer.ComposerPicture %s  asset=%s", composer.Picture, asset)
+		logger.Composer.Debug("(ComposerPictureData) composer.ComposerPicture %s  asset=%s", composer.Picture, asset)
 		return s.paths.ResolveAssetRoot(asset), nil
 	}
 
-	logger.Composer.Debug("(ComposerPictureFile) ComposerPicture=%s", composer.Picture)
+	logger.Composer.Debug("(ComposerPictureData) Composer.Picture=%s", composer.Picture)
 	return s.paths.ResolveDataRoot(composer.Picture), nil
 
 }
 
-// GenerateThumbnailAsync
-func (s *ComposerService) GenerateThumbnailAsync(fullFilePath string, fullThumbnailPath string, maxSize int) {
-	time.Sleep(100 * time.Millisecond)
-	logger.Composer.Debug("(ComposerPictureFile) GenerateThumbnailAsync %s  thumbnail=%s", fullFilePath, fullThumbnailPath)
+// =====================================
+// Provide the data information of the thumbnail
+// composers
+// │   ├── beethoven
+// │   │   └── thumbnail.png
+// =====================================
+func (s *ComposerService) ComposerThumbnailData(composerID uint32) (string, error) {
 
-	media.RequestThumbnail(
+	composer, err := models.FindComposerByID(s.db, (uint)(composerID))
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return "", apperrors.ErrComposerNotFound
+		}
+		return "", err
+	}
+
+	if asset, ok := shared.GetDefaultComposerThumbnail(composer.Picture); ok {
+		logger.Composer.Debug("(ComposerThumbnailData) composer.ComposerThumbnail %s  asset=%s", composer.Picture, asset)
+		return s.paths.ResolveAssetRoot(asset), nil
+	}
+
+	logger.Composer.Debug("(ComposerThumbnailData) ComposerPicture=%s", composer.Picture)
+	return s.paths.ResolveDataRoot(composer.Picture), nil
+
+}
+
+// GenerateResizedImage
+func (s *ComposerService) GenerateResizedImage(fullFilePath string, fullThumbnailPath string, maxSize int) error {
+	//time.Sleep(100 * time.Millisecond)
+	logger.Composer.Debug("(ComposerPictureData) GenerateResizedImage %s  thumbnail=%s", fullFilePath, fullThumbnailPath)
+
+	res := media.RequestThumbnail(
 		fullFilePath,
 		fullThumbnailPath,
 		maxSize,
-		logger.GetModuleLevel("score"),
+		logger.GetModuleLevel("microservice"),
 	)
+	if res {
+		return nil
+	} else {
+		return apperrors.ErrComposerThumbnail
+	}
 }

@@ -40,6 +40,7 @@ The document can also be consulted locally in 'visual studio code' via the integ
 - [Linux useful commands](./general/linux-useful.md)
 - [Go Language](./general/go.md)
 - [Go Structure](./general/go-struct.md)
+- [Go synchronous and asynchronous](./general/go-sync.md)
 - [JWT](./general/jwt.md)
 - [HTTP Status Codes](./general/http_status_codes.md)
 - [API Response Standard](./backend/api-response.md)

@@ -72,6 +72,7 @@ var (
 	ErrComposerAlreadyExists = errors.New("Composer already exists")
 	ErrComposerCreation      = errors.New("Composer Error in Creation Process")
 	ErrComposerMerging       = errors.New("Composer merging issue")
+	ErrComposerThumbnail     = errors.New("Composer Thumbnail or Picture creation issue")
 
 	// Image
 	ErrImageFormatInvalid = errors.New("Image Format not allowed !")

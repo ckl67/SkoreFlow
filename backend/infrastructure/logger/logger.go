@@ -25,15 +25,16 @@ const (
 // These variables provide ready-to-use loggers for specific app modules.
 // They are initialized once when the package is loaded, before main() starts.
 var (
-	Main     = New("main")
-	Server   = New("server")
-	Login    = New("login")
-	User     = New("user")
-	Score    = New("score")
-	Composer = New("composer")
-	DB       = New("db")
-	HTTP     = New("http")
-	API      = New("api")
+	Main         = New("main")
+	Server       = New("server")
+	MicroService = New("microservice")
+	Login        = New("login")
+	User         = New("user")
+	Score        = New("score")
+	Composer     = New("composer")
+	DB           = New("db")
+	HTTP         = New("http")
+	API          = New("api")
 )
 
 /*

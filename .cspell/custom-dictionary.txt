@@ -31,6 +31,7 @@ gonic
 gopath
 gopher
 gorm
+goroutines
 gunicorn
 HEALTHCHECK
 HMAC

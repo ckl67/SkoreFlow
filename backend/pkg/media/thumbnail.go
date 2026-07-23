@@ -14,7 +14,7 @@ import (
 
 // -----------------------------------------------------------------------------
 // RequestThumbnail
-// Sends a PDF to Python microservice and returns success/failure
+// Sends a file to Python microservice and returns success/failure
 // -----------------------------------------------------------------------------
 
 func RequestThumbnail(inputPath string, outputPath string, maxSize int, logLevel string) bool {
@@ -34,13 +34,13 @@ func RequestThumbnail(inputPath string, outputPath string, maxSize int, logLevel
 	// ---------------------------------------------------------
 	absInputPath, err := filepath.Abs(inputPath)
 	if err != nil {
-		logger.Score.Error("failed to resolve pdf path: %v", err)
+		logger.MicroService.Error("failed to resolve pdf path: %v", err)
 		return false
 	}
 
 	absOutputPath, err := filepath.Abs(outputPath)
 	if err != nil {
-		logger.Score.Error("failed to resolve thumbnail path: %v", err)
+		logger.MicroService.Error("failed to resolve thumbnail path: %v", err)
 		return false
 	}
 
@@ -56,7 +56,7 @@ func RequestThumbnail(inputPath string, outputPath string, maxSize int, logLevel
 
 	jsonData, err := json.Marshal(payload)
 	if err != nil {
-		logger.Score.Error("failed to marshal JSON payload: %v", err)
+		logger.MicroService.Error("failed to marshal JSON payload: %v", err)
 		return false
 	}
 
@@ -67,13 +67,14 @@ func RequestThumbnail(inputPath string, outputPath string, maxSize int, logLevel
 		Timeout: 60 * time.Second,
 	}
 
+	// Call the service
 	req, err := http.NewRequest(
 		http.MethodPost,
 		url,
 		bytes.NewBuffer(jsonData),
 	)
 	if err != nil {
-		logger.Score.Error("failed to create request: %v", err)
+		logger.MicroService.Error("failed to create request: %v", err)
 		return false
 	}
 
@@ -84,7 +85,7 @@ func RequestThumbnail(inputPath string, outputPath string, maxSize int, logLevel
 	// ---------------------------------------------------------
 	resp, err := client.Do(req)
 	if err != nil {
-		logger.Score.Error("microservice unreachable: %v", err)
+		logger.MicroService.Error("microservice unreachable: %v", err)
 		return false
 	}
 	defer resp.Body.Close()
@@ -94,7 +95,7 @@ func RequestThumbnail(inputPath string, outputPath string, maxSize int, logLevel
 	// ---------------------------------------------------------
 	body, _ := io.ReadAll(resp.Body)
 	if resp.StatusCode != http.StatusOK {
-		logger.Score.Error(
+		logger.MicroService.Error(
 			"thumbnail microservice (%d): %s",
 			resp.StatusCode,
 			string(body),
@@ -111,12 +112,11 @@ func RequestThumbnail(inputPath string, outputPath string, maxSize int, logLevel
 	}
 
 	if err := json.NewDecoder(resp.Body).Decode(&result); err == nil {
-		logger.Score.Debug("thumbnail result: %s", result.Message)
-	} else {
-		logger.Score.Debug("thumbnail generated (no JSON response parsed)")
+		logger.MicroService.Debug("thumbnail result: %s", result.Message)
+		return false
 	}
 
-	logger.Score.Debug("thumbnail successfully generated: %s", absOutputPath)
+	logger.MicroService.Debug("thumbnail successfully generated: %s", absOutputPath)
 
 	return true
 }
