@@ -11,13 +11,6 @@ package services
 // ===============================================================================================
 
 import (
-	"errors"
-	"io"
-	"mime/multipart"
-	"os"
-	"path/filepath"
-	"strings"
-
 	"backend/core/apperrors"
 	"backend/core/forms"
 	"backend/core/models"
@@ -27,6 +20,13 @@ import (
 	"backend/pkg/media"
 	"backend/pkg/storagepath"
 	"backend/shared"
+	"errors"
+	"io"
+	"mime/multipart"
+	"os"
+	"path/filepath"
+	"strings"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -341,6 +341,11 @@ func (s *ComposerService) StoreComposerPicture(
 	}
 
 	// Build storage path
+	// (composers)
+	// │   ├── beethoven
+	// │   │   └── picture.png
+	// │   │   └── thumbnail.png
+
 	relativePath := s.paths.ComposerPictureRel(composer.SafeName, ext)
 	logger.Composer.Debug("(StoreComposerPicture) Relative path %s", relativePath)
 	composer.Picture = relativePath
@@ -348,7 +353,26 @@ func (s *ComposerService) StoreComposerPicture(
 	absolutePath := s.paths.ResolveDataRoot(relativePath)
 	logger.Composer.Debug("(StoreComposerPicture) Absolute path %s", absolutePath)
 
-	return filedir.SaveFile(absolutePath, reader)
+	// Save original image
+	if err := filedir.SaveFile(absolutePath, reader); err != nil {
+		logger.Composer.Debug(
+			"(StoreComposerPicture) failed to save image",
+		)
+		return err
+	}
+
+	// Save thumbnail
+	thumbnailRelativePath := s.paths.ComposerPictureThumbnailRel(composer.SafeName, ext)
+	thumbnailAbsolutePath := s.paths.ResolveDataRoot(thumbnailRelativePath)
+	logger.Composer.Debug("(StoreComposerPicture) Thumbnail Relative path %s", thumbnailRelativePath)
+	logger.Composer.Debug("(StoreComposerPicture) Thumbnail Absolute path %s", thumbnailAbsolutePath)
+
+	s.GenerateThumbnailAsync(
+		absolutePath,
+		thumbnailAbsolutePath,
+		media.ComposerSizeThumb,
+	)
+	return nil
 }
 
 // Deletes a composer and associated assets.
@@ -432,9 +456,9 @@ func (s *ComposerService) deleteComposerOrchestrator(composer *models.Composer) 
 }
 
 // =====================================
-//
-//	c.File("/storage/composers/mozart/mozart.png")
-//
+// composers
+// │   ├── beethoven
+// │   │   └── picture.png//
 // =====================================
 func (s *ComposerService) ComposerPictureFile(composerID uint32) (string, error) {
 
@@ -454,4 +478,17 @@ func (s *ComposerService) ComposerPictureFile(composerID uint32) (string, error)
 	logger.Composer.Debug("(ComposerPictureFile) ComposerPicture=%s", composer.Picture)
 	return s.paths.ResolveDataRoot(composer.Picture), nil
 
+}
+
+// GenerateThumbnailAsync
+func (s *ComposerService) GenerateThumbnailAsync(fullFilePath string, fullThumbnailPath string, maxSize int) {
+	time.Sleep(100 * time.Millisecond)
+	logger.Composer.Debug("(ComposerPictureFile) GenerateThumbnailAsync %s  thumbnail=%s", fullFilePath, fullThumbnailPath)
+
+	media.RequestThumbnail(
+		fullFilePath,
+		fullThumbnailPath,
+		maxSize,
+		logger.GetModuleLevel("score"),
+	)
 }

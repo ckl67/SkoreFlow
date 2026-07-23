@@ -70,7 +70,11 @@ storage/  #  Persistent runtime data (excluded from Git)
 │   │   │   └── Mozart.png
 ├── composers
 │   ├── mozart
+│   │       └── picture.png
+│   │       └── thumbnail.png
 │   └── bach
+│   │       └── picture.png
+│   │       └── thumbnail.png
 ├── users/
 │   ├── user-1.png
 │   ├── user-15.png

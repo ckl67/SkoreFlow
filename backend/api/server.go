@@ -93,7 +93,7 @@ func (server *Server) Setup(version string, db *gorm.DB) {
 	server.userService = services.NewUserService(db, paths)
 	server.ScoreService = services.NewScoreService(db, paths)
 	server.ComposerService = services.NewComposerService(db, paths)
-	server.SeederService = services.NewSeederService(db, paths)
+	server.SeederService = services.NewSeederService(db, paths, server.ComposerService)
 
 	// ----------------------------------------------------
 	// 3. Database migrations (schema sync with models)

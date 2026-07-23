@@ -1,4 +1,4 @@
-package pdf
+package media
 
 import (
 	"backend/infrastructure/config"
@@ -6,17 +6,18 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"path/filepath"
 	"time"
 )
 
 // -----------------------------------------------------------------------------
-// RequestToPdfToImage
+// RequestThumbnail
 // Sends a PDF to Python microservice and returns success/failure
 // -----------------------------------------------------------------------------
 
-func RequestToPdfToImage(pdfPath string, thumbPath string, logLevel string) bool {
+func RequestThumbnail(inputPath string, outputPath string, maxSize int, logLevel string) bool {
 
 	// ---------------------------------------------------------
 	// 0. Microservice URL (from config)
@@ -24,20 +25,20 @@ func RequestToPdfToImage(pdfPath string, thumbPath string, logLevel string) bool
 	// 0. Prepare microservice URL from config
 	msConfig := config.Config().MicroService
 	url := fmt.Sprintf(
-		"%s/createthumbnail",
+		"%s/thumbnail/create",
 		msConfig.ThumbnailServiceURL,
 	)
 
 	// ---------------------------------------------------------
 	// 1. Normalize paths (avoid relative path issues)
 	// ---------------------------------------------------------
-	absPdfPath, err := filepath.Abs(pdfPath)
+	absInputPath, err := filepath.Abs(inputPath)
 	if err != nil {
 		logger.Score.Error("failed to resolve pdf path: %v", err)
 		return false
 	}
 
-	absThumbPath, err := filepath.Abs(thumbPath)
+	absOutputPath, err := filepath.Abs(outputPath)
 	if err != nil {
 		logger.Score.Error("failed to resolve thumbnail path: %v", err)
 		return false
@@ -46,9 +47,10 @@ func RequestToPdfToImage(pdfPath string, thumbPath string, logLevel string) bool
 	// ---------------------------------------------------------
 	// 2. Build payload
 	// ---------------------------------------------------------
-	payload := map[string]string{
-		"pdf_path":    absPdfPath,
-		"output_path": absThumbPath,
+	payload := map[string]any{
+		"input_path":  absInputPath,
+		"output_path": absOutputPath,
+		"max_size":    maxSize,
 		"log_level":   logLevel,
 	}
 
@@ -90,8 +92,13 @@ func RequestToPdfToImage(pdfPath string, thumbPath string, logLevel string) bool
 	// ---------------------------------------------------------
 	// 5. Status handling
 	// ---------------------------------------------------------
+	body, _ := io.ReadAll(resp.Body)
 	if resp.StatusCode != http.StatusOK {
-		logger.Score.Error("microservice error status: %d", resp.StatusCode)
+		logger.Score.Error(
+			"thumbnail microservice (%d): %s",
+			resp.StatusCode,
+			string(body),
+		)
 		return false
 	}
 
@@ -109,7 +116,7 @@ func RequestToPdfToImage(pdfPath string, thumbPath string, logLevel string) bool
 		logger.Score.Debug("thumbnail generated (no JSON response parsed)")
 	}
 
-	logger.Score.Debug("thumbnail successfully generated: %s", absThumbPath)
+	logger.Score.Debug("thumbnail successfully generated: %s", absOutputPath)
 
 	return true
 }

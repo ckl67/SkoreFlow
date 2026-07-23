@@ -7,6 +7,14 @@ import (
 	"backend/shared"
 )
 
+// Type for seeding
+type composers struct {
+	Name  string
+	Genre string
+	Wiki  string
+	Img   string
+}
+
 // Start orchestrates the application setup and launches the server.
 // It handles configuration loading, database connection, and service bootstrapping.
 func Start(version string) {
@@ -22,11 +30,29 @@ func Start(version string) {
 	appServer.Setup(version, db)
 
 	// 3. Database Seeding
-	// For users
-	// 	file is not saved in the DataRoot Directory !
-	// 	We will use ResolveAssetRoot returns the get the absolute path in the Assets, for displaying the file
+
+	// 3.1. admin
 	appServer.SeederService.User("admin", cfg.AdminEmail, cfg.AdminPassword, shared.RoleAdmin, "users/admin.png")
 
+	// 3.2. Demo composers
+	// Files stored in demo/composers/
+	demoComposers := []composers{
+		{"Wolfgang Amadeus Mozart", "Classical period", "https://fr.wikipedia.org/wiki/Wolfgang_Amadeus_Mozart", "Mozart.png"},
+		{"Ludwig van Beethoven", "Classical period", "https://fr.wikipedia.org/wiki/Ludwig_van_Beethoven", "Beethoven.png"},
+	}
+	for _, c := range demoComposers {
+		imgPath := ""
+		if c.Img != "" {
+			imgPath = "demo/composers/" + c.Img
+		}
+		if err := appServer.SeederService.Composer(c.Name, c.Genre, c.Wiki, imgPath); err != nil {
+			logger.Main.Fatal("Seed failed: %v", err)
+		}
+	}
+
+	// 3.3 Demo Score
+
+	// 4 Test Seeding
 	if config.Config().TestMode {
 		// Users
 		appServer.SeederService.User("user1", "user1@test.com", "password123", shared.RoleUser, "users/default.png")
@@ -35,16 +61,11 @@ func Start(version string) {
 		appServer.SeederService.User("moderator1", "moderator1@test.com", "password123", shared.RoleModerator, "users/moderator.png")
 		appServer.SeederService.User("moderator2", "moderator2@test.com", "password123", shared.RoleModerator, "users/moderator.png")
 
-		// 1. Define the array (slice of structs) containing all your compositors
-		composers := []struct {
-			Name  string
-			Genre string
-			Wiki  string
-			Img   string
-		}{
-			// cspell:disable
-			{"Wolfgang Amadeus Mozart", "Classical period", "https://fr.wikipedia.org/wiki/Wolfgang_Amadeus_Mozart", "Mozart.png"},
-			{"Ludwig van Beethoven", "Classical period", "https://fr.wikipedia.org/wiki/Ludwig_van_Beethoven", "Beethoven.png"},
+		// Composers
+		// Files stored in ../testauto/backend/resources/composers/
+		// Array (slice of structs) containing all your compositors
+		// cspell:disable
+		testComposers := []composers{
 			{"Supertramp", "Rock gradual, Pop, Art Rock, Blues-rock", "https://fr.wikipedia.org/wiki/Supertramp", "Supertramp.png"},
 			{"NightWish", "Hard Rock, Art Rock", "https://fr.wikipedia.org/wiki/Nightwish", ""},
 			{"Frédéric Chopin", "romantic", "https://fr.wikipedia.org/wiki/Fr%C3%A9d%C3%A9ric_Chopin", "Frédéric Chopin.png"},
@@ -58,15 +79,13 @@ func Start(version string) {
 			{"AC/DC", "hard rock", "https://fr.wikipedia.org/wiki/AC/DC", "ACDC.png"},
 			// cspell:enable
 		}
-		basePath := "../testauto/backend/resources/composers/"
 
-		// 2. A single loop that runs the seeder for each element
-		for _, c := range composers {
+		// Loop that runs the seeder for each element
+		for _, c := range testComposers {
 			imgPath := ""
 			if c.Img != "" {
-				imgPath = basePath + c.Img
+				imgPath = "../testauto/backend/resources/composers/" + c.Img
 			}
-
 			if err := appServer.SeederService.Composer(c.Name, c.Genre, c.Wiki, imgPath); err != nil {
 				logger.Main.Fatal("Seed failed: %v", err)
 			}

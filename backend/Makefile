@@ -29,7 +29,7 @@ VERSION=$(shell git describe --tags --always --dirty)
 LDFLAGS=-ldflags="-X main.Version=$(VERSION)"
 
 # Makefile Rules
-.PHONY: all build run run-test run-dev clean-build air air-test air-dev clean tidy reset help version
+.PHONY: all version build run-test run-dev run cleandb-storage air air-test air-dev tidy clean-build reset help
 
 ## all: Clean, organize modules, and compile
 all: tidy build
@@ -69,7 +69,7 @@ run:
 	PROTECTION_LEVEL=full \
 	$(GO) run $(LDFLAGS) $(MAIN_FILE)
 
-clean:
+cleandb-storage:
 	@echo "Clean DB and Storage files"
 	cd ../testauto/backend/ && bash auto-test.sh --clean
 
@@ -117,16 +117,16 @@ reset:
 ## help: Show available commands
 help:
 	@echo "Available commands:"
-	@echo "  make build       : Compile the project with version injection"
-	@echo "  make run         : Run (Prod) with version injection"
-	@echo "  make run-dev     : Run (Dev) with version injection"
-	@echo "  make run-test    : Run (Test) with version injection"
-	@echo "  make cleandb     : Clean Database"
-	@echo "  make air         : Run (Prod) with air allowing hot reload"
-	@echo "  make air-dev     : Run (Dev) with air in test mode"
-	@echo "  make air-test    : Run (Test) with air in test mode"
-	@echo "  make version     : Show the version to be injected"
-	@echo "  make tidy        : Clean up dependencies"
-	@echo "  make reset       : Clear cache and reinstall everything"
-	@echo "  make clean       : Remove the binary"
-	@echo "  make help        : Show this help message"
+	@echo "  make build       				: Compile the project with version injection"
+	@echo "  make run         				: Run (Prod) with version injection"
+	@echo "  make run-dev     				: Run (Dev) with version injection"
+	@echo "  make run-test    				: Run (Test) with version injection"
+	@echo "  make cleandb-storage    	: Clean Database and Storage files"
+	@echo "  make air         				: Run (Prod) with air allowing hot reload"
+	@echo "  make air-dev     				: Run (Dev) with air in test mode"
+	@echo "  make air-test    				: Run (Test) with air in test mode"
+	@echo "  make version     				: Show the version to be injected"
+	@echo "  make tidy        				: Clean up dependencies"
+	@echo "  make reset       				: Clear cache and reinstall everything"
+	@echo "  make clean       				: Remove the binary"
+	@echo "  make help        				: Show this help message"

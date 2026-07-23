@@ -24,8 +24,15 @@ Navigate to the root of your backend project and initialize Air:
 air init
 ```
 
-This will create a .air.toml file.
+This will create a `.air.toml` file.
 This file tells Air: "Watch all .go files, and whenever one changes, run go build and restart the binary."
+
+Configuration of air : `.air.toml`
+For example to avoid The message ‘watching storage/composers/...’ from the Hot Reload / File Watcher system such as Air.
+
+```shell
+exclude_dir = ["assets", "tmp", "vendor", "storage"]
+```
 
 ## 1.3. Usage
 

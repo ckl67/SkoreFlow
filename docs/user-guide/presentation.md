@@ -10,5 +10,6 @@
 # Presentation
 
 This document is the SkoreFlow user guide.
-It is deliberately incomplete, to allow new users to contribute to it.
-We will outline a few key points.
+
+SkoreFlow is a personal sheet music manager.
+The user guide is deliberately incomplete, to allow new users to contribute to it.

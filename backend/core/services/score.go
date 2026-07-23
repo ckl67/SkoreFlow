@@ -23,7 +23,7 @@ import (
 	"backend/infrastructure/logger"
 	"backend/pkg/filedir"
 	"backend/pkg/format"
-	"backend/pkg/pdf"
+	"backend/pkg/media"
 	"backend/pkg/storagepath"
 	"backend/shared"
 
@@ -408,19 +408,20 @@ func (s *ScoreService) StoreScoreFile(
 	}
 
 	// Async thumbnail generation
-	go s.GenerateThumbnailAsync(absoluteScorePath, absoluteThumbnailPath)
+	go s.GenerateThumbnailAsync(absoluteScorePath, absoluteThumbnailPath, media.ScoreSize)
 
 	return nil
 
 }
 
 // GenerateThumbnailAsync
-func (s *ScoreService) GenerateThumbnailAsync(fullFilePath, fullThumbnailPath string) {
+func (s *ScoreService) GenerateThumbnailAsync(fullFilePath string, fullThumbnailPath string, maxSize int) {
 	time.Sleep(100 * time.Millisecond)
 
-	pdf.RequestToPdfToImage(
+	media.RequestThumbnail(
 		fullFilePath,
 		fullThumbnailPath,
+		maxSize,
 		logger.GetModuleLevel("score"),
 	)
 }

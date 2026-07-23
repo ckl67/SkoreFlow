@@ -299,6 +299,8 @@ func (ctrl *ComposerController) GetComposerPicture(c *gin.Context) {
 	// We are Not in the same situation than for Avatar
 	// Because the same reference will always return the same picture
 	// So we can ask for a very long cover 24 x 3600 secondes = 86400
+	logger.Composer.Debug("(Ctrl-GetComposerPicture) We stay in ")
+
 	c.Header("Cache-Control", "public, max-age=86400")
 
 	cidString := c.Param("id")
@@ -309,7 +311,7 @@ func (ctrl *ComposerController) GetComposerPicture(c *gin.Context) {
 	}
 
 	file, err := ctrl.service.ComposerPictureFile(uint32(cid))
-	logger.User.Debug("(Ctrl-GetComposerPicture) ComposerPictureFile : %s", file)
+	logger.Composer.Debug("(Ctrl-GetComposerPicture) ComposerPictureFile : %s", file)
 	if err != nil {
 		responses.FAIL(c, http.StatusNotFound, err)
 		return

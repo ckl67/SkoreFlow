@@ -25,7 +25,7 @@ import { request } from './api.js';
 //      name: "mozart",
 //      externalURL: "https://fr.wikipedia.org/wiki/mozart",
 //      epoch: "Moderne",
-//      uploadFile: "resources/scores/mozart.png",
+//      uploadFile: "resources/scores/mozart.pn",
 //      isVerified: true},
 //      TOKEN
 //    );

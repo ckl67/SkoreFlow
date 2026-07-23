@@ -2,7 +2,7 @@ package shared
 
 var defaultComposerPicture = map[string]string{
 	//	     Database 										Project Root
-	// composers/mozart/mozart.png             N.C.
+	// composers/mozart/picture.png             N.C.
 	// 		composers/default.png				backend/assets/composers/default.png
 	"composers/default.png": "composers/default.png",
 }

@@ -23,7 +23,7 @@
     "-- BACKEND AUTO TEST --": "",
     " 🐹🚦smoke": "cd testauto/backend && bash auto-test.sh",
     "-- UTILITIES --": "",
-    "  🧹clean:db-storage": "cd backend && make clean",
+    "  🧹clean:db-storage": "cd backend && make cleandb-storage",
     "  ☠️kill:services": "sudo fuser -k 8080/tcp || true && sudo fuser -k 5001/tcp || true && sudo fuser -k 5173/tcp || true",
     "  📫 mailpit:status": "docker ps -a -f name=mailpit",
     "// TESTING AND OVERALL QUALITY --- //": "",

@@ -17,3 +17,16 @@ microservice
 ├────────► Audio Service (Go)
 ├────────► MIDI Service (C++)
 └────────► AI Service
+
+### Thumbnail
+
+```text
+PDF  ─┐
+PNG  ─┤
+JPG  ─┤
+JPEG ─┤
+WEBP ─┤
+BMP  ─┘
+          ↓
+      Thumbnail PNG
+```

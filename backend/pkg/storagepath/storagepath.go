@@ -39,10 +39,21 @@ func NewPaths(appRoot string, dataRoot string) *Paths {
 // ComposerPictureRel constructs the relative storage path for composers.
 // composers
 // │   ├── beethoven
-// │   │   └── beethoven.png
-// paths.ComposerPictureRel( "mozart",".png") will return composers/mozart/mozart.png
+// │   │   └── picture.png
 func (p *Paths) ComposerPictureRel(composerSafeName, ext string) string {
-	filename := composerSafeName + ext
+	filename := "picture" + ext
+	return filepath.Join(
+		"composers",
+		composerSafeName,
+		filename,
+	)
+}
+
+// composers
+// │   ├── beethoven
+// │   │   └── thumbnail.png
+func (p *Paths) ComposerPictureThumbnailRel(composerSafeName, ext string) string {
+	filename := "thumbnail" + ext
 	return filepath.Join(
 		"composers",
 		composerSafeName,
@@ -83,9 +94,9 @@ func (p *Paths) ScoreThumbnailRel(userID uint32, composerSafeName, scoreSafeName
 // ResolveDataRoot returns the absolute path for a given relative path
 //
 //	 Example
-//				paths.ResolveDataRoot( "composers/mozart/mozart.png")
+//				paths.ResolveDataRoot( "composers/mozart/picture.png")
 //			returns
-//				/opt/render/project/src/backend/storage/composers/mozart/mozart.png
+//				/opt/render/project/src/backend/storage/composers/mozart/picture.png
 func (p *Paths) ResolveDataRoot(rel string) string {
 	return filepath.Join(p.DataRoot, rel)
 }
