@@ -19,12 +19,12 @@ import (
 	"fmt"
 	"net/http"
 
-	"backend/core/apperrors"
-	"backend/core/dto"
-	"backend/core/forms"
-	"backend/core/services"
 	"backend/infrastructure/config"
 	"backend/infrastructure/logger"
+	"backend/internal/apperrors"
+	"backend/internal/dto"
+	"backend/internal/forms"
+	"backend/internal/services"
 	"backend/pkg/responses"
 
 	"github.com/gin-gonic/gin"

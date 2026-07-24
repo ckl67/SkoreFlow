@@ -8,11 +8,11 @@ import (
 	"syscall"
 	"time"
 
-	"backend/core/models"
-	"backend/core/services"
 	"backend/infrastructure/config"
 	"backend/infrastructure/health"
 	"backend/infrastructure/logger"
+	"backend/internal/models"
+	"backend/internal/services"
 	"backend/pkg/storagepath"
 
 	"github.com/gin-gonic/gin"

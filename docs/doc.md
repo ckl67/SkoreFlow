@@ -34,6 +34,7 @@ The document can also be consulted locally in 'visual studio code' via the integ
 - [Naming Conventions](./skoreflow/naming-conventions.md)
 - [Backend Frontend Responsibilities](./skoreflow/responsibilities.md)
 - [Rest return](./skoreflow/rest-response.md)
+- [VS Code Debugging Configuration (Backend / Frontend)](./skoreflow/debug.md)
 
 ### General
 

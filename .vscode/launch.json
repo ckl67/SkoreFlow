@@ -1,49 +1,62 @@
 // ${workspaceFolder} = Workspace Folder
 // ${fileDirname} = Current file
-
 {
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Launch Chrome",
-      "type": "chrome",
+      "name": "Backend (Go)",
+      "type": "go",
       "request": "launch",
-      "url": "http://localhost:5173"
+      "mode": "debug",
+      "program": "${workspaceFolder}/backend/cmd/server",
+      "cwd": "${workspaceFolder}/backend"
     },
     {
-      "name": "Debug Vitest File",
+      "name": "Attach Backend",
+      "type": "go",
+      "request": "attach",
+      "mode": "remote",
+      "host": "127.0.0.1",
+      "port": 2345
+    },
+    {
+      "name": "Frontend (Chrome + Vite)",
+      "type": "pwa-chrome",
+      "request": "launch",
+      "url": "http://localhost:5173",
+      "webRoot": "${workspaceFolder}/frontend",
+      "sourceMapPathOverrides": {
+        "/src/*": "${workspaceFolder}/frontend/src/*",
+        "vite:///*": "${workspaceFolder}/*",
+        "vite:///src/*": "${workspaceFolder}/frontend/src/*"
+      }
+    },
+
+    {
+      "name": "Vitest (Current File)",
       "type": "node",
       "request": "launch",
       "program": "${workspaceFolder}/node_modules/vitest/vitest.mjs",
       "args": ["run", "${file}"],
       "cwd": "${workspaceFolder}",
-      "console": "integratedTerminal"
+      "console": "integratedTerminal",
+      "skipFiles": ["<node_internals>/**"]
     },
 
     {
-      "name": "Debug Server",
-      "type": "go",
-      "request": "launch",
-      "mode": "debug",
-      "program": "${workspaceFolder}/backend/cmd/server",
-      "cwd": "${workspaceFolder}"
-    },
-    {
-      "name": "Debug CLI (no args)",
-      "type": "go",
-      "request": "launch",
-      "mode": "debug",
-      "program": "${workspaceFolder}backend/cmd/cli",
-      "cwd": "${workspaceFolder}"
-    },
-    {
-      "name": "Debug CLI (list users)",
+      "name": "CLI",
       "type": "go",
       "request": "launch",
       "mode": "debug",
       "program": "${workspaceFolder}/backend/cmd/cli",
-      "cwd": "${workspaceFolder}",
-      "args": ["-list-users"]
+      "cwd": "${workspaceFolder}/backend"
+    }
+  ],
+
+  "compounds": [
+    {
+      "name": "Debug Full Stack",
+      "configurations": ["Attach Backend", "Frontend (Chrome + Vite)"]
     }
   ]
 }

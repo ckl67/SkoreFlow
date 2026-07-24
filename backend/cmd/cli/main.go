@@ -6,10 +6,10 @@ import (
 	"os"
 	"path/filepath"
 
-	"backend/core/models"
 	"backend/infrastructure/config"
 	"backend/infrastructure/database"
 	"backend/infrastructure/logger"
+	"backend/internal/models"
 	"backend/pkg/storagepath"
 
 	"gorm.io/gorm"
@@ -19,11 +19,10 @@ import (
 //	Due to the import, the code has to be run from the backend root !!
 //  Directory backen
 //		go run ./cmd/cli/main.go
-// 		go build ./cmd/cli/main.go -o skoreflow-cli
+// or better from the package
+//		go run ./cmd/cli
 //	Examples of use :
 //		go run ./cmd/cli/main.go -version
-//		go run ./cmd/cli/main.go -list-users
-//		./skoreflow-cli -list-users
 //		......
 //
 //	Test cleanup-avatars"

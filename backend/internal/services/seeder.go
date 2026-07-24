@@ -1,8 +1,8 @@
 package services
 
 import (
-	"backend/core/models"
 	"backend/infrastructure/logger"
+	"backend/internal/models"
 	"backend/pkg/format"
 	"backend/pkg/security"
 	"backend/pkg/storagepath"

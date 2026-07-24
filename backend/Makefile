@@ -1,7 +1,18 @@
 # Variables
+
 BINARY_NAME=sf-backend
 GO=go
-MAIN_FILE=./cmd/server/main.go
+DLV=dlv
+
+DLV_OPTION= \
+    --headless \
+    --listen=:2345 \
+    --api-version=2 \
+    --accept-multiclient
+
+
+## According to standard practice in Go, you need to run the package and not ./cmd/server/main.go
+MAIN_FILE=./cmd/server
 
 # Principle
 # `make` executes each line of a recipe in a completely independent sub-shell (a process).
@@ -29,7 +40,7 @@ VERSION=$(shell git describe --tags --always --dirty)
 LDFLAGS=-ldflags="-X main.Version=$(VERSION)"
 
 # Makefile Rules
-.PHONY: all version build run-test run-dev run cleandb-storage air air-test air-dev tidy clean-build reset help
+.PHONY: all version build run-test run-dev run cleandb-storage air air-test air-dev tidy clean-build reset debug-test debug-dev help
 
 ## all: Clean, organize modules, and compile
 all: tidy build
@@ -42,6 +53,24 @@ version:
 build:
 	@echo "==> Compiling binary (Version: $(VERSION))..."
 	CGO_ENABLED=0 $(GO) build $(LDFLAGS) -o build/$(BINARY_NAME) $(MAIN_FILE)
+
+debug-test:
+	@echo "==> DEBUG TEST - (TEST = TRUE Send Registration Token) (SMTP = FALSE) environment (Version: $(VERSION))...."
+	APP_ENV=development \
+	TEST_MODE=true \
+	SMTP_ENABLED=false \
+	PROTECTION_LEVEL=none \
+	$(DLV) debug $(LDFLAGS) $(MAIN_FILE) $(DLV_OPTION)
+	@echo "==> DEBUG TEST environment (Version: $(VERSION))...."
+
+debug-dev:
+	@echo "==> DEBUG DEV - (TEST = FALSE) (SMTP = TUE) environment (Version: $(VERSION))...."
+	APP_ENV=development \
+	TEST_MODE=false \
+	SMTP_ENABLED=true \
+	PROTECTION_LEVEL=none \
+	$(DLV) debug $(LDFLAGS) $(MAIN_FILE) $(DLV_OPTION)
+	@echo "==> DEBUG TEST environment (Version: $(VERSION))...."
 
 run-test:
 	@echo "==> Running TEST - (TEST = TRUE Send Registration Token) (SMTP = FALSE) environment (Version: $(VERSION))...."
@@ -120,7 +149,9 @@ help:
 	@echo "  make build       				: Compile the project with version injection"
 	@echo "  make run         				: Run (Prod) with version injection"
 	@echo "  make run-dev     				: Run (Dev) with version injection"
+	@echo "  make debug-dev     		  : Debug (Dev) with version injection"
 	@echo "  make run-test    				: Run (Test) with version injection"
+	@echo "  make debug-test    			: Debug (Test) with version injection"
 	@echo "  make cleandb-storage    	: Clean Database and Storage files"
 	@echo "  make air         				: Run (Prod) with air allowing hot reload"
 	@echo "  make air-dev     				: Run (Dev) with air in test mode"

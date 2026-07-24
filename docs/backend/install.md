@@ -40,7 +40,11 @@ _ "golang.org/x/image/webp"
 
 ```bash
 wget https://go.dev/dl/go1.25.0.linux-amd64.tar.gz
+## MANDATORY
+sudo rm -rf /usr/local/go
+## THEN
 sudo tar -C /usr/local -xzf go1.25.0.linux-amd64.tar.gz
+
 ```
 
 Add Go to your path
@@ -92,19 +96,13 @@ go get golang.org/x/image/webp
 ```
 
 which adds it as a dependency in your go.mod.
-
 Consequences of Go 1.25 Update !!
-
-Adding a modern "x" library dependency might automatically bump (increase) your go.mod version to go 1.25.0 if the library requires the latest toolchain features. This ensures compatibility and security across all dependencies.
-
-```go
-// go.mod
-
-go 1.25.0
-```
-
 Afterwards it is mandatory to run
 
 ```shell
 make reset
 ```
+
+## Debugging
+
+After upgrade of GO it is also mandatory to install [dlv](./debug.md)

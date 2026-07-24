@@ -1,6 +1,6 @@
 import axios, { Method } from 'axios';
 import { config } from './../config/config';
-import { logger } from './../core/logger/logger';
+import { logger } from '../../logger/logger';
 
 // --------------------------------------------------------------------------------
 // Request options

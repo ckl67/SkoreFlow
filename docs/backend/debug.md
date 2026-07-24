@@ -19,7 +19,7 @@ It covers:
 ## 1. Prerequisites
 
 - Go installed
-- Delve debugger installed:
+  - If you install a new version of GO you have to install dlv !!
 
 ```bash
 go install github.com/go-delve/delve/cmd/dlv@latest
@@ -218,7 +218,15 @@ cd backend
 
 # Server
 go run cmd/server/main.go
+# or as recommended by GO running the package
+go run ./cmd/server
+
 
 # CLI
 go run cmd/cli/main.go -list-users
+
+# or as recommended by GO running the package
+go run ./cmd/cli -list-users
+cd ./cmd/cli && go run . -list-users
+
 ```

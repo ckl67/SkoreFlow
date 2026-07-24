@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from './useAuth';
 import { loginService } from '../../services/auth/authService';
 import type { LoginRequest } from '../../../../shared/types/auth';
-import { logger } from '../../core/logger/logger';
+import { logger } from '../../../logger/logger';
 // Role
 // - call the backend
 // - check the response

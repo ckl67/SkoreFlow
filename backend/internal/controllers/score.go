@@ -20,10 +20,10 @@ import (
 	"net/http"
 	"strconv"
 
-	"backend/core/apperrors"
-	"backend/core/forms"
-	"backend/core/services"
 	"backend/infrastructure/logger"
+	"backend/internal/apperrors"
+	"backend/internal/forms"
+	"backend/internal/services"
 	"backend/pkg/responses"
 
 	"github.com/gin-gonic/gin"

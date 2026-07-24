@@ -1,5 +1,5 @@
 import { createContext, useState } from 'react';
-import { logger } from './../core/logger/logger';
+import { logger } from '../../logger/logger';
 
 export type DevUser = {
   username: string;

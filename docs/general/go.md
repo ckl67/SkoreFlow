@@ -12,6 +12,8 @@ Go is an expressive, concise programming language. Its concurrency model makes i
 
 - `go run main.go` — compiles and runs the program immediately without leaving a binary behind. Convenient for development.
 - `go build` — produces the final binary for distribution or production.
+  or as recommended by GO running the package
+- `go run ./cmd/server`
 
 For simplicity see also Makefile un backend directory
 

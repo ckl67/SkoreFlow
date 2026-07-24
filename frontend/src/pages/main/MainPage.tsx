@@ -1,4 +1,4 @@
-import { logger } from '../../core/logger/logger';
+import { logger } from '../../../logger/logger';
 
 export default function MainPage() {
   logger.debug('router', 'MainPage()');

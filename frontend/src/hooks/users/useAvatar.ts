@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { getAvatar, getUserAvatar } from '../../services/users/avatarService';
-import { logger } from '../../core/logger/logger';
+import { getAvatar } from '../../services/users/avatarService';
+import { logger } from '../../../logger/logger';
 
 // Remember
 // Always pairing:

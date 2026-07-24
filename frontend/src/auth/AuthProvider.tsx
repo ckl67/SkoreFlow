@@ -1,7 +1,7 @@
 import { createContext, useEffect, useState } from 'react';
 import type { UserPublicResponse } from '../../../shared/types/user';
 import { getProfile } from '../services/users/userService';
-import { logger } from './../core/logger/logger';
+import { logger } from '../../logger/logger';
 // Context handle 3 thinks
 // * Global State : user - token - isAuthenticated
 // * Actions: login - logout - refreshMe

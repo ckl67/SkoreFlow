@@ -11,10 +11,10 @@ package services
 // ===============================================================================================
 
 import (
-	"backend/core/apperrors"
-	"backend/core/forms"
-	"backend/core/models"
 	"backend/infrastructure/logger"
+	"backend/internal/apperrors"
+	"backend/internal/forms"
+	"backend/internal/models"
 	"backend/pkg/filedir"
 	"backend/pkg/format"
 	"backend/pkg/media"

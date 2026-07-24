@@ -30,7 +30,7 @@ async function run() {
       composer: '',
       uploadFile: '',
     },
-    TOKEN_USER2,
+    TOKEN_USER2
   );
 }
 

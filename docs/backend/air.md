@@ -40,6 +40,9 @@ Instead of running:
 
 ```shell
 go run ./cmd/server/main.go
+# or as recommended by GO running the package
+go run ./cmd/server
+
 
 # Simply use:
 

@@ -44,9 +44,9 @@ import (
 	"strings"
 	"time"
 
-	"backend/core/controllers"
 	"backend/infrastructure/config"
 	"backend/infrastructure/logger"
+	"backend/internal/controllers"
 	"backend/middlewares"
 
 	"github.com/gin-contrib/cors"

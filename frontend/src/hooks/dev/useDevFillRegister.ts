@@ -8,7 +8,7 @@ type DevFillRegisterEvent = CustomEvent<RegisterRequest>;
 export function useDevFillRegister(
   setUsername: (v: string) => void,
   setEmail: (v: string) => void,
-  setPassword: (v: string) => void,
+  setPassword: (v: string) => void
 ) {
   useEffect(() => {
     function handler(event: Event) {

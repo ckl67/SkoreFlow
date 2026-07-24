@@ -9,7 +9,7 @@ export default defineConfig({
     devSourcemap: true, // <-- Added: Allows you to view your original Tailwind classes in the browser inspector
   },
   build: {
-    sourcemap: false,
+    sourcemap: true, // Enables the generation of source maps
   },
   server: {
     host: '0.0.0.0',
@@ -19,5 +19,6 @@ export default defineConfig({
       // Essential for shared/network folders
       usePolling: true,
     },
+    sourcemapIgnoreList: false, // Prevents Vite from hiding certain files in VS Code
   },
 });

@@ -16,7 +16,7 @@ describe('🧪 Stress tests - Production or Development Mode ', () => {
           username: `spam${i}`,
           email: `spam${i}@test.com`,
           password: 'password123',
-        }),
+        })
       );
     }
 

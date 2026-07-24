@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getComposersPage } from '../../services/composers/composerService';
-import { logger } from '../../core/logger/logger';
+import { logger } from '../../../logger/logger';
 import { ComposerPublicResponse } from '../../../../shared/types/composer';
 
 /* ====================================

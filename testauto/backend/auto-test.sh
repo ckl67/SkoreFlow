@@ -208,7 +208,9 @@ pwd
 
 echo "Running backend..."
 
-go run ./cmd/server/main.go &
+# go run ./cmd/server/main.go &
+# or as recommended by GO running the package
+# go run ./cmd/server &
 BACKEND_PID=$!
 trap 'echo "Stopping backend..."; kill "$BACKEND_PID" 2>/dev/null' EXIT INT TERM
 

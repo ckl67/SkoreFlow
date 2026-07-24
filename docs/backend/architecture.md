@@ -206,4 +206,7 @@ cp .env.example .env
 
 ```bash
 go run cmd/server/main.go
+# or as recommended by GO running the package
+go run ./cmd/server
+
 ```

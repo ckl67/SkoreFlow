@@ -9,29 +9,30 @@
 📚 📖 Documentation
 🧪 Test
 🧑‍🔬 Test
-🖥️ 🔳 🖼️ VM
+🖥️ VM
 ⚙️ Parameter
 🌀 Air
 📍 Local Services
 📌
 🔮 Improvements
 🎯
-☠️
+☠️ Danger
 🧹 Clean Up
 🗑️
 ✨
-🎯
 ↑ ↓ → ←
 👤 User2
 🔑 Admin
 🎲 Random
-🛡️ Moderator <- (Ou ⚖️ / 🔨)
+🛡️ Moderator
 🧑‍✈️ / 👩‍✈️ Officer
 🧑‍🔧 Maintenance
-🔨 🛠️
+🛠️ tools
 🔨 Build
 🚀 Run Build
 ▶️ Run
 🚧 dev
-🕵️🚨 linter ( Linter is a valuable development tool that helps to improve and enhance code quality)
 🪮 Formatter
+🩺 Tools
+🪲
+🐞

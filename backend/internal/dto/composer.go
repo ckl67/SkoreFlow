@@ -1,6 +1,6 @@
 package dto
 
-import "backend/core/models"
+import "backend/internal/models"
 
 type ComposerPublicResponse struct {
 	ID          uint32 `json:"id"`

@@ -1,15 +1,21 @@
 # =========================================================
-# 🧠 Dependencies / environments
+# Dependencies / environments
 # =========================================================
 node_modules/
 **/node_modules/
+
+# =========================================================
+# In most projects we avoid automatically formatting
+# .env files with Prettier
+# =========================================================
+
 venv/
 **/venv/
 .env
 **/.env
 
 # =========================================================
-# 🧪 Test / build artifacts
+# Test / build artifacts
 # =========================================================
 dist/
 build/
@@ -17,20 +23,20 @@ coverage/
 *.log
 
 # =========================================================
-# 🧪 Testauto outputs (if generated)
+# Testauto outputs (if generated)
 # =========================================================
 testauto/**/coverage/
 testauto/**/dist/
 
 # =========================================================
-# 📦 Lock / generated files (optional safety)
+# Lock / generated files (optional safety)
 # =========================================================
 package-lock.json
 pnpm-lock.yaml
 yarn.lock
 
 # =========================================================
-# 🧹 Docs exclusions (optional if you want strict control)
+# Docs exclusions (optional if you want strict control)
 # =========================================================
 # Uncomment ONLY if you want to exclude generated docs
 docs/generated/

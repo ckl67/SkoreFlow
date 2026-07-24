@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { logger } from '../../core/logger/logger';
+import { logger } from '../../../logger/logger';
 import { getComposerPicture } from '../../services/composers/composerService';
 
 // Remember
