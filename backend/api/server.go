@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"backend/infrastructure/config"
-	"backend/infrastructure/health"
 	"backend/infrastructure/logger"
+	"backend/infrastructure/probe"
 	"backend/internal/models"
 	"backend/internal/services"
 	"backend/pkg/storagepath"
@@ -60,7 +60,7 @@ func (server *Server) Setup(version string, db *gorm.DB) {
 	healthURL := fmt.Sprintf("%s/health", cfg.MicroService.ThumbnailServiceURL)
 
 	for i := 0; i < 5; i++ {
-		err := health.CheckThumbnailService(healthURL)
+		err := probe.CheckThumbnailService(healthURL)
 		if err == nil {
 			logger.Server.Info("microservice/thumbnail ready")
 			break
@@ -70,7 +70,7 @@ func (server *Server) Setup(version string, db *gorm.DB) {
 		time.Sleep(2 * time.Second)
 	}
 
-	err := health.CheckThumbnailService(healthURL)
+	err := probe.CheckThumbnailService(healthURL)
 	if err != nil {
 		logger.Server.Error("(Setup) microservice/thumbnail not available: %v", err)
 		// Option A: continue anyway

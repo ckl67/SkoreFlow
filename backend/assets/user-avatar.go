@@ -1,4 +1,4 @@
-package shared
+package assets
 
 import "backend/infrastructure/logger"
 

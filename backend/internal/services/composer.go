@@ -11,15 +11,16 @@ package services
 // ===============================================================================================
 
 import (
+	"backend/assets"
 	"backend/infrastructure/logger"
 	"backend/internal/apperrors"
+	"backend/internal/domain"
 	"backend/internal/forms"
 	"backend/internal/models"
 	"backend/pkg/filedir"
 	"backend/pkg/format"
 	"backend/pkg/media"
 	"backend/pkg/storagepath"
-	"backend/shared"
 	"errors"
 	"io"
 	"mime/multipart"
@@ -50,8 +51,8 @@ func (s *ComposerService) CreateComposer(uid uint32, userRole int, req forms.Cre
 	logger.Composer.Debug("(CreateComposer Service) UID=%d Role=%d Name=%s", uid, userRole, req.Name)
 
 	// 1. Authorization check
-	isAdmin := userRole == shared.RoleAdmin
-	isModerator := userRole == shared.RoleModerator
+	isAdmin := userRole == domain.RoleAdmin
+	isModerator := userRole == domain.RoleModerator
 
 	// Everyone can create a composer, but only admin and moderator can validate verification
 
@@ -77,7 +78,7 @@ func (s *ComposerService) CreateComposer(uid uint32, userRole int, req forms.Cre
 		if !isAdmin && !isModerator {
 			logger.Composer.Warn(
 				"(CreateComposer Service): Unauthorized composer validation : user=%d role=%d required=[%d,%d] name=%s",
-				uid, userRole, shared.RoleAdmin, shared.RoleModerator, req.Name,
+				uid, userRole, domain.RoleAdmin, domain.RoleModerator, req.Name,
 			)
 			return nil, apperrors.ErrAccessForbidden
 		}
@@ -165,8 +166,8 @@ func (s *ComposerService) UpdateComposer(uid uint32, userRole int, ComposerID ui
 		return nil, err
 	}
 
-	isAdmin := userRole == shared.RoleAdmin
-	isModerator := userRole == shared.RoleModerator
+	isAdmin := userRole == domain.RoleAdmin
+	isModerator := userRole == domain.RoleModerator
 
 	if !isAdmin && !isModerator {
 		logger.Composer.Warn("Unauthorized update attempt: user=%d role=%d", uid, userRole)
@@ -206,8 +207,8 @@ func (s *ComposerService) UpdateComposer(uid uint32, userRole int, ComposerID ui
 func (s *ComposerService) MergeComposers(uid uint32, userRole int, sourceID uint, targetID uint) error {
 
 	// Authorizations
-	isAdmin := userRole == shared.RoleAdmin
-	isModerator := userRole == shared.RoleModerator
+	isAdmin := userRole == domain.RoleAdmin
+	isModerator := userRole == domain.RoleModerator
 
 	if !isAdmin && !isModerator {
 		logger.Composer.Warn("Unauthorized Merge attempt: user=%d role=%d", uid, userRole)
@@ -405,8 +406,8 @@ func (s *ComposerService) DeleteComposer(uid uint32, composerID uint, userRole i
 		return err
 	}
 
-	isAdmin := userRole == shared.RoleAdmin
-	isModerator := userRole == shared.RoleModerator
+	isAdmin := userRole == domain.RoleAdmin
+	isModerator := userRole == domain.RoleModerator
 
 	if !isAdmin && !isModerator {
 		logger.Composer.Warn("Unauthorized deletion attempt: user=%d role=%d", uid, userRole)
@@ -491,7 +492,7 @@ func (s *ComposerService) ComposerPictureData(composerID uint32) (string, error)
 		return "", err
 	}
 
-	if asset, ok := shared.GetDefaultComposerPicture(composer.Picture); ok {
+	if asset, ok := assets.GetDefaultComposerPicture(composer.Picture); ok {
 		logger.Composer.Debug("(ComposerPictureData) composer.ComposerPicture %s  asset=%s", composer.Picture, asset)
 		return s.paths.ResolveAssetRoot(asset), nil
 	}
@@ -517,7 +518,7 @@ func (s *ComposerService) ComposerThumbnailData(composerID uint32) (string, erro
 		return "", err
 	}
 
-	if asset, ok := shared.GetDefaultComposerThumbnail(composer.Picture); ok {
+	if asset, ok := assets.GetDefaultComposerThumbnail(composer.Picture); ok {
 		logger.Composer.Debug("(ComposerThumbnailData) composer.ComposerThumbnail %s  asset=%s", composer.Picture, asset)
 		return s.paths.ResolveAssetRoot(asset), nil
 	}

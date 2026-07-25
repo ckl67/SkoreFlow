@@ -64,9 +64,9 @@ export async function apiRequest<TResponse = unknown, TRequest = unknown>(
       },
     });
 
-    logger.debug('api', '(apiRequest) status =', res.status);
-    logger.debug('api', '(apiRequest) content-type =', res.headers['content-type']);
-    logger.debug('api', '(apiRequest) data =', res.data);
+    //logger.debug('api', '(apiRequest) status =', res.status);
+    //logger.debug('api', '(apiRequest) content-type =', res.headers['content-type']);
+    //logger.debug('api', '(apiRequest) data =', res.data);
 
     // If the server returns a 200 status code but with `success: false` or no data
     // the server returns a failure (success: false),
@@ -148,7 +148,7 @@ axios.interceptors.response.use(
 export async function apiBinaryRequest(method: Method, url: string): Promise<Blob> {
   const token = localStorage.getItem('token');
 
-  logger.debug('api', '(apiBinaryRequest) method url =', config.apiUrl + url);
+  //logger.debug('api', '(apiBinaryRequest) method url =', config.apiUrl + url);
   const res = await axios({
     method,
     url: config.apiUrl + url,
@@ -158,9 +158,9 @@ export async function apiBinaryRequest(method: Method, url: string): Promise<Blo
     },
   });
 
-  logger.debug('api', '(apiBinaryRequest) status =', res.status);
-  logger.debug('api', '(apiBinaryRequest) content-type =', res.headers['content-type']);
-  logger.debug('api', '(apiBinaryRequest) blob =', res.data);
+  //logger.debug('api', '(apiBinaryRequest) status =', res.status);
+  //logger.debug('api', '(apiBinaryRequest) content-type =', res.headers['content-type']);
+  //logger.debug('api', '(apiBinaryRequest) blob =', res.data);
 
   return res.data;
 }

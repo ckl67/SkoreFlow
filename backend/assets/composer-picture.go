@@ -1,4 +1,4 @@
-package shared
+package assets
 
 var defaultComposerPicture = map[string]string{
 	//	     Database 										Project Root

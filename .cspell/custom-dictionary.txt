@@ -46,6 +46,7 @@ microservice
 mkhl
 modcache
 mozillazg
+multiclient
 mvdan
 netgo
 NTFS

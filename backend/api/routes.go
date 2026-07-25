@@ -206,13 +206,6 @@ func (server *Server) SetupRouter() {
 		api.POST("/me/mail/confirm", userCtrl.ConfirmUpdateMail) // vitest
 
 		// ---------------------------------------------------------------------------------------
-		// Demo
-		// ---------------------------------------------------------------------------------------
-		api.GET("/demo/composers/:id/picture", composerCtrl.GetComposerPicture)
-		api.HEAD("/demo/composers/:id/picture", composerCtrl.GetComposerPicture)
-		//api.GET("/demo/composers/:id/thumbnail", composerCtrl.ResetPassword)
-
-		// ---------------------------------------------------------------------------------------
 		// Protected routes (authenticated users only)
 		// ---------------------------------------------------------------------------------------
 		protected := api.Group("/")

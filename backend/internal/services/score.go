@@ -8,6 +8,7 @@ package services
 // ===============================================================================================
 
 import (
+	"encoding/json"
 	"errors"
 	"io"
 	"mime/multipart"
@@ -25,7 +26,6 @@ import (
 	"backend/pkg/format"
 	"backend/pkg/media"
 	"backend/pkg/storagepath"
-	"backend/shared"
 
 	"gorm.io/gorm"
 )
@@ -214,11 +214,11 @@ func (s *ScoreService) UpdateScore(uid uint32, scoreID uint, form forms.UpdateSc
 	}
 
 	if form.Tags != "" {
-		score.Tags = domain.CleanTagsCategories(form.Tags)
+		score.Tags = CleanTagsCategories(form.Tags)
 	}
 
 	if form.Categories != "" {
-		score.Categories = domain.CleanTagsCategories(form.Categories)
+		score.Categories = CleanTagsCategories(form.Categories)
 	}
 
 	if form.InformationText != "" {
@@ -254,7 +254,7 @@ func (s *ScoreService) DeleteScore(uid uint32, scoreID uint, userRole int) error
 	}
 
 	// 2. Authorization
-	isAdmin := userRole == shared.RoleAdmin
+	isAdmin := userRole == domain.RoleAdmin
 	isOwner := score.UploaderID == uid
 
 	if !isAdmin && !isOwner {
@@ -282,7 +282,7 @@ func (s *ScoreService) GetScore(uid uint32, scoreID uint, userRole int) (*models
 		return nil, err
 	}
 
-	isAdmin := userRole == shared.RoleAdmin
+	isAdmin := userRole == domain.RoleAdmin
 	isOwner := score.UploaderID == uid
 
 	if !isAdmin && !isOwner {
@@ -494,4 +494,30 @@ func (s *ScoreService) deleteScoreOrchestrator(score *models.Score) error {
 // The frontend is responsible for providing a valid format.
 func createDate(date string) (time.Time, error) {
 	return time.Parse(time.RFC3339, date)
+}
+
+// CleanTagsCategories sanitizes a semicolon-separated string of tags or categories.
+// - Trims whitespace
+// - Removes empty values
+// - Removes duplicates (case-insensitive)
+// - Returns a JSON string suitable for database storage
+func CleanTagsCategories(input string) string {
+	rawTags := strings.Split(input, ";")
+	uniqueMap := make(map[string]bool)
+	var cleanTags []string
+
+	for _, t := range rawTags {
+		trimmed := strings.TrimSpace(t)
+		lower := strings.ToLower(trimmed)
+
+		// Skip empty or duplicate entries
+		if trimmed != "" && !uniqueMap[lower] {
+			uniqueMap[lower] = true
+			cleanTags = append(cleanTags, trimmed)
+		}
+	}
+
+	// Convert to JSON string for DB storage
+	data, _ := json.Marshal(cleanTags)
+	return string(data)
 }

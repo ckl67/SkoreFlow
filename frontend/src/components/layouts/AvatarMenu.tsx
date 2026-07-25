@@ -43,7 +43,9 @@ export default function AvatarMenu() {
     // Because wa are using a Hook
     // We must ensure that we no longer have: <img src="/api/me/avatar" />
     // Only : <img src={avatarURL}
-    <div className="relative" ref={menuRef}>
+
+    // Add z-index z-50 here to the parent container to force the entire block to the foreground
+    <div className="relative z-50" ref={menuRef}>
       {/* Avatar button */}
       <button onClick={() => setMenuOpen(!menuOpen)} className="flex items-center gap-2">
         {avatarURL ? (
@@ -57,7 +59,7 @@ export default function AvatarMenu() {
 
       {/* Dropdown menu */}
       {menuOpen && (
-        <div className="absolute right-0 top-12 w-56 rounded-md border bg-white shadow-lg">
+        <div className="absolute right-0 top-12 z-50 w-56 rounded-md border bg-white shadow-lg">
           <div className="border-b px-4 py-3">
             <div className="font-medium">{user.username}</div>
             <div className="text-sm text-gray-500">{user.email}</div>

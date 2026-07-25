@@ -18,13 +18,13 @@ import (
 	"backend/infrastructure/config"
 	"backend/infrastructure/logger"
 	"backend/internal/apperrors"
+	"backend/internal/domain"
 	"backend/internal/forms"
 	"backend/internal/models"
 	"backend/pkg/format"
 	"backend/pkg/mail"
 	"backend/pkg/security"
 	"backend/pkg/storagepath"
-	"backend/shared"
 
 	"gorm.io/gorm"
 )
@@ -87,7 +87,7 @@ func (s *AuthService) Register(form forms.RegisterRequest) (*models.User, error)
 		Email:      email,
 		Password:   hashedPassword,
 		Avatar:     "users/default.png",
-		Role:       shared.RoleUser,
+		Role:       domain.RoleUser,
 		IsVerified: false,
 	}
 

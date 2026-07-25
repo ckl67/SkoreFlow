@@ -6,7 +6,7 @@ import (
 	"backend/auth"
 	"backend/infrastructure/config"
 	"backend/infrastructure/logger"
-	"backend/shared"
+	"backend/internal/domain"
 
 	"github.com/gin-gonic/gin"
 )
@@ -68,7 +68,7 @@ func AdminOnlyMiddleware() gin.HandlerFunc {
 		logger.Login.Debug("(AdminOnlyMiddleware) checking admin privileges: role=%d", role)
 
 		// 2. Enforce admin-only access
-		if role != shared.RoleAdmin {
+		if role != domain.RoleAdmin {
 			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{
 				"error": "Admin access required",
 			})

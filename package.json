@@ -8,8 +8,8 @@
   ],
   "scripts": {
     "-- 🎼 SKOREFLOW --": "",
-    "dev": "concurrently -k -n \"THUMB,BACK,FRONT\" -c \"magenta,blue,cyan\" \"npm:dev:thumbnail\" \"npm:test:backend:run\" \"npm:dev:frontend\"",
-    "vm": "concurrently -k -n \"THUMB,BACK,FRONT\" -c \"magenta,blue,cyan\" \"npm:dev:thumbnail\" \"npm:test:backend:run\" \"npm:vm:frontend\"",
+    "dev": "concurrently -k -n \"THUMB,BACK,FRONT\" -c \"magenta,blue,cyan\" \"npm:dev:thumbnail\" \"npm:test:backend\" \"npm:dev:frontend\"",
+    "vm": "concurrently -k -n \"THUMB,BACK,FRONT\" -c \"magenta,blue,cyan\" \"npm:dev:thumbnail\" \"npm:test:backend\" \"npm:vm:frontend\"",
     "debug": "concurrently -k -n \"THUMB,BACK,FRONT\" -c \"magenta,blue,cyan\" \"npm:dev:thumbnail\" \"npm:test:backend:debug\" \"npm:vm:frontend\"",
     "-- 🐍 MICROSERVICES --": "",
     "dev:thumbnail": "cd microservice/thumbnail && make",

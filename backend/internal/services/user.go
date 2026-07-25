@@ -17,9 +17,11 @@ import (
 	"strings"
 	"time"
 
+	"backend/assets"
 	"backend/infrastructure/config"
 	"backend/infrastructure/logger"
 	"backend/internal/apperrors"
+	"backend/internal/domain"
 	"backend/internal/forms"
 	"backend/internal/models"
 	"backend/pkg/filedir"
@@ -28,7 +30,6 @@ import (
 	"backend/pkg/media"
 	"backend/pkg/security"
 	"backend/pkg/storagepath"
-	"backend/shared"
 
 	"gorm.io/gorm"
 )
@@ -101,7 +102,7 @@ func (s *UserService) AdminCreateUser(input forms.AdminCreateUserRequest) (*mode
 		Username:            username,
 		Email:               email,
 		Password:            hashedPassword,
-		Role:                shared.RoleUser,
+		Role:                domain.RoleUser,
 		Avatar:              "users/default.png",
 		PasswordReset:       "",
 		PasswordResetExpire: time.Time{},
@@ -547,7 +548,7 @@ func (s *UserService) AvatarFile(userID uint32) (string, error) {
 		return "", apperrors.ErrUserNotFound
 	}
 
-	if asset, ok := shared.GetDefaultAvatar(user.Avatar); ok {
+	if asset, ok := assets.GetDefaultAvatar(user.Avatar); ok {
 		logger.User.Debug("(AvatarFile) user.Avatar %s  asset=%s", user.Avatar, asset)
 		return s.paths.ResolveAssetRoot(asset), nil
 	}

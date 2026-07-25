@@ -1,4 +1,4 @@
-package shared
+package domain
 
 const (
 	RoleUser      = 0

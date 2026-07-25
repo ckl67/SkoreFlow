@@ -2,14 +2,14 @@
 
 BINARY_NAME=sf-backend
 GO=go
-DLV=dlv
 
+DLV=dlv
 DLV_OPTION= \
     --headless \
     --listen=:2345 \
     --api-version=2 \
     --accept-multiclient
-
+DLV_OUTPUT := --output=./tmp/delve/sf-backend-debug
 
 ## According to standard practice in Go, you need to run the package and not ./cmd/server/main.go
 MAIN_FILE=./cmd/server
@@ -60,7 +60,7 @@ debug-test:
 	TEST_MODE=true \
 	SMTP_ENABLED=false \
 	PROTECTION_LEVEL=none \
-	$(DLV) debug $(LDFLAGS) $(MAIN_FILE) $(DLV_OPTION)
+	$(DLV) debug $(LDFLAGS) $(MAIN_FILE) $(DLV_OPTION) $(DLV_OUTPUT)
 	@echo "==> DEBUG TEST environment (Version: $(VERSION))...."
 
 debug-dev:
@@ -69,7 +69,7 @@ debug-dev:
 	TEST_MODE=false \
 	SMTP_ENABLED=true \
 	PROTECTION_LEVEL=none \
-	$(DLV) debug $(LDFLAGS) $(MAIN_FILE) $(DLV_OPTION)
+	$(DLV) debug $(LDFLAGS) $(MAIN_FILE) $(DLV_OPTION) $(DLV_OUTPUT)
 	@echo "==> DEBUG TEST environment (Version: $(VERSION))...."
 
 run-test:

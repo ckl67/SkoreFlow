@@ -4,7 +4,7 @@ import (
 	"backend/infrastructure/config"
 	"backend/infrastructure/database"
 	"backend/infrastructure/logger"
-	"backend/shared"
+	"backend/internal/domain"
 )
 
 // Type for seeding
@@ -32,7 +32,7 @@ func Start(version string) {
 	// 3. Database Seeding
 
 	// 3.1. admin
-	appServer.SeederService.User("admin", cfg.AdminEmail, cfg.AdminPassword, shared.RoleAdmin, "users/admin.png")
+	appServer.SeederService.User("admin", cfg.AdminEmail, cfg.AdminPassword, domain.RoleAdmin, "users/admin.png")
 
 	// 3.2. Demo composers
 	// Files stored in demo/composers/
@@ -51,15 +51,16 @@ func Start(version string) {
 	}
 
 	// 3.3 Demo Score
+	// Files stored in demo/scores/
 
 	// 4 Test Seeding
 	if config.Config().TestMode {
 		// Users
-		appServer.SeederService.User("user1", "user1@test.com", "password123", shared.RoleUser, "users/default.png")
-		appServer.SeederService.User("user2", "user2@test.com", "password123", shared.RoleUser, "users/default.png")
-		appServer.SeederService.User("user3", "user3@test.com", "password123", shared.RoleUser, "users/default.png")
-		appServer.SeederService.User("moderator1", "moderator1@test.com", "password123", shared.RoleModerator, "users/moderator.png")
-		appServer.SeederService.User("moderator2", "moderator2@test.com", "password123", shared.RoleModerator, "users/moderator.png")
+		appServer.SeederService.User("user1", "user1@test.com", "password123", domain.RoleUser, "users/default.png")
+		appServer.SeederService.User("user2", "user2@test.com", "password123", domain.RoleUser, "users/default.png")
+		appServer.SeederService.User("user3", "user3@test.com", "password123", domain.RoleUser, "users/default.png")
+		appServer.SeederService.User("moderator1", "moderator1@test.com", "password123", domain.RoleModerator, "users/moderator.png")
+		appServer.SeederService.User("moderator2", "moderator2@test.com", "password123", domain.RoleModerator, "users/moderator.png")
 
 		// Composers
 		// Files stored in ../testauto/backend/resources/composers/
