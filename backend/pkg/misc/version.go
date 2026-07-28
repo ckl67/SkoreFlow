@@ -12,7 +12,7 @@ import (
 // RawArt Generated via : // figlet -c "SkoreFlow Backend     Server"
 // Issue with : backticks (`)
 // Replace all with ($)
-func PrintAsciiVersion(version string) {
+func PrintAsciiVersion(version, Commit, BuildDate string) {
 	rawArt := `
                  ____  _                  _____ _
                 / ___|| | _____  _ __ ___|  ___| | _____      __
@@ -31,6 +31,12 @@ func PrintAsciiVersion(version string) {
 	asciiArt := strings.ReplaceAll(rawArt, "$", "`")
 
 	fmt.Printf("%s\n", asciiArt)
-	fmt.Printf("Backend - Version : %s\n\n", version)
+
+	fmt.Printf("---------------------------------------\n")
+	fmt.Printf("Backend \n")
+	fmt.Printf(" - Version : %s\n", version)
+	fmt.Printf(" - Commit : %s\n", Commit)
+	fmt.Printf(" - Date : %s\n", BuildDate)
+	fmt.Printf("---------------------------------------\n")
 
 }

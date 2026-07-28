@@ -38,9 +38,9 @@ type Server struct {
 
 	authService     *services.AuthService
 	userService     *services.UserService
-	ScoreService    *services.ScoreService
-	ComposerService *services.ComposerService
-	SeederService   *services.SeederService
+	scoreService    *services.ScoreService
+	composerService *services.ComposerService
+	seederService   *services.SeederService
 
 	Router  *gin.Engine
 	Version string
@@ -91,9 +91,9 @@ func (server *Server) Setup(version string, db *gorm.DB) {
 
 	server.authService = services.NewAuthService(db, paths)
 	server.userService = services.NewUserService(db, paths)
-	server.ScoreService = services.NewScoreService(db, paths)
-	server.ComposerService = services.NewComposerService(db, paths)
-	server.SeederService = services.NewSeederService(db, paths, server.ComposerService)
+	server.scoreService = services.NewScoreService(db, paths)
+	server.composerService = services.NewComposerService(db, paths)
+	server.seederService = services.NewSeederService(db, paths, server.composerService)
 
 	// ----------------------------------------------------
 	// 3. Database migrations (schema sync with models)

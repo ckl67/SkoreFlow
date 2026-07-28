@@ -88,29 +88,28 @@ func (ctrl *ComposerController) CreateComposer(c *gin.Context) {
 
 // GetComposersPage fetches a paginated list of composers with optional search filters
 func (ctrl *ComposerController) GetComposersPage(c *gin.Context) {
-	uid := c.GetUint32("user_id")
+	isDemo := false
 
 	var form forms.GetComposersPageRequest
+
 	if err := c.ShouldBind(&form); err != nil {
 		responses.FAIL(c, http.StatusBadRequest, err)
 		return
 	}
 
-	logger.Score.Debug("(Controller GetComposersPage) : User: %d | Search: %v (IsVerified = %v) | Page: %d | PageSize: %d | SortBy: %s",
-		uid, form.Name, form.IsVerified, form.Page, form.Limit, form.SortBy)
+	// form.IsVerified or form.name can be nil !
+	logger.Composer.Debug("(Controller GetComposersPage) : Search: %v IsVerified = %v (IsDemo =%t ) | Page: %d | PageSize: %d | SortBy: %s",
+		form.Name, form.IsVerified, isDemo, form.Page, form.Limit, form.SortBy)
 
-	pageData, err := ctrl.service.GetComposersPage(uid, form)
+	pageData, err := ctrl.service.GetComposersPage(isDemo, form)
 	if err != nil {
 		responses.FAIL(c, http.StatusInternalServerError, err)
 		return
 	}
 
-	//responses.SUCCESS(c, http.StatusOK, pageData)
-
 	// Cast to composers
 	// Pagination.Rows is stored as interface{} because the same Pagination
 	// structure is reused for different entities (composers, scores, composers, ...).
-	//
 	// Here we know that GetComposersPage() populated Rows with []*models.Composers,
 	// so we perform a type assertion to recover the concrete type.
 	//
@@ -147,8 +146,83 @@ func (ctrl *ComposerController) GetComposersPage(c *gin.Context) {
 
 }
 
+// Merge Composer from source to target in all the scores
+// --> Replace composers in the scores then delete Composers
+func (ctrl *ComposerController) MergeComposers(c *gin.Context) {
+	uid := c.GetUint32("user_id")
+	userRole := c.GetInt("user_role")
+
+	var form forms.GetComposersMergeRequest
+	if err := c.ShouldBindJSON(&form); err != nil {
+		responses.FAIL(c, http.StatusBadRequest, err)
+		return
+	}
+
+	logger.Composer.Debug("(Controller MergeComposers) : User: %d with role : %d will merge Composer ID %d to %d| ",
+		uid, userRole, form.SourceID, form.TargetID)
+
+	err := ctrl.service.MergeComposers(uid, userRole, form.SourceID, form.TargetID)
+	if err != nil {
+		switch err {
+		case apperrors.ErrComposerMerging:
+			responses.FAIL(c, http.StatusBadRequest, err)
+		case apperrors.ErrComposerNotFound:
+			responses.FAIL(c, http.StatusNotFound, err)
+		default:
+			responses.FAIL(c, http.StatusInternalServerError, err)
+		}
+		return
+	}
+
+	responses.SUCCESS(c, http.StatusOK, gin.H{"message": "Composer merging successfully"})
+
+}
+
+// GetDemoComposersPage fetches a paginated list of composers with optional search filters
+func (ctrl *ComposerController) GetDemoComposersPage(c *gin.Context) {
+	isDemo := true
+
+	var form forms.GetComposersPageRequest
+
+	if err := c.ShouldBind(&form); err != nil {
+		responses.FAIL(c, http.StatusBadRequest, err)
+		return
+	}
+
+	// form.IsVerified or form.name can be nil !
+	logger.Composer.Debug("(Controller GetDemoComposersPage) : Search: %v IsVerified = %v (IsDemo =%t ) | Page: %d | PageSize: %d | SortBy: %s",
+		form.Name, form.IsVerified, isDemo, form.Page, form.Limit, form.SortBy)
+
+	pageData, err := ctrl.service.GetComposersPage(isDemo, form)
+	if err != nil {
+		responses.FAIL(c, http.StatusInternalServerError, err)
+		return
+	}
+
+	var composers []*models.Composer
+	var ok bool
+	composers, ok = pageData.Rows.([]*models.Composer)
+	if !ok {
+		responses.FAIL(c, http.StatusInternalServerError, fmt.Errorf("invalid composers type"))
+		return
+	}
+
+	response := dto.GetComposersPageResponse{
+		Message:    "composers retrieved successfully",
+		Page:       pageData.Page,
+		Limit:      pageData.Limit,
+		TotalRows:  pageData.TotalRows,
+		TotalPages: pageData.TotalPages,
+		Composers:  dto.ToComposersPublicResponse(composers),
+	}
+
+	responses.SUCCESS(c, http.StatusOK, response)
+
+}
+
 // GetComposer retrieves detailed information for a single composer
 func (ctrl *ComposerController) GetComposer(c *gin.Context) {
+
 	idParam := c.Param("id")
 	cid, err := strconv.ParseUint(idParam, 10, 32)
 	if err != nil {
@@ -176,26 +250,19 @@ func (ctrl *ComposerController) GetComposer(c *gin.Context) {
 
 }
 
-// Merge Composer from source to target in all the scores
-// --> Replace composers in the scores then delete Composers
-func (ctrl *ComposerController) MergeComposers(c *gin.Context) {
-	uid := c.GetUint32("user_id")
-	userRole := c.GetInt("user_role")
+// GetDemoComposer retrieves detailed information for a single composer
+func (ctrl *ComposerController) GetDemoComposer(c *gin.Context) {
 
-	var form forms.GetComposersMergeRequest
-	if err := c.ShouldBindJSON(&form); err != nil {
-		responses.FAIL(c, http.StatusBadRequest, err)
+	idParam := c.Param("id")
+	cid, err := strconv.ParseUint(idParam, 10, 32)
+	if err != nil {
+		responses.FAIL(c, http.StatusBadRequest, apperrors.ErrComposerInvalidID)
 		return
 	}
 
-	logger.Score.Debug("(Controller MergeComposers) : User: %d with role : %d will merge Composer ID %d to %d| ",
-		uid, userRole, form.SourceID, form.TargetID)
-
-	err := ctrl.service.MergeComposers(uid, userRole, form.SourceID, form.TargetID)
+	composer, err := ctrl.service.GetComposer(uint(cid))
 	if err != nil {
 		switch err {
-		case apperrors.ErrComposerMerging:
-			responses.FAIL(c, http.StatusBadRequest, err)
 		case apperrors.ErrComposerNotFound:
 			responses.FAIL(c, http.StatusNotFound, err)
 		default:
@@ -204,7 +271,12 @@ func (ctrl *ComposerController) MergeComposers(c *gin.Context) {
 		return
 	}
 
-	responses.SUCCESS(c, http.StatusOK, gin.H{"message": "Composer merging successfully"})
+	response := dto.GetComposerResponse{
+		Message:  "Composer retrieved successfully",
+		Composer: dto.ToComposerPublicResponse(composer),
+	}
+
+	responses.SUCCESS(c, http.StatusOK, response)
 
 }
 
@@ -301,8 +373,9 @@ func (ctrl *ComposerController) GetComposerPicture(c *gin.Context) {
 	// So we can ask for a very long cover 24 x 3600 secondes = 86400
 	logger.Composer.Debug("(Ctrl-GetComposerPicture) We stay in ")
 
-	c.Header("Cache-Control", "public, max-age=86400")
+	c.Header("Cache-Control", "private, max-age=86400")
 
+	isDemo := false
 	cidString := c.Param("id")
 	cid, err := strconv.ParseUint(cidString, 10, 32)
 	if err != nil || cid <= 0 {
@@ -310,7 +383,13 @@ func (ctrl *ComposerController) GetComposerPicture(c *gin.Context) {
 		return
 	}
 
-	file, err := ctrl.service.ComposerPictureData(uint32(cid))
+	logger.Composer.Info(
+		"Origin=%q Authorization=%t",
+		c.GetHeader("Origin"),
+		c.GetHeader("Authorization") != "",
+	)
+
+	file, err := ctrl.service.ComposerPictureData(uint32(cid), isDemo)
 	logger.Composer.Debug("(Ctrl-GetComposerPicture) ComposerPictureData : %s", file)
 	if err != nil {
 		responses.FAIL(c, http.StatusNotFound, err)
@@ -326,8 +405,9 @@ func (ctrl *ComposerController) GetComposerThumbnail(c *gin.Context) {
 	// So we can ask for a very long cover 24 x 3600 secondes = 86400
 	logger.Composer.Debug("(Ctrl-GetComposerThumbnail) We stay in ")
 
-	c.Header("Cache-Control", "public, max-age=86400")
+	c.Header("Cache-Control", "private, max-age=86400")
 
+	isDemo := false
 	cidString := c.Param("id")
 	cid, err := strconv.ParseUint(cidString, 10, 32)
 	if err != nil || cid <= 0 {
@@ -335,8 +415,66 @@ func (ctrl *ComposerController) GetComposerThumbnail(c *gin.Context) {
 		return
 	}
 
-	file, err := ctrl.service.ComposerThumbnailData(uint32(cid))
+	file, err := ctrl.service.ComposerThumbnailData(uint32(cid), isDemo)
 	logger.Composer.Debug("(Ctrl-GetComposerThumbnail) ComposerThumbnailData : %s", file)
+	if err != nil {
+		responses.FAIL(c, http.StatusNotFound, err)
+		return
+	}
+
+	c.File(file)
+}
+
+func (ctrl *ComposerController) GetDemoComposerPicture(c *gin.Context) {
+	// We are Not in the same situation than for Avatar
+	// Because the same reference will always return the same picture
+	// So we can ask for a very long cover 24 x 3600 secondes = 86400
+	logger.Composer.Debug("(Ctrl-GetDemoComposerPicture) We stay in ")
+
+	c.Header("Cache-Control", "public, max-age=86400")
+
+	isDemo := true
+	cidString := c.Param("id")
+	cid, err := strconv.ParseUint(cidString, 10, 32)
+	if err != nil || cid <= 0 {
+		responses.FAIL(c, http.StatusBadRequest, fmt.Errorf("invalid composer id"))
+		return
+	}
+
+	logger.Composer.Info(
+		"Origin=%q Authorization=%t",
+		c.GetHeader("Origin"),
+		c.GetHeader("Authorization") != "",
+	)
+
+	file, err := ctrl.service.ComposerPictureData(uint32(cid), isDemo)
+	logger.Composer.Debug("(Ctrl-GetDemoComposerPicture) ComposerPictureData : %s", file)
+	if err != nil {
+		responses.FAIL(c, http.StatusNotFound, err)
+		return
+	}
+
+	c.File(file)
+}
+
+func (ctrl *ComposerController) GetDemoComposerThumbnail(c *gin.Context) {
+	// We are Not in the same situation than for Avatar
+	// Because the same reference will always return the same picture
+	// So we can ask for a very long cover 24 x 3600 secondes = 86400
+	logger.Composer.Debug("(Ctrl-GetDemoComposerThumbnail) We stay in ")
+
+	c.Header("Cache-Control", "public, max-age=86400")
+
+	isDemo := true
+	cidString := c.Param("id")
+	cid, err := strconv.ParseUint(cidString, 10, 32)
+	if err != nil || cid <= 0 {
+		responses.FAIL(c, http.StatusBadRequest, fmt.Errorf("invalid composer id"))
+		return
+	}
+
+	file, err := ctrl.service.ComposerThumbnailData(uint32(cid), isDemo)
+	logger.Composer.Debug("(Ctrl-GetDemoComposerThumbnail) ComposerThumbnailData : %s", file)
 	if err != nil {
 		responses.FAIL(c, http.StatusNotFound, err)
 		return

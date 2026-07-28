@@ -33,6 +33,7 @@ The document can also be consulted locally in 'visual studio code' via the integ
 
 - [Naming Conventions](./skoreflow/naming-conventions.md)
 - [Backend Frontend Responsibilities](./skoreflow/responsibilities.md)
+- [Public vs Protected API](./skoreflow/public-protected-api.md)
 - [Rest return](./skoreflow/rest-response.md)
 - [VS Code Debugging Configuration (Backend / Frontend)](./skoreflow/debug.md)
 
@@ -61,6 +62,7 @@ The document can also be consulted locally in 'visual studio code' via the integ
 ### Backend Guides
 
 - [Architecture](./backend/architecture.md)
+- [Public vs Controlled API Routes](./backend/public-vs-controlled-routes.md)
 - [API Response Standard](./backend/api-response.md)
 - [Some specificities - Architecture Diagram](./backend/architecture.dio)
   - _(To change the theme in drawio - Ctrl Shift P : "Drawio - Change Theme")_

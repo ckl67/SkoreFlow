@@ -72,7 +72,7 @@ func (s *SeederService) User(name string, email string, password string, role in
 }
 
 // Composer
-func (s *SeederService) Composer(name string, epoch string, externalURL string, picturePath string) error {
+func (s *SeederService) Composer(name string, epoch string, externalURL string, picturePath string, demo bool) error {
 
 	var composer models.Composer
 
@@ -95,6 +95,7 @@ func (s *SeederService) Composer(name string, epoch string, externalURL string, 
 		Epoch:       epoch,
 		ExternalURL: externalURL,
 		IsVerified:  true,
+		IsDemo:      demo,
 	}
 
 	// 3. Store picture using ComposerService

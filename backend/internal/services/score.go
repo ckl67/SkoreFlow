@@ -97,7 +97,7 @@ func (s *ScoreService) CreateScore(uid uint32, form forms.CreateScoreRequest, fi
 
 	// 1. Priority ID provided
 	if form.ComposerId != nil && *form.ComposerId > 0 {
-		composer, err = models.FindComposerByID(s.db, *form.ComposerId)
+		composer, err = models.FindComposerByID(s.db, *form.ComposerId, false)
 		if err != nil {
 			return apperrors.ErrComposerNotFound
 		}

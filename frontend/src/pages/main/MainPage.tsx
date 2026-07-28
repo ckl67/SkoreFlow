@@ -2,6 +2,10 @@ import { logger } from '../../../logger/logger';
 import { config } from '../../config/config';
 
 export default function MainPage() {
-  logger.debug('router', 'MainPage()');
-  return <div>Hello</div>;
+  return (
+    <div>
+      Hello
+      <img src={`${config.apiUrl}/composers/2/picture`} alt="Composer demo" />
+    </div>
+  );
 }

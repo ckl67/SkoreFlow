@@ -28,16 +28,10 @@ MAIN_FILE=./cmd/server
 # Versioning via Git
 # --tags: Look for tags
 # --always: Fallback to commit hash if no tag is found
-# --dirty: Append "-dirty" if there are uncommitted changes
-# Note: Ensure your repo has tags for this to work properly, otherwise only the hash will be shown.
-# The displayed version is always based on the latest Tag created.
-# Example:
-#       git tag v0.1.0 -m "First stable version with version display"
-VERSION=$(shell git describe --tags --always --dirty)
-
-# Path to the version variable in main.go
-# If your main.go is at the root, use main.Version
-LDFLAGS=-ldflags="-X main.Version=$(VERSION)"
+VERSION=$(shell git describe --tags --always)
+COMMIT=$(shell git rev-parse --short HEAD)
+BUILD_DATE=$(shell date -u +%Y-%m-%dT%H:%M:%SZ)
+LDFLAGS=-ldflags="-X main.Version=$(VERSION) -X main.Commit=$(COMMIT) -X main.BuildDate=$(BUILD_DATE)"
 
 # Makefile Rules
 .PHONY: all version build run-test run-dev run cleandb-storage air air-test air-dev tidy clean-build reset debug-test debug-dev help
@@ -103,24 +97,41 @@ cleandb-storage:
 	cd ../testauto/backend/ && bash auto-test.sh --clean
 
 ## run: Automate the Hot Reload process thanks to the standard Air tool
+## For Air, we pass : VERSION,COMMIT, BUILD_DATE as command-line arguments and we include them in the Air configuration file (.air.toml).
+## cmd = "go build -ldflags=\"-X main.Version=$VERSION -X main.Commit=$COMMIT -X main.BuildDate=$BUILD_DATE\" -o ./tmp/main ./cmd/server"
 air:
 	@echo "==> Running Hot Reload (air) main.go (Version: $(VERSION))..."
+	VERSION="$(VERSION)" \
+	COMMIT="$(COMMIT)" \
+	BUILD_DATE="$(BUILD_DATE)" \
 	APP_ENV=production \
 	TEST_MODE=false \
 	SMTP_ENABLED=true \
 	PROTECTION_LEVEL=full \
 	air
 
+## run: Automate the Hot Reload process thanks to the standard Air tool
+## For Air, we pass : VERSION,COMMIT, BUILD_DATE as command-line arguments and we include them in the Air configuration file (.air.toml).
+## cmd = "go build -ldflags=\"-X main.Version=$VERSION -X main.Commit=$COMMIT -X main.BuildDate=$BUILD_DATE\" -o ./tmp/main ./cmd/server"
 air-test:
 	@echo "==> Running Hot Reload (air) DEV - (TEST = TRUE Send Registration Token) (SMTP = FALSE) environment (Version: $(VERSION))...."
+	VERSION="$(VERSION)" \
+	COMMIT="$(COMMIT)" \
+	BUILD_DATE="$(BUILD_DATE)" \
 	APP_ENV=development \
 	TEST_MODE=true \
 	SMTP_ENABLED=false \
 	PROTECTION_LEVEL=none \
 	air
 
+## run: Automate the Hot Reload process thanks to the standard Air tool
+## For Air, we pass : VERSION,COMMIT, BUILD_DATE as command-line arguments and we include them in the Air configuration file (.air.toml).
+## cmd = "go build -ldflags=\"-X main.Version=$VERSION -X main.Commit=$COMMIT -X main.BuildDate=$BUILD_DATE\" -o ./tmp/main ./cmd/server"
 air-dev:
 	@echo "==> Running Hot Reload (air) DEV - (TEST = FALSE) (SMTP = TRUE) environment (Version: $(VERSION))...."
+	VERSION="$(VERSION)" \
+	COMMIT="$(COMMIT)" \
+	BUILD_DATE="$(BUILD_DATE)" \
 	APP_ENV=development \
 	TEST_MODE= false\
 	SMTP_ENABLED=true \

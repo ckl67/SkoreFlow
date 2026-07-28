@@ -18,7 +18,6 @@ type composers struct {
 // Start orchestrates the application setup and launches the server.
 // It handles configuration loading, database connection, and service bootstrapping.
 func Start(version string) {
-	// Log configuration details (redacted/safe version)
 	cfg := config.Config()
 	cfg.LogSafe()
 
@@ -32,7 +31,7 @@ func Start(version string) {
 	// 3. Database Seeding
 
 	// 3.1. admin
-	appServer.SeederService.User("admin", cfg.AdminEmail, cfg.AdminPassword, domain.RoleAdmin, "users/admin.png")
+	appServer.seederService.User("admin", cfg.AdminEmail, cfg.AdminPassword, domain.RoleAdmin, "users/admin.png")
 
 	// 3.2. Demo composers
 	// Files stored in demo/composers/
@@ -45,7 +44,7 @@ func Start(version string) {
 		if c.Img != "" {
 			imgPath = "demo/composers/" + c.Img
 		}
-		if err := appServer.SeederService.Composer(c.Name, c.Genre, c.Wiki, imgPath); err != nil {
+		if err := appServer.seederService.Composer(c.Name, c.Genre, c.Wiki, imgPath, true); err != nil {
 			logger.Main.Fatal("Seed failed: %v", err)
 		}
 	}
@@ -56,11 +55,11 @@ func Start(version string) {
 	// 4 Test Seeding
 	if config.Config().TestMode {
 		// Users
-		appServer.SeederService.User("user1", "user1@test.com", "password123", domain.RoleUser, "users/default.png")
-		appServer.SeederService.User("user2", "user2@test.com", "password123", domain.RoleUser, "users/default.png")
-		appServer.SeederService.User("user3", "user3@test.com", "password123", domain.RoleUser, "users/default.png")
-		appServer.SeederService.User("moderator1", "moderator1@test.com", "password123", domain.RoleModerator, "users/moderator.png")
-		appServer.SeederService.User("moderator2", "moderator2@test.com", "password123", domain.RoleModerator, "users/moderator.png")
+		appServer.seederService.User("user1", "user1@test.com", "password123", domain.RoleUser, "users/default.png")
+		appServer.seederService.User("user2", "user2@test.com", "password123", domain.RoleUser, "users/default.png")
+		appServer.seederService.User("user3", "user3@test.com", "password123", domain.RoleUser, "users/default.png")
+		appServer.seederService.User("moderator1", "moderator1@test.com", "password123", domain.RoleModerator, "users/moderator.png")
+		appServer.seederService.User("moderator2", "moderator2@test.com", "password123", domain.RoleModerator, "users/moderator.png")
 
 		// Composers
 		// Files stored in ../testauto/backend/resources/composers/
@@ -87,7 +86,7 @@ func Start(version string) {
 			if c.Img != "" {
 				imgPath = "../testauto/backend/resources/composers/" + c.Img
 			}
-			if err := appServer.SeederService.Composer(c.Name, c.Genre, c.Wiki, imgPath); err != nil {
+			if err := appServer.seederService.Composer(c.Name, c.Genre, c.Wiki, imgPath, false); err != nil {
 				logger.Main.Fatal("Seed failed: %v", err)
 			}
 		}

@@ -9,6 +9,7 @@ type ComposerPublicResponse struct {
 	ExternalURL string `json:"external_url"`
 	Epoch       string `json:"epoch"`
 	IsVerified  bool   `json:"isVerified"`
+	IsDemo      bool   `json:"isDemo"`
 }
 
 type CreateComposerResponse struct {
@@ -41,6 +42,7 @@ func ToComposerPublicResponse(composer *models.Composer) ComposerPublicResponse 
 		ExternalURL: composer.ExternalURL,
 		Epoch:       composer.Epoch,
 		IsVerified:  composer.IsVerified,
+		IsDemo:      composer.IsDemo,
 	}
 }
 

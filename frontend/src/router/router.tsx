@@ -13,21 +13,36 @@ import MainPage from '../pages/main/MainPage';
 
 import ComposersPage from '../pages/composers/ComposersPage';
 
+// Public routes
+// Accessible without authentication.
+
+// Controlled routes
+// Accessible to everyone.
+// Services automatically use the public or authenticated API
+// depending on whether a token is available.
+
+// Protected routes
+// Authentication required.
+
 export const router = createBrowserRouter([
   {
     element: <MainLayout />,
     children: [
+      // Public routes
       { path: '/', element: <MainPage /> },
       { path: '/login', element: <LoginPage /> },
       { path: '/register', element: <RegisterPage /> },
       { path: 'register/confirm', element: <RegisterConfirmPage /> },
       { path: '/register/pending', element: <RegisterPendingPage /> },
+
+      // Controlled routes
+      // Accessible with or without a token
+      { path: '/composers', element: <ComposersPage /> },
       {
-        element: <ProtectedRoute />, // The goalkeeper
-        children: [
-          { path: '/me', element: <MePage /> },
-          { path: '/composers', element: <ComposersPage /> },
-        ],
+        // Protected routes
+        // Token mandatory
+        element: <ProtectedRoute />,
+        children: [{ path: '/me', element: <MePage /> }],
       },
     ],
   },

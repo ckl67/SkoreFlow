@@ -8,7 +8,7 @@ tmp_dir = "tmp/air"
 [build]
 args_bin = []
 bin = "./tmp/air/main"
-cmd = "go build -o ./tmp/air/main ./cmd/server"
+cmd = "sh -c 'go build -ldflags \"-X main.Version=$VERSION -X main.Commit=$COMMIT -X main.BuildDate=$BUILD_DATE\" -o ./tmp/air/main ./cmd/server'"
 log = "tmp/air/build-errors.log"
 delay = 1000
 entrypoint = ["./tmp/air/main"]

@@ -82,7 +82,6 @@ func (server *Server) SetupRouter() {
 	//  - AllowHeaders Permits specific headers like Authorization (essential for JWT tokens).
 	//  - AllowCredentials Allows the exchange of cookies or authentication headers between front and back.
 	//  - MaxAge Tells the browser how long (12h) to cache the "Preflight" response. 3. Configuration via Environment Variables
-	//
 
 	rawOrigins := strings.Split(config.Config().Frontend.CorsAllowedOrigins, ",")
 
@@ -103,26 +102,16 @@ func (server *Server) SetupRouter() {
 	logger.Server.Info("CORS origin READING = %q", origins)
 
 	// Gin Logger
-	// r.Use(gin.Logger()) — The Logger
-	// This middleware is used to log requests arriving at your server.
-	// It writes log entries to the console for each interaction.
-	// It displays the time, the HTTP status (200, 404, 500…), and the response time
-
-	// r.Use(gin.Recovery()) — The Life Jacket
-	// This middleware is used to intercept panics (fatal errors in Go) to prevent your server from shutting down completely.
-
-	// r.Use(gin.Logger()): Enables the default logger on all routes.
-	// r.Use(gin.LoggerWithConfig(...)): Enables a second logger on all routes (which duplicates the first one), except for /health and /version.
-
 	// r.Use(gin.Logger()) <-- has been removed otherwise we will have double logs
-	//	POST /api/login
-	//	POST /api/login
 
 	// Custom logger configuration:
 	// Skip noisy endpoints (health checks, version)
 	r.Use(gin.LoggerWithConfig(gin.LoggerConfig{
 		SkipPaths: []string{"/health", "/version"},
 	}))
+
+	// r.Use(gin.Recovery()) — The Life Jacket
+	// This middleware is used to intercept panics (fatal errors in Go) to prevent your server from shutting down completely.
 	r.Use(gin.Recovery())
 
 	// -------------------------------------------------------------------------------------------
@@ -131,42 +120,44 @@ func (server *Server) SetupRouter() {
 	// Controllers act as HTTP adapters → they depend on services
 	userCtrl := controllers.NewUserController(server.userService)
 	authCtrl := controllers.NewAuthController(server.authService)
-	scoreCtrl := controllers.NewScoreController(server.ScoreService)
-	composerCtrl := controllers.NewComposerController(server.ComposerService)
+	scoreCtrl := controllers.NewScoreController(server.scoreService)
+	composerCtrl := controllers.NewComposerController(server.composerService)
 
 	// -------------------------------------------------------------------------------------------
-	// 5. Public system endpoints
+	// 5. Public system endpoints - Health - API Version - API Message
 	// -------------------------------------------------------------------------------------------
 
-	// Health check (used by monitoring tools)
 	r.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"status": "OK"})
 	})
 
-	// API version
 	r.GET("/version", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"version": server.Version})
 	})
 
-	// Root endpoint
 	r.GET("/api", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"message": "API is running"})
 	})
 
 	// -------------------------------------------------------------------------------------------
+	// FOR DEBUGGING
+	// Gin never re-executes these lines. They have already been used to record the routes.
+	// SET the Breakpoints in the controllers !
+	// -------------------------------------------------------------------------------------------
 	// 6. API grouping
+	//		Or by versioning
+	// 			v1 := api.Group("/v1")
+	// 			v1.POST("/register", authCtrl.Register)
 	// -------------------------------------------------------------------------------------------
 	api := r.Group("/api")
-	// v1 := api.Group("/v1")
 	{
 		// ---------------------------------------------------------------------------------------
 		// Public authentication routes
 		// ---------------------------------------------------------------------------------------
-		// v1.POST("/register", authCtrl.Register)
 
 		// ==============================================
 		// Registration Flow:
-		// ------------------
+		// ==============================================
 		// 1. User POSTs /register {username, email, password}
 		//    → creates user with IsVerified=false
 		//    → backend sends confirmation email with frontend link:
@@ -191,6 +182,10 @@ func (server *Server) SetupRouter() {
 		// 2. Frontend displays reset form (new password / confirm)
 		//    → POST /password/reset {token, password}
 		//    → backend validates token and updates password
+		// ------------------------------------------------
+		// The route : api.POST("/me/mail/confirm", userCtrl.ConfirmUpdateMail) is the following of
+		// 	the route protected.PUT("/me/mail", userCtrl.UpdateMail)
+		// 	However, we prefer use the public route because the process is :change mail  --> logout --> Link email later
 		// ==============================================
 
 		api.POST("/auth/register", middlewares.RateLimiter(1, 5), authCtrl.Register) // vitest -->   req/sec, burst 5
@@ -200,10 +195,22 @@ func (server *Server) SetupRouter() {
 		api.POST("/logout", authCtrl.Logout)                                         // vitest
 		api.POST("/password/forgot", authCtrl.ForgotPassword)                        // vitest
 		api.POST("/password/reset", authCtrl.ResetPassword)                          // vitest
+		api.POST("/me/mail/confirm", userCtrl.ConfirmUpdateMail)                     // vitest
 
-		// The route : api.POST("/me/mail/confirm", userCtrl.ConfirmUpdateMail) is the following of the route protected.PUT("/me/mail", userCtrl.UpdateMail)
-		// However, we prefer use the route with no login route, because the process is : change mail  --> logout --> Link email later
-		api.POST("/me/mail/confirm", userCtrl.ConfirmUpdateMail) // vitest
+		// ---------------------------------------------------------------------------------------
+		// Public routes
+		// ---------------------------------------------------------------------------------------
+		public := api.Group("/public")
+		{
+			public.GET("/composers", composerCtrl.GetDemoComposersPage) // vitest
+			public.GET("/composers/:id", composerCtrl.GetDemoComposer)  // vitest
+
+			public.GET("/composers/:id/picture", composerCtrl.GetDemoComposerPicture)
+			public.HEAD("/composers/:id/picture", composerCtrl.GetDemoComposerPicture)
+			public.GET("/composers/:id/thumbnail", composerCtrl.GetDemoComposerThumbnail)
+			public.HEAD("/composers/:id/thumbnail", composerCtrl.GetDemoComposerThumbnail)
+
+		}
 
 		// ---------------------------------------------------------------------------------------
 		// Protected routes (authenticated users only)
@@ -250,18 +257,14 @@ func (server *Server) SetupRouter() {
 			// COMPOSERS
 			// -----------------------------------------------------------------------------------
 
-			// Return Json
-			protected.POST("/composers", composerCtrl.CreateComposer) // vitest
+			protected.POST("/composers", composerCtrl.CreateComposer)    // vitest
+			protected.PUT("/composers/:id", composerCtrl.UpdateComposer) // vitest
+			protected.DELETE("/composers/:id", composerCtrl.DeleteComposer)
+			protected.PUT("/composers/merge", composerCtrl.MergeComposers)
 
 			protected.GET("/composers", composerCtrl.GetComposersPage) // vitest
 			protected.GET("/composers/:id", composerCtrl.GetComposer)  // vitest
 
-			protected.PUT("/composers/:id", composerCtrl.UpdateComposer) // vitest
-			protected.DELETE("/composers/:id", composerCtrl.DeleteComposer)
-
-			protected.PUT("/composers/merge", composerCtrl.MergeComposers)
-
-			// Return Data
 			protected.GET("/composers/:id/picture", composerCtrl.GetComposerPicture)
 			protected.HEAD("/composers/:id/picture", composerCtrl.GetComposerPicture)
 			protected.GET("/composers/:id/thumbnail", composerCtrl.GetComposerThumbnail)

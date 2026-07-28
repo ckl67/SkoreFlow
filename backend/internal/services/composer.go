@@ -72,6 +72,7 @@ func (s *ComposerService) CreateComposer(uid uint32, userRole int, req forms.Cre
 		ExternalURL: req.ExternalURL,
 		Picture:     "composers/default.png",
 		IsVerified:  false,
+		IsDemo:      false,
 	}
 
 	if req.IsVerified {
@@ -107,7 +108,7 @@ func (s *ComposerService) CreateComposer(uid uint32, userRole int, req forms.Cre
 
 // GetComposersPage
 // Retrieves a paginated list of composers based on search criteria.
-func (s *ComposerService) GetComposersPage(uid uint32, form forms.GetComposersPageRequest) (*models.Pagination, error) {
+func (s *ComposerService) GetComposersPage(isDemo bool, form forms.GetComposersPageRequest) (*models.Pagination, error) {
 
 	if form.Page <= 0 {
 		form.Page = 1
@@ -128,14 +129,19 @@ func (s *ComposerService) GetComposersPage(uid uint32, form forms.GetComposersPa
 
 	var composer models.Composer
 
-	result, err := composer.List(s.db, &pagination, form.Name, form.IsVerified, uid)
+	// form.Name or form.IsVerified can be nil
+	result, err := composer.List(s.db, &pagination, form.Name, form.IsVerified, isDemo)
 	if err != nil {
 		logger.Composer.Error("Failed to list composers: %v", err)
 		return nil, err
 	}
 
 	if result == nil || len(result.Rows.([]*models.Composer)) == 0 {
-		logger.Composer.Warn("No composers found for search: %s", *form.Name)
+		if form.Name != nil {
+			logger.Composer.Warn("No composers found for search: %s", *form.Name)
+		} else {
+			logger.Composer.Warn("No composers found")
+		}
 	}
 
 	return result, err
@@ -145,7 +151,7 @@ func (s *ComposerService) GetComposersPage(uid uint32, form forms.GetComposersPa
 // Retrieves a composer by its ID.
 // No authorization required (public access).
 func (s *ComposerService) GetComposer(ComposerID uint) (*models.Composer, error) {
-	composer, err := models.FindComposerByID(s.db, ComposerID)
+	composer, err := models.FindComposerByID(s.db, ComposerID, false)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, apperrors.ErrComposerNotFound
@@ -158,7 +164,7 @@ func (s *ComposerService) GetComposer(ComposerID uint) (*models.Composer, error)
 
 // Updates an existing composer entity.
 func (s *ComposerService) UpdateComposer(uid uint32, userRole int, ComposerID uint, form forms.UpdateComposerRequest) (*models.Composer, error) {
-	composer, err := models.FindComposerByID(s.db, ComposerID)
+	composer, err := models.FindComposerByID(s.db, ComposerID, false)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, apperrors.ErrComposerNotFound
@@ -237,7 +243,7 @@ func (s *ComposerService) MergeComposers(uid uint32, userRole int, sourceID uint
 	}()
 
 	// Verify target
-	target, err := models.FindComposerByID(tx, targetID)
+	target, err := models.FindComposerByID(tx, targetID, false)
 	if err != nil {
 		tx.Rollback()
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -258,7 +264,7 @@ func (s *ComposerService) MergeComposers(uid uint32, userRole int, sourceID uint
 	}
 
 	// Delete source
-	composer, err := models.FindComposerByID(tx, sourceID)
+	composer, err := models.FindComposerByID(tx, sourceID, false)
 	if err != nil {
 		tx.Rollback()
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -398,7 +404,7 @@ func (s *ComposerService) StoreComposerPicture(
 
 // Deletes a composer and associated assets.
 func (s *ComposerService) DeleteComposer(uid uint32, composerID uint, userRole int) error {
-	composer, err := models.FindComposerByID(s.db, composerID)
+	composer, err := models.FindComposerByID(s.db, composerID, false)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return apperrors.ErrComposerNotFound
@@ -482,9 +488,9 @@ func (s *ComposerService) deleteComposerOrchestrator(composer *models.Composer) 
 // │   ├── beethoven
 // │   │   └── picture.png
 // =====================================
-func (s *ComposerService) ComposerPictureData(composerID uint32) (string, error) {
+func (s *ComposerService) ComposerPictureData(composerID uint32, isDemo bool) (string, error) {
 
-	composer, err := models.FindComposerByID(s.db, (uint)(composerID))
+	composer, err := models.FindComposerByID(s.db, (uint)(composerID), isDemo)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return "", apperrors.ErrComposerNotFound
@@ -508,9 +514,9 @@ func (s *ComposerService) ComposerPictureData(composerID uint32) (string, error)
 // │   ├── beethoven
 // │   │   └── thumbnail.png
 // =====================================
-func (s *ComposerService) ComposerThumbnailData(composerID uint32) (string, error) {
+func (s *ComposerService) ComposerThumbnailData(composerID uint32, isDemo bool) (string, error) {
 
-	composer, err := models.FindComposerByID(s.db, (uint)(composerID))
+	composer, err := models.FindComposerByID(s.db, (uint)(composerID), isDemo)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return "", apperrors.ErrComposerNotFound

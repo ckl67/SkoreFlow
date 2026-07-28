@@ -33,6 +33,7 @@ type Composer struct {
 	ExternalURL string    `gorm:"size:255" json:"external_url"`
 	Epoch       string    `gorm:"size:255" json:"epoch"`
 	IsVerified  bool      `gorm:"default:false" json:"is_verified"`
+	IsDemo      bool      `gorm:"default:false" json:"is_demo"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 }
@@ -72,7 +73,7 @@ func (c *Composer) Delete(db *gorm.DB) (int64, error) {
 //
 // Filters:
 // - search: matches name or safe name
-func (c *Composer) List(db *gorm.DB, pagination *Pagination, search *string, isVerified *bool, userID uint32) (*Pagination, error) {
+func (c *Composer) List(db *gorm.DB, pagination *Pagination, search *string, isVerified *bool, isDemo bool) (*Pagination, error) {
 	var composers []*Composer
 
 	// Base query
@@ -84,6 +85,8 @@ func (c *Composer) List(db *gorm.DB, pagination *Pagination, search *string, isV
 		searchTerm := "%" + *search + "%"
 		query = query.Where("(name LIKE ? OR safe_name LIKE ?)", searchTerm, searchTerm)
 	}
+
+	query = query.Where("is_demo = ?", isDemo)
 
 	if isVerified != nil {
 		query = query.Where("is_verified = ?", *isVerified)
@@ -99,9 +102,21 @@ func (c *Composer) List(db *gorm.DB, pagination *Pagination, search *string, isV
 }
 
 // FindComposerByID retrieves a composer by its unique identifier.
-func FindComposerByID(db *gorm.DB, id uint) (*Composer, error) {
+func FindComposerByID(db *gorm.DB, id uint, isDemo bool) (*Composer, error) {
+
+	// Base query
+	query := db.Model(&Composer{})
+
+	// If we are in demo mode, we hide the non demo elements
+	if isDemo {
+		query = query.Where("is_demo = ?", true)
+	}
+
 	var composer Composer
-	err := db.First(&composer, id).Error
+	err := query.First(&composer, id).Error
+	if err != nil {
+		return nil, err
+	}
 	return &composer, err
 }
 

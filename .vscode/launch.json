@@ -4,7 +4,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Backend (Go)",
+      "name": "Launch Backend (debug)",
       "type": "go",
       "request": "launch",
       "mode": "debug",

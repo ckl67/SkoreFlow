@@ -148,6 +148,7 @@ axios.interceptors.response.use(
 export async function apiBinaryRequest(method: Method, url: string): Promise<Blob> {
   const token = localStorage.getItem('token');
 
+  logger.debug('api', 'GET', url);
   //logger.debug('api', '(apiBinaryRequest) method url =', config.apiUrl + url);
   const res = await axios({
     method,
@@ -158,6 +159,7 @@ export async function apiBinaryRequest(method: Method, url: string): Promise<Blo
     },
   });
 
+  logger.debug('api', 'DONE', url);
   //logger.debug('api', '(apiBinaryRequest) status =', res.status);
   //logger.debug('api', '(apiBinaryRequest) content-type =', res.headers['content-type']);
   //logger.debug('api', '(apiBinaryRequest) blob =', res.data);

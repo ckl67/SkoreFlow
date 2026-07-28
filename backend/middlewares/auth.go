@@ -20,8 +20,6 @@ import (
 // - Does NOT perform authorization (permissions)
 // - Must be applied to all protected routes
 func AuthMiddleware() gin.HandlerFunc {
-	secret := config.Config().ApiSecret
-
 	return func(c *gin.Context) {
 		// 1. Extract token from Authorization header
 		tokenString := auth.ExtractToken(c)
@@ -35,7 +33,11 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 
 		// 3. Decode token and extract metadata (user_id, role)
-		userID, role, err := auth.ExtractTokenMetadata(tokenString, secret)
+		userID, role, err := auth.ExtractTokenMetadata(
+			tokenString,
+			config.Config().ApiSecret,
+		)
+		// Invalid token
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 				"error": "Invalid token",

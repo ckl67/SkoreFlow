@@ -7,12 +7,22 @@
 This document provides instructions for testing the composers functionalities of the SkoreFlow backend.
 These tests are essential to ensure curl testing before vitest !
 
+## Public
+
+```shell
+curl http://localhost:8080/api/public/composers | jq
+
+curl -I http://192.168.1.138:8080/api/public/composers/1/picture
+curl -I http://192.168.1.138:8080/api/public/composers/1/thumbnail
+
+
+```
+
 ## Prerequisite
 
 User Login to get token
 
 ```shell
-
 TOKEN_USER2=$(curl -X POST http://localhost:8080/api/login \
  -H "Content-Type: application/json" \
  -d '{"email":"user2@test.com","password":"password123"}' | jq -r '.data.token')

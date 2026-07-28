@@ -11,7 +11,7 @@ import { logger } from '../../../logger/logger';
 export function getComposersPage({
   page = 1,
   limit = Pagination.composers.defaultLimit,
-  sort = 'id asc',
+  sort = 'asc',
   name,
   isVerified,
 }: GetComposersPageRequest = {}): Promise<GetComposersPageResponse> {
@@ -31,7 +31,13 @@ export function getComposersPage({
     params.append('isVerified', String(isVerified));
   }
 
-  return apiRequest<GetComposersPageResponse>('GET', `/composers?${params.toString()}`);
+  const token = localStorage.getItem('token');
+
+  if (token) {
+    return apiRequest<GetComposersPageResponse>('GET', `/composers?${params.toString()}`);
+  }
+
+  return apiRequest<GetComposersPageResponse>('GET', `/public/composers?${params.toString()}`);
 }
 
 export function getComposer(id: number) {
@@ -44,11 +50,24 @@ export function getComposer(id: number) {
  * @returns : data
  */
 export async function getComposerPicture(id: number) {
-  const blob = await apiBinaryRequest('GET', `/composers/${id}/picture`);
+  const token = localStorage.getItem('token');
+
+  if (token) {
+    const blob = await apiBinaryRequest('GET', `/composers/${id}/picture`);
+    return blob;
+  }
+  const blob = await apiBinaryRequest('GET', `/public/composers/${id}/picture`);
   return blob;
 }
 
 export async function getComposerThumbnail(id: number) {
-  const blob = await apiBinaryRequest('GET', `/composers/${id}/thumbnail`);
+  const token = localStorage.getItem('token');
+
+  if (token) {
+    const blob = await apiBinaryRequest('GET', `/composers/${id}/thumbnail`);
+    return blob;
+  }
+
+  const blob = await apiBinaryRequest('GET', `/public/composers/${id}/thumbnail`);
   return blob;
 }

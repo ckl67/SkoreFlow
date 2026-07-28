@@ -4,17 +4,20 @@ import (
 	"backend/api"
 	"backend/infrastructure/logger"
 	"backend/pkg/misc"
+	"fmt"
 )
 
 // ===============================================================================================
 // Version represents the application version, injected during build (pending).
-// Ref :
-//
-//	go build -ldflags="-X main.Version=$(git describe --tags --always)" -o build/sf-backend main.go
-//	go run -ldflags="-X main.Version=$(git describe --tags --always)" main.go
+// 	VERSION=$(shell git describe --tags --always)
+//	COMMIT=$(shell git rev-parse --short HEAD)
+//	BUILD_DATE=$(shell date -u +%Y-%m-%dT%H:%M:%SZ)
+//	LDFLAGS=-ldflags="-X main.Version=$(VERSION) -X main.Commit=$(COMMIT) -X main.BuildDate=$(BUILD_DATE)"
 // ===============================================================================================
 
 var Version string = "Git version injection (pending)"
+var Commit = "Commit (pending)"
+var BuildDate = "Date (pending)"
 
 // Main
 func main() {
@@ -38,8 +41,10 @@ func main() {
 	logger.SetModuleLevel("api", "info")
 
 	// Print the ASCII banner with the current version
-	misc.PrintAsciiVersion(Version)
+	misc.PrintAsciiVersion(Version, Commit, BuildDate)
+
+	fullVersion := fmt.Sprintf("%s (commit: %s) built at %s", Version, Commit, BuildDate)
 
 	// Start the main application bootstrap
-	api.Start(Version)
+	api.Start(fullVersion)
 }
