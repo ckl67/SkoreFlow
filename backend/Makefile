@@ -28,7 +28,7 @@ MAIN_FILE=./cmd/server
 # Versioning via Git
 # --tags: Look for tags
 # --always: Fallback to commit hash if no tag is found
-VERSION=$(shell git describe --tags --always)
+VERSION=$(shell git describe --tags --match "backend/*" --always)
 COMMIT=$(shell git rev-parse --short HEAD)
 BUILD_DATE=$(shell date -u +%Y-%m-%dT%H:%M:%SZ)
 LDFLAGS=-ldflags="-X main.Version=$(VERSION) -X main.Commit=$(COMMIT) -X main.BuildDate=$(BUILD_DATE)"

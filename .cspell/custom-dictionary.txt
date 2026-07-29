@@ -60,7 +60,11 @@ Println
 pwreset
 pypoetry
 pyproject
+pytest
+PYTHONPATH
 rqconfirm
+setlog
+setuptools
 sheetcomposer
 shellcheck
 shfmt

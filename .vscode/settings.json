@@ -119,5 +119,10 @@
   // =========================================================
   // PYTHON
   // =========================================================
-  "python.terminal.activateEnvironment": false
+  "python.terminal.activateEnvironment": false,
+  "python.analysis.extraPaths": ["./src"],
+
+  // Testing python
+  "python.testing.pytestEnabled": true,
+  "python.testing.pytestArgs": ["microservice/thumbnail/tests"]
 }

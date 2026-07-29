@@ -32,6 +32,7 @@ The document can also be consulted locally in 'visual studio code' via the integ
 ### SkoreFlow
 
 - [Naming Conventions](./skoreflow/naming-conventions.md)
+- [Version Strategy](./skoreflow/version-strategy.md)
 - [Backend Frontend Responsibilities](./skoreflow/responsibilities.md)
 - [Public vs Protected API](./skoreflow/public-protected-api.md)
 - [Rest return](./skoreflow/rest-response.md)
@@ -43,6 +44,7 @@ The document can also be consulted locally in 'visual studio code' via the integ
 - [Go Language](./general/go.md)
 - [Go Structure](./general/go-struct.md)
 - [Go synchronous and asynchronous](./general/go-sync.md)
+- [Python Imports, Root Folders](./general/python-Imports-rootfolder.md)
 - [JWT](./general/jwt.md)
 - [HTTP Status Codes](./general/http_status_codes.md)
 - [API Response Standard](./backend/api-response.md)
