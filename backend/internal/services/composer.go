@@ -364,6 +364,8 @@ func (s *ComposerService) StoreComposerPicture(
 	picturePath := s.paths.ResolveDataRoot(pictureRelativePath)
 	thumbnailPath := s.paths.ResolveDataRoot(thumbnailRelativePath)
 
+	//logger.Composer.Debug("((s *ComposerService) StoreComposerPicture):: \n uploadedPath=%s \n picturePath=%s \n thumbnailPath=%s", uploadedPath, picturePath, thumbnailPath)
+
 	composer.Picture = pictureRelativePath
 
 	// ---------------------------------------------------------

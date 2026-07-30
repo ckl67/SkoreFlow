@@ -33,14 +33,16 @@ func RequestThumbnail(inputPath string, outputPath string, maxSize int, logLevel
 	// 1. Normalize paths (avoid relative path issues)
 	// ---------------------------------------------------------
 	absInputPath, err := filepath.Abs(inputPath)
+	//logger.MicroService.Debug("(RequestThumbnail):: absInputPath %s", absInputPath)
 	if err != nil {
-		logger.MicroService.Error("failed to resolve pdf path: %v", err)
+		logger.MicroService.Error("(RequestThumbnail):: failed to resolve input path: %v", err)
 		return false
 	}
 
 	absOutputPath, err := filepath.Abs(outputPath)
+	//logger.MicroService.Debug("(RequestThumbnail):: absOutputPath %s", absOutputPath)
 	if err != nil {
-		logger.MicroService.Error("failed to resolve thumbnail path: %v", err)
+		logger.MicroService.Error("(RequestThumbnail):: failed to resolve thumbnail path: %v", err)
 		return false
 	}
 
@@ -56,7 +58,7 @@ func RequestThumbnail(inputPath string, outputPath string, maxSize int, logLevel
 
 	jsonData, err := json.Marshal(payload)
 	if err != nil {
-		logger.MicroService.Error("failed to marshal JSON payload: %v", err)
+		logger.MicroService.Error("(RequestThumbnail):: failed to marshal JSON payload: %v", err)
 		return false
 	}
 
@@ -74,7 +76,7 @@ func RequestThumbnail(inputPath string, outputPath string, maxSize int, logLevel
 		bytes.NewBuffer(jsonData),
 	)
 	if err != nil {
-		logger.MicroService.Error("failed to create request: %v", err)
+		logger.MicroService.Error("(RequestThumbnail):: failed to create request: %v", err)
 		return false
 	}
 
@@ -85,7 +87,7 @@ func RequestThumbnail(inputPath string, outputPath string, maxSize int, logLevel
 	// ---------------------------------------------------------
 	resp, err := client.Do(req)
 	if err != nil {
-		logger.MicroService.Error("microservice unreachable: %v", err)
+		logger.MicroService.Error("(RequestThumbnail):: microservice unreachable: %v", err)
 		return false
 	}
 	defer resp.Body.Close()
@@ -96,7 +98,7 @@ func RequestThumbnail(inputPath string, outputPath string, maxSize int, logLevel
 	body, _ := io.ReadAll(resp.Body)
 	if resp.StatusCode != http.StatusOK {
 		logger.MicroService.Error(
-			"thumbnail microservice (%d): %s",
+			"(RequestThumbnail):: thumbnail microservice (%d): %s",
 			resp.StatusCode,
 			string(body),
 		)
@@ -112,11 +114,11 @@ func RequestThumbnail(inputPath string, outputPath string, maxSize int, logLevel
 	}
 
 	if err := json.NewDecoder(resp.Body).Decode(&result); err == nil {
-		logger.MicroService.Debug("thumbnail result: %s", result.Message)
+		logger.MicroService.Debug("(RequestThumbnail):: thumbnail result: %s", result.Message)
 		return false
 	}
 
-	logger.MicroService.Debug("thumbnail successfully generated: %s", absOutputPath)
+	logger.MicroService.Debug("(RequestThumbnail):: thumbnail successfully generated: %s", absOutputPath)
 
 	return true
 }

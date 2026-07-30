@@ -22,27 +22,19 @@ Set
 Compilation and Build are the same approach between dev server and PaaS
 
 ```shell
-
-## locally : directory /backen
+# Comparison between local and render.com settings
+# -------------------------------------------------------------------------------
+# locally : directory /backen
 go build             -ldflags="...  " -o build/sf-backend ./cmd/server/main.go
-## run
+# run
 build/sf-backend
 
+# -------------------------------------------------------------------------------
 ## Render.com : directory /backen
 go build -tags netgo -ldflags '-s -w' -o app              ./cmd/server/main.go
 app/app
 
 go build -tags netgo -ldflags '-s -w' -o app ./cmd/server/main.go
-
-```
-
-### Debug
-
-Following command can help
-
-```shell
-
-pwd && ls -la && find . -maxdepth 3 -type f | sed -n '1,200p'
 
 ```
 
@@ -56,14 +48,8 @@ Instead of creating 20 “Key/Value” variables, Render allows to create a virt
 - Click on Add Secret File.
 - Fill in the fields:
   - Filename: .env
-  - Contents: Copy and paste the entire contents of your local .env file. (See below)
+  - Contents: Copy and paste the entire contents of local `.env.render`file. (See below)
 - Click Save.
-
-Render will create this file securely and invisibly on their servers
-
-```shell
-# You can copy file .env.render
-```
 
 ### Limitation
 

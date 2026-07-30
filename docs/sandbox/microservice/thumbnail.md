@@ -2,9 +2,13 @@
 
 [← back](../../doc.md)
 
+## Sandbox
+
+On render.com
+
 ## Service
 
-For Go Backend: Select "Web Services" on the PaaS
+For thumbnail: Select "Web Services" on the PaaS
 
 ```text
 Web Services — Dynamic web app. Ideal for full-stack apps, API servers, and mobile backends.
@@ -24,20 +28,21 @@ Add Poppler directly to Render
   - Add this special variable that Render uses to install Linux packages:
     - Key: RENDER_NATIVE_PACKAGES
       - Value: poppler-utils
+  - Add PORT value:5001
 - Click Save Changes.
 
-## Sandbox
-
-On render.com
+<img src="../../../docs/images/render-com-thumbnail-env-variables.png" alt="Description" width="800">
 
 ### Settings
 
 - Root Directory
   - microservice/thumbnail
 - Build Command
-  - pip install -r requirements.txt
+  - pip install -r requirements.txt && pip install -e .
 - Start Command
-  - gunicorn app:app --bind 0.0.0.0:$PORT
+  - gunicorn my_app.app:app --bind 0.0.0.0:$PORT
+
+ <img src="../../../docs/images/render-com-thumbnail-settings.png" alt="Description" width="800">
 
 ### Environment Variables
 

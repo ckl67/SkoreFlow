@@ -70,6 +70,7 @@ def health():
 
 # ------------------------------------------------------------
 # HEALTH CHECK for render.com
+# https://thumbnail-tgzi.onrender.com/
 # ------------------------------------------------------------
 @app.route("/", methods=["GET"])
 def get():

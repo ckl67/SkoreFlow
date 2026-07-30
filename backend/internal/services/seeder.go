@@ -101,6 +101,8 @@ func (s *SeederService) Composer(name string, epoch string, externalURL string, 
 	// 3. Store picture using ComposerService
 	if picturePath != "" {
 
+		logger.Main.Debug("((s *SeederService) Composer):: picturePath %s ", picturePath)
+
 		file, err := os.Open(picturePath)
 		if err != nil {
 			return fmt.Errorf("cannot open seed image %q: %w", picturePath, err)
