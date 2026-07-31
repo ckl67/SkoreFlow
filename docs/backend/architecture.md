@@ -64,10 +64,10 @@ storage/  #  Persistent runtime data (excluded from Git)
 ├── scores/
 │   ├── uploaded-scores/
 │   │   ├── Mozart/
-│   │   │   └── Mozart.png
+│   │   │   └── Pour Elise.png
 │   ├── thumbnails/
 │   │   ├── Mozart/
-│   │   │   └── Mozart.png
+│   │   │   └── Pour Elise.png
 ├── composers
 │   ├── mozart
 │   │       └── picture.png

@@ -20,7 +20,7 @@ SkoreFlow provides a structured pipeline to:
 
 ## 🧪 Sandbox
 
-Skoreflow can currently be tested in a [Sandbox](https://skoreflow-frontend.onrender.com/)
+Skoreflow can currently be tested in a [Sandbox](..)
 
 ---
 

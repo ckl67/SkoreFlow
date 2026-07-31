@@ -1,16 +1,18 @@
 {
   "version": "0.2",
   "language": "en",
+  "files": ["**/*.{js,ts,jsx,tsx,md,json}"],
   "ignorePaths": [
     "node_modules/**",
     ".cspell/custom-dictionary.txt",
-    "vendor/**",
     "*.mod",
     "*.dio",
     ".git/**",
     ".vscode/**",
     ".gitignore",
-    "**/.*"
+    "**/venv/**",
+    "**/.*",
+    "docs/draft/**"
   ],
   "dictionaries": ["custom-dictionary"],
   "dictionaryDefinitions": [

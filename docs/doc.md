@@ -27,7 +27,7 @@ The document can also be consulted locally in 'visual studio code' via the integ
 - [Visual Studio Code settings](./environment/vscode.md)
 - [Remote Development](./environment/remote-ports.md)
 - [VSC Workspace](./environment/single-folder.md)
-- [eslint and prettier](./environment/formatting.md)
+- [eslint, prettier cspell](./environment/formatting.md)
 
 ### SkoreFlow
 
@@ -81,11 +81,11 @@ The document can also be consulted locally in 'visual studio code' via the integ
   - [composer](./backend/manual-tests/composer-mtest.md)
   - [score](./backend/manual-tests/score-mtest.md)
 
-### Microservice
+### Microservices
 
-- [Microservice](./microservice/microservice.md)
-- [gunicorn](./microservice/gunicorn.md)
-  - [thumbnail](./microservice/thumbnail/installation.md)
+- [Microservice](./microservices/microservice.md)
+- [gunicorn](./microservices/gunicorn.md)
+  - [thumbnail](./microservices/thumbnail/installation.md)
 
 ### Frontend Guides
 
