@@ -11,6 +11,18 @@ Keeping this inventory allows us to:
 - simplify troubleshooting;
 - compare future changes after upgrades.
 
+## Production update policy
+
+The production server should never be modified manually.
+
+The production server should only:
+
+- retrieve the latest committed sources;
+- build the application;
+- restart the services.
+
+This guarantees that production always runs the exact version that has been tested and validated.
+
 ## Server Information
 
 | Property         | Value                      |
@@ -164,6 +176,9 @@ Typical responsibilities include:
 Examples:
 
 ```bash
+
+sudo su - skoreflow
+
 cd /opt/skoreflow/backend
 make build
 

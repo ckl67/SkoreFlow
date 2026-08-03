@@ -161,14 +161,14 @@ done
 
 echo "Cleaning environment..."
 
-# Kill any lingering processes on backend ports (Go: 8080, Flask Microservice: 5010)
+# Kill any lingering processes on backend ports (Go: 8080, Flask Microservices: 5010)
 if fuser 8080/tcp >/dev/null 2>&1; then
 	echo "Kill backend ..."
 	fuser -k 8080/tcp
 fi
 
 if fuser 5010/tcp >/dev/null 2>&1; then
-	echo "Kill microservice  ..."
+	echo "Kill microservices  ..."
 	fuser -k 5010/tcp
 fi
 

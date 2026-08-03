@@ -57,7 +57,7 @@ Will load in order :
 
 - [backend](./backend.md)
 - [frontend](./frontend.md)
-- [thumbnail service](./microservice/thumbnail.md)
+- [thumbnail service](./microservices/thumbnail.md)
 
 ### Directory Mapping
 

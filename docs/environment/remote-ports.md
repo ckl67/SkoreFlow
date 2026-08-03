@@ -83,7 +83,7 @@ When you run a server on a remote machine (e.g. Ubuntu VM), VS Code can detect i
 
 - localhost:8080 (Go backend)
 - localhost:5173 (Vite frontend)
-- localhost:5001 (Python microservice)
+- localhost:5001 (Python thumbnail microservice)
 
 In the Ports tab, VS Code lists:
 

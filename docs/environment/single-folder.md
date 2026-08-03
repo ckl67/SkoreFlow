@@ -16,7 +16,7 @@ to switch from one workspace to another workspace !!
   "backend": true,
   "frontend": true,
   "shared": true,
-  "microservice": true,
+  "microservices": true,
   "testauto": true,
   "docs": true,
 - Using a `.code-workspace` file does not provide real architectural benefits for this type of monorepo.

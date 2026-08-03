@@ -15,6 +15,8 @@ At the end of this step, the server will provide:
 
 The application itself is not installed yet.
 
+With `ubuntu` account
+
 ---
 
 ## Installed components

@@ -126,7 +126,7 @@ For running test with a SMTP server you have to run
 
 Frontend React : localhost:5173
 Backend Go : localhost:8080
-Backend MicroService : localhost:5010
+Backend Thumbnail MicroService : localhost:5010
 MailPit SMTP : localhost:1025
 Interface Mail : localhost:8025
 

@@ -1,6 +1,6 @@
 # Versioning Strategy for a Monorepo Architecture
 
-This document explains how versioning, tagging, and deployment work across the SkoreFlow monorepo (backend, frontend, microservice).
+This document explains how versioning, tagging, and deployment work across the SkoreFlow monorepo (backend, frontend, microservices).
 
 ## Versioning Standard (Semantic Versioning)
 
@@ -35,7 +35,7 @@ Version metadata is dynamically generated during the Build or Execution phase.
 SkoreFlow/ <-- Monorepo Root
   ├── backend/ <-- Go API (Receives version via Go -ldflags)
   ├── frontend/ <-- Vite/React (Receives version via vite.config.ts)
-  └── microservice/
+  └── microservices/
     └── thumbnail/ <-- Python/Flask (Receives version via \_version.py)
 ```
 
@@ -46,7 +46,7 @@ Here is a complete scenario where you update the Backend and the Thumbnail Micro
 ### Step 1: Local Development
 
 - Modify Go code in backend/.
-- Modify Python code in microservice/thumbnail/.
+- Modify Python code in microservices/thumbnail/.
 - Test locally using the respective Makefile.
   - For Thumbnail, make run executes gen-version, creating `\_version.py` locally on the fly.
   - For Backend, Go injects the build flags at compile time.
@@ -58,7 +58,7 @@ Save your changes in Git as a single atomic commit:
 ```Bash
 
 # 1. Stage modified files
-git add backend/ microservice/thumbnail/
+git add backend/ microservices/thumbnail/
 
 # 2. Create the commit
 git commit -m "feat: add webp support for thumbnail and update backend API"
@@ -116,7 +116,7 @@ The deployment script executes:
 
 ```Bash
 
-cd microservice/thumbnail
+cd microservices/thumbnail
 make gen-version
 ```
 

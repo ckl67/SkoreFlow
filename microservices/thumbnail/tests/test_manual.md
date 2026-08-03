@@ -21,16 +21,16 @@ curl "http://localhost:5001/loglevel?log_level=debug"
 curl -X POST http://localhost:5001/thumbnail/create \
      -H "Content-Type: application/json" \
       -d '{
-        "input_path": "/home/christian/SkoreFlow_Project/SkoreFlow/microservice/thumbnail/tests/storage/ballade.pdf",
-        "output_path": "/home/christian/SkoreFlow_Project/SkoreFlow/microservice/thumbnail/tests/storage/thumbnail_ballade.png",
+        "input_path": "/home/christian/SkoreFlow_Project/SkoreFlow/microservices/thumbnail/tests/storage/ballade.pdf",
+        "output_path": "/home/christian/SkoreFlow_Project/SkoreFlow/microservices/thumbnail/tests/storage/thumbnail_ballade.png",
         "max_size":256
       }'
 
 curl -X POST http://localhost:5001/thumbnail/create \
      -H "Content-Type: application/json" \
       -d '{
-        "input_path": "/home/christian/SkoreFlow_Project/SkoreFlow/microservice/thumbnail/tests/storage/ballade.pdf",
-        "output_path": "/home/christian/SkoreFlow_Project/SkoreFlow/microservice/thumbnail/tests/storage/thumbnail_ballade.png",
+        "input_path": "/home/christian/SkoreFlow_Project/SkoreFlow/microservices/thumbnail/tests/storage/ballade.pdf",
+        "output_path": "/home/christian/SkoreFlow_Project/SkoreFlow/microservices/thumbnail/tests/storage/thumbnail_ballade.png",
         "max_size":256,
         "log_level": "debug"
       }'
@@ -38,8 +38,8 @@ curl -X POST http://localhost:5001/thumbnail/create \
 curl -X POST http://localhost:5001/thumbnail/create \
      -H "Content-Type: application/json" \
       -d '{
-        "input_path": "/home/christian/SkoreFlow_Project/SkoreFlow/microservice/thumbnail/test/storage/Mozart.png",
-        "output_path": "/home/christian/SkoreFlow_Project/SkoreFlow/microservice/thumbnail/test/storage/thumbnail_Mozart_40.png",
+        "input_path": "/home/christian/SkoreFlow_Project/SkoreFlow/microservices/thumbnail/test/storage/Mozart.png",
+        "output_path": "/home/christian/SkoreFlow_Project/SkoreFlow/microservices/thumbnail/test/storage/thumbnail_Mozart_40.png",
         "max_size":40
       }'
 

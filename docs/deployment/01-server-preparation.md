@@ -10,6 +10,8 @@ Install the minimal tools required to manage and build SkoreFlow.
 At this stage, we do not install Go, Node.js or Nginx yet.
 We only prepare the operating system.
 
+With `ubuntu` account
+
 ### curl
 
 Used for downloading resources and testing HTTP endpoints.

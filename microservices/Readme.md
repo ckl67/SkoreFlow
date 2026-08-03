@@ -4,7 +4,7 @@ This directory will contain all microservices running on specific ports
 
 ## Multi-Module Version Isolation (Monorepo Strategy)
 
-In a multi-module environment (containing `backend/`, `frontend/`, and `microservice/*`), components must evolve independently without forcing version bumps on untouched code.
+In a multi-module environment (containing `backend/`, `frontend/`, and `microservices/*`), components must evolve independently without forcing version bumps on untouched code.
 
 ### The Problem with Single Global Tags
 
@@ -18,7 +18,7 @@ By scoping tags with the service path (e.g., `thumbnail/v1.1.0`), each service m
 Commit Hash  | Target Files Changed                  | Applied Tags
 --------------------------------------------------------------------------------------
 8f3a12d      | frontend/src/components/Button.tsx    | frontend/v1.0.1
-b4c90e1      | microservice/thumbnail/src/app.py     | thumbnail/v1.1.0
+b4c90e1      | microservices/thumbnail/src/app.py    | thumbnail/v1.1.0
 a1b2c3d      | backend/cmd/main.go & thumbnail/      | backend/v2.0.1 , thumbnail/v1.2.0
 ```
 

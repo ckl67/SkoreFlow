@@ -15,7 +15,7 @@ At the end of this step:
 
 The reverse proxy (Nginx) and HTTPS configuration are covered in the next document.
 
----
+## With `ubuntu` account
 
 ## Step 1 — Backend service
 
@@ -76,16 +76,16 @@ Group=skoreflow
 
 WorkingDirectory=/opt/skoreflow/microservices/thumbnail
 
-ExecStart=/opt/skoreflow/microservices/thumbnail/.venv/bin/python app.py
+ExecStart=/usr/bin/make run
 
 Restart=always
 RestartSec=5
 
+Environment="PATH=/opt/skoreflow/microservices/thumbnail/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin"
+
 [Install]
 WantedBy=multi-user.target
 ```
-
-> Adjust the `ExecStart` command if your thumbnail service uses a different entry point.
 
 ---
 
@@ -152,29 +152,29 @@ Active: active (running)
 Display backend logs:
 
 ```bash
-journalctl -u skoreflow-backend
+sudo journalctl -u skoreflow-backend
 ```
 
 Display thumbnail service logs:
 
 ```bash
-journalctl -u skoreflow-thumbnail
+sudo journalctl -u skoreflow-thumbnail
 ```
 
 Follow logs in real time:
 
 ```bash
-journalctl -fu skoreflow-backend
+sudo journalctl -fu skoreflow-backend
 ```
 
 ```bash
-journalctl -fu skoreflow-thumbnail
+sudo journalctl -fu skoreflow-thumbnail
 ```
 
 Show the latest 100 log entries:
 
 ```bash
-journalctl -u skoreflow-backend -n 100
+sudo journalctl -u skoreflow-backend -n 100
 ```
 
 ---
@@ -262,3 +262,17 @@ At this stage:
 The SkoreFlow application is now running as managed Linux services.
 
 The next document covers the reverse proxy configuration with Nginx and HTTPS.
+
+## Checking
+
+Check the thumbnail health endpoint.
+
+```bash
+curl http://localhost:5001/health
+```
+
+Check the backend health endpoint.
+
+```bash
+curl http://localhost:8080/api/health
+```

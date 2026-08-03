@@ -32,12 +32,12 @@ func CheckThumbnailService(url string) error {
 
 	resp, err := client.Do(req)
 	if err != nil {
-		return fmt.Errorf("microservice/thumbnail unreachable: %w", err)
+		return fmt.Errorf("microservices/thumbnail unreachable: %w", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("microservice/thumbnail unhealthy: status=%d", resp.StatusCode)
+		return fmt.Errorf("microservices/thumbnail unhealthy: status=%d", resp.StatusCode)
 	}
 
 	var result MicroserviceHealth
@@ -46,7 +46,7 @@ func CheckThumbnailService(url string) error {
 	}
 
 	if result.Status != "ok" {
-		return fmt.Errorf("microservice/thumbnail not ready (status=%s)", result.Status)
+		return fmt.Errorf("microservices/thumbnail not ready (status=%s)", result.Status)
 	}
 
 	return nil

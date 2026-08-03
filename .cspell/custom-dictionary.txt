@@ -15,7 +15,7 @@ ldflags
 logfile
 mailpit
 MAINLAYOUT
-microservice
+microservices
 netgo
 NTFS
 omitempty

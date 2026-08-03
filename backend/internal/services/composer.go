@@ -545,7 +545,7 @@ func (s *ComposerService) GenerateResizedImage(fullFilePath string, fullThumbnai
 		fullFilePath,
 		fullThumbnailPath,
 		maxSize,
-		logger.GetModuleLevel("microservice"),
+		logger.GetModuleLevel("microservices"),
 	)
 	if res {
 		return nil

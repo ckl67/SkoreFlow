@@ -1,3 +1,5 @@
+<!-- cspell:ignore gofumpt  -->
+
 # VS Code Setup Guide – SkoreFlow (Linux)
 
 [← back](../doc.md)
@@ -72,7 +74,7 @@ SkoreFlow/
 ├── backend/        # Go API
 ├── frontend/       # React (Vite)
 ├── testauto/       # Tests (Vitest)
-├── microservice/   # Python and others
+├── microservices/   # Python and others
 ├── docs/           # Documentation
 ├── package.json    # Root config
 ```

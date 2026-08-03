@@ -14,16 +14,16 @@ import (
 
 // -----------------------------------------------------------------------------
 // RequestThumbnail
-// Sends a file to Python microservice and returns success/failure
+// Sends a file to Python microservices and returns success/failure
 // -----------------------------------------------------------------------------
 
 func RequestThumbnail(inputPath string, outputPath string, maxSize int, logLevel string) bool {
 
 	// ---------------------------------------------------------
-	// 0. Microservice URL (from config)
+	// 0. Microservices URL (from config)
 	// ---------------------------------------------------------
-	// 0. Prepare microservice URL from config
-	msConfig := config.Config().MicroService
+	// 0. Prepare microservices URL from config
+	msConfig := config.Config().MicroServices
 	url := fmt.Sprintf(
 		"%s/thumbnail/create",
 		msConfig.ThumbnailServiceURL,
@@ -33,16 +33,16 @@ func RequestThumbnail(inputPath string, outputPath string, maxSize int, logLevel
 	// 1. Normalize paths (avoid relative path issues)
 	// ---------------------------------------------------------
 	absInputPath, err := filepath.Abs(inputPath)
-	//logger.MicroService.Debug("(RequestThumbnail):: absInputPath %s", absInputPath)
+	//logger.MicroServices.Debug("(RequestThumbnail):: absInputPath %s", absInputPath)
 	if err != nil {
-		logger.MicroService.Error("(RequestThumbnail):: failed to resolve input path: %v", err)
+		logger.MicroServices.Error("(RequestThumbnail):: failed to resolve input path: %v", err)
 		return false
 	}
 
 	absOutputPath, err := filepath.Abs(outputPath)
-	//logger.MicroService.Debug("(RequestThumbnail):: absOutputPath %s", absOutputPath)
+	//logger.MicroServices.Debug("(RequestThumbnail):: absOutputPath %s", absOutputPath)
 	if err != nil {
-		logger.MicroService.Error("(RequestThumbnail):: failed to resolve thumbnail path: %v", err)
+		logger.MicroServices.Error("(RequestThumbnail):: failed to resolve thumbnail path: %v", err)
 		return false
 	}
 
@@ -58,7 +58,7 @@ func RequestThumbnail(inputPath string, outputPath string, maxSize int, logLevel
 
 	jsonData, err := json.Marshal(payload)
 	if err != nil {
-		logger.MicroService.Error("(RequestThumbnail):: failed to marshal JSON payload: %v", err)
+		logger.MicroServices.Error("(RequestThumbnail):: failed to marshal JSON payload: %v", err)
 		return false
 	}
 
@@ -76,7 +76,7 @@ func RequestThumbnail(inputPath string, outputPath string, maxSize int, logLevel
 		bytes.NewBuffer(jsonData),
 	)
 	if err != nil {
-		logger.MicroService.Error("(RequestThumbnail):: failed to create request: %v", err)
+		logger.MicroServices.Error("(RequestThumbnail):: failed to create request: %v", err)
 		return false
 	}
 
@@ -87,7 +87,7 @@ func RequestThumbnail(inputPath string, outputPath string, maxSize int, logLevel
 	// ---------------------------------------------------------
 	resp, err := client.Do(req)
 	if err != nil {
-		logger.MicroService.Error("(RequestThumbnail):: microservice unreachable: %v", err)
+		logger.MicroServices.Error("(RequestThumbnail):: microservice unreachable: %v", err)
 		return false
 	}
 	defer resp.Body.Close()
@@ -97,7 +97,7 @@ func RequestThumbnail(inputPath string, outputPath string, maxSize int, logLevel
 	// ---------------------------------------------------------
 	body, _ := io.ReadAll(resp.Body)
 	if resp.StatusCode != http.StatusOK {
-		logger.MicroService.Error(
+		logger.MicroServices.Error(
 			"(RequestThumbnail):: thumbnail microservice (%d): %s",
 			resp.StatusCode,
 			string(body),
@@ -114,11 +114,11 @@ func RequestThumbnail(inputPath string, outputPath string, maxSize int, logLevel
 	}
 
 	if err := json.NewDecoder(resp.Body).Decode(&result); err == nil {
-		logger.MicroService.Debug("(RequestThumbnail):: thumbnail result: %s", result.Message)
+		logger.MicroServices.Debug("(RequestThumbnail):: thumbnail result: %s", result.Message)
 		return false
 	}
 
-	logger.MicroService.Debug("(RequestThumbnail):: thumbnail successfully generated: %s", absOutputPath)
+	logger.MicroServices.Debug("(RequestThumbnail):: thumbnail successfully generated: %s", absOutputPath)
 
 	return true
 }

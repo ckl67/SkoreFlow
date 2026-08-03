@@ -54,30 +54,30 @@ func (server *Server) Setup(version string, db *gorm.DB) {
 
 	cfg := config.Config()
 	// ----------------------------------------------------
-	// 1. Microservice healthcheck (CRITICAL DEPENDENCY)
+	// 1. Microservices healthcheck (CRITICAL DEPENDENCY)
 	// ----------------------------------------------------
 
-	healthURL := fmt.Sprintf("%s/health", cfg.MicroService.ThumbnailServiceURL)
+	healthURL := fmt.Sprintf("%s/health", cfg.MicroServices.ThumbnailServiceURL)
 
 	for i := 0; i < 5; i++ {
 		err := probe.CheckThumbnailService(healthURL)
 		if err == nil {
-			logger.Server.Info("microservice/thumbnail ready")
+			logger.Server.Info("microservices/thumbnail ready")
 			break
 		}
 
-		logger.Server.Warn("microservice/thumbnail not ready, retrying... (%d/5)", i+1)
+		logger.Server.Warn("microservices/thumbnail not ready, retrying... (%d/5)", i+1)
 		time.Sleep(2 * time.Second)
 	}
 
 	err := probe.CheckThumbnailService(healthURL)
 	if err != nil {
-		logger.Server.Error("(Setup) microservice/thumbnail not available: %v", err)
+		logger.Server.Error("(Setup) microservices/thumbnail not available: %v", err)
 		// Option A: continue anyway
 		// Option B: panic (Not recommended)
 		// panic(err)
 	} else {
-		logger.Server.Info("(Setup) microservice/thumbnail is healthy")
+		logger.Server.Info("(Setup) microservices/thumbnail is healthy")
 	}
 
 	// ----------------------------------------------------

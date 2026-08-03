@@ -1,3 +1,5 @@
+<!-- cspell:ignore gunicorn -->
+
 # Home
 
 ## Welcome
@@ -83,7 +85,7 @@ The document can also be consulted locally in 'visual studio code' via the integ
 
 ### Microservices
 
-- [Microservice](./microservices/microservice.md)
+- [Microservices](./microservices/microservices.md)
 - [gunicorn](./microservices/gunicorn.md)
   - [thumbnail](./microservices/thumbnail/installation.md)
 
@@ -112,7 +114,7 @@ The document can also be consulted locally in 'visual studio code' via the integ
 - [SkoreFlow Sandbox](./sandbox/sandbox.md)
   - [backend](./sandbox/backend.md)
   - [frontend](./sandbox/frontend.md)
-  - [thumbnail service](./sandbox/microservice/thumbnail.md)
+  - [thumbnail service](./sandbox/microservices/thumbnail.md)
 
 ### Contribution
 

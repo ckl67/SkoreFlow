@@ -124,5 +124,5 @@
 
   // Testing python
   "python.testing.pytestEnabled": true,
-  "python.testing.pytestArgs": ["microservice/thumbnail/tests"]
+  "python.testing.pytestArgs": ["microservices/thumbnail/tests"]
 }

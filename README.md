@@ -29,7 +29,7 @@ Skoreflow can currently be tested in a [Sandbox](..)
 SkoreFlow is actively under development and improvement on
 
 - Backend:
-- Microservice:
+- Microservices:
 - Frontend:
 - Features:
 - Documentation:
@@ -46,7 +46,7 @@ Contributions and feedback are welcome.
 ├── backend
 ├── docs
 ├── frontend
-├── microservice
+├── microservices
 ├── node_modules
 ├── shared
 ├── testauto
@@ -76,7 +76,7 @@ SkoreFlow/
 ├── backend/              # Go backend
 ├── frontend/             # React (Vite)
 │ └── package.json
-├── microservice/         # Python or other
+├── microservices/         # Python or other
 ├── testauto/
 │ ├── backend/
 ├── docs/
@@ -96,7 +96,7 @@ SkoreFlow/
 ## 📍Local Services
 
 - Backend Go : localhost:8080
-- MicroService thumbnail : localhost:5010
+- MicroServices thumbnail : localhost:5010
 - Frontend React : localhost:5173
 - MailPit SMTP : localhost:1025
 - Interface Mail : localhost:8025

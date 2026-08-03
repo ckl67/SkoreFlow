@@ -29,7 +29,7 @@ The Gunicorn server is broadly compatible with various web frameworks, simply im
 ### Create the virtual environment
 
 ```shell
-# In directory  microservice/thumbnail/
+# In directory  microservices/thumbnail/
 python3 -m venv venv
 ```
 
@@ -66,7 +66,7 @@ And start again with installation !
 ## Update
 
 ```shell
-./venv/bin/pip install -r microservice/requirements.txt
+./venv/bin/pip install -r microservices/requirements.txt
 ```
 
 ## Uninstall
@@ -91,7 +91,7 @@ python app.py
 
 ## For test
 
-In directory : microservice/thumbnail/test$
+In directory : microservices/thumbnail/test$
 
 ```shell
 python3 -m venv venv

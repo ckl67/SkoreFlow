@@ -15,7 +15,7 @@
     "vmf": "npm run vm:frontend",
     "debug": "concurrently -k -n \"THUMB,BACK,FRONT\" -c \"magenta,blue,cyan\" \"npm:dev:thumbnail\" \"npm:test:backend:debug\" \"npm:vm:frontend\"",
     "-- 🐍 MICROSERVICES --": "",
-    "dev:thumbnail": "cd microservice/thumbnail && make run",
+    "dev:thumbnail": "cd microservices/thumbnail && make run",
     "-- 🐹🌀 BACKEND DEV --": "",
     "dev:backend": "cd backend && make air-dev",
     "dev:backend:run": "cd backend && make run-dev",
