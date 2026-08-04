@@ -2,6 +2,8 @@
 
 # Server preparation
 
+[← back](../doc.md)
+
 ## Step 1 — Install base system packages
 
 Objective

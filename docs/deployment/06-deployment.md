@@ -2,6 +2,8 @@
 
 # Deployment
 
+[← back](../doc.md)
+
 ## Objective
 
 This document describes the standard deployment procedure for updating a production SkoreFlow server.

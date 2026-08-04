@@ -1,4 +1,8 @@
+<!-- cspell:ignore  -->
+
 # SkoreFlow update
+
+[← back](../doc.md)
 
 ## Objective
 

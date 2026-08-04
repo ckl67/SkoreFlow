@@ -1,3 +1,5 @@
+<!-- cspell:ignore autonumber -->
+
 # 🌐 CORS Configuration Guide - SkoreFlow Backend
 
 [← back](../doc.md)

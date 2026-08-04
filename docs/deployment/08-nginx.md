@@ -2,6 +2,8 @@
 
 # Nginx configuration
 
+[← back](../doc.md)
+
 ## Objective
 
 Nginx is a high-performance web server, reverse proxy and load balancer.

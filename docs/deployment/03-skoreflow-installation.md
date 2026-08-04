@@ -1,4 +1,8 @@
+<!-- cspell:ignore  -->
+
 # SkoreFlow installation
+
+[← back](../doc.md)
 
 ## Objective
 

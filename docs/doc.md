@@ -109,12 +109,18 @@ The document can also be consulted locally in 'visual studio code' via the integ
 
 - [Shared data](./shared/shared.md)
 
-### Sandbox
+### Sandbox deployment
 
-- [SkoreFlow Sandbox](./sandbox/sandbox.md)
-  - [backend](./sandbox/backend.md)
-  - [frontend](./sandbox/frontend.md)
-  - [thumbnail service](./sandbox/microservices/thumbnail.md)
+- [secret](./deployment/00-secret.md)
+- [server inventory](./deployment/00-server-inventory.md)
+- [server preparation](./deployment/01-server-preparation.md)
+- [runtime installation](./deployment/02-runtime-installation.md)
+- [skoreflow installation](./deployment/03-skoreflow-installation.md)
+- [skoreflow update](./deployment/04-skoreflow-update.md)
+- [system services](./deployment/05-system-services.md)
+- [deployment](./deployment/06-deployment.md)
+- [dns mail server](./deployment/07-dns-mailserver-lws.md)
+- [nginx](./deployment/08-nginx.md)
 
 ### Contribution
 

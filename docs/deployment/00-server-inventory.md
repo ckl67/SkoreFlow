@@ -1,4 +1,8 @@
+<!-- cspell:ignore tulpn    -->
+
 # Server Inventory
+
+[← back](../doc.md)
 
 ## Objective
 

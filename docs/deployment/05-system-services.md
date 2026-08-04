@@ -2,6 +2,8 @@
 
 # System services
 
+[← back](../doc.md)
+
 ## Objective
 
 This document configures SkoreFlow to run as Linux services using **systemd**.

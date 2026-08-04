@@ -1,6 +1,8 @@
-<!-- cspell:ignore Poppler -->
+<!-- cspell:ignore Poppler pdfinfo pdftoppm -->
 
 # Runtime installation
+
+[← back](../doc.md)
 
 ## Objective
 
