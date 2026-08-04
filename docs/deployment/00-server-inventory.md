@@ -126,6 +126,7 @@ Administrative operations should instead be performed using `sudo`.
 The `ubuntu` account is the administrative user provided by the operating system.
 
 Although it is **not** the `root` user, it belongs to the `sudo` group and can temporarily obtain administrator privileges.
+For security reason VPS skoreflow access is denied `ssh skoreflow@137.74.168.176`
 
 Typical responsibilities include:
 
@@ -147,6 +148,22 @@ sudo systemctl daemon-reload
 
 sudo su - skoreflow
 ```
+
+Remark
+`sudo su - skoreflow`
+
+The - symbol means:
+
+- "opens a proper login session (login shell)"
+- This is almost the same as if skoreflow had logged in via SSH.
+- The system reloads:
+  - /etc/profile
+  - /etc/profile.d/\*
+  - ~/.profile
+
+`sudo su skoreflow`
+You switch users without creating a new login session (login shell).
+To avoid !!
 
 The `ubuntu` account should **not** own or execute the application.
 

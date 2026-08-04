@@ -22,20 +22,23 @@ TLS certificates will be installed in the next document.
 ## Architecture
 
 ```text
+
                  Internet
-                     │
-                     ▼
-                 Port 80
-                     │
-                 +---------+
-                 |  Nginx  |
-                 +---------+
-                  │       │
-        ----------       ----------
-        │                          │
-        ▼                          ▼
-Frontend (dist/)            Go Backend
-Static files                localhost:8080
+                    |
+                    v
+                Nginx :80
+                    |
+        +-----------+-----------+
+        |                       |
+        v                       v
+ Frontend React              Backend Go
+    /                          /api/*
+   dist/                   localhost:8080
+                                |
+                                v
+                        Thumbnail service
+                        localhost:5001
+
 ```
 
 ---
@@ -121,65 +124,65 @@ sudo nano /etc/nginx/sites-available/skoreflow
 
 Insert the following configuration:
 
-```nginx
+```shell
 server {
 
     listen 80;
-
-    server_name _;
+    server_name skoreflow-app.com;
 
     root /opt/skoreflow/frontend/dist;
     index index.html;
 
-    location / {
-        try_files $uri $uri/ /index.html;
-    }
 
+    # Backend API
     location /api/ {
-
-        proxy_pass http://127.0.0.1:8080/;
+        proxy_pass http://localhost:8080;
 
         proxy_http_version 1.1;
 
         proxy_set_header Host $host;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     }
 
+
+    # Frontend React
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
 }
 ```
 
-### Focus on the configuration
+Example
+`curl http://localhost/version` will ask Nginx for:
+
+GET /
+└── /version
+
+However, your current configuration says:
 
 ```shell
-    listen 80;        # Listening on the standard HTTP port (80)
-
-    server_name _;    # Responds to any domain name or IP address
-
-    root /opt/skoreflow/frontend/dist;
-    index index.html;
-
-    # Crucial for SPAs: Nginx first looks for the file ($uri),
-    # then the directory ($uri/). If it cannot find it, it always returns /index.html.
-    # This allows the JavaScript router (React Router, Vue Router, etc.) to handle front-end URLs.
-    location / {
-        try_files $uri $uri/ /index.html;
-    }
-
-    location /api/ {
-
-        proxy_pass http://127.0.0.1:8080/;  # Redirects /api/ requests to the backend on port 8080.
-                                            # The trailing slash '/' removes the '/api/' prefix from the request sent to the backend.
-
-        proxy_http_version 1.1;
-
-        proxy_set_header Host $host;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
+location / {
+    try_files $uri $uri/ /index.html;
+}
 ```
+
+So Nginx looks for: `/opt/skoreflow/frontend/dist/version`
+As it cannot find this file, it applies: `/index.html`
+
+### Focus on the configuration
+
+- `listen 80;`
+  - Listening on the standard HTTP port (80)
+- `server*name *;`
+  - Responds to any domain name or IP address
+- `location / {try_files $uri $uri/ /index.html; }`
+  - Crucial for SPAs: Nginx first looks for the file ($uri),
+  - then the directory ($uri/). If it cannot find it, it always returns /index.html.
+  - This allows the JavaScript router (React Router, Vue Router, etc.) to handle front-end URLs.
+- `location /api/ {proxy_pass http://127.0.0.1:8080/;`
+  - Redirects /api/ requests to the backend on port 8080.
+  - The trailing slash '/' removes the '/api/' prefix from the request sent to the backend.
 
 ### Focus on the headers
 

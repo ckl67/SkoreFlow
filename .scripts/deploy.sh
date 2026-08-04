@@ -1,4 +1,6 @@
-#!/usr/bin/env bash
+#!/bin/bash
+
+export PATH="/usr/local/go/bin:/usr/bin:/bin:$PATH"
 
 ####################################################
 # Deployment procedure for production server

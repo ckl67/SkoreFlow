@@ -187,6 +187,22 @@ func (server *Server) SetupRouter() {
 			c.JSON(http.StatusOK, gin.H{"version": server.Version})
 		})
 
+		api.GET("/info", func(c *gin.Context) {
+			cfg := config.Config()
+
+			c.JSON(http.StatusOK, gin.H{
+				"name":            "skoreflow",
+				"version":         server.Version,
+				"App Environment": cfg.AppEnv,
+				"ProtectionLevel": cfg.ProtectionLevel,
+				"ProjectRoot":     cfg.ProjectRoot,
+				"DataRoot":        cfg.DataRoot,
+				"testmode":        cfg.TestMode,
+				"frontend":        cfg.Frontend,
+				"microservices":   cfg.MicroServices,
+			})
+		})
+
 		// -------------------------------------------------------------------------------------------
 		// Public system endpoints - Authentication
 		// -------------------------------------------------------------------------------------------
