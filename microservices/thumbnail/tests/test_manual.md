@@ -8,10 +8,10 @@
 make run
 
 # Health
-curl http://localhost:5001/health
+curl http://localhost:5001/api/health
 
 #Version
-curl http://localhost:5001/version
+curl http://localhost:5001/api/version
 
 # Log level
 curl http://localhost:5001/loglevel
@@ -42,15 +42,5 @@ curl -X POST http://localhost:5001/thumbnail/create \
         "output_path": "/home/christian/SkoreFlow_Project/SkoreFlow/microservices/thumbnail/test/storage/thumbnail_Mozart_40.png",
         "max_size":40
       }'
-
-```
-
-## sandbox
-
-For render.com
-
-```shell
-
-curl https://thumbnail-tgzi.onrender.com/health
 
 ```

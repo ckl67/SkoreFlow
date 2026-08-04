@@ -13,14 +13,14 @@ describe('🚦 Smoke Tests - API Basics', () => {
   });
 
   it('should pass health check', async () => {
-    const res = await request('GET', `${BASE_URL}/health`);
+    const res = await request('GET', `${BASE_URL}/api/health`);
 
     expect(res.status).toBe(200);
     expect(res.data).toBeTruthy();
   });
 
   it('should return version info', async () => {
-    const res = await request('GET', `${BASE_URL}/version`);
+    const res = await request('GET', `${BASE_URL}/api/version`);
 
     expect(res.status).toBe(200);
     expect(res.data).toBeTruthy();

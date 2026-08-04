@@ -1,3 +1,5 @@
+<!-- cspell:ignore Poppler -->
+
 # Runtime installation
 
 ## Objective

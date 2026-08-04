@@ -135,6 +135,8 @@ sudo systemctl status skoreflow-thumbnail
 Check the services
 
 ```bash
+# -f: Follows the log in real time (follow).
+# -u skoreflow-backend: Filters only events from the skoreflow-backend.service unit.
 
 sudo journalctl -fu skoreflow-thumbnail
 sudo journalctl -fu skoreflow-backend

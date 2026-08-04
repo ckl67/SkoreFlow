@@ -12,8 +12,9 @@ At the end of this step:
 - the thumbnail service starts automatically;
 - both services are automatically restarted if they unexpectedly stop;
 - application logs are available through `journalctl`.
-
-The reverse proxy (Nginx) and HTTPS configuration are covered in the next document.
+  - f: Follows the log in real time (follow).
+  - u skoreflow-backend: Filters only events from the skoreflow-backend.service unit.
+    The reverse proxy (Nginx) and HTTPS configuration are covered in the next document.
 
 ## With `ubuntu` account
 

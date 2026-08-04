@@ -47,6 +47,19 @@ Only the ownership must be assigned to the dedicated application user.
 The `storage` directory contains all persistent application data.
 
 ```text
+/opt/skoreflow
+│
+├── backend
+├── frontend
+├── microservices
+│   └── thumbnail
+└── storage
+    ├── database.db
+    ├── users
+    ├── composers
+    └── scores
+
+
 storage/
 │
 ├── database.db

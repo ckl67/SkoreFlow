@@ -107,7 +107,7 @@ func (server *Server) SetupRouter() {
 	// Custom logger configuration:
 	// Skip noisy endpoints (health checks, version)
 	r.Use(gin.LoggerWithConfig(gin.LoggerConfig{
-		SkipPaths: []string{"/health", "/version"},
+		SkipPaths: []string{"/api/health", "/api/version"},
 	}))
 
 	// r.Use(gin.Recovery()) — The Life Jacket
@@ -122,22 +122,6 @@ func (server *Server) SetupRouter() {
 	authCtrl := controllers.NewAuthController(server.authService)
 	scoreCtrl := controllers.NewScoreController(server.scoreService)
 	composerCtrl := controllers.NewComposerController(server.composerService)
-
-	// -------------------------------------------------------------------------------------------
-	// 5. Public system endpoints - Health - API Version - API Message
-	// -------------------------------------------------------------------------------------------
-
-	r.GET("/health", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"status": "OK"})
-	})
-
-	r.GET("/version", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"version": server.Version})
-	})
-
-	r.GET("/api", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"message": "API is running"})
-	})
 
 	// -------------------------------------------------------------------------------------------
 	// FOR DEBUGGING
@@ -187,6 +171,25 @@ func (server *Server) SetupRouter() {
 		// 	the route protected.PUT("/me/mail", userCtrl.UpdateMail)
 		// 	However, we prefer use the public route because the process is :change mail  --> logout --> Link email later
 		// ==============================================
+
+		// -------------------------------------------------------------------------------------------
+		// Public system endpoints - Health - API Version - API Message
+		// -------------------------------------------------------------------------------------------
+		api.GET("", func(c *gin.Context) {
+			c.JSON(http.StatusOK, gin.H{"message": "API is running"})
+		})
+
+		api.GET("/health", func(c *gin.Context) {
+			c.JSON(http.StatusOK, gin.H{"status": "OK"})
+		})
+
+		api.GET("/version", func(c *gin.Context) {
+			c.JSON(http.StatusOK, gin.H{"version": server.Version})
+		})
+
+		// -------------------------------------------------------------------------------------------
+		// Public system endpoints - Authentication
+		// -------------------------------------------------------------------------------------------
 
 		api.POST("/auth/register", middlewares.RateLimiter(1, 5), authCtrl.Register) // vitest -->   req/sec, burst 5
 		api.POST("/auth/register/confirm", authCtrl.ConfirmRegistration)             // vitest
