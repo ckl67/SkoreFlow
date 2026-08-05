@@ -12,7 +12,12 @@ It will also address the development environment, to cover the necessary tools, 
 
 Whether you're new to SkoreFlow or an experienced developer, this documentation will help you get started and contribute effectively to the project.
 
-The document can also be consulted locally in 'visual studio code' via the integrated browser [SkoreFlow document](http://127.0.0.1:3000/docs/index.html#/) - For that, it is essential that the "Live Server" has been started before manually : `ctrl Shift p` --> `Live Premier Start Server`
+The document can be consulted
+
+- locally in 'visual studio code' via preview
+- locally in 'visual studio code' or your browser via the integrated browser [SkoreFlow document](http://127.0.0.1:3000/docs/index.html#/)
+  - For that, it is essential that the "Live Server" has been started before manually : `ctrl Shift p` --> `Live Premier Start Server`
+- externally via github [SkoreFlow documentation](https://ckl67.github.io/SkoreFlow/)
 
 ## Table of Contents
 
@@ -109,18 +114,22 @@ The document can also be consulted locally in 'visual studio code' via the integ
 
 - [Shared data](./shared/shared.md)
 
+### Sandbox access
+
+- [sandbox](https://skoreflow-app.com/)
+
 ### Sandbox deployment
 
-- [secret](./deployment/00-secret.md)
-- [server inventory](./deployment/00-server-inventory.md)
-- [server preparation](./deployment/01-server-preparation.md)
-- [runtime installation](./deployment/02-runtime-installation.md)
-- [skoreflow installation](./deployment/03-skoreflow-installation.md)
-- [skoreflow update](./deployment/04-skoreflow-update.md)
-- [system services](./deployment/05-system-services.md)
-- [deployment](./deployment/06-deployment.md)
-- [dns mail server](./deployment/07-dns-mailserver-lws.md)
-- [nginx](./deployment/08-nginx.md)
+- [00-server inventory](./deployment/00-server-inventory.md)
+- [01-server preparation](./deployment/01-server-preparation.md)
+- [02-runtime installation](./deployment/02-runtime-installation.md)
+- [03-skoreflow installation](./deployment/03-skoreflow-installation.md)
+- [04-skoreflow update](./deployment/04-skoreflow-update.md)
+- [05-system services](./deployment/05-system-services.md)
+- [06-deployment](./deployment/06-deployment.md)
+- [07-dns mail server](./deployment/07-dns-mailserver-lws.md)
+- [08-nginx](./deployment/08-nginx.md)
+- [09-https](./deployment/09-https.md)
 
 ### Contribution
 

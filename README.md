@@ -20,7 +20,8 @@ SkoreFlow provides a structured pipeline to:
 
 ## 🧪 Sandbox
 
-Skoreflow can currently be tested in a [Sandbox](..)
+Skoreflow can currently be tested in a [Sandbox](https://skoreflow-app.com)
+which could become the final server to.
 
 ---
 
@@ -129,7 +130,7 @@ Open visual code, and open file `.code-workspace`
 ## 🌿 Contributions
 
 - To contribute, please use your **Own Branches** or **Feature Branches** and submit a **Pull Request**. Direct pushes to the main branch are not permitted.
-- See [CONTRIBUTING](./CONTRIBUTING.md) or [CONTRIBUTING (more details)](./docs/general/fork.md)
+- See [CONTRIBUTING](./CONTRIBUTING.md)
 
 ## 📄 License
 

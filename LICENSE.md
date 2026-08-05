@@ -1,3 +1,5 @@
+<!-- cspell:ignore Klugesherz -->
+
 # MIT License
 
 Copyright (c) 2026 Christian Klugesherz

@@ -91,7 +91,7 @@ It also applies when representing SkoreFlow in public spaces, such as:
 
 ## Reporting Issues
 
-If you experience or witness unacceptable behavior, please report it to: christian.klugesherz@gmail.com
+If you experience or witness unacceptable behavior, please report it to: `christian.klugesherz@gmail.com`
 
 All reports will be:
 
@@ -135,7 +135,6 @@ The following actions may be taken depending on the severity of the violation:
 
 ## Attribution
 
-This Code of Conduct is adapted from the Contributor Covenant, version 2.0:
-https://www.contributor-covenant.org/version/2/0/code_of_conduct.html
+This Code of Conduct is adapted from the Contributor Covenant, version 2.0: `https://www.contributor-covenant.org/version/2/0/code_of_conduct.html`
 
 Community enforcement guidelines are inspired by Mozilla’s Code of Conduct.

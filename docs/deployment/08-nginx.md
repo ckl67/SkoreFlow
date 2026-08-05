@@ -300,3 +300,76 @@ The production architecture is now:
 Nginx now serves the frontend and forwards API requests to the backend.
 
 The next document covers HTTPS configuration using Let's Encrypt and Certbot.
+
+## Relative API URLs
+
+When SkoreFlow is deployed behind Nginx, the frontend does **not** communicate directly with the backend.
+
+The browser sees a relative URL.
+As the page was loaded from: `http://137.74.168.176/`
+or : `https://skoreflow-app.com/`
+
+it automatically converts:
+`/api/auth/login`
+to:
+`http://137.74.168.176/api/auth/login`
+
+Instead of using an absolute API URL such as:
+
+```javascript
+export const config = {
+  apiUrl: import.meta.env.VITE_API_URL ?? 'http://localhost:8080/api',
+  testMode: import.meta.env.VITE_TEST_MODE === 'true',
+} as const;
+```
+
+```env
+VITE_API_URL=http://localhost:8080/api
+```
+
+the frontend simply uses:
+
+```env
+VITE_API_URL=/api
+```
+
+The `/api` path is a **relative URL**.
+
+When the browser executes a request such as:
+
+```text
+GET /api/auth/login
+```
+
+it automatically sends the request to the same host that served the frontend.
+
+For example:
+
+| Frontend URL                | Browser request                     |
+| --------------------------- | ----------------------------------- |
+| `http://137.74.168.176`     | `http://137.74.168.176/api/...`     |
+| `https://skoreflow-app.com` | `https://skoreflow-app.com/api/...` |
+
+Nginx then forwards the request to the backend:
+
+```text
+Browser
+    │
+    ▼
+https://skoreflow-app.com/api/...
+    │
+    ▼
+Nginx
+    │
+    ▼
+http://localhost:8080/api/...
+```
+
+This approach has several advantages:
+
+- the frontend never needs to know where the backend is running;
+- the backend can move to another host or port without modifying the frontend;
+- switching from HTTP to HTTPS requires no frontend changes;
+- the same frontend build works in development, staging, and production by only changing the reverse proxy configuration.
+
+Using relative API URLs is considered a best practice when a frontend is served through a reverse proxy.

@@ -2,113 +2,312 @@
 
 [← back](../doc.md)
 
-# SkoreFlow Infrastructure: DNS Setup & SMTP Configuration Guide
+# SkoreFlow Infrastructure: DNS and Email Configuration
 
-This document provides a comprehensive overview of the domain resolution layer (DNS) and the transaction email architecture (SMTP) configured for `skoreflow-app.com`.
+## Objective
 
----
+This document describes the DNS and email infrastructure configuration required for SkoreFlow production deployment.
 
-## Part 1: Domain Name System (DNS) Architecture
+The objectives are:
 
-### 1. Fundamental Principles
+- expose the web application through the public domain;
+- keep email services managed by the external mail provider;
+- configure the DNS records required for reliable email delivery;
+- prepare the infrastructure required by the backend email service.
 
-The **Domain Name System (DNS)** serves as the internet's directory service. It translates human-readable domain names (e.g., `skoreflow-app.com`) into computer-routable IP addresses (e.g., IPv4 `137.74.168.176`).
-
-When a client initiates a request to your application, the operating system queries authoritative Name Servers (NS) to resolve where traffic should be routed.
-
-### 2. Record Types Reference
-
-| Record Type | Designation         | Function & Behavior                                                                                   |
-| :---------- | :------------------ | :---------------------------------------------------------------------------------------------------- |
-| **A**       | Address Record      | Maps a hostname directly to a 32-bit **IPv4 address**.                                                |
-| **AAAA**    | IPv6 Address Record | Maps a hostname directly to a 128-bit **IPv6 address**.                                               |
-| **CNAME**   | Canonical Name      | Creates an **alias** pointing one domain name to another domain name (does not take an IP directly).  |
-| **NS**      | Name Server         | Specifies the **authoritative servers** responsible for serving DNS records for the domain.           |
-| **MX**      | Mail Exchange       | Directs inbound emails sent to your domain (`@skoreflow-app.com`) to the designated mail server.      |
-| **TXT**     | Text Record         | Holds arbitrary text; primarily utilized for email security protocols (**SPF**, **DKIM**, **DMARC**). |
+The application code responsible for sending emails is documented separately in the backend documentation.
 
 ---
 
-### 3. Production Zone DNS Configuration
+# Part 1 — DNS Architecture
 
-To route web traffic to your VPS while preserving email delivery capabilities through LWS, the active DNS table must be configured as follows:
+## 1. DNS fundamentals
 
-```text
-# --- WEB TRAFFIC (VPS Router) ---
-A       @                 137.74.168.176          # Directs root domain to VPS IP
-CNAME   www               @                       # Aliases [www.skoreflow-app.com](https://www.skoreflow-app.com) to root
+The **Domain Name System (DNS)** is the mechanism that translates human-readable domain names into network addresses.
 
-# --- MAIL SERVICES (LWS Infrastructure) ---
-A       mail              213.255.195.65          # LWS mail server IP
-MX      @                 10 mail.skoreflow-app.com. # Inbound mail delivery target
-TXT     @                 v=spf1 mx:skoreflow-app.com a:mail.skoreflow-app.com include:lws-hosting.com ~all
-TXT     dkim._domainkey   v=DKIM1; k=rsa; p=MIGf... # Outbound email signature verification
-
-# --- AUTHORITATIVE NAME SERVERS ---
-NS      @                 ns21.lwsdns.com.
-NS      @                 ns22.lwsdns.com.
-NS      @                 ns23.lwsdns.com.
-NS      @                 ns24.lwsdns.com.
-```
-
-## Part 2: Mail Server (SMTP) Integration & Go Implementation
-
-### Architectural Challenge: Port 587 (STARTTLS) vs. Port 465 (Direct SSL)
-
-When connecting a Go backend to an enterprise SMTP server like LWS (mail93.lwspanel.com), two primary connection mechanisms exist:
-
-- Port 587 (STARTTLS): The connection opens as plain unencrypted TCP, and then issues a STARTTLS command to upgrade the socket to TLS.
-- Port 465 (Implicit SSL/TLS): The connection establishes an immediate TLS handshake upon connecting, before any SMTP negotiation or SASL authentication begins.
-
-Standard Go library implementations (smtp.SendMail) assume Port 587 with STARTTLS. Because modern shared mail clusters enforce immediate TLS on dedicated ports, initiating a plain TCP connection often results in authentication failures (535 5.7.8 Error: authentication failed). 2. Technical Workflow of the Dual-Layer Test
-
-### Technical Workflow of the Dual-Layer Test
-
-The Go test handles secure email delivery through a dual-strategy implementation:
+Example:
 
 ```text
-
-+--------------------------------+
-                  |  Initiate TestSMTPServerLWS()  |
-                  +--------------------------------+
-                                   |
-                                   v
-                  +--------------------------------+
-                  |  Attempt 1: Port 465 (SSL)     |
-                  |  Call sendMailTLS()            |
-                  +--------------------------------+
-                                   |
-                         +---------+---------+
-                         |                   |
-                     [Success]            [Failure]
-                         |                   |
-                         v                   v
-                 +---------------+   +--------------------------------+
-                 |  Pass Test    |   |  Attempt 2: Port 587           |
-                 +---------------+   |  Fallback smtp.SendMail()      |
-                                     +--------------------------------+
-                                                     |
-                                           +---------+---------+
-                                           |                   |
-                                       [Success]            [Failure]
-                                           |                   |
-                                           v                   v
-                                   +---------------+   +---------------+
-                                   |  Pass Test    |   |  Fail Test    |
-                                   +---------------+   +---------------+
+skoreflow-app.com
+        |
+        v
+137.74.168.176
+        |
+        v
+SkoreFlow VPS
 ```
 
-### Key Components of the Go Helper Function
+When a user accesses:
 
-The custom sendMailTLS function bypasses smtp.SendMail limitations by establishing an implicit TLS connection:
+```text
+https://skoreflow-app.com
+```
 
-- tls.Dial("tcp", addr, config): Connects to mail93.lwspanel.com:465 with full SSL encryption enabled from byte zero.
-- smtp.NewClient(conn, serverName): Instantiates an SMTP protocol wrapper over the established encrypted TLS stream.
-- client.Auth(auth): Transmits PLAIN SASL authentication credentials securely over TLS.
-- client.Mail() / client.Rcpt() / client.Data(): Executes standard RFC 5321 envelope and payload transaction.
+the browser first resolves the domain through DNS, then connects to the server hosting the application.
 
-### Email Security Protocols Breakdown
+---
 
-- SPF (Sender Policy Framework): A TXT record listing IP addresses authorized to send emails on behalf of @skoreflow-app.com. Prevents IP spoofing.
-- DKIM (DomainKeys Identified Mail): A cryptographic public key stored in DNS (dkim.\_domainkey). The mail server signs outgoing headers with the corresponding private key to guarantee mail integrity during transport.
-- DMARC: Specifies how receiving servers (Gmail, Outlook) should handle emails that fail SPF or DKIM checks.
+# 2. DNS record types
+
+| Record | Name                | Purpose                                                  |
+| ------ | ------------------- | -------------------------------------------------------- |
+| A      | Address record      | Maps a hostname to an IPv4 address                       |
+| AAAA   | IPv6 address record | Maps a hostname to an IPv6 address                       |
+| CNAME  | Canonical name      | Creates an alias to another hostname                     |
+| MX     | Mail exchange       | Defines the mail server responsible for receiving emails |
+| TXT    | Text record         | Stores configuration data such as SPF, DKIM and DMARC    |
+| NS     | Name server         | Defines the authoritative DNS servers                    |
+
+---
+
+# 3. Production DNS architecture
+
+SkoreFlow uses two separate infrastructures:
+
+- the VPS hosts the web application;
+- LWS continues to provide email hosting.
+
+The domain therefore has two independent roles:
+
+```text
+                 skoreflow-app.com
+
+                         |
+        +----------------+----------------+
+        |                                 |
+        v                                 v
+
+    Web traffic                      Email services
+
+       VPS                              LWS
+137.74.168.176                 mail.skoreflow-app.com
+       |                                 |
+    Nginx                              SMTP
+       |
+ React + Go Backend
+```
+
+---
+
+# 4. DNS records
+
+Example production configuration:
+
+```text
+# ------------------------------------------------
+# WEB APPLICATION
+# ------------------------------------------------
+
+A       @                 137.74.168.176
+
+CNAME   www               @
+
+
+# ------------------------------------------------
+# EMAIL SERVICE (LWS)
+# ------------------------------------------------
+
+A       mail              213.255.195.65
+
+MX      @                 10 mail.skoreflow-app.com.
+
+
+# ------------------------------------------------
+# EMAIL SECURITY
+# ------------------------------------------------
+
+TXT     @
+
+v=spf1 mx:skoreflow-app.com a:mail.skoreflow-app.com include:lws-hosting.com ~all
+
+
+TXT     dkim._domainkey
+
+v=DKIM1; k=rsa; p=<public-key>
+
+
+TXT     _dmarc
+
+v=DMARC1; p=none
+```
+
+The exact values depend on the email provider configuration.
+
+---
+
+# Part 2 — Email Security
+
+Modern email delivery relies on three complementary mechanisms.
+
+## SPF
+
+**Sender Policy Framework**
+
+SPF defines which servers are allowed to send emails for a domain.
+
+Example:
+
+```text
+skoreflow-app.com
+        |
+        |
+        +-- authorized SMTP servers
+```
+
+Receiving servers check the sender IP against the SPF record.
+
+Purpose:
+
+- prevent domain spoofing;
+- improve email reputation.
+
+---
+
+## DKIM
+
+**DomainKeys Identified Mail**
+
+DKIM uses asymmetric cryptography.
+
+The mail server signs outgoing messages with a private key.
+
+The public key is published in DNS:
+
+```text
+dkim._domainkey.skoreflow-app.com
+```
+
+Receiving servers verify the signature.
+
+Purpose:
+
+- guarantee message integrity;
+- prove that the email was sent by an authorized server.
+
+---
+
+## DMARC
+
+**Domain-based Message Authentication, Reporting and Conformance**
+
+DMARC defines the policy applied when SPF or DKIM checks fail.
+
+Example:
+
+```text
+SPF failed
+        +
+DKIM failed
+        |
+        v
+DMARC policy applied
+```
+
+Possible policies:
+
+| Policy     | Meaning             |
+| ---------- | ------------------- |
+| none       | Monitoring only     |
+| quarantine | Treat as suspicious |
+| reject     | Reject the message  |
+
+During initial deployment, `p=none` is often recommended to monitor before enforcing stricter rules.
+
+---
+
+# Part 3 — SMTP configuration
+
+SkoreFlow uses an external SMTP provider.
+
+The backend connects to the SMTP server to send:
+
+- account confirmation emails;
+- password reset emails;
+- notification emails.
+
+The SMTP configuration is stored in backend environment variables.
+
+Example:
+
+```env
+SMTP_HOST=mail.provider.com
+SMTP_PORT=465
+SMTP_USER=<account>
+SMTP_PASSWORD=<password>
+SMTP_FROM=no-reply@skoreflow-app.com
+```
+
+Credentials must never be stored in the source repository.
+
+---
+
+# SMTP ports
+
+Two common SMTP submission modes exist.
+
+## Port 465 — Implicit TLS
+
+Connection starts directly with encryption.
+
+```text
+Client
+   |
+   | TLS handshake
+   |
+SMTP server
+```
+
+This is commonly used by hosted mail providers.
+
+---
+
+## Port 587 — STARTTLS
+
+Connection starts unencrypted, then upgrades to TLS.
+
+```text
+Client
+   |
+   | SMTP connection
+   |
+   | STARTTLS command
+   |
+   | TLS encryption
+   |
+SMTP server
+```
+
+The correct mode depends on the SMTP provider.
+
+---
+
+# Deployment checklist
+
+Before enabling email functionality:
+
+- [ ] MX record configured
+- [ ] SPF record configured
+- [ ] DKIM record configured
+- [ ] SMTP credentials created
+- [ ] Backend environment variables configured
+- [ ] Test email successfully delivered
+
+---
+
+# Conclusion
+
+The production email architecture is now separated from the application hosting architecture.
+
+The VPS is responsible for:
+
+- web hosting;
+- API hosting;
+- application execution.
+
+The mail provider is responsible for:
+
+- mailbox hosting;
+- SMTP delivery;
+- email reputation management.
+
+The backend only acts as an SMTP client.
