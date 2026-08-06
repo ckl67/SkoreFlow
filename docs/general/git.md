@@ -91,7 +91,17 @@ git fetch retrieves all the latest changes from the remote server (GitHub) and s
 ```bash
 git fetch origin
 git log HEAD..origin/main
+# afterwards you can make
+git merge origin/main
+# or
+git rebase origin/main
 ```
+
+After checking the git log, the decision is made at a easy:
+
+- `git rebase origin/main` --> If you have local commits that are out of sync and you want to keep a clean, linear history.
+- `git merge origin/main` --> If you have no local commits ahead
+  - **_Git will then perform a simple fast-forward, which is the same as a rebase_**
 
 ### pull
 
