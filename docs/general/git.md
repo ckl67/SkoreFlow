@@ -37,3 +37,72 @@
 |                                 | Reset completely to a commit (destructive)                         | `git reset --hard <commit>`                           |
 |                                 | Put changes aside temporarily                                      | `git stash`                                           |
 |                                 | Bring back stashed changes                                         | `git stash pop`                                       |
+
+## Quick summary
+
+### Updates branches
+
+From main to dev (locally)
+
+After switch `dev`
+
+- Override `dev` so that it is the same as `main`
+  - `git switch dev`
+  - `git reset --hard main`
+
+- Update the `dev` branch whilst **keeping** the work on the dev branch
+  - `dev` branch already contains work in progress or commits specific to `dev`:
+  - We want to merge the new changes from `main` into `dev` without losing the progress in dev.
+  - We have two main options:
+    - 1:
+      - `git switch dev`
+      - `git merge main`
+        - Combines the branch history into dev. If there are any differences, Git creates a merge commit.
+    - 2:
+      - `git switch dev`
+      - `git rebase main`
+      - In `dev`, replay the development commits on top of the current main branch.
+      - This avoids unnecessary merge commits and keeps the history linear.
+
+```text
+          (B) --- (C)  <-- main
+         /
+--- (A)
+         \
+          (X) --- (Y)  <-- dev (the branch you’re on)
+
+after rebase main dev will become
+
+                            |
+--- (A) --- (B) --- (C) ----+--- (X') --- (Y')  <-- dev (updated)
+
+```
+
+## git fetch vs Git pull
+
+### fetch
+
+git fetch retrieves all the latest changes from the remote server (GitHub) and saves them to your local remote branches
+
+- Effect:
+  - It never modifies your working directory or your actual local branches (main, dev).
+- Usage: This is a 100% safe way to see what has changed on the server without risking immediate conflicts.
+
+```bash
+git fetch origin
+git log HEAD..origin/main
+```
+
+### pull
+
+`git pull` performs two operations in a single command:
+
+```bash
+git fetch origin
+git merge origin/main
+```
+
+### Best practice
+
+You can configure `git pull` to perform a rebase rather than a merge using the command `git pull --rebase`,
+which helps to avoid unnecessary merge commits when you’re pulling in your colleagues’ work.

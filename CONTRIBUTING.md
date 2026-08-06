@@ -26,3 +26,38 @@ As the architecture is layered, you can contribute to the backend without touchi
 All contribution are welcome !
 
 ---
+
+## Git Workflow & Pull Request Policy
+
+To maintain a clean and linear Git history on the main branch, please follow these guidelines:
+
+### Local Configuration (Recommended)
+
+Before starting, we recommend setting up Git to rebase automatically when pulling updates:
+
+```Bash
+git config pull.rebase true
+# or manually
+git pull --rebase
+```
+
+### Branching & Commits
+
+Always create a dedicated branch for your feature or bug fix:
+
+```Bash
+git checkout -b feature/my-new-feature
+```
+
+Keep your feature branch updated with main using rebase instead of merge:
+
+```Bash
+git fetch origin
+git rebase origin/main
+```
+
+### . Submitting a Pull Request
+
+Open a Pull Request (PR) against the main branch once your code is ready and tested.
+
+Ensure all discussions and code reviews are resolved before requesting a merge.
