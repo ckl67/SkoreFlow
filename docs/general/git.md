@@ -38,6 +38,15 @@
 |                                 | Put changes aside temporarily                                      | `git stash`                                           |
 |                                 | Bring back stashed changes                                         | `git stash pop`                                       |
 
+## Summary of the golden rules
+
+- On the main branch:
+  - We Merge (Example git merge dev).
+- On the dev branch or a feature branch:
+  - We Rebase or Merge against the main branch (git rebase main).
+
+Important: WE will never use `git rebase dev` on main
+
 ## Quick summary
 
 ### Updates branches
@@ -63,6 +72,8 @@ After switch `dev`
       - `git rebase main`
       - In `dev`, replay the development commits on top of the current main branch.
       - This avoids unnecessary merge commits and keeps the history linear.
+
+### Principle of rebase
 
 ```text
           (B) --- (C)  <-- main
