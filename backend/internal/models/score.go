@@ -1,3 +1,4 @@
+//cspell:ignore GORM
 package models
 
 // ===============================================================================================
@@ -13,21 +14,9 @@ import (
 )
 
 // Score represents a musical score stored in the database.
+// via : OnDelete:RESTRICT
 //
-// Notes:
-// - GORM tags (gorm:"...") define database schema and constraints.
-// - JSON tags (json:"...") define API serialization.
-//
-// Compatibility:
-// - Tags and Categories are stored as JSON strings for cross-database support.
-//
-// Constraints:
-//   - Unique index on (safe_score_name, composer_id, uploader_id)
-//     ensures no duplicate score per user/composer pair.
-//
-// File Storage:
-// - FilePath and ThumbnailPath store full file paths.
-
+//	We cannot delete the composer whilst there are scores that reference them.
 type Score struct {
 	ID            uint32 `gorm:"primary_key;auto_increment" json:"id"`
 	ScoreName     string `gorm:"size:255;not null" json:"score_name"`

@@ -1,3 +1,4 @@
+// cspell:ignore gorm	storagepath
 package services
 
 // APPLICATION ARCHITECTURE
@@ -50,11 +51,10 @@ func NewComposerService(db *gorm.DB, paths *storagepath.Paths) *ComposerService 
 func (s *ComposerService) CreateComposer(uid uint32, userRole int, req forms.CreateComposerRequest) (*models.Composer, error) {
 	logger.Composer.Debug("(CreateComposer Service) UID=%d Role=%d Name=%s", uid, userRole, req.Name)
 
+	// Everyone can create a composer, but only admin and moderator can validate verification
 	// 1. Authorization check
 	isAdmin := userRole == domain.RoleAdmin
 	isModerator := userRole == domain.RoleModerator
-
-	// Everyone can create a composer, but only admin and moderator can validate verification
 
 	// 2. Mandatory fields validation
 	if req.Name == "" {
@@ -68,9 +68,9 @@ func (s *ComposerService) CreateComposer(uid uint32, userRole int, req forms.Cre
 	composer := models.Composer{
 		Name:        req.Name,
 		SafeName:    safeName,
-		Epoch:       req.Epoch,
-		ExternalURL: req.ExternalURL,
 		Picture:     "composers/default.png",
+		ExternalURL: req.ExternalURL,
+		Epoch:       req.Epoch,
 		IsVerified:  false,
 		IsDemo:      false,
 	}
@@ -87,7 +87,7 @@ func (s *ComposerService) CreateComposer(uid uint32, userRole int, req forms.Cre
 		composer.IsVerified = req.IsVerified
 	}
 
-	// 4. File processing (optional)
+	// 4. File processing
 	if err := s.ProcessComposerStorage(&composer, req.File); err != nil {
 		return nil, err
 	}

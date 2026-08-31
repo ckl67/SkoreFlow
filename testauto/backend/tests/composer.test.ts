@@ -1,3 +1,4 @@
+// cspell:ignore unverify
 import path from 'path';
 import { beforeAll, describe, expect, it } from 'vitest';
 
@@ -47,25 +48,6 @@ describe('🎼 Composer API - From the User Point of view', () => {
       password: 'password123',
     });
     TOKEN_MODERATOR1 = res.data.data!.token;
-  });
-
-  // ----------------------------------------------------------------------------
-  // SETUP
-  // ----------------------------------------------------------------------------
-  beforeAll(async () => {});
-
-  // ----------------------------------------------------------------------------
-  // LOGIN
-  // ----------------------------------------------------------------------------
-  it('should confirm login of pre seeded user', async () => {
-    const resLogin = await login({
-      email: 'user1@test.com',
-      password: 'password123',
-    });
-
-    expect(resLogin.status).toBe(200);
-
-    TOKEN_USER1 = resLogin.data.data!.token;
   });
 
   // ----------------------------------------------------------------------------

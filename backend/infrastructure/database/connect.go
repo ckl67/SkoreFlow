@@ -57,16 +57,16 @@ func ConnectDB(cfg config.ServerConfig) *gorm.DB {
 
 		// MkdirAll ensures that the DataRoot directory exists before attempting to create the SQLite database file.
 		// It can create multiple levels of directories if they do not exist.
-		if err := os.MkdirAll(cfg.DataRoot, 0755); err != nil {
+		if err := os.MkdirAll(cfg.Paths.DataRoot, 0755); err != nil {
 			logger.DB.Fatal("unable to create data directory: %v", err)
 		}
 
 		// Check if the DataRoot directory exists before proceeding to create the SQLite database file.
-		if _, err := os.Stat(cfg.DataRoot); err != nil {
+		if _, err := os.Stat(cfg.Paths.DataRoot); err != nil {
 			logger.DB.Fatal("DataRoot does not exist: %v", err)
 		}
 
-		dbPath := filepath.Join(cfg.DataRoot, "database.db")
+		dbPath := filepath.Join(cfg.Paths.DataRoot, "database.db")
 		logger.DB.Info("SQLite database file path: %s", dbPath)
 		db, err = gorm.Open(sqlite.Open(dbPath), dbConfig)
 

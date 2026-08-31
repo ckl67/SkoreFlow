@@ -1,5 +1,10 @@
+// cspell:ignore GORM gonic
 package api
 
+// ===============================================================================================
+// PIPELINE
+// ===============================================================================================
+//	HTTP REQUEST ->	ROUTER -> CONTROLLER -> FORM (validation) -> SERVICE (business logic) -> MODEL (DB) ->  DTO -> RESPONSE JSON
 // ===============================================================================================
 // APPLICATION ARCHITECTURE
 // ===============================================================================================
@@ -7,9 +12,9 @@ package api
 // -------------------|----------------|----------------------------------------------------------
 // TRANSPORT          | controllers/   | Handles HTTP requests, extracts files and JSON data.
 //                    | forms/         | Delegates validation/binding to forms.
-//                    |                | No business logic, no DB access.
+//                    | dto/           | Data Output Control
 //                    |                |
-// ORCHESTRATION      | services/       | Business "Brain". Aware of the models.
+// ORCHESTRATION      | services/      | Business "Brain". Aware of the models.
 //                    |                | Coordinates storage, thumbnails, and business rules.
 //                    |                |
 // PERSISTENCE        | models/        | Handles database only (SQL via GORM).
@@ -18,24 +23,10 @@ package api
 // INFRASTRUCTURE     | utils/         | "Atomic" functions, "blind" to business logic.
 //                    |                | (Disk I/O, network calls, file manipulation).
 // ===============================================================================================
-//
-// PIPELINE
-//
-//
-//		HTTP REQUEST
-//		   ↓
-//		ROUTER
-//		   ↓
-//		CONTROLLER (transport)
-//		   ↓
-//		FORM (validation)
-//		↓
-//		SERVICE (business logic)
-//		   ↓
-//		MODEL (DB)
-//		↓
-//		RESPONSE JSON
-//
+// FOR DEBUGGING
+// ===============================================================================================
+// Gin never re-executes these lines.
+// SET the Breakpoints in the controllers !
 // ===============================================================================================
 
 import (
@@ -53,7 +44,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// SetupRouter initializes all HTTP routes and middleware for the API server.
 func (server *Server) SetupRouter() {
 	// -------------------------------------------------------------------------------------------
 	// 1. Gin mode configuration
@@ -69,19 +59,16 @@ func (server *Server) SetupRouter() {
 	r := gin.New()
 
 	// -------------------------------------------------------------------------------------------
-	// 3. Global middleware
-	// --> Mandatory to declare all the Middleware here !
+	// 3. Global middleware --> Mandatory to declare all the Middleware here !
 	// -------------------------------------------------------------------------------------------
-
 	// Base middlewares
-
 	// CORS configuration (required for cross-origin frontend) --> see document cors.md
 	// Parameter Purpose
-	//  - AllowOrigins Lists the domains permitted to contact the API (e.g., http://localhost:5173).
+	//  - AllowOrigins : List of browser allowed to call the backend (e.g., http://localhost:5173).
 	//  - AllowMethods Defines which HTTP verbs are allowed (GET, POST, etc.).
 	//  - AllowHeaders Permits specific headers like Authorization (essential for JWT tokens).
 	//  - AllowCredentials Allows the exchange of cookies or authentication headers between front and back.
-	//  - MaxAge Tells the browser how long (12h) to cache the "Preflight" response. 3. Configuration via Environment Variables
+	//  - MaxAge Tells the browser how long (12h) to cache the "Preflight" response.
 
 	rawOrigins := strings.Split(config.Config().Frontend.CorsAllowedOrigins, ",")
 
@@ -99,12 +86,12 @@ func (server *Server) SetupRouter() {
 	})
 
 	r.Use(corsMiddleware)
-	logger.Server.Info("CORS origin READING = %q", origins)
+	logger.Server.Info("CORS origin = %q", origins)
 
-	// Gin Logger
-	// r.Use(gin.Logger()) <-- has been removed otherwise we will have double logs
-
-	// Custom logger configuration:
+	// -------------------------------------------------------------------------------------------
+	// 4. Gin Logger
+	// -------------------------------------------------------------------------------------------
+	// Custom logger configuration (Only one to avoid double logs !)
 	// Skip noisy endpoints (health checks, version)
 	r.Use(gin.LoggerWithConfig(gin.LoggerConfig{
 		SkipPaths: []string{"/api/health", "/api/version"},
@@ -115,7 +102,7 @@ func (server *Server) SetupRouter() {
 	r.Use(gin.Recovery())
 
 	// -------------------------------------------------------------------------------------------
-	// 4. Controller instantiation
+	// 5. Controller instantiation
 	// -------------------------------------------------------------------------------------------
 	// Controllers act as HTTP adapters → they depend on services
 	userCtrl := controllers.NewUserController(server.userService)
@@ -124,14 +111,9 @@ func (server *Server) SetupRouter() {
 	composerCtrl := controllers.NewComposerController(server.composerService)
 
 	// -------------------------------------------------------------------------------------------
-	// FOR DEBUGGING
-	// Gin never re-executes these lines. They have already been used to record the routes.
-	// SET the Breakpoints in the controllers !
-	// -------------------------------------------------------------------------------------------
 	// 6. API grouping
-	//		Or by versioning
-	// 			v1 := api.Group("/v1")
-	// 			v1.POST("/register", authCtrl.Register)
+	// 	versioning possible
+	// 		api := api.Group("/v1")
 	// -------------------------------------------------------------------------------------------
 	api := r.Group("/api")
 	{
@@ -151,7 +133,6 @@ func (server *Server) SetupRouter() {
 		//    → backend validates token and sets IsVerified=true
 		// 3. Optional: POST /register/request_confirmation {email}
 		//    → re-sends confirmation email if user did not receive it
-		//		Remark : Do not confuse user's IsVerified with composer's IsVerified, the second one indicate that it has been confirmed by moderator or admin
 		//
 		// Login Flow:
 		// -----------
@@ -191,15 +172,14 @@ func (server *Server) SetupRouter() {
 			cfg := config.Config()
 
 			c.JSON(http.StatusOK, gin.H{
-				"name":            "skoreflow",
-				"version":         server.Version,
-				"App Environment": cfg.AppEnv,
-				"ProtectionLevel": cfg.ProtectionLevel,
-				"ProjectRoot":     cfg.ProjectRoot,
-				"DataRoot":        cfg.DataRoot,
-				"testmode":        cfg.TestMode,
-				"frontend":        cfg.Frontend,
-				"microservices":   cfg.MicroServices,
+				"name":               "skoreflow",
+				"version":            server.Version,
+				"App Environment":    cfg.AppEnv,
+				"DevelopmentRuntime": cfg.DevelopmentRuntime,
+				"Security":           cfg.Security,
+				"Paths":              cfg.Paths,
+				"frontend":           cfg.Frontend,
+				"microservices":      cfg.MicroServices,
 			})
 		})
 
@@ -302,16 +282,16 @@ func (server *Server) SetupRouter() {
 				adminRoutes.PUT("/admin/users/:id", userCtrl.AdminUpdateUser)    // vitest
 				adminRoutes.DELETE("/admin/users/:id", userCtrl.AdminDeleteUser) // vitest
 
-				// Only for vitest
-				if config.Config().TestMode {
+				// Only for TestMode
+				if config.Config().AppEnv == "development" {
 					fmt.Println("=================================")
-					fmt.Println("BE CARE ROOT NOT ALLOWED IN PROD")
-					fmt.Println("     ONLY IN TEST MODE ")
-					fmt.Println("		- /test/reset-token/:email")
-					fmt.Println("		- /test/expire-token")
-					adminRoutes.GET("/test/reset-token/:email", authCtrl.AdmGetResetToken) // vitest : Currently NOT USED
-					adminRoutes.POST("/test/expire-token", authCtrl.AdmExpireToken)        // vitest - used in auth.ts
+					fmt.Println("BE CARE SPECIAL ROOTS ARE OPEN ")
 					fmt.Println("=================================")
+
+					adminRoutes.GET("/admin/test/auth/token/reset/:email", authCtrl.AdmGetResetToken) // vitest : Currently NOT USED
+					adminRoutes.POST("/admin/test/auth/token/force-expire", authCtrl.AdmExpireToken)  // vitest - used in auth.ts
+					adminRoutes.POST("/admin/test/auth/smtp/enable", authCtrl.AdmEnableSmtp)
+					adminRoutes.POST("/admin/test/auth/smtp/disable", authCtrl.AdmDisableSmtp)
 				}
 
 				// Return Data

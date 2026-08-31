@@ -2,88 +2,75 @@
 // HELPERS
 // --------------------------------------------------------------------------------
 
-import { API_URL } from '../config.js';
-
-import { createReadStream } from 'node:fs';
 import FormData from 'form-data';
+import fs from 'fs';
+
+import { API_URL } from '../config.js';
 import { request } from './api.js';
 
-// --------------------------------------------------------------------------------
-// createScore
-// --------------------------------------------------------------------------------
-//
-//	File            *multipart.FileHeader `form:"uploadFile"`
-//	Composer        string                `form:"composer"`
-//	ScoreName       string                `form:"scoreName"`
-//	ReleaseDate     string                `form:"releaseDate"`
-//	Categories      string                `form:"categories"`
-//	Tags            string                `form:"tags"`
-//	InformationText string                `form:"informationText"`
-//
-//
-//    createScore({
-//      name: "mozart",
-//      externalURL: "https://fr.wikipedia.org/wiki/mozart",
-//      epoch: "Moderne",
-//      uploadFile: "resources/scores/mozart.pn",
-//      isVerified: true},
-//      TOKEN
-//    );
-// --------------------------------------------------------------------------------
+import { CreateScorePayload, CreateScoreResponse } from '../../../shared/types/score';
 
 // --------------------------------------------------------------------------------
-// TYPES
-// --------------------------------------------------------------------------------
-
-type RequestOptions = {
-  uploadFile: string;
-  composer?: string;
-  scoreName: string;
-  releaseDate?: string;
-  categories?: string;
-  tags?: string;
-  informationText?: string;
-};
-
-type ApiMessage = {
-  message: string;
-};
-// --------------------------------------------------------------------------------
-// createScore
+// Create Score
+// Usage in Vitest
+// const res = await CreateScore(...)
 // --------------------------------------------------------------------------------
 async function createScore(
-  {
-    scoreName,
-    releaseDate,
-    categories,
-    tags,
-    informationText,
-    uploadFile,
-    composer,
-  }: RequestOptions,
+  { composerId, scoreName, releaseDate, categories, tags, informationText, annotations }: CreateScorePayload,
+  filePath: string,
   token: string
 ) {
+  if (!composerId) {
+    throw new Error('composerId is required');
+  }
+
+  if (!Number.isInteger(composerId) || composerId <= 0) {
+    throw new Error('composerId must be a positive integer');
+  }
+
+  if (!scoreName) {
+    throw new Error('scoreName is required');
+  }
+
   const form = new FormData();
 
-  if (!uploadFile) {
-    throw new Error('uploadFile is required');
-  }
-  // scoreName Mandatory !
+  form.append('composerId', String(composerId));
   form.append('scoreName', scoreName);
-  if (releaseDate) form.append('releaseDate', releaseDate);
-  if (categories) form.append('categories', categories);
-  if (tags) form.append('tags', tags);
-  if (informationText) form.append('informationText', informationText);
-  if (composer) form.append('composer', composer);
-  if (uploadFile) form.append('uploadFile', createReadStream(uploadFile));
 
-  console.log(`\n Creating score: ${scoreName} (File: ${uploadFile || 'None'})`);
+  if (releaseDate !== undefined) {
+    form.append('releaseDate', releaseDate);
+  }
 
-  const res = await request<ApiMessage>('POST', `${API_URL}/scores/upload`, {
+  if (categories !== undefined) {
+    form.append('categories', categories);
+  }
+
+  if (tags !== undefined) {
+    form.append('tags', tags);
+  }
+
+  if (informationText !== undefined) {
+    form.append('informationText', informationText);
+  }
+
+  if (annotations !== undefined) {
+    form.append('annotations', annotations);
+  }
+
+  // File is optional for the helper itself so that
+  // Vitest can test the backend validation.
+  if (filePath) {
+    form.append('uploadFile', fs.createReadStream(filePath));
+  }
+
+  const res = await request<CreateScoreResponse>('POST', `${API_URL}/scores`, {
     token,
     data: form,
     headers: form.getHeaders(),
   });
+
+  console.log('\nScore Creation response:', res.status, res.data);
+
   return res;
 }
 

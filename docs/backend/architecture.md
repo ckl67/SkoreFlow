@@ -1,3 +1,5 @@
+<!-- cspell:ignore GORM  -->
+
 # 🎼 SkoreFlow Backend
 
 [← back](../doc.md)
@@ -62,12 +64,14 @@ Client
 storage/  #  Persistent runtime data (excluded from Git)
 ├── database.db
 ├── scores/
-│   ├── uploaded-scores/
-│   │   ├── Mozart/
-│   │   │   └── Pour Elise.png
-│   ├── thumbnails/
-│   │   ├── Mozart/
-│   │   │   └── Pour Elise.png
+│   ├── uploaded
+│   │    ├── user-1/
+│   │    │   ├── Mozart/
+│   │    │   │   └── Pour Elise.pdf
+│   ├── thumbnails
+│   │    ├── user-1/
+│   │        └─── Mozart/
+│   │            └── Pour Elise.png
 ├── composers
 │   ├── mozart
 │   │       └── picture.png

@@ -124,7 +124,7 @@ func (s *AuthService) Login(email, password string) (*models.User, string, error
 	}
 
 	// 5. Generate JWT token
-	token, err := auth.CreateToken(user.ID, user.Role, config.Config().ApiSecret)
+	token, err := auth.CreateToken(user.ID, user.Role, config.Config().Authentication.ApiSecret)
 	if err != nil {
 		return nil, "", err
 	}
@@ -185,7 +185,7 @@ func (s *AuthService) SendRegistration(email string) (string, error) {
 	cfg := config.Config()
 
 	if !cfg.Smtp.Enabled {
-		if cfg.TestMode {
+		if cfg.DevelopmentRuntime.ExposeRegistrationToken {
 			logger.Login.Info("SMTP disabled, skipping email send for %s", email)
 			return user.PasswordReset, nil
 		}
@@ -234,7 +234,7 @@ func (s *AuthService) ForgotPassword(email string) (string, error) {
 
 	cfg := config.Config()
 	if !cfg.Smtp.Enabled {
-		if cfg.TestMode {
+		if cfg.DevelopmentRuntime.ExposeRegistrationToken {
 			logger.Login.Info("SMTP disabled, skipping email send for %s", email)
 			return user.PasswordReset, nil
 		}
@@ -375,4 +375,20 @@ func (s *AuthService) CleanupUnverifiedUsers(olderThan time.Duration) error {
 	return s.db.
 		Where("is_verified = ? AND created_at < ?", false, time.Now().Add(-olderThan)).
 		Delete(&models.User{}).Error
+}
+
+// Enable or Disable SMTP server and return the server
+func (s *AuthService) AdmEnabledSmtp(val bool) string {
+	var rep string
+	cfg := config.Config()
+
+	cfg.Smtp.Enabled = val
+
+	if cfg.Smtp.HostServerAddr != "" {
+		rep = cfg.Smtp.HostServerAddr
+	} else {
+		rep = "No server declared"
+	}
+
+	return rep
 }

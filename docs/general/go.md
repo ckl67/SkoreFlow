@@ -187,6 +187,17 @@ if err := c.ShouldBindJSON(&obj); err != nil {
 - `Bind` and `ShouldBind` **infer** the parser to use from the request's `Content-Type` header (JSON, form, XML...).
 - `BindJSON` and `ShouldBindJSON` **force** JSON parsing, regardless of `Content-Type`.
 
-### Rule of thumb
-
 Prefer the `Should...` methods in production. They give you full control over error handling and response formatting, instead of letting Gin decide for you.
+
+`ShouldBind` is a Gin method that automatically inspects the incoming HTTP request's Content-Type header and parses the payload into a Go struct.
+
+- Smart Format Selection:
+  - application/json --> Uses json:"..." struct tags.
+  - multipart/form-data or application/x-www-form-urlencoded --> Uses form:"..." struct tags.
+  - GET Query String --> Falls back to query parameters.
+- Automatic Type Conversion:
+  - Converts string values from form fields or URLs into Go types (e.g., "42" to uint).
+- Validation: Enforces rules defined in the binding:"..."
+  - tag (e.g., binding:"required").
+- Error Handling:
+  - Returns an error if validation or type parsing fails, allowing you to decide how to handle the HTTP response (without automatically writing a 400 Bad Request like c.Bind() does).

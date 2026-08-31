@@ -2,7 +2,16 @@
 
 [← back](../../doc.md)
 
-With prefilled database
+## Introduction
+
+This document provides instructions for testing the score basic functionalities of the SkoreFlow backend.
+These tests are essential to ensure curl testing before vitest !
+
+## Basics
+
+```shell
+curl http://localhost:8080/api
+```
 
 ## Login
 
@@ -30,6 +39,8 @@ curl -H "Authorization: Bearer $TOKEN_USER2" "http://localhost:8080/api/composer
 # Not Verified
 curl -H "Authorization: Bearer $TOKEN_USER2" "http://localhost:8080/api/composers?isVerified=false&page=1&limit=5&" | jq
 
+# Beethoven Composer
+curl -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/composers/2 | jq
 ```
 
 ## Create score
@@ -38,21 +49,59 @@ curl -H "Authorization: Bearer $TOKEN_USER2" "http://localhost:8080/api/composer
 
 NAME="Sonate au Clair de Lune"
 COMPOSER="Ludwig Van Beethoven"
-FILE_PATH="resources/scores/Ludwig Van Beethoven/Sonate No. 14 - Clair de lune.pdf"
+COMPOSER_ID=2
+FILE_PATH="../testauto/backend/resources/scores/Ludwig Van Beethoven/Sonate No. 14 - Clair de lune.pdf"
 
-COMPOSER="Beethoven"
-
-curl -X POST "http://localhost:8080/api/scores/upload" \
+curl -X POST "http://localhost:8080/api/scores" \
   -H "Authorization: Bearer $TOKEN_USER2" \
+  -F "uploadFile=@$FILE_PATH" \
+  -F "composerId=$COMPOSER_ID" \
   -F "scoreName=$NAME" \
-  -F "composer=$COMPOSER" \
   -F "releaseDate=1965-12-12T00:00:00Z" \
   -F "categories=Classical,Romantic" \
   -F "tags=Piano,Calm" \
-  -F "informationText=Automated test file for $COMPOSER" \
-  -F "uploadFile=@$FILE_PATH"
+  -F "informationText=Automated test file for $COMPOSER"
 
-COMPOSER="Beethoven"
+# ================================================
+# Same result a second time with TOKEN_USER2
+# ================================================
+
+curl -i -X POST "http://localhost:8080/api/scores" \
+  -H "Authorization: Bearer $TOKEN_USER2" \
+  -F "uploadFile=@$FILE_PATH" \
+  -F "composerId=$COMPOSER_ID" \
+  -F "scoreName=$NAME" \
+  -F "releaseDate=1965-12-12T00:00:00Z" \
+  -F "categories=Classical,Romantic" \
+  -F "tags=Piano,Calm" \
+  -F "informationText=Automated test file for $COMPOSER"
+
+```
+
+## Some verifications
+
+```shell
+# ================================================
+# composerId=9999 → composer does not exist
+# ================================================
+NAME="Sonate au Clair de Lune"
+COMPOSER="Ludwig Van Beethoven"
+COMPOSER_ID=9999
+FILE_PATH="../testauto/backend/resources/scores/Ludwig Van Beethoven/Sonate No. 14 - Clair de lune.pdf"
+
+# To display the body -i
+curl -i -X POST "http://localhost:8080/api/scores" \
+  -H "Authorization: Bearer $TOKEN_USER2" \
+  -F "uploadFile=@$FILE_PATH" \
+  -F "composerId=$COMPOSER_ID" \
+  -F "scoreName=$NAME" \
+  -F "releaseDate=1965-12-12T00:00:00Z" \
+  -F "categories=Classical,Romantic" \
+  -F "tags=Piano,Calm" \
+  -F "informationText=Automated test file for $COMPOSER"
+
+
+
 
 ```
 

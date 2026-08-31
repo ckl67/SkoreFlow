@@ -3,9 +3,10 @@ package media
 const (
 	DefaultSize = 512
 
-	ComposerSize = DefaultSize
-	AvatarSize   = 256
-	ScoreSize    = 256
+	AvatarSize = 256
 
+	ComposerSize      = DefaultSize
 	ComposerSizeThumb = 128
+
+	ScoreSizeThumb = 128
 )

@@ -1,3 +1,5 @@
+// cspell:ignore Autorized GORM Seedata golobby
+
 package config
 
 import (
@@ -13,21 +15,15 @@ import (
 	"github.com/golobby/config/v3/pkg/feeder"
 )
 
-// Server Configuration Principles
-// Configuration loading flow:
+// Configuration loading flow handled by github.com/golobby/config/v3
 // 1. NewConfig() initializes default values
 // 2. DotEnv feeder loads values from .env file
 // 3. Env feeder overrides with system environment variables
-//
-// This mechanism is handled by:
-//   github.com/golobby/config/v3
-//
-// ⚠️ IMPORTANT:
-// Do NOT mix os.Getenv() with golobby/config,
-// otherwise you break the consistency of the configuration layer.
+// 	Do NOT mix os.Getenv() with golobby/config,
 
-// SMTP Configuration
-// Used for sending emails (password reset, notifications, etc.)
+// ------------------------------
+// SMTP Configuration : sending emails (password reset, notifications, etc.)
+// ------------------------------
 type SmtpConfig struct {
 	Enabled        bool   `env:"SMTP_ENABLED"` // Even bool must be considered as string
 	From           string `env:"SMTP_FROM"`
@@ -37,8 +33,9 @@ type SmtpConfig struct {
 	PasswordBase64 string `env:"SMTP_PASSWORD_BASE64"` // store it base64 encoded for safety in config parsing
 }
 
-// Database Configuration
-// Defines connection parameters for the database layer (GORM)
+// ------------------------------
+// Database Configuration : Connection parameters for the database layer (GORM)
+// ------------------------------
 type DatabaseConfig struct {
 	Driver   string `env:"DB_DRIVER"` // e.g. sqlite, postgres, mysql
 	Host     string `env:"DB_HOST"`
@@ -48,49 +45,82 @@ type DatabaseConfig struct {
 	Port     int    `env:"DB_PORT"`
 }
 
-// Internal Microservices Configuration
-// Used for internal services (e.g. thumbnail generation)
+// ------------------------------
+// Microservices Configuration : For internal services (e.g. thumbnail generation)
+// ------------------------------
 type MicroServicesConfig struct {
 	ThumbnailServiceURL string `env:"THUMBNAIL_SERVICE_URL"`
 }
 
+// ------------------------------
 // Frontend Configuration
+// ------------------------------
 type FrontendConfig struct {
 	Origin                string `env:"FRONTEND_ORIGIN"`                   // e.g. http://localhost:5173
 	ResetPasswordPath     string `env:"FRONTEND_RESET_PASSWORD_PATH"`      // e.g. /reset/password
 	RegisterConfirmPath   string `env:"FRONTEND_REGISTER_CONFIRM_PATH"`    // e.g. /register/confirm
 	UpdateMailConfirmPath string `env:"FRONTEND_UPDATE_MAIL_CONFIRM_PATH"` // e.g. /mail/confirm
-
-	CorsAllowedOrigins string `env:"CORS_ALLOWED_ORIGINS"` // Allowed origins for CORS e.g. http://localhost:5173,https://app.skoreflow.com
+	CorsAllowedOrigins    string `env:"CORS_ALLOWED_ORIGINS"`              // Allowed origins for CORS e.g. http://localhost:5173,https://app.skoreflow.com
 }
 
-// Global Server Configuration
-// Central struct holding ALL configuration used across the app
-type ServerConfig struct {
-	// Backend Mode Environment runtime (infra)
-	AppEnv string `env:"APP_ENV"` // development, production
+// ------------------------------
+// DevelopmentConfig
+// Everything that describes how the application starts up in Development mode
+// ------------------------------
+type DevelopmentConfig struct {
+	SeedData                bool `env:"SEED_DATA"`                 // Populate test data in the data base
+	ExposeRegistrationToken bool `env:"EXPOSE_REGISTRATION_TOKEN"` // Return the confirmation token in the API response
+}
 
-	// Backend Test Mode
-	TestMode bool `env:"TEST_MODE"` // For tests Purpose - To activate some specific routes for tests facilities + seed users
-
-	// Backend Security
-	ProtectionLevel string `env:"PROTECTION_LEVEL"` // none, basic, full.
-
-	// Paths
+// ------------------------------
+// Paths Configuration
+// ------------------------------
+type PathsConfig struct {
 	ProjectRoot string `env:"PROJECT_ROOT"` //	PROJECT_ROOT=/app or PROJECT_ROOT=/home/<linux user>/SkoreFlow_Project/SkoreFlow/backend
-	DataRoot    string `env:"DATA_ROOT"`    // DATA_ROOT=storage
+	DataRoot    string `env:"DATA_ROOT"`
+}
 
-	// Admin Email
-	AdminEmail    string `env:"ADMIN_EMAIL"`
-	AdminPassword string `env:"ADMIN_PASSWORD"`
+// ------------------------------
+// Admin Configuration
+// ------------------------------
+type AdminConfig struct {
+	Email    string `env:"ADMIN_EMAIL"`
+	Password string `env:"ADMIN_PASSWORD"`
+}
 
-	// Authentication
-	ApiSecret string `env:"API_SECRET"`
+// ------------------------------
+// SecurityConfig
+// ------------------------------
+type SecurityConfig struct {
+	ProtectionLevel string `env:"PROTECTION_LEVEL"` // none, basic, full.
+}
 
-	// Access
+// ------------------------------
+// AuthenticationConfig
+// ------------------------------
+type AuthenticationConfig struct {
+	ApiSecret                 string `env:"API_SECRET"`
+	ExpirationDays            int    `env:"EXPIRATION_DAYS"`
+	JwtLifetime               int    `env:"JWT_LIFE_TIME"`
+	ResetTokenLifetime        int    `env:"RESET_TOKEN_LIFE_TIME"`
+	ConfirmationTokenLifetime int    `env:"CONFIRMATION_TOKEN_LIFE_TIME"`
+}
+
+// ============================================================================================================
+// Backend Global Server Configuration Central struct holding ALL configuration used across the app
+// ============================================================================================================
+type ServerConfig struct {
+	AppEnv               string `env:"APP_ENV"`                // development, production
 	BackendListenAddress string `env:"BACKEND_LISTEN_ADDRESS"` // e.g. : 0.0.0.0:8080
 
-	// Others
+	// -----------------------------------------------
+
+	DevelopmentRuntime DevelopmentConfig
+	Security           SecurityConfig
+	Paths              PathsConfig
+	Admin              AdminConfig
+	Authentication     AuthenticationConfig
+
 	Database      DatabaseConfig
 	Smtp          SmtpConfig
 	MicroServices MicroServicesConfig
@@ -105,57 +135,50 @@ type configBuilder struct {
 }
 
 // Singleton Pattern
-// sync.Once guarantees that configuration is initialized ONLY ONCE,
-// even in concurrent environments.
-//
-// This avoids:
-// - duplicated loads
-// - race conditions
-// - inconsistent config states
+// sync.Once guarantees that configuration is initialized ONLY ONCE even in concurrent environments.
+// This avoids: - duplicated loads - race conditions - inconsistent config states
 var (
 	serverConfig ServerConfig
 	configOnce   sync.Once
 )
 
 // Safe Logging (⚠️ NOT production-safe)
-// Logs configuration for debugging purposes
-// This function exposes sensitive data (passwords, secrets).
 // Use ONLY in development or test mode.
 func (c ServerConfig) LogSafe() {
-	fmt.Printf("-----------------------------------------\n")
-	fmt.Printf("------------- SERVER CONFIG -------------\n")
-	fmt.Printf("-----------------------------------------\n")
+	fmt.Printf("-------------------------------------------------\n")
+	fmt.Printf("------------- BACKEND SERVER CONFIG -------------\n")
+	fmt.Printf("-------------------------------------------------\n")
 
-	fmt.Println("Environment runtime (infra)")
-	fmt.Printf("    Environment Mode (production/development)- (appEnv) :%s\n", c.AppEnv)
-
-	fmt.Printf("    Test Mode (TestMode) :%t\n", c.TestMode)
-	if c.TestMode {
-		fmt.Println("		- Will automatically seed test users on server startup for testing purposes.")
-		fmt.Println("		- Will authorize all requests without smtp authentication for easier testing of protected routes.")
-	}
-
-	fmt.Println("Feature flags")
-	fmt.Printf("    Protection Level (none/basic/full) :%s\n", c.ProtectionLevel)
-	fmt.Printf("    SMTP Enabled: %t\n", c.Smtp.Enabled)
+	fmt.Printf("General\n")
+	fmt.Printf("  - Environment Mode (production/development) - (AppEnv) : %s\n", c.AppEnv)
 
 	if c.AppEnv == "development" {
 
-		fmt.Println("Paths:")
-		fmt.Printf("  ProjectRoot: %s\n", c.ProjectRoot)
-		fmt.Printf("  DataRoot   : %s\n", c.DataRoot)
+		fmt.Printf("  - Autorized Address (BackendListenAddress) : %s\n", c.BackendListenAddress)
 
-		fmt.Println("Admin Mail:")
-		fmt.Printf("  AdminEmail: %s\n", c.AdminEmail)
-		fmt.Printf("  AdminPassword: %s\n", c.AdminPassword) // ❌ sensitive
+		fmt.Printf("Development Runtime\n")
+		fmt.Printf("  - Populate test data in the data base (Seedata) : %t\n", c.DevelopmentRuntime.SeedData)
+		fmt.Printf("  - Registration token will be exposed in the HTTP response (ExposeRegistrationToken) : %t\n", c.DevelopmentRuntime.ExposeRegistrationToken)
 
-		fmt.Println("Authentication:")
-		fmt.Printf("  ApiSecret: %s\n", c.ApiSecret) // ❌ sensitive
+		fmt.Printf("Security\n")
+		fmt.Printf("    Protection Level (none/basic/full) :%s\n", c.Security.ProtectionLevel)
 
-		fmt.Println("Backend Access:")
-		fmt.Printf("  BackendListenAddress: %s\n", c.BackendListenAddress)
+		fmt.Printf("Paths\n")
+		fmt.Printf("  ProjectRoot: %s\n", c.Paths.ProjectRoot)
+		fmt.Printf("  DataRoot   : %s\n", c.Paths.DataRoot)
 
-		fmt.Println("Database:")
+		fmt.Printf("Admin\n")
+		fmt.Printf("  - Email): %s\n", c.Admin.Email)
+		fmt.Printf("  - Password): %s\n", c.Admin.Password) // ❌ sensitive
+
+		fmt.Printf("Authentication\n")
+		fmt.Printf("  - ApiSecret: %s\n", c.Authentication.ApiSecret) // ❌ sensitive
+		fmt.Printf("  - ExpirationDays: %d\n", c.Authentication.ExpirationDays)
+		fmt.Printf("  - JwtLifetime: %d\n", c.Authentication.JwtLifetime)
+		fmt.Printf("  - ResetTokenLifetime: %d\n", c.Authentication.ResetTokenLifetime)
+		fmt.Printf("  - ConfirmationTokenLifetime: %d\n", c.Authentication.ConfirmationTokenLifetime)
+
+		fmt.Printf("Database\n")
 		fmt.Printf("  Driver: %s\n", c.Database.Driver)
 		fmt.Printf("  Host: %s\n", c.Database.Host)
 		fmt.Printf("  User: %s\n", c.Database.User)
@@ -163,7 +186,7 @@ func (c ServerConfig) LogSafe() {
 		fmt.Printf("  Name: %s\n", c.Database.Name)
 		fmt.Printf("  Port: %d\n", c.Database.Port)
 
-		fmt.Println("SMTP:")
+		fmt.Printf("SMTP\n")
 		fmt.Printf("  Enabled: %t\n", c.Smtp.Enabled)
 		fmt.Printf("  From: %s\n", c.Smtp.From)
 		fmt.Printf("  Host: %s\n", c.Smtp.HostServerAddr)
@@ -172,10 +195,10 @@ func (c ServerConfig) LogSafe() {
 		fmt.Printf("  Password: %s\n", c.Smtp.PasswordBase64) // ❌ sensitive
 		fmt.Printf("  ==> In case MailPit is used you can access to its interface via local interface : http://localhost:8025 \n")
 
-		fmt.Println("MicroServices:")
+		fmt.Printf("MicroServices\n")
 		fmt.Printf("  ThumbnailServiceURL: %s\n", c.MicroServices.ThumbnailServiceURL)
 
-		fmt.Println("Frontend:")
+		fmt.Printf("Frontend\n")
 		fmt.Printf("  Origin: %s\n", c.Frontend.Origin)
 		fmt.Printf("  ResetPasswordPath: %s\n", c.Frontend.ResetPasswordPath)
 		fmt.Printf("  RegisterConfirmPath: %s\n", c.Frontend.RegisterConfirmPath)
@@ -191,7 +214,7 @@ func (c ServerConfig) LogSafe() {
 			fmt.Printf("   Current working directory: %s\n", cwd)
 		}
 
-		fmt.Printf("   ProjectRoot              : %s\n", c.ProjectRoot)
+		fmt.Printf("   ProjectRoot              : %s\n", c.Paths.ProjectRoot)
 
 	}
 
@@ -222,7 +245,7 @@ func (b configBuilder) PanicOnMissingDotenv(status bool) configBuilder {
 // Guarantees a single initialized configuration.
 func Config() ServerConfig {
 	configOnce.Do(func() {
-		fmt.Println("Loading configuration...")
+		fmt.Printf("Loading configuration...\n")
 		serverConfig = ConfigBuilder().Build()
 	})
 	return serverConfig
@@ -283,16 +306,35 @@ func (b configBuilder) Build() ServerConfig {
 // Provides fallback values when nothing is defined
 func NewConfig() ServerConfig {
 	return ServerConfig{
-		AppEnv:          "",
-		ProtectionLevel: "full",
-		ProjectRoot:     "",
-		DataRoot:        "",
-
-		AdminEmail:    "admin@admin.com",
-		AdminPassword: "",
-		ApiSecret:     "",
-
+		AppEnv:               "",
 		BackendListenAddress: "0.0.0.0:8080",
+
+		DevelopmentRuntime: DevelopmentConfig{
+			SeedData:                true,
+			ExposeRegistrationToken: true,
+		},
+
+		Security: SecurityConfig{
+			ProtectionLevel: "full",
+		},
+
+		Paths: PathsConfig{
+			ProjectRoot: "",
+			DataRoot:    "",
+		},
+
+		Admin: AdminConfig{
+			Email:    "admin@admin.com",
+			Password: "",
+		},
+
+		Authentication: AuthenticationConfig{
+			ApiSecret:                 "",
+			ExpirationDays:            2,
+			JwtLifetime:               3,
+			ResetTokenLifetime:        2,
+			ConfirmationTokenLifetime: 2,
+		},
 
 		Frontend: FrontendConfig{ // Don't forget to configure vite.config.js file
 			Origin:                "http://localhost:5173", //(ex: Dev http://localhost:5173 ou Prod https://app.skoreflow.com)

@@ -35,7 +35,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		// 3. Decode token and extract metadata (user_id, role)
 		userID, role, err := auth.ExtractTokenMetadata(
 			tokenString,
-			config.Config().ApiSecret,
+			config.Config().Authentication.ApiSecret,
 		)
 		// Invalid token
 		if err != nil {

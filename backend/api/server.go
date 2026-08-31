@@ -85,8 +85,8 @@ func (server *Server) Setup(version string, db *gorm.DB) {
 	// ----------------------------------------------------
 
 	paths := storagepath.NewPaths(
-		cfg.ProjectRoot,
-		cfg.DataRoot,
+		cfg.Paths.ProjectRoot,
+		cfg.Paths.DataRoot,
 	)
 
 	server.authService = services.NewAuthService(db, paths)

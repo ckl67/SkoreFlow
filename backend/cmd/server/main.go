@@ -31,7 +31,7 @@ func main() {
 	// Initialization: Defining specific log levels per module
 	logger.SetModuleLevel("main", "debug") // In debug, will also display the configuration used
 	logger.SetModuleLevel("server", "debug")
-	logger.SetModuleLevel("microservices", "debug")
+	logger.SetModuleLevel("microservices", "info")
 	logger.SetModuleLevel("login", "debug")
 	logger.SetModuleLevel("user", "debug")
 	logger.SetModuleLevel("score", "debug")

@@ -1,3 +1,4 @@
+// cspell:ignore gonic webp
 package forms
 
 // ===============================================================================================
@@ -67,8 +68,7 @@ type GetScoresPageRequest struct {
 // CreateScoreRequest defines the payload for creating a new score.
 type CreateScoreRequest struct {
 	File            *multipart.FileHeader `form:"uploadFile" binding:"required"`
-	Composer        string                `form:"composer"`
-	ComposerId      *uint                 `form:"composerId"`
+	ComposerId      uint                  `form:"composerId" binding:"required"`
 	ScoreName       string                `form:"scoreName" binding:"required"`
 	ReleaseDate     string                `form:"releaseDate"`
 	Categories      string                `form:"categories"`
@@ -106,10 +106,6 @@ type InformationTextRequest struct {
 func (req *CreateScoreRequest) ValidateForm() error {
 	if req.File == nil {
 		return errors.New("file is required")
-	}
-
-	if strings.TrimSpace(req.Composer) == "" {
-		return errors.New("composer is required")
 	}
 
 	if strings.TrimSpace(req.ScoreName) == "" {

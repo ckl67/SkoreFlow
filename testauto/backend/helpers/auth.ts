@@ -130,7 +130,7 @@ async function ResendRegistration(data: ResendRegistrationRequest) {
 // Set Expire token time
 // --------------------------------------------------------------------------------
 async function expireToken(email: string, token: string) {
-  const res = await request('POST', `${API_URL}/test/expire-token`, {
+  const res = await request('POST', `${API_URL}/admin/test/auth/token/force-expire`, {
     token,
     data: { email },
   });

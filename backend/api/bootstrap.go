@@ -31,13 +31,13 @@ func Start(version string) {
 	// 3. Database Seeding
 
 	// 3.1. admin
-	appServer.seederService.User("admin", cfg.AdminEmail, cfg.AdminPassword, domain.RoleAdmin, "users/admin.png")
+	appServer.seederService.User("admin", cfg.Admin.Email, cfg.Admin.Password, domain.RoleAdmin, "users/admin.png")
 
 	// 3.2. Demo composers
 	// Files stored in demo/composers/
 	demoComposers := []composers{
-		{"Wolfgang Amadeus Mozart", "Classical period", "https://fr.wikipedia.org/wiki/Wolfgang_Amadeus_Mozart", "Mozart.png"},
-		{"Ludwig van Beethoven", "Classical period", "https://fr.wikipedia.org/wiki/Ludwig_van_Beethoven", "Beethoven.png"},
+		{"Wolfgang Amadeus Mozart Demo", "Classical period", "https://fr.wikipedia.org/wiki/Wolfgang_Amadeus_Mozart", "Mozart.png"},
+		{"Ludwig van Beethoven Demo", "Classical period", "https://fr.wikipedia.org/wiki/Ludwig_van_Beethoven", "Beethoven.png"},
 	}
 	for _, c := range demoComposers {
 		imgPath := ""
@@ -53,7 +53,7 @@ func Start(version string) {
 	// Files stored in demo/scores/
 
 	// 4 Test Seeding
-	if config.Config().TestMode {
+	if config.Config().DevelopmentRuntime.SeedData {
 		// Users
 		appServer.seederService.User("user1", "user1@test.com", "password123", domain.RoleUser, "users/default.png")
 		appServer.seederService.User("user2", "user2@test.com", "password123", domain.RoleUser, "users/default.png")
@@ -66,6 +66,8 @@ func Start(version string) {
 		// Array (slice of structs) containing all your compositors
 		// cspell:disable
 		testComposers := []composers{
+			{"Wolfgang Amadeus Mozart", "Classical period", "https://fr.wikipedia.org/wiki/Wolfgang_Amadeus_Mozart", "Mozart.png"},
+			{"Ludwig van Beethoven", "Classical period", "https://fr.wikipedia.org/wiki/Ludwig_van_Beethoven", "Beethoven.png"},
 			{"Supertramp", "Rock gradual, Pop, Art Rock, Blues-rock", "https://fr.wikipedia.org/wiki/Supertramp", "Supertramp.png"},
 			{"NightWish", "Hard Rock, Art Rock", "https://fr.wikipedia.org/wiki/Nightwish", ""},
 			{"Frédéric Chopin", "romantic", "https://fr.wikipedia.org/wiki/Fr%C3%A9d%C3%A9ric_Chopin", "Frédéric Chopin.png"},

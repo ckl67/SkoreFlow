@@ -1,3 +1,4 @@
+//cspell:ignore gonic
 package controllers
 
 // ===============================================================================================
@@ -22,6 +23,7 @@ import (
 
 	"backend/infrastructure/logger"
 	"backend/internal/apperrors"
+	"backend/internal/dto"
 	"backend/internal/forms"
 	"backend/internal/services"
 	"backend/pkg/responses"
@@ -43,40 +45,53 @@ func NewScoreController(s *services.ScoreService) *ScoreController {
 // CreateScore
 // Handles the upload of a new music score.
 func (ctrl *ScoreController) CreateScore(c *gin.Context) {
+	// 1. User context
 	uid := c.GetUint32("user_id")
 	userRole := c.GetInt("user_role")
 
-	logger.Score.Debug("(CreateScore): User ID: %d, User Role: %d will create a score\n", uid, userRole)
+	logger.Score.Debug("(CreateScore): User ID: %d (Role: %d) will create a score\n", uid, userRole)
 
-	// logger.Score.Debug("(CreateScore): Content-Type: %s", c.ContentType())
-
+	// 2. Form binding
+	// ShouldBind : Automatic Type Conversion: Converts string values from form fields or URLs into Go types (e.g., "42" to uint).
 	var form forms.CreateScoreRequest
 	if err := c.ShouldBind(&form); err != nil {
 		responses.FAIL(c, http.StatusBadRequest, err)
 		return
 	}
 
-	logger.Score.Debug("(CreateScore): Form raw: %+v", c.Request.Form)
+	//logger.Score.Debug("(CreateScore): Form raw: %+v", c.Request.Form)
 
+	// 3. Validation
 	if err := form.ValidateForm(); err != nil {
 		responses.FAIL(c, http.StatusBadRequest, err)
 		return
 	}
 
-	err := ctrl.service.CreateScore(uid, form, form.File)
+	// 4. Service call (passing file handle to service)
+	scoreCreated, err := ctrl.service.CreateScore(uid, form)
 	if err != nil {
 		switch {
 		case errors.Is(err, apperrors.ErrScoreAlreadyExists):
 			responses.FAIL(c, http.StatusConflict, err)
+
+		case errors.Is(err, apperrors.ErrComposerNotFound):
+			responses.FAIL(c, http.StatusBadRequest, err)
+
+		case errors.Is(err, apperrors.ErrInvalidDate):
+			responses.FAIL(c, http.StatusNotFound, err)
+
 		default:
 			responses.FAIL(c, http.StatusInternalServerError, err)
 		}
 		return
 	}
 
-	responses.SUCCESS(c, http.StatusAccepted, gin.H{
-		"message": "File uploaded successfully",
-	})
+	// 5. Response
+	response := dto.CreateScoreResponse{
+		Message: "Score created successfully",
+		Id:      scoreCreated.ID,
+	}
+	responses.SUCCESS(c, http.StatusCreated, response)
 }
 
 // UpdateScore

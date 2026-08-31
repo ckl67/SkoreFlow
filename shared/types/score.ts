@@ -5,76 +5,82 @@
 // ==========
 // React:
 // ==========
-// createComposer(
-//    payload: CreateComposerPayload,
+// createScore(
+//    payload: CreateScorePayload,
 //    file: File,
 // )
 // ==========
 // Vitest:
 // ==========
-// createComposer(
-//     payload: CreateComposerPayload,
+// createScore(
+//     payload: CreateScorePayload,
 //     filePath: string,
 // )
 
-export type CreateComposerPayload = {
-  name: string;
-  externalURL?: string;
-  epoch?: string;
+export type CreateScorePayload = {
+  composerId: number;
+  scoreName: string;
+  releaseDate?: string;
+  categories?: string;
+  tags?: string;
+  informationText?: string;
+  annotations?: string;
 };
 
-export type CreateComposerResponse = {
+export type CreateScoreResponse = {
   message: string;
   id: number;
 };
 
 // ---------------------------
 
-export type ComposerPublicResponse = {
+export type ScorePublicResponse = {
   id: number;
   name: string;
-  picture: string;
-  external_url: string;
-  epoch: string;
-  isVerified: boolean;
+  composerId: number;
+  scoreName: string;
+  releaseDate: string;
+  tags: string;
+  categories: string;
+  informationText: string;
+  annotations: string;
 };
 
 // ---------------------------
 
-export type GetComposersPageRequest = {
+export type GetScoresPageRequest = {
   page?: number;
   limit?: number;
   sort?: string;
   name?: string;
-  isVerified?: boolean;
 };
 
-export type GetComposersPageResponse = {
+export type GetScoresPageResponse = {
   message: string;
   limit: number;
   page: number;
   sort?: string;
   total_rows: number;
   total_pages: number;
-  composers: ComposerPublicResponse[];
+  scores: ScorePublicResponse[];
 };
 
 // ---------------------------
 
-export type GetComposerResponse = {
+export type GetScoresResponse = {
   message: string;
-  composer: ComposerPublicResponse;
+  score: ScorePublicResponse;
 };
 
 // ---------------------------
 
-export type UpdateComposerRequestPayload = {
+export type UpdateScoreRequestPayload = {
   externalURL?: string;
   epoch?: string;
   isVerified?: boolean;
 };
 
-export type UpdateComposerResponse = {
+export type UpdateScoreResponse = {
   message: string;
-  composer: ComposerPublicResponse;
+  score: ScorePublicResponse;
 };

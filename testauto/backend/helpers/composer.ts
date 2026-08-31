@@ -11,7 +11,7 @@ import { CreateComposerPayload, CreateComposerResponse } from '../../../shared/t
 import {
   GetComposersPageRequest,
   GetComposersPageResponse,
-  GetComposersResponse,
+  GetComposerResponse,
 } from '../../../shared/types/composer';
 
 import {
@@ -98,12 +98,29 @@ async function GetComposersPage(
 
 // --------------------------------------------------------------------------------
 
+// Unique response
 async function GetComposer(ComposerId: number, token: string) {
-  const res = await request<GetComposersResponse>('GET', `${API_URL}/composers/${ComposerId}`, {
+  const res = await request<GetComposerResponse>('GET', `${API_URL}/composers/${ComposerId}`, {
     token,
   });
 
   console.log('\n composers User response:', res.status, res.data);
+  return res;
+}
+
+// search within a paginated list.
+// Could theoretically return several results
+async function getComposersByName(ComposerName: string, token: string) {
+  const res = await request<GetComposersPageResponse>(
+    'GET',
+    `${API_URL}/composers?name=${ComposerName}`,
+    {
+      token,
+    }
+  );
+
+  console.log('\nComposers User response:', res.status, res.data);
+
   return res;
 }
 
@@ -168,4 +185,4 @@ async function updateComposer(
 // EXPORT (ESM)
 // --------------------------------------------------------------------------------
 
-export { createComposer, GetComposersPage, GetComposer, updateComposer };
+export { createComposer, getComposersByName, GetComposersPage, GetComposer, updateComposer };

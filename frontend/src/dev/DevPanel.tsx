@@ -24,6 +24,7 @@ export default function DevPanel() {
   const { lastRegisteredUser, setLastRegisteredUser } = useDev();
 
   const [isOpen, setIsOpen] = useState(false);
+  const [confEmail, setConfEmail] = useState(false);
 
   if (!isOpen) {
     return (
@@ -111,6 +112,13 @@ export default function DevPanel() {
     );
   }
   // ---
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const isChecked = e.target.checked;
+    console.log('New value for the checkbox :', isChecked);
+    setConfEmail(isChecked);
+  };
+  // ---
+
   return (
     <div className="fixed bottom-4 right-4 w-64 rounded-lg border bg-white p-3 shadow-xl text-xs text-gray-700">
       <div className="flex items-center justify-between mb-2 border-b pb-1">
@@ -157,6 +165,18 @@ export default function DevPanel() {
         >
           🎲 Random Register
         </button>
+
+        <label className="col-span-2 flex flex-col mt-2">
+          <div className="flex items-center gap-2">
+            <span>With confirmation of email:</span>
+            <input
+              type="checkbox"
+              name="confEmail"
+              checked={confEmail}
+              onChange={handleChange}
+            />: {confEmail ? '(true)' : '(false)'}
+          </div>
+        </label>
       </div>
 
       {/* Information about the last logged-in user */}

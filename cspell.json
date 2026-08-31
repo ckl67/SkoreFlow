@@ -1,15 +1,13 @@
 {
   "version": "0.2",
   "language": "en",
-  "files": ["**/*.{js,ts,jsx,tsx,md,json}"],
+  "files": ["**/*.{js,ts,jsx,tsx,md,json,go}"],
   "ignorePaths": [
-    "node_modules/**",
     ".cspell/custom-dictionary.txt",
-    "*.mod",
-    "*.dio",
+    "node_modules/**",
     ".git/**",
     ".vscode/**",
-    ".gitignore",
+    "**/.gitignore",
     "**/venv/**",
     "**/.*",
     "docs/draft/**"

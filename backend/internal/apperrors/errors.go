@@ -57,9 +57,12 @@ var (
 	ErrSmtpFailed        = errors.New("smtp failed")
 
 	// Score
-	ErrScoreAlreadyExists = errors.New("score already exists for this user and composer")
-	ErrScoreInvalidID     = errors.New("invalid score ID")
-	ErrScoreNotFound      = errors.New("score not found")
+	ErrScoreAlreadyExists     = errors.New("score already exists for this user and composer")
+	ErrScoreInvalidID         = errors.New("invalid score ID")
+	ErrScoreNotFound          = errors.New("score not found")
+	ErrScoreThumbnail         = errors.New("score thumbnail issue")
+	ErrScoreFileFormatInvalid = errors.New("score file format not allowed !")
+	ErrScoreFileRequired      = errors.New("score file is required")
 
 	// Other
 	ErrInvalidDate = errors.New("invalid date format")

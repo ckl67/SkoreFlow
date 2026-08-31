@@ -79,7 +79,7 @@ func (ctrl *AuthController) Register(c *gin.Context) {
 	}
 
 	// Only for vitest
-	if config.Config().TestMode {
+	if config.Config().DevelopmentRuntime.ExposeRegistrationToken {
 		response.Token = token
 	}
 
@@ -114,7 +114,7 @@ func (ctrl *AuthController) ResendRegistration(c *gin.Context) {
 	}
 
 	// Only for vitest
-	if config.Config().TestMode {
+	if config.Config().DevelopmentRuntime.ExposeRegistrationToken {
 		response.Token = token
 	}
 
@@ -231,7 +231,7 @@ func (ctrl *AuthController) ForgotPassword(c *gin.Context) {
 	}
 
 	// Only for vitest
-	if config.Config().TestMode {
+	if config.Config().DevelopmentRuntime.ExposeRegistrationToken {
 		response.Token = token
 	}
 	responses.SUCCESS(c, http.StatusOK, response)
@@ -299,7 +299,7 @@ func (ctrl *AuthController) AdmGetResetToken(c *gin.Context) {
 	}
 
 	responses.SUCCESS(c, http.StatusOK, gin.H{
-		"message": "Only for test : Get Rest Token",
+		"message": "Only for test : Get Reset Token",
 		"token":   token,
 	})
 }
@@ -326,6 +326,38 @@ func (ctrl *AuthController) AdmExpireToken(c *gin.Context) {
 
 	responses.SUCCESS(c, http.StatusOK, gin.H{
 		"message": "Only for test : Expired time set",
+	})
+
+}
+
+// Only for test : AdmEnableSmtp
+func (ctrl *AuthController) AdmEnableSmtp(c *gin.Context) {
+	adminID := c.GetUint32("user_id")
+
+	logger.User.Warn("(AdmEnableSmtp) Admin %d enable smtp", adminID)
+
+	serv := ctrl.authService.AdmEnabledSmtp(true)
+
+	msg := fmt.Sprintf("Only for test : set SMTP %s", serv)
+
+	responses.SUCCESS(c, http.StatusOK, gin.H{
+		"message": msg,
+	})
+
+}
+
+// Only for test : AdmDisableSmtp
+func (ctrl *AuthController) AdmDisableSmtp(c *gin.Context) {
+	adminID := c.GetUint32("user_id")
+
+	logger.User.Warn("(AdmDisableSmtp) Admin %d enable smtp", adminID)
+
+	serv := ctrl.authService.AdmEnabledSmtp(false)
+
+	msg := fmt.Sprintf("Only for test : set SMTP %s", serv)
+
+	responses.SUCCESS(c, http.StatusOK, gin.H{
+		"message": msg,
 	})
 
 }

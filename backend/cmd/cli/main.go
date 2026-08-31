@@ -55,8 +55,8 @@ func main() {
 	db := database.ConnectDB(cfg)
 
 	paths := storagepath.NewPaths(
-		cfg.ProjectRoot,
-		cfg.DataRoot,
+		cfg.Paths.ProjectRoot,
+		cfg.Paths.DataRoot,
 	)
 
 	if *listUsersFlag {

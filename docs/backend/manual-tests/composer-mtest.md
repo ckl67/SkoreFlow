@@ -48,13 +48,29 @@ curl -X POST "http://localhost:8080/api/composers" \
 
 ### Composer listing
 
-To list all composers
+- To list all composers
 
 ```shell
 curl -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/composers | jq
+
+curl -H "Authorization: Bearer $TOKEN_USER2" "http://localhost:8080/api/composers?page=1&limit=50" | jq
+
 ```
 
-To list 1 composer
+- To list 1 specific composer
+
+```shell
+curl -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/composers?name=NightWish | jq
+
+# {"Wolfgang Amadeus Mozart", "Classical period", "https://fr.wikipedia.org/wiki/Wolfgang_Amadeus_Mozart", "Mozart.png"},
+
+
+curl -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/composers?name=Wolfgang%20Amadeus%20Mozart | jq
+
+
+```
+
+- To list 1 composer
 
 ```shell
 curl -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/composers/1 | jq

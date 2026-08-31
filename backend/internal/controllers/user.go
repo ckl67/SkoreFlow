@@ -148,7 +148,7 @@ func (ctrl *UserController) UpdateMail(c *gin.Context) {
 	}
 
 	// Only for vitest
-	if config.Config().TestMode {
+	if config.Config().DevelopmentRuntime.ExposeRegistrationToken {
 		response.TokenEmail = tokenEmail
 	}
 
