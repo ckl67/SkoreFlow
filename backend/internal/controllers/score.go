@@ -75,10 +75,10 @@ func (ctrl *ScoreController) CreateScore(c *gin.Context) {
 			responses.FAIL(c, http.StatusConflict, err)
 
 		case errors.Is(err, apperrors.ErrComposerNotFound):
-			responses.FAIL(c, http.StatusBadRequest, err)
+			responses.FAIL(c, http.StatusNotFound, err)
 
 		case errors.Is(err, apperrors.ErrInvalidDate):
-			responses.FAIL(c, http.StatusNotFound, err)
+			responses.FAIL(c, http.StatusBadRequest, err)
 
 		default:
 			responses.FAIL(c, http.StatusInternalServerError, err)
@@ -265,7 +265,7 @@ func (ctrl *ScoreController) GetScoresPage(c *gin.Context) {
 
 	logger.Score.Debug("(Controller GetScoresPage) : User: %d | Search: %s | Page: %d | PageSize: %d | SortBy: %s", uid, form.Search, form.Page, form.Limit, form.SortBy)
 
-	pageData, err := ctrl.service.GetScoresPage(uid, form)
+	pageData, err := ctrl.service.GetScoresPage(uid, form, false)
 	if err != nil {
 		responses.FAIL(c, http.StatusInternalServerError, err)
 		return

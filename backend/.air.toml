@@ -26,7 +26,16 @@ kill_delay = "0s"
 poll = false
 poll_interval = 0
 post_cmd = []
-pre_cmd = []
+# Whenever Air detects a change to a .go file, it will run this pre_cmd before restarting the compilation cmd.
+# npm run vmbc:
+#  "vmbc": "RESET_DB_STORAGE=1 npm run clean-backend && npm run test:backend",
+#     clean-backend cleans the database/storage on start-up.
+#     RESET_DB_STORAGE=1 is passed to the Air process.
+#     Whenever the code is modified, Air triggers pre_cmd, which runs 'make cleandb-storage' before recompiling and restarting the server.
+
+pre_cmd = [
+  "sh -c 'if [ \"$RESET_DB_STORAGE\" = \"1\" ]; then make cleandb-storage; fi'",
+]
 rerun = false
 rerun_delay = 500
 send_interrupt = false

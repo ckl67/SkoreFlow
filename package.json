@@ -12,6 +12,7 @@
     "vm": "concurrently -k -n \"THUMB,BACK,FRONT\" -c \"magenta,blue,cyan\" \"npm:dev:thumbnail\" \"npm:test:backend\" \"npm:vm:frontend\"",
     "vmm": "npm run dev:thumbnail",
     "vmb": "npm run clean-backend && npm run test:backend",
+    "vmbc": "npm run clean-backend && RESET_DB_STORAGE=1 npm run test:backend",
     "vmf": "npm run vm:frontend",
     "debug": "concurrently -k -n \"THUMB,BACK,FRONT\" -c \"magenta,blue,cyan\" \"npm:dev:thumbnail\" \"npm:test:backend:debug\" \"npm:vm:frontend\"",
     "-- 🐍 MICROSERVICES --": "",

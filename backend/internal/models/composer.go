@@ -74,9 +74,14 @@ func (c *Composer) Delete(db *gorm.DB) (int64, error) {
 //
 // Filters:
 // - search: matches name or safe name
-func (c *Composer) List(db *gorm.DB, pagination *Pagination, search *string, isVerified *bool, isDemo bool) (*Pagination, error) {
+func (c *Composer) List(
+	db *gorm.DB,
+	pagination *Pagination,
+	search *string,
+	isVerified *bool,
+	isDemo bool,
+) (*Pagination, error) {
 	var composers []*Composer
-
 	// Base query
 	query := db.Model(&Composer{})
 
@@ -122,10 +127,19 @@ func FindComposerByID(db *gorm.DB, id uint, isDemo bool) (*Composer, error) {
 }
 
 // FindComposerBySafeName retrieves a composer by its safeName
-func FindComposerBySafeName(db *gorm.DB, safeName string) (*Composer, error) {
-	var composer Composer
+func FindComposerBySafeName(db *gorm.DB, safeName string, isDemo bool) (*Composer, error) {
+
+	// Base query
+	query := db.Model(&Composer{})
+
+	// If we are in demo mode, we hide the non demo elements
+	if isDemo {
+		query = query.Where("is_demo = ?", true)
+	}
 
 	// 1. Try to find existing composer
+
+	var composer Composer
 	err := db.Where("safe_name = ?", safeName).First(&composer).Error
 	return &composer, err
 }

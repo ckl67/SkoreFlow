@@ -10,7 +10,8 @@
     "**/.gitignore",
     "**/venv/**",
     "**/.*",
-    "docs/draft/**"
+    "docs/draft/**",
+    "**/package.json"
   ],
   "dictionaries": ["custom-dictionary"],
   "dictionaryDefinitions": [

@@ -23,6 +23,12 @@ type Score struct {
 	SafeScoreName string `gorm:"size:255;uniqueIndex:idx_score_user"`
 
 	// Foreign key to Composer
+	//  - ComposerID is the actual foreign key stored in the scores table.
+	// 		: identifies the composer in the database
+	// 	- Composer is the GORM relationship that allows you to manipulate the associated composer.
+	// 		: represents the associated Composer object
+	// To retrieve a score along with its composer, we need to
+	// 		Preload("Composer")
 	ComposerID uint32   `gorm:"not null;index;uniqueIndex:idx_score_user" json:"composer_id"`
 	Composer   Composer `gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;" json:"composer"`
 
@@ -30,12 +36,13 @@ type Score struct {
 	FilePath        string    `gorm:"column:file_path;not null" json:"file_path"`
 	ThumbnailPath   string    `gorm:"column:thumbnail_path;not null" json:"thumbnail_path"`
 	UploaderID      uint32    `gorm:"not null;uniqueIndex:idx_score_user"`
-	CreatedAt       time.Time `json:"created_at"`
-	UpdatedAt       time.Time `json:"updated_at"`
 	Tags            string    `gorm:"type:TEXT" json:"tags"`
 	Categories      string    `gorm:"type:TEXT" json:"categories"`
 	InformationText string    `gorm:"type:TEXT" json:"information_text"`
 	Annotations     string    `gorm:"type:TEXT;default:'[]'" json:"annotations"` // JSON string
+	IsDemo          bool      `gorm:"not null;default:false;index" json:"is_demo"`
+	CreatedAt       time.Time `json:"created_at"`
+	UpdatedAt       time.Time `json:"updated_at"`
 }
 
 // Create inserts a new score record into the database.
@@ -99,6 +106,7 @@ func (s *Score) List(
 	category string,
 	search string,
 	userID uint32,
+	isDemo bool,
 ) (*Pagination, error) {
 	var scores []*Score
 
@@ -108,6 +116,8 @@ func (s *Score) List(
 		Where("uploader_id = ?", userID)
 
 	//query := db.Model(&Score{}).Where("uploader_id = ?", userID)
+
+	query = query.Where("is_demo = ?", isDemo)
 
 	// Search filter
 	if search != "" {
@@ -140,10 +150,21 @@ func (s *Score) List(
 }
 
 // FindScoreByID retrieves a score by its unique identifier.
-func FindScoreByID(db *gorm.DB, id uint) (*Score, error) {
+func FindScoreByID(db *gorm.DB, id uint, isDemo bool) (*Score, error) {
+	// Base query
+	query := db.Model(&Score{})
+
+	// If we are in demo mode, we hide the non demo elements
+	if isDemo {
+		query = query.Where("is_demo = ?", true)
+	}
+
 	var score Score
-	err := db.Preload("Composer").First(&score, id).Error
-	// err := db.First(&score, id).Error
+	query = query.Preload("Composer")
+	err := query.First(&score, id).Error
+	if err != nil {
+		return nil, err
+	}
 	return &score, err
 }
 

@@ -1,4 +1,4 @@
-// cspell:ignore Turque
+// cspell:ignore Turque   pdff
 import path from 'path';
 import { beforeAll, describe, expect, it } from 'vitest';
 

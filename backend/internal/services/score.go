@@ -55,7 +55,7 @@ func (s *ScoreService) findOrCreateComposer(name string) (*models.Composer, erro
 	var err error
 
 	// 1. Try to find existing composer
-	composer, err = models.FindComposerBySafeName(s.db, safeName)
+	composer, err = models.FindComposerBySafeName(s.db, safeName, false)
 	if err == nil {
 		return composer, nil
 	}
@@ -112,7 +112,6 @@ func (s *ScoreService) CreateScore(uid uint32, form forms.CreateScoreRequest) (*
 		ScoreName:     strings.TrimSpace(form.ScoreName),
 		SafeScoreName: safeScoreName,
 		ComposerID:    composer.ID,
-		Composer:      *composer, // Preload composer for response
 		ReleaseDate:   releaseDate,
 		//	FilePath:      relativePath,
 		//	ThumbnailPath: relativeThumbnailPath,
@@ -209,8 +208,8 @@ func (s *ScoreService) StoreScorePdfThumbnail(
 	uploadedPath := s.paths.ResolveDataRoot(relativePath)
 	thumbnailPath := s.paths.ResolveDataRoot(relativeThumbnailPath)
 
-	logger.Score.Debug("(StoreScorePicture) uploadedPath=%s", uploadedPath)
-	logger.Score.Debug("(StoreScorePicture) thumbnailPath=%s", thumbnailPath)
+	logger.Score.Debug("(StoreScorePdfThumbnail) uploadedPath=%s", uploadedPath)
+	logger.Score.Debug("(StoreScorePdfThumbnail) thumbnailPath=%s", thumbnailPath)
 
 	score.FilePath = uploadedPath
 	score.ThumbnailPath = thumbnailPath
@@ -266,7 +265,7 @@ func (s *ScoreService) GenerateResizedImage(fullFilePath string, fullThumbnailPa
 // - Reprocesses file if provided
 func (s *ScoreService) UpdateScore(uid uint32, scoreID uint, form forms.UpdateScoreRequest, file *multipart.FileHeader) (*models.Score, error) {
 	// 1. Fetch existing score
-	score, err := models.FindScoreByID(s.db, scoreID)
+	score, err := models.FindScoreByID(s.db, scoreID, false)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, apperrors.ErrScoreNotFound
@@ -337,7 +336,7 @@ func (s *ScoreService) UpdateScore(uid uint32, scoreID uint, form forms.UpdateSc
 // - Deletes physical files first, then DB record
 func (s *ScoreService) DeleteScore(uid uint32, scoreID uint, userRole int) error {
 	// 1. Fetch score
-	score, err := models.FindScoreByID(s.db, scoreID)
+	score, err := models.FindScoreByID(s.db, scoreID, false)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return apperrors.ErrScoreNotFound
@@ -366,7 +365,7 @@ func (s *ScoreService) DeleteScore(uid uint32, scoreID uint, userRole int) error
 
 // GetScore retrieves a score after verifying access permissions.
 func (s *ScoreService) GetScore(uid uint32, scoreID uint, userRole int) (*models.Score, error) {
-	score, err := models.FindScoreByID(s.db, scoreID)
+	score, err := models.FindScoreByID(s.db, scoreID, false)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, apperrors.ErrScoreNotFound
@@ -404,7 +403,7 @@ func (s *ScoreService) UpdateAnnotations(uid uint32, scoreID uint, annotations s
 }
 
 // GetScoresPage handles paginated listing with filters and search.
-func (s *ScoreService) GetScoresPage(uid uint32, form forms.GetScoresPageRequest) (*models.Pagination, error) {
+func (s *ScoreService) GetScoresPage(uid uint32, form forms.GetScoresPageRequest, isDemo bool) (*models.Pagination, error) {
 	// 1. Defaults
 	if form.Page <= 0 {
 		form.Page = 1
@@ -431,7 +430,7 @@ func (s *ScoreService) GetScoresPage(uid uint32, form forms.GetScoresPageRequest
 	logger.Score.Debug("GetScoresPage: sort=%s", pagination.Sort)
 
 	var score models.Score
-	result, err := score.List(s.db, &pagination, safeCompSearch, form.Tag, form.Category, form.Search, uid)
+	result, err := score.List(s.db, &pagination, safeCompSearch, form.Tag, form.Category, form.Search, uid, false)
 	if err != nil {
 		logger.Score.Error("List failed: %v", err)
 		return nil, err
