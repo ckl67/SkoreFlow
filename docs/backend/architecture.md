@@ -152,7 +152,7 @@ Reusable helpers are separated from business logic.
 
 ## 🔐 Authentication
 
-- Token-based authentication (JWT) [see also](./architecure.dio)
+- Token-based authentication (JWT) [see also](./architecture.dio)
 - Middleware-based access control
 
 ## 📦 Storage Structure

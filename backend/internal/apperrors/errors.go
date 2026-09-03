@@ -40,7 +40,6 @@ var (
 	ErrUserUsernameAlreadyUsed  = errors.New("Username already in use")
 	ErrUserNotVerified          = errors.New("User Not verified!")
 	ErrUserNotFound             = errors.New("User Not Found")
-	ErrUsernameTaken            = errors.New("username already taken")
 	ErrUserAvatarFileNotFound   = errors.New("Avatar picture not found")
 	ErrUserAvatarFileNotDeleted = errors.New("Avatar picture not deleted")
 	ErrUserAvatarAlreadyDefault = errors.New("User Avatar already default")

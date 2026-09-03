@@ -25,46 +25,6 @@ File → Open Folder → SkoreFlow/
 Install only what is necessary.
 The needed extensions are declared in file "./vscode/extensions.json"
 
-### Core
-
-- Prettier (formatter)
-- ESLint (code quality)
-- Emmet (web-developer’s toolkit)
-- Vitest Explorer (tests)
-- npm IntelliSense
-- Error Lens
-
-### System / Shell
-
-- ShellCheck
-- shfmt
-
-### Backend
-
-- Go (official Go extension)
-- `gofumpt` for formatting see below
-- Python
-
-### Frontend (React)
-
-- ES7+ React Snippets
-
-### Documentation
-
-- Markdown All in One
-- Markdown lint
-- Code Spell Checker
-
-### Git
-
-- Git Graph or GitLens
-- GitHub Pull Requests & Issues
-
-### Optional
-
-- Python (Pylance)
-- GitHub Copilot
-
 ## Project Structure
 
 This project is a **monorepo** with a single root:
@@ -79,4 +39,4 @@ SkoreFlow/
 ├── package.json    # Root config
 ```
 
-👉 vscode tools are only configured at the **root level**
+👉 vscode tools are configured at the **root level**

@@ -35,16 +35,16 @@ def client():
 # BASE ENDPOINT TESTS
 # ------------------------------------------------------------
 def test_health_endpoint(client):
-    """Verify that the /api/health endpoint returns 200 OK and version metadata."""
-    response = client.get("/api/health")
+    """Verify that the /health endpoint returns 200 OK and version metadata."""
+    response = client.get("/health")
     assert response.status_code == 200
     data = response.get_json()
     assert data["status"] == "ok"
 
 
 def test_version_endpoint(client):
-    """Verify the /api/version endpoint."""
-    response = client.get("/api/version")
+    """Verify the /version endpoint."""
+    response = client.get("/version")
     assert response.status_code == 200
     data = response.get_json()
     assert "version" in data

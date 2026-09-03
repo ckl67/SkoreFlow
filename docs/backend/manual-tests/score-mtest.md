@@ -7,23 +7,29 @@
 This document provides instructions for testing the score basic functionalities of the SkoreFlow backend.
 These tests are essential to ensure curl testing before vitest !
 
+## Variable setting
+
+```shell
+API_VERSION="v1"
+```
+
 ## Basics
 
 ```shell
-curl http://localhost:8080/api
+curl http://localhost:8080/api/${API_VERSION}
 ```
 
 ## Login
 
 ```shell
 
-TOKEN_USER2=$(curl -X POST http://localhost:8080/api/login \
+TOKEN_USER2=$(curl -X POST http://localhost:8080/api/${API_VERSION}/login \
  -H "Content-Type: application/json" \
  -d '{"email":"user2@test.com","password":"password123"}' | jq -r '.data.token')
 
 echo "JWT Token: $TOKEN_USER2"
 
-curl -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/me | jq
+curl -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/${API_VERSION}/me | jq
 
 ```
 
@@ -31,16 +37,16 @@ curl -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/me | jq
 
 ```shell
 # All Composers
-curl -H "Authorization: Bearer $TOKEN_USER2" "http://localhost:8080/api/composers?page=1&limit=5" | jq
+curl -H "Authorization: Bearer $TOKEN_USER2" "http://localhost:8080/api/${API_VERSION}/composers?page=1&limit=5" | jq
 
 # Verified
-curl -H "Authorization: Bearer $TOKEN_USER2" "http://localhost:8080/api/composers?isVerified=true&page=1&limit=5&" | jq
+curl -H "Authorization: Bearer $TOKEN_USER2" "http://localhost:8080/api/${API_VERSION}/composers?isVerified=true&page=1&limit=5&" | jq
 
 # Not Verified
-curl -H "Authorization: Bearer $TOKEN_USER2" "http://localhost:8080/api/composers?isVerified=false&page=1&limit=5&" | jq
+curl -H "Authorization: Bearer $TOKEN_USER2" "http://localhost:8080/api/${API_VERSION}/composers?isVerified=false&page=1&limit=5&" | jq
 
 # Beethoven Composer
-curl -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/composers/2 | jq
+curl -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/${API_VERSION}/composers/2 | jq
 ```
 
 ## Create score
@@ -52,7 +58,7 @@ COMPOSER="Ludwig Van Beethoven"
 COMPOSER_ID=2
 FILE_PATH="../testauto/backend/resources/scores/Ludwig Van Beethoven/Sonate No. 14 - Clair de lune.pdf"
 
-curl -X POST "http://localhost:8080/api/scores" \
+curl -X POST "http://localhost:8080/api/${API_VERSION}/scores" \
   -H "Authorization: Bearer $TOKEN_USER2" \
   -F "uploadFile=@$FILE_PATH" \
   -F "composerId=$COMPOSER_ID" \
@@ -66,7 +72,7 @@ curl -X POST "http://localhost:8080/api/scores" \
 # Same result a second time with TOKEN_USER2
 # ================================================
 
-curl -i -X POST "http://localhost:8080/api/scores" \
+curl -i -X POST "http://localhost:8080/api/${API_VERSION}/scores" \
   -H "Authorization: Bearer $TOKEN_USER2" \
   -F "uploadFile=@$FILE_PATH" \
   -F "composerId=$COMPOSER_ID" \
@@ -90,7 +96,7 @@ COMPOSER_ID=9999
 FILE_PATH="../testauto/backend/resources/scores/Ludwig Van Beethoven/Sonate No. 14 - Clair de lune.pdf"
 
 # To display the body -i
-curl -i -X POST "http://localhost:8080/api/scores" \
+curl -i -X POST "http://localhost:8080/api/${API_VERSION}/scores" \
   -H "Authorization: Bearer $TOKEN_USER2" \
   -F "uploadFile=@$FILE_PATH" \
   -F "composerId=$COMPOSER_ID" \
@@ -109,14 +115,14 @@ curl -i -X POST "http://localhost:8080/api/scores" \
 
 ```shell
 
-curl -H "Authorization: Bearer $TOKEN_USER2" "http://localhost:8080/api/scores?page=1&limit=5" | jq
+curl -H "Authorization: Bearer $TOKEN_USER2" "http://localhost:8080/api/${API_VERSION}/scores?page=1&limit=5" | jq
 
 ```
 
 ## List of a specific score
 
 ```shell
-curl -H "Authorization: Bearer $TOKEN_USER2" "http://localhost:8080/api/scores/1" | jq
+curl -H "Authorization: Bearer $TOKEN_USER2" "http://localhost:8080/api/${API_VERSION}/scores/1" | jq
 
 
 ```
@@ -128,7 +134,7 @@ curl -X PUT \
   -H "Authorization: Bearer $TOKEN_USER2" \
   -H "Content-Type: application/json" \
   -d '{"source_id":2,"target_id":1}' \
-  http://localhost:8080/api/composers/merge | jq
+  http://localhost:8080/api/${API_VERSION}/composers/merge | jq
 
 
 ```

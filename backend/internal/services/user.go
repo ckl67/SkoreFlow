@@ -1,3 +1,4 @@
+// cspell:ignore gorm storagepath
 package services
 
 // ===============================================================================================
@@ -90,7 +91,7 @@ func (s *UserService) AdminCreateUser(input forms.AdminCreateUserRequest) (*mode
 		return nil, err
 	}
 	if exists {
-		return nil, apperrors.ErrUsernameTaken
+		return nil, apperrors.ErrUserUsernameAlreadyUsed
 	}
 
 	hashedPassword, err := security.HashPassword(input.Password)
@@ -272,18 +273,14 @@ func (s *UserService) ConfirmUpdateMail(token string) (*models.User, error) {
 func (s *UserService) AdminUpdateUser(uid uint32, input forms.AdminUpdateUserRequest) (*models.User, error) {
 	var user models.User
 
-	// 1. Retrieve existing user
+	// 1. Retrieve user to be updated via its uid
 	if err := user.FindByID(s.db, uid); err != nil {
 		return nil, apperrors.ErrUserNotFound
 	}
 
-	logger.User.Info("(Service AdminUpdateUser) input: (%s, %s) ", *input.Email, *input.Username)
-	logger.User.Info("(Service AdminUpdateUser) existing user: %+v", user)
-
 	// 2. Apply updates (partial update)
-
 	if input.Username != nil && *input.Username != user.Username {
-		exists, err := user.ExistsByUsername(s.db, *input.Username)
+		exists, err := new(models.User).ExistsByUsername(s.db, *input.Username)
 		if err != nil {
 			return nil, err
 		}
@@ -294,7 +291,7 @@ func (s *UserService) AdminUpdateUser(uid uint32, input forms.AdminUpdateUserReq
 	}
 
 	if input.Email != nil && *input.Email != user.Email {
-		exists, err := user.ExistsByEmail(s.db, *input.Email)
+		exists, err := new(models.User).ExistsByEmail(s.db, *input.Email)
 		if err != nil {
 			return nil, err
 		}

@@ -1,3 +1,4 @@
+// cspell:ignore gonic gorm storagepath
 package api
 
 import (

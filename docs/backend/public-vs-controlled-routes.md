@@ -56,7 +56,7 @@ Public and authenticated resources will be exposed through different endpoints.
 Examples:
 
 ```shell
-GET /api/public/composers/:id/picture
+GET /api/demo/composers/:id/picture
 GET /api/composers/:id/picture
 ```
 

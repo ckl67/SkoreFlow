@@ -219,7 +219,7 @@ echo " "
 
 # Health check loop
 echo "Waiting for server to be ready...(Can be a little bit long in case of new compilation of go.mod)"
-until curl -s http://localhost:8080/api/health >/dev/null; do
+until curl -s http://localhost:8080/api/v1/health >/dev/null; do
 	sleep 1.0
 	echo -n "."
 done

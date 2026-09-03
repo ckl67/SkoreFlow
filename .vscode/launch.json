@@ -21,7 +21,7 @@
     },
     {
       "name": "Frontend (Chrome + Vite)",
-      "type": "pwa-chrome",
+      "type": "chrome", //pwa-chrome
       "request": "launch",
       "url": "http://localhost:5173",
       "webRoot": "${workspaceFolder}/frontend",

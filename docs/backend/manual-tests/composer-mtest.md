@@ -7,13 +7,21 @@
 This document provides instructions for testing the composers functionalities of the SkoreFlow backend.
 These tests are essential to ensure curl testing before vitest !
 
+But at first
+
+### Variable setting
+
+```shell
+API_VERSION="v1"
+```
+
 ## Public
 
 ```shell
-curl http://localhost:8080/api/public/composers | jq
+curl http://localhost:8080/api/${API_VERSION}/demo/composers | jq
 
-curl -I http://192.168.1.138:8080/api/public/composers/1/picture
-curl -I http://192.168.1.138:8080/api/public/composers/1/thumbnail
+curl -I http://192.168.1.138:8080/api/${API_VERSION}/demo/composers/1/picture
+curl -I http://192.168.1.138:8080/api/${API_VERSION}/demo/composers/1/thumbnail
 
 
 ```
@@ -23,20 +31,20 @@ curl -I http://192.168.1.138:8080/api/public/composers/1/thumbnail
 User Login to get token
 
 ```shell
-TOKEN_USER2=$(curl -X POST http://localhost:8080/api/login \
+TOKEN_USER2=$(curl -X POST http://localhost:8080/api/${API_VERSION}/login \
  -H "Content-Type: application/json" \
  -d '{"email":"user2@test.com","password":"password123"}' | jq -r '.data.token')
 
 echo "JWT Token: $TOKEN_USER2"
 
-curl -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/me | jq
+curl -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/${API_VERSION}/me | jq
 
 ```
 
 ## Create of a composer
 
 ```shell
-curl -X POST "http://localhost:8080/api/composers" \
+curl -X POST "http://localhost:8080//${API_VERSION}api/composers" \
   -H "Authorization: Bearer $TOKEN_USER2" \
   -F "name=Beethoven 2" \
   -F "epoch=Classical" \
@@ -51,21 +59,21 @@ curl -X POST "http://localhost:8080/api/composers" \
 - To list all composers
 
 ```shell
-curl -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/composers | jq
+curl -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/${API_VERSION}/composers | jq
 
-curl -H "Authorization: Bearer $TOKEN_USER2" "http://localhost:8080/api/composers?page=1&limit=50" | jq
+curl -H "Authorization: Bearer $TOKEN_USER2" "http://localhost:8080/api/${API_VERSION}/composers?page=1&limit=50" | jq
 
 ```
 
 - To list 1 specific composer
 
 ```shell
-curl -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/composers?name=NightWish | jq
+curl -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/${API_VERSION}/composers?name=NightWish | jq
 
 # {"Wolfgang Amadeus Mozart", "Classical period", "https://fr.wikipedia.org/wiki/Wolfgang_Amadeus_Mozart", "Mozart.png"},
 
 
-curl -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/composers?name=Wolfgang%20Amadeus%20Mozart | jq
+curl -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/${API_VERSION}/composers?name=Wolfgang%20Amadeus%20Mozart | jq
 
 
 ```
@@ -73,7 +81,7 @@ curl -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/composers
 - To list 1 composer
 
 ```shell
-curl -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/composers/1 | jq
+curl -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/${API_VERSION}/composers/1 | jq
 ```
 
 ### Get Picture
@@ -81,9 +89,9 @@ curl -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/composers
 ```shell
 
 # Header in VM environnement
-curl -I -H "Authorization: Bearer $TOKEN_USER2" http://192.168.1.138:8080/api/composers/1/picture
+curl -I -H "Authorization: Bearer $TOKEN_USER2" http://192.168.1.138:8080/api/${API_VERSION}/composers/1/picture
 
-curl -H "Authorization: Bearer $TOKEN_USER2" -o avatar.png http://localhost:8080/api/me/avatar
+curl -H "Authorization: Bearer $TOKEN_USER2" -o avatar.png http://localhost:8080/api/${API_VERSION}/me/avatar
 file avatar.png
 
 ```

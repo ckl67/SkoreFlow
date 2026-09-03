@@ -18,7 +18,7 @@ Only variables prefixed with : **VITE\_** are exposed to the frontend code.
 Example:
 
 ```env
-VITE_API_URL=http://localhost:8080/api
+VITE_API_URL=http://localhost:8080/api/v1
 VITE_TEST_MODE=true
 ```
 

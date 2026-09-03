@@ -318,13 +318,13 @@ Instead of using an absolute API URL such as:
 
 ```javascript
 export const config = {
-  apiUrl: import.meta.env.VITE_API_URL ?? 'http://localhost:8080/api',
+  apiUrl: import.meta.env.VITE_API_URL ?? 'http://localhost:8080/api/v1',
   testMode: import.meta.env.VITE_TEST_MODE === 'true',
 } as const;
 ```
 
 ```env
-VITE_API_URL=http://localhost:8080/api
+VITE_API_URL=http://localhost:8080/api/v1
 ```
 
 the frontend simply uses:
@@ -362,7 +362,7 @@ https://skoreflow-app.com/api/...
 Nginx
     │
     ▼
-http://localhost:8080/api/...
+http://localhost:8080/api/v1/...
 ```
 
 This approach has several advantages:

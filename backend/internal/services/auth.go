@@ -1,3 +1,4 @@
+//cspell:ignore gorm storagepath
 package services
 
 // APPLICATION ARCHITECTURE
@@ -72,7 +73,7 @@ func (s *AuthService) Register(form forms.RegisterRequest) (*models.User, error)
 		return nil, err
 	}
 	if exists {
-		return nil, apperrors.ErrUsernameTaken
+		return nil, apperrors.ErrUserUsernameAlreadyUsed
 	}
 
 	// 4. Hash password

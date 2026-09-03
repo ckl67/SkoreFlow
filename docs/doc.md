@@ -6,7 +6,7 @@
 
 Welcome to the SkoreFlow documentation !
 
-This documentation provides comprehensive guides and documentation for contributing to the SkoreFlow project, including setup instructions for both the backend and frontend development environments.
+This documentation provides a comprehensive guides and documentation for contributing to the SkoreFlow project, including setup instructions for backend, frontend, microservices development environments.
 
 It will also address the development environment, to cover the necessary tools, installation steps, and best practices to ensure a smooth contribution process.
 
@@ -71,6 +71,7 @@ The document can be consulted
 ### Backend Guides
 
 - [Architecture](./backend/architecture.md)
+- [Routes versioning](./backend/routes.md)
 - [Public vs Controlled API Routes](./backend/public-vs-controlled-routes.md)
 - [API Response Standard](./backend/api-response.md)
 - [Some specificities - Architecture Diagram](./backend/architecture.dio)

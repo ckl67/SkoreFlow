@@ -130,7 +130,7 @@ describe('🎼 Score API - From the User Point of view', () => {
 
     const res = await createScore(score, filePath, TOKEN_USER1);
 
-    expect(res.status).toBe(400);
+    expect(res.status).toBe(404);
     expect(res.data.error!.message).toBe('composer not found');
   });
 
@@ -206,7 +206,7 @@ describe('🎼 Score API - From the User Point of view', () => {
       TOKEN_USER1
     );
 
-    expect(res.status).toBe(404);
+    expect(res.status).toBe(400);
     expect(res.data.error!.message).toBe('invalid date format');
   });
 

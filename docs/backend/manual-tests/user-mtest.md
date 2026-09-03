@@ -16,6 +16,8 @@ DB_PATH="./storage/database.db"
 AVATAR_FILE="/home/christian/SkoreFlow_Project/SkoreFlow/testauto/backend/users/avatar-ckl.png"
 ADMIN_EMAIL="admin@admin.com"
 ADMIN_PASSWORD="skoreflow"
+API_VERSION="v1"
+
 ```
 
 ⚠️ Be care, the command below must be run in the backend directory, otherwise the DB_PATH variable will not be correct.
@@ -42,7 +44,7 @@ User POSTs /register {username, email, password}
 
 ```shell
 # Register a new user
-curl -s -X POST "http://localhost:8080/api/register" \
+curl -s -X POST "http://localhost:8080/api/${API_VERSION}/register" \
   -H "Content-Type: application/json" \
   -d "{
     \"username\": \"ItsMe\",
@@ -58,7 +60,7 @@ curl -s -X POST "http://localhost:8080/api/register" \
 TOKEN_SQL=$(sqlite3 "$DB_PATH" "SELECT password_reset FROM users WHERE email='$EMAIL';")
 
 # To confirm the registration using the token, you can use the following command:
-curl -X POST http://localhost:8080/api/register/confirm \
+curl -X POST http://localhost:8080/api/${API_VERSION}/register/confirm \
  -H "Content-Type: application/json" \
  -d "{
     \"token\":\"${TOKEN_SQL}\"
@@ -67,7 +69,7 @@ curl -X POST http://localhost:8080/api/register/confirm \
 
 ```shell
 # To request a password reset, you can use the following command:
-curl -X POST http://localhost:8080/api/register/rqconfirm \
+curl -X POST http://localhost:8080/api/${API_VERSION}/register/rqconfirm \
  -H "Content-Type: application/json" \
  -d "{
   \"email\":\"${EMAIL}\"
@@ -79,7 +81,7 @@ curl -X POST http://localhost:8080/api/register/rqconfirm \
 To log in and obtain a JWT token for authenticated requests, you can use the following command:
 
 ```shell
-curl -s -X POST http://localhost:8080/api/login \
+curl -s -X POST http://localhost:8080/api/${API_VERSION}/login \
  -H "Content-Type: application/json" \
  -d "{
     \"email\":\"${EMAIL}\",
@@ -87,7 +89,7 @@ curl -s -X POST http://localhost:8080/api/login \
   }" | jq
 
 
-TOKEN_USER=$(curl -s -X POST http://localhost:8080/api/login \
+TOKEN_USER=$(curl -s -X POST http://localhost:8080/api/${API_VERSION}/login \
  -H "Content-Type: application/json" \
  -d "{
     \"email\":\"${EMAIL}\",
@@ -110,7 +112,7 @@ echo "$TOKEN_USER" | cut -d '.' -f2 | base64 -d 2>/dev/null | jq
 To request a password reset, you can use the following command:
 
 ```shell
-curl -X POST http://localhost:8080/api/password/forgot \
+curl -X POST http://localhost:8080/api/${API_VERSION}/password/forgot \
  -H "Content-Type: application/json" \
  -d "{
   \"email\":\"${EMAIL}\"
@@ -129,7 +131,7 @@ The link will open a frontend page where the user can enter a new password. The 
 You have 1 hour to reset the password, after that the token will expire and you will need to request a new password reset.
 
 ```shell
-curl -X POST http://localhost:8080/api/password/reset \
+curl -X POST http://localhost:8080/api/${API_VERSION}/password/reset \
  -H "Content-Type: application/json" \
  -d "{
     \"token\":\"${TOKEN_SQL}\",
@@ -140,7 +142,7 @@ curl -X POST http://localhost:8080/api/password/reset \
 New login with the new password:
 
 ```shell
-TOKEN_USER=$(curl -s -X POST http://localhost:8080/api/login \
+TOKEN_USER=$(curl -s -X POST http://localhost:8080/api/${API_VERSION}/login \
  -H "Content-Type: application/json" \
  -d "{
     \"email\":\"${EMAIL}\",
@@ -154,7 +156,7 @@ echo "JWT Token: $TOKEN_USER"
 To access the user's profile information, you can use the following command with the JWT token obtained from the login step:
 
 ```shell
-curl -H "Authorization: Bearer $TOKEN_USER" http://localhost:8080/api/me | jq
+curl -H "Authorization: Bearer $TOKEN_USER" http://localhost:8080/api/${API_VERSION}/me | jq
 ```
 
 ### Avatar
@@ -165,7 +167,7 @@ To upload an avatar for the user, you can use the following command:
 
 ls -l "$AVATAR_FILE"
 
-curl -X POST http://localhost:8080/api/me/avatar \
+curl -X POST http://localhost:8080/api/${API_VERSION}/me/avatar \
  -H "Authorization: Bearer $TOKEN_USER" \
  -F "avatar=@$AVATAR_FILE" | jq
 ```
@@ -176,11 +178,11 @@ To update the user's profile information, you can use the following command with
 
 ```shell
 
-TOKEN_USER1=$(curl -X POST http://localhost:8080/api/login \
+TOKEN_USER1=$(curl -X POST http://localhost:8080/api/${API_VERSION}/login \
  -H "Content-Type: application/json" \
  -d '{"email":"user1@test.com","password":"password123"}' | jq -r '.data.token')
 
-TOKEN_USER2=$(curl -X POST http://localhost:8080/api/login \
+TOKEN_USER2=$(curl -X POST http://localhost:8080/api/${API_VERSION}/login \
  -H "Content-Type: application/json" \
  -d '{"email":"user2.updated@test.com","password":"password123"}' | jq -r '.data.token')
 
@@ -192,7 +194,7 @@ echo "JWT Token2 : $TOKEN_USER2"
 Profile update example:
 
 ```shell
-curl -X PUT http://localhost:8080/api/me  \
+curl -X PUT http://localhost:8080/api/${API_VERSION}/me  \
   -H "Authorization: Bearer $TOKEN_USER1" \
   -H "Content-Type: application/json" \
   -d '{  "username": "UpdatedUser1"}' | jq
@@ -206,14 +208,14 @@ curl -X PUT http://localhost:8080/api/me  \
 from the admin perspective, you can log in with the following
 
 ```shell
-curl -s -X POST http://localhost:8080/api/login \
+curl -s -X POST http://localhost:8080/api/${API_VERSION}/login \
  -H "Content-Type: application/json" \
  -d "{
     \"email\":\"${ADMIN_EMAIL}\",
     \"password\":\"${ADMIN_PASSWORD}\"
   }" | jq
 
-TOKEN_ADMIN=$(curl -s -X POST http://localhost:8080/api/login \
+TOKEN_ADMIN=$(curl -s -X POST http://localhost:8080/api/${API_VERSION}/login \
  -H "Content-Type: application/json" \
  -d "{
     \"email\":\"${ADMIN_EMAIL}\",
@@ -229,7 +231,7 @@ echo "JWT Token: $TOKEN_ADMIN"
 To create a new user as an admin, you can use the following command:
 
 ```shell
-curl -i -X POST http://localhost:8080/api/admin/users \
+curl -i -X POST http://localhost:8080/api/${API_VERSION}/admin/users \
  -H "Authorization: Bearer $TOKEN_ADMIN" \
  -H "Content-Type: application/json" \
  -d '{
@@ -238,7 +240,7 @@ curl -i -X POST http://localhost:8080/api/admin/users \
   "password":"password123"
 }'
 
-curl -i -X POST http://localhost:8080/api/admin/users \
+curl -i -X POST http://localhost:8080/api/${API_VERSION}/admin/users \
  -H "Authorization: Bearer $TOKEN_ADMIN" \
  -H "Content-Type: application/json" \
  -d '{
@@ -254,7 +256,7 @@ curl -i -X POST http://localhost:8080/api/admin/users \
 To list all users as an admin, you can use the following command:
 
 ```shell
-curl -H "Authorization: Bearer $TOKEN_ADMIN" http://localhost:8080/api/admin/users | jq
+curl -H "Authorization: Bearer $TOKEN_ADMIN" http://localhost:8080/api/${API_VERSION}/admin/users | jq
 ```
 
 ### User details by admin
@@ -262,7 +264,7 @@ curl -H "Authorization: Bearer $TOKEN_ADMIN" http://localhost:8080/api/admin/use
 To get the details of a specific user as an admin, you can use the following command, replacing `<USER_ID>` with the actual ID of the user you want to retrieve:
 
 ```shell
-curl -H "Authorization: Bearer $TOKEN_ADMIN" http://localhost:8080/api/admin/users/2 | jq
+curl -H "Authorization: Bearer $TOKEN_ADMIN" http://localhost:8080/api/${API_VERSION}/admin/users/2 | jq
 ```
 
 ### User update by admin
@@ -286,7 +288,7 @@ http://localhost:8080/api/admin/users/4 | jq
 To delete a user as an admin, you can use the following command, replacing `<USER_ID>` with the actual ID of the user you want to delete:
 
 ```shell
-curl -X DELETE "http://localhost:8080/api/admin/users/3" \
+curl -X DELETE "http://localhost:8080/api/${API_VERSION}/admin/users/3" \
  -H "Authorization: Bearer $TOKEN_ADMIN" | jq
 ```
 
@@ -309,7 +311,7 @@ go run cmd/cli/main.go -cleanup-avatars
 
 ADMIN_EMAIL="admin@admin.com"
 ADMIN_PASSWORD="skoreflow"
-TOKEN_ADMIN=$(curl -s -X POST http://localhost:8080/api/login \
+TOKEN_ADMIN=$(curl -s -X POST http://localhost:8080/api/${API_VERSION}/login \
  -H "Content-Type: application/json" \
  -d "{
     \"email\":\"${ADMIN_EMAIL}\",
@@ -317,12 +319,12 @@ TOKEN_ADMIN=$(curl -s -X POST http://localhost:8080/api/login \
   }" | jq -r '.data.token')
 
 
-curl -H "Authorization: Bearer $TOKEN_ADMIN" "http://localhost:8080/api/admin/users" | jq
+curl -H "Authorization: Bearer $TOKEN_ADMIN" "http://localhost:8080/api/${API_VERSION}/admin/users" | jq
 
-curl -H "Authorization: Bearer $TOKEN_ADMIN" "http://localhost:8080/api/admin/users?page=1&limit=4" | jq
+curl -H "Authorization: Bearer $TOKEN_ADMIN" "http://localhost:8080/api/${API_VERSION}/admin/users?page=1&limit=4" | jq
 
-curl -H "Authorization: Bearer $TOKEN_ADMIN" "http://localhost:8080/api/admin/users?page=1&limit=2" | jq
-curl -H "Authorization: Bearer $TOKEN_ADMIN" "http://localhost:8080/api/admin/users?page=2&limit=2" | jq
+curl -H "Authorization: Bearer $TOKEN_ADMIN" "http://localhost:8080/api/${API_VERSION}/admin/users?page=1&limit=2" | jq
+curl -H "Authorization: Bearer $TOKEN_ADMIN" "http://localhost:8080/api/${API_VERSION}/admin/users?page=2&limit=2" | jq
 
 
 ```

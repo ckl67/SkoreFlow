@@ -5,6 +5,9 @@ backend
 dotenv
 Frédéric
 frontend
+gonic
+Gunicorn
+healthcheck
 Inkscape
 logfile
 mailpit
@@ -14,6 +17,7 @@ setlog
 setuptools
 Skoreflow
 Sonate
+subfolders
 testauto
 typestrict
 venv

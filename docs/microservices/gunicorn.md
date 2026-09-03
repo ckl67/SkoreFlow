@@ -1,6 +1,6 @@
 # Principle
 
-When you run your Flask or Django application using `python app.py`, you are using the built-in development server.
+By running Flask application using `python app.py`, we are using the built-in development server.
 It’s perfect for coding, but completely unsuitable for production.
 
 Here’s exactly what Gunicorn offers in addition:

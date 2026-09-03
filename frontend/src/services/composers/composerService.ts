@@ -1,7 +1,4 @@
-import {
-  GetComposersPageRequest,
-  GetComposersPageResponse,
-} from '../../../../shared/types/composer';
+import { GetComposersPageRequest, GetComposersPageResponse } from '../../../../shared/types/composer';
 import { GetComposersResponse } from '../../../../shared/types/composer';
 import { apiRequest } from '../../api/client';
 import { Pagination } from '../../config/pagination';
@@ -37,7 +34,7 @@ export function getComposersPage({
     return apiRequest<GetComposersPageResponse>('GET', `/composers?${params.toString()}`);
   }
 
-  return apiRequest<GetComposersPageResponse>('GET', `/public/composers?${params.toString()}`);
+  return apiRequest<GetComposersPageResponse>('GET', `/demo/composers?${params.toString()}`);
 }
 
 export function getComposer(id: number) {
@@ -56,7 +53,7 @@ export async function getComposerPicture(id: number) {
     const blob = await apiBinaryRequest('GET', `/composers/${id}/picture`);
     return blob;
   }
-  const blob = await apiBinaryRequest('GET', `/public/composers/${id}/picture`);
+  const blob = await apiBinaryRequest('GET', `/demo/composers/${id}/picture`);
   return blob;
 }
 
@@ -68,6 +65,6 @@ export async function getComposerThumbnail(id: number) {
     return blob;
   }
 
-  const blob = await apiBinaryRequest('GET', `/public/composers/${id}/thumbnail`);
+  const blob = await apiBinaryRequest('GET', `/demo/composers/${id}/thumbnail`);
   return blob;
 }

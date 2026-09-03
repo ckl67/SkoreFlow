@@ -144,7 +144,7 @@ sudo journalctl -fu skoreflow-thumbnail
 sudo journalctl -fu skoreflow-backend
 
 curl http://localhost:5001/health
-curl http://localhost:8080/api/health
+curl http://localhost:8080/api/v1/health
 ```
 
 If the frontend is served through Nginx, open the application in a browser and verify that:

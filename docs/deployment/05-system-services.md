@@ -277,5 +277,5 @@ curl http://localhost:5001/health
 Check the backend health endpoint.
 
 ```bash
-curl http://localhost:8080/api/health
+curl http://localhost:8080/api/v1/health
 ```

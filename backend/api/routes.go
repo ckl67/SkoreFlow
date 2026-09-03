@@ -1,4 +1,4 @@
-// cspell:ignore GORM gonic
+// cspell:ignore GORM gonic  apiv
 package api
 
 // ===============================================================================================
@@ -10,9 +10,9 @@ package api
 // ===============================================================================================
 // Layer              | Component      | Business Role
 // -------------------|----------------|----------------------------------------------------------
-// TRANSPORT          | controllers/   | Handles HTTP requests, extracts files and JSON data.
-//                    | forms/         | Delegates validation/binding to forms.
-//                    | dto/           | Data Output Control
+// TRANSPORT          | controllers/   | Handles HTTP requests, extracts files and JSON data. With
+//                    | forms/         |   - Delegates validation/binding to forms.
+//                    | dto/           |   - Data Output Control
 //                    |                |
 // ORCHESTRATION      | services/      | Business "Brain". Aware of the models.
 //                    |                | Coordinates storage, thumbnails, and business rules.
@@ -30,15 +30,14 @@ package api
 // ===============================================================================================
 
 import (
-	"fmt"
-	"net/http"
 	"strings"
 	"time"
 
+	v1 "backend/api/routes/v1"
+	v2 "backend/api/routes/v2"
 	"backend/infrastructure/config"
 	"backend/infrastructure/logger"
 	"backend/internal/controllers"
-	"backend/middlewares"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -107,199 +106,17 @@ func (server *Server) SetupRouter() {
 	// Controllers act as HTTP adapters → they depend on services
 	userCtrl := controllers.NewUserController(server.userService)
 	authCtrl := controllers.NewAuthController(server.authService)
-	scoreCtrl := controllers.NewScoreController(server.scoreService)
 	composerCtrl := controllers.NewComposerController(server.composerService)
+	scoreCtrl := controllers.NewScoreController(server.scoreService)
 
 	// -------------------------------------------------------------------------------------------
-	// 6. API grouping
-	// 	versioning possible
-	// 		api := api.Group("/v1")
+	// 6. API grouping (Versioning)
 	// -------------------------------------------------------------------------------------------
-	api := r.Group("/api")
-	{
-		// ---------------------------------------------------------------------------------------
-		// Public authentication routes
-		// ---------------------------------------------------------------------------------------
+	apiv1 := r.Group("/api/v1")
+	v1.RegisterRoutes(apiv1, authCtrl, userCtrl, composerCtrl, scoreCtrl, server.Version)
 
-		// ==============================================
-		// Registration Flow:
-		// ==============================================
-		// 1. User POSTs /register {username, email, password}
-		//    → creates user with IsVerified=false
-		//    → backend sends confirmation email with frontend link:
-		//       https://frontend/register/confirm?token=abc123
-		// 2. User clicks frontend link
-		//    → frontend calls POST /register/confirm {token}
-		//    → backend validates token and sets IsVerified=true
-		// 3. Optional: POST /register/request_confirmation {email}
-		//    → re-sends confirmation email if user did not receive it
-		//
-		// Login Flow:
-		// -----------
-		// POST /login {email, password}
-		//    → standard login, returns token/session
-		//
-		// Password Reset Flow:
-		// --------------------
-		// 1. POST /password/forgot {email}
-		//    → backend generates token, sends frontend link:
-		//       https://frontend/reset-password?token=abc123
-		// 2. Frontend displays reset form (new password / confirm)
-		//    → POST /password/reset {token, password}
-		//    → backend validates token and updates password
-		// ------------------------------------------------
-		// The route : api.POST("/me/mail/confirm", userCtrl.ConfirmUpdateMail) is the following of
-		// 	the route protected.PUT("/me/mail", userCtrl.UpdateMail)
-		// 	However, we prefer use the public route because the process is :change mail  --> logout --> Link email later
-		// ==============================================
-
-		// -------------------------------------------------------------------------------------------
-		// Public system endpoints - Health - API Version - API Message
-		// -------------------------------------------------------------------------------------------
-		api.GET("", func(c *gin.Context) {
-			c.JSON(http.StatusOK, gin.H{"message": "API is running"})
-		})
-
-		api.GET("/health", func(c *gin.Context) {
-			c.JSON(http.StatusOK, gin.H{"status": "OK"})
-		})
-
-		api.GET("/version", func(c *gin.Context) {
-			c.JSON(http.StatusOK, gin.H{"version": server.Version})
-		})
-
-		api.GET("/info", func(c *gin.Context) {
-			cfg := config.Config()
-
-			c.JSON(http.StatusOK, gin.H{
-				"name":               "skoreflow",
-				"version":            server.Version,
-				"App Environment":    cfg.AppEnv,
-				"DevelopmentRuntime": cfg.DevelopmentRuntime,
-				"Security":           cfg.Security,
-				"Paths":              cfg.Paths,
-				"frontend":           cfg.Frontend,
-				"microservices":      cfg.MicroServices,
-			})
-		})
-
-		// -------------------------------------------------------------------------------------------
-		// Public system endpoints - Authentication
-		// -------------------------------------------------------------------------------------------
-
-		api.POST("/auth/register", middlewares.RateLimiter(1, 5), authCtrl.Register) // vitest -->   req/sec, burst 5
-		api.POST("/auth/register/confirm", authCtrl.ConfirmRegistration)             // vitest
-		api.POST("/auth/register/resend", authCtrl.ResendRegistration)               // vitest
-		api.POST("/login", authCtrl.Login)                                           // vitest
-		api.POST("/logout", authCtrl.Logout)                                         // vitest
-		api.POST("/password/forgot", authCtrl.ForgotPassword)                        // vitest
-		api.POST("/password/reset", authCtrl.ResetPassword)                          // vitest
-		api.POST("/me/mail/confirm", userCtrl.ConfirmUpdateMail)                     // vitest
-
-		// ---------------------------------------------------------------------------------------
-		// Public routes
-		// ---------------------------------------------------------------------------------------
-		public := api.Group("/public")
-		{
-			public.GET("/composers", composerCtrl.GetDemoComposersPage) // vitest
-			public.GET("/composers/:id", composerCtrl.GetDemoComposer)  // vitest
-
-			public.GET("/composers/:id/picture", composerCtrl.GetDemoComposerPicture)
-			public.HEAD("/composers/:id/picture", composerCtrl.GetDemoComposerPicture)
-			public.GET("/composers/:id/thumbnail", composerCtrl.GetDemoComposerThumbnail)
-			public.HEAD("/composers/:id/thumbnail", composerCtrl.GetDemoComposerThumbnail)
-
-		}
-
-		// ---------------------------------------------------------------------------------------
-		// Protected routes (authenticated users only)
-		// ---------------------------------------------------------------------------------------
-		protected := api.Group("/")
-		protected.Use(middlewares.AuthMiddleware())
-		{
-			// -----------------------------------------------------------------------------------
-			// User self-management
-			// -----------------------------------------------------------------------------------
-			// Return Json
-			protected.GET("/me", userCtrl.GetProfile)             // vitest
-			protected.PUT("/me/profile", userCtrl.UpdateProfile)  // vitest
-			protected.PUT("/me/mail", userCtrl.UpdateMail)        // vitest
-			protected.POST("/me/avatar", userCtrl.UploadAvatar)   // vitest
-			protected.DELETE("/me/avatar", userCtrl.DeleteAvatar) // vitest
-
-			// Return Data
-			protected.GET("/me/avatar", userCtrl.GetAvatar)  //
-			protected.HEAD("/me/avatar", userCtrl.GetAvatar) //
-
-			// -----------------------------------------------------------------------------------
-			// SCORES (Music scores)
-			// -----------------------------------------------------------------------------------
-			// Design strategy:
-			// - GET  → simple queries (pagination, filters via query params)
-			// - POST → complex searches (large payload, advanced filters)
-
-			// Upload
-			protected.POST("/scores", scoreCtrl.CreateScore)
-
-			// Search & listing
-			protected.GET("/scores", scoreCtrl.GetScoresPage)
-
-			// CRUD operations
-			protected.GET("/scores/:id", scoreCtrl.GetScore)
-			protected.PUT("/scores/:id", scoreCtrl.UpdateScore)
-			protected.DELETE("/scores/:id", scoreCtrl.DeleteScore)
-
-			// Partial update (annotations only)
-			protected.PATCH("/scores/:id/annotations", scoreCtrl.UpdateAnnotations)
-
-			// -----------------------------------------------------------------------------------
-			// COMPOSERS
-			// -----------------------------------------------------------------------------------
-
-			protected.POST("/composers", composerCtrl.CreateComposer)    // vitest
-			protected.PUT("/composers/:id", composerCtrl.UpdateComposer) // vitest
-			protected.DELETE("/composers/:id", composerCtrl.DeleteComposer)
-			protected.PUT("/composers/merge", composerCtrl.MergeComposers)
-
-			protected.GET("/composers", composerCtrl.GetComposersPage) // vitest
-			protected.GET("/composers/:id", composerCtrl.GetComposer)  // vitest
-
-			protected.GET("/composers/:id/picture", composerCtrl.GetComposerPicture)
-			protected.HEAD("/composers/:id/picture", composerCtrl.GetComposerPicture)
-			protected.GET("/composers/:id/thumbnail", composerCtrl.GetComposerThumbnail)
-			protected.HEAD("/composers/:id/thumbnail", composerCtrl.GetComposerThumbnail)
-
-			// -----------------------------------------------------------------------------------
-			// ADMIN ROUTES (restricted)
-			// -----------------------------------------------------------------------------------
-			adminRoutes := protected.Group("/")
-			adminRoutes.Use(middlewares.AdminOnlyMiddleware())
-			{
-				// Return Json
-				adminRoutes.GET("/admin/users", userCtrl.AdminGetUsersPage)      // vitest
-				adminRoutes.GET("/admin/users/:id", userCtrl.AdminGetUser)       // vitest
-				adminRoutes.POST("/admin/users", userCtrl.AdminCreateUser)       // vitest
-				adminRoutes.PUT("/admin/users/:id", userCtrl.AdminUpdateUser)    // vitest
-				adminRoutes.DELETE("/admin/users/:id", userCtrl.AdminDeleteUser) // vitest
-
-				// Only for TestMode
-				if config.Config().AppEnv == "development" {
-					fmt.Println("=================================")
-					fmt.Println("BE CARE SPECIAL ROOTS ARE OPEN ")
-					fmt.Println("=================================")
-
-					adminRoutes.GET("/admin/test/auth/token/reset/:email", authCtrl.AdmGetResetToken) // vitest : Currently NOT USED
-					adminRoutes.POST("/admin/test/auth/token/force-expire", authCtrl.AdmExpireToken)  // vitest - used in auth.ts
-					adminRoutes.POST("/admin/test/auth/smtp/enable", authCtrl.AdmEnableSmtp)
-					adminRoutes.POST("/admin/test/auth/smtp/disable", authCtrl.AdmDisableSmtp)
-				}
-
-				// Return Data
-				protected.GET("/admin/users/:id/avatar", userCtrl.AdminGetAvatar)
-
-			}
-		}
-	}
+	apiv2 := r.Group("/api/v2")
+	v2.RegisterRoutes(apiv2, authCtrl, userCtrl, composerCtrl, scoreCtrl, server.Version)
 
 	// We Set r to the "server.Router"
 	server.Router = r

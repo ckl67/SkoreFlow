@@ -162,7 +162,7 @@ sequenceDiagram
     participant User as 👤 User
     participant Browser as 🌍 Browser
     participant Frontend as ⚛️ Frontend (Vite)<br/>Origin = http://localhost:5173
-    participant Backend as 🐹 Backend (Go / Gin)<br/>API = http://localhost:8080/api <br/> ⚙️ CORS_ALLOWED_ORIGINS: http://localhost:5173
+    participant Backend as 🐹 Backend (Go / Gin)<br/>API = http://localhost:8080/api/v1 <br/> ⚙️ CORS_ALLOWED_ORIGINS: http://localhost:5173
 
     User->>Browser: Click "Login"
 
