@@ -106,7 +106,7 @@ describe('👤 User  API - From the User Point of view', () => {
   // ----------------------------------------------------------------------------
 
   it('should update profile of User2', async () => {
-    const resLogin = await login({ email: 'user1@test.com', password: 'password123' });
+    const resLogin = await login({ email: 'user2@test.com', password: 'password123' });
     if (resLogin.status !== 200) {
       console.log('LOGIN FAILED RESPONSE:', resLogin.data);
     }
@@ -294,10 +294,7 @@ describe('👤 User  API - From the User Point of view', () => {
 
     TOKEN_USER2 = resLogin.data.data!.token;
     // Upload Avatar
-    const uploadRes = await uploadAvatar(
-      path.join(__dirname, '../resources/users/avatar-man1.png'),
-      TOKEN_USER2
-    );
+    const uploadRes = await uploadAvatar(path.join(__dirname, '../resources/users/avatar-man1.png'), TOKEN_USER2);
     expect(uploadRes.status).toBe(200);
 
     const profileRes1 = await getProfile(TOKEN_USER2);

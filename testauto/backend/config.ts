@@ -1,3 +1,4 @@
 // config API_URL
+export const API_VERSION = 'v1';
 export const BASE_URL = 'http://localhost:8080';
-export const API_URL = `${BASE_URL}/api`;
+export const API_URL = `${BASE_URL}/api/${API_VERSION}`;
