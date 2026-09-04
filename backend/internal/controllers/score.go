@@ -25,6 +25,7 @@ import (
 	"backend/internal/apperrors"
 	"backend/internal/dto"
 	"backend/internal/forms"
+	"backend/internal/models"
 	"backend/internal/services"
 	"backend/pkg/responses"
 
@@ -255,6 +256,7 @@ func (ctrl *ScoreController) UpdateAnnotations(c *gin.Context) {
 // Supports filtering (search, tags, categories, composer) and sorting.
 // Returns both data and pagination metadata.
 func (ctrl *ScoreController) GetScoresPage(c *gin.Context) {
+	isDemo := false
 	uid := c.GetUint32("user_id")
 
 	var form forms.GetScoresPageRequest
@@ -263,13 +265,32 @@ func (ctrl *ScoreController) GetScoresPage(c *gin.Context) {
 		return
 	}
 
-	logger.Score.Debug("(Controller GetScoresPage) : User: %d | Search: %s | Page: %d | PageSize: %d | SortBy: %s", uid, form.Search, form.Page, form.Limit, form.SortBy)
+	logger.Score.Debug("(Controller GetScoresPage) : User: %d | Search: %v | Page: %d | PageSize: %d | SortBy: %s", uid, form.Name, form.Page, form.Limit, form.SortBy)
 
-	pageData, err := ctrl.service.GetScoresPage(uid, form, false)
+	pageData, err := ctrl.service.GetScoresPage(uid, isDemo, form)
 	if err != nil {
 		responses.FAIL(c, http.StatusInternalServerError, err)
 		return
 	}
 
-	responses.SUCCESS(c, http.StatusOK, pageData)
+	// Cast to scores
+
+	var scores []*models.Score
+	var ok bool
+	scores, ok = pageData.Rows.([]*models.Score)
+	if !ok {
+		responses.FAIL(c, http.StatusInternalServerError, fmt.Errorf("invalid scores type"))
+		return
+	}
+
+	response := dto.GetScoresPageResponse{
+		Message:    "scores retrieved successfully",
+		Page:       pageData.Page,
+		Limit:      pageData.Limit,
+		TotalRows:  pageData.TotalRows,
+		TotalPages: pageData.TotalPages,
+		Scores:     dto.ToScoresPublicResponse(scores),
+	}
+
+	responses.SUCCESS(c, http.StatusOK, response)
 }

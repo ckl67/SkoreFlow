@@ -6,6 +6,7 @@ dotenv
 Frédéric
 frontend
 gonic
+gorm
 Gunicorn
 healthcheck
 Inkscape

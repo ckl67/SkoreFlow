@@ -101,52 +101,120 @@ func (s *Score) Delete(db *gorm.DB) (int64, error) {
 func (s *Score) List(
 	db *gorm.DB,
 	pagination *Pagination,
-	composer string,
-	tag string,
-	category string,
-	search string,
+	composer *string,
+	search *string,
+	tag *string,
+	category *string,
 	userID uint32,
 	isDemo bool,
 ) (*Pagination, error) {
 	var scores []*Score
 
+	sort := pagination.GetSort()
+
 	// Base query (scoped to user)
+
+	// As soon as a query involves several tables,
+	// always specify the columns belonging to `scores`.
+	// To avoid :  "message": "SQL logic error: ambiguous column name: is_demo (1)"
+	// This avoids problem as `composers` and `scores` share is_demo
 	query := db.Model(&Score{}).
 		Preload("Composer").
-		Where("uploader_id = ?", userID)
+		Where("scores.uploader_id = ?", userID).
+		Where("scores.is_demo = ?", isDemo)
 
-	//query := db.Model(&Score{}).Where("uploader_id = ?", userID)
+	// JOIN is required for composer filtering or composer sorting.
+	needsComposerJoin := composer != nil ||
+		sort == "composer asc" ||
+		sort == "composer desc"
 
-	query = query.Where("is_demo = ?", isDemo)
-
-	// Search filter
-	if search != "" {
-		searchTerm := "%" + search + "%"
-		query = query.Where("(score_name LIKE ? OR safe_score_name LIKE ?)", searchTerm, searchTerm)
+	if needsComposerJoin {
+		query = query.Joins(
+			"JOIN composers ON composers.id = scores.composer_id",
+		)
 	}
 
 	// Composer filter
-	if composer != "" {
-		query = query.Joins("JOIN composers ON composers.id = scores.composer_id").
-			Where("composers.safe_name LIKE ?", "%"+composer+"%")
+	if composer != nil {
+		query = query.Where(
+			"composers.safe_name LIKE ?",
+			"%"+*composer+"%",
+		)
+	}
+
+	if search != nil {
+		searchTerm := "%" + *search + "%"
+		query = query.Where(
+			"(scores.score_name LIKE ? OR scores.safe_score_name LIKE ?)",
+			searchTerm,
+			searchTerm,
+		)
 	}
 
 	// Tags & categories filters
-	if tag != "" {
-		query = query.Where("tags LIKE ?", "%"+tag+"%")
+	if tag != nil {
+		query = query.Where(
+			"scores.tags LIKE ?",
+			"%"+*tag+"%",
+		)
 	}
-	if category != "" {
-		query = query.Where("categories LIKE ?", "%"+category+"%")
+
+	if category != nil {
+		query = query.Where(
+			"scores.categories LIKE ?",
+			"%"+*category+"%",
+		)
 	}
 
 	// Execute query with pagination
-	err := query.Scopes(paginate(pagination, query)).Find(&scores).Error
+	err := query.Scopes(
+		paginate(pagination, query, getScoreSort(sort)),
+	).Find(&scores).Error
+
 	if err != nil {
 		return nil, err
 	}
 
 	pagination.Rows = scores
 	return pagination, nil
+}
+
+// Sort translator
+func getScoreSort(sort string) string {
+	switch sort {
+	case "id asc":
+		return "scores.id ASC"
+	case "id desc":
+		return "scores.id DESC"
+
+	case "score_name asc":
+		return "scores.score_name ASC"
+	case "score_name desc":
+		return "scores.score_name DESC"
+
+	case "composer asc":
+		return "composers.safe_name ASC"
+	case "composer desc":
+		return "composers.safe_name DESC"
+
+	case "release_date asc":
+		return "scores.release_date ASC"
+	case "release_date desc":
+		return "scores.release_date DESC"
+
+	case "created_at asc":
+		return "scores.created_at ASC"
+	case "created_at desc":
+		return "scores.created_at DESC"
+
+	case "updated_at asc":
+		return "scores.updated_at ASC"
+	case "updated_at desc":
+		return "scores.updated_at DESC"
+
+	default:
+		return "scores.updated_at DESC"
+	}
 }
 
 // FindScoreByID retrieves a score by its unique identifier.

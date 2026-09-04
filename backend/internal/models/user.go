@@ -144,7 +144,7 @@ func (c *User) List(db *gorm.DB, pagination *Pagination, userID uint32) (*Pagina
 	query := db.Model(&User{})
 
 	// Execute query with pagination
-	err := query.Scopes(paginate(pagination, query)).Find(&users).Error
+	err := query.Scopes(paginate(pagination, query, pagination.GetSort())).Find(&users).Error
 	if err != nil {
 		return nil, err
 	}

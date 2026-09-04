@@ -14,7 +14,7 @@ func RegisterScoreRoutes(rg *gin.RouterGroup, scoreCtrl *controllers.ScoreContro
 	scoreGroup.Use(middlewares.AuthMiddleware())
 	{
 		// Upload
-		scoreGroup.POST("/scores", scoreCtrl.CreateScore)
+		scoreGroup.POST("/scores", scoreCtrl.CreateScore) // vitest
 
 		// Search & listing
 		scoreGroup.GET("/scores", scoreCtrl.GetScoresPage)

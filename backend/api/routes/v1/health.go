@@ -11,21 +11,23 @@ import (
 func RegisterHealthRoutes(rg *gin.RouterGroup, serverVersion string) {
 
 	// public routes
-	healthGroup := rg.Group("/")
+	// Explicitly declare the root without a slash to intercept /api/v1
+	// Without this the /api/v1 route will return a 301 redirect to /api/v1/ which is not ideal for API clients.
+	//healthGroup := rg.Group("/")
 	{
-		healthGroup.GET("", func(c *gin.Context) {
+		rg.GET("", func(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{"message": "API is running"})
 		})
 
-		healthGroup.GET("/health", func(c *gin.Context) {
+		rg.GET("/health", func(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{"status": "OK"})
 		})
 
-		healthGroup.GET("/version", func(c *gin.Context) {
+		rg.GET("/version", func(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{"version": serverVersion})
 		})
 
-		healthGroup.GET("/info", func(c *gin.Context) {
+		rg.GET("/info", func(c *gin.Context) {
 			cfg := config.Config()
 
 			c.JSON(http.StatusOK, gin.H{

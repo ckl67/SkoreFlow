@@ -98,7 +98,7 @@ func (c *Composer) List(
 		query = query.Where("is_verified = ?", *isVerified)
 	}
 	// Execute query with pagination
-	err := query.Scopes(paginate(pagination, query)).Find(&composers).Error
+	err := query.Scopes(paginate(pagination, query, pagination.GetSort())).Find(&composers).Error
 	if err != nil {
 		return nil, err
 	}

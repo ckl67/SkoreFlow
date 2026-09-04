@@ -19,7 +19,13 @@ API_VERSION="v1"
 curl http://localhost:8080/api/${API_VERSION}
 ```
 
-## Login
+## public - demo
+
+## private
+
+### Prerequisite
+
+#### Login
 
 ```shell
 
@@ -33,7 +39,7 @@ curl -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/${API_VER
 
 ```
 
-## List of Composers
+### List of Composers
 
 ```shell
 # All Composers
@@ -46,18 +52,19 @@ curl -H "Authorization: Bearer $TOKEN_USER2" "http://localhost:8080/api/${API_VE
 curl -H "Authorization: Bearer $TOKEN_USER2" "http://localhost:8080/api/${API_VERSION}/composers?isVerified=false&page=1&limit=5&" | jq
 
 # Beethoven Composer
-curl -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/${API_VERSION}/composers/2 | jq
+curl -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/${API_VERSION}/composers?name=Ludwig%20Van %20Beethoven| jq
 ```
 
-## Create score
+### Create score
 
 ```shell
 
-NAME="Sonate au Clair de Lune"
+NAME="Sonate au Clair de Lune - Perfect Version"
 COMPOSER="Ludwig Van Beethoven"
 COMPOSER_ID=2
 FILE_PATH="../testauto/backend/resources/scores/Ludwig Van Beethoven/Sonate No. 14 - Clair de lune.pdf"
 
+# To run in /backend
 curl -X POST "http://localhost:8080/api/${API_VERSION}/scores" \
   -H "Authorization: Bearer $TOKEN_USER2" \
   -F "uploadFile=@$FILE_PATH" \
@@ -69,7 +76,7 @@ curl -X POST "http://localhost:8080/api/${API_VERSION}/scores" \
   -F "informationText=Automated test file for $COMPOSER"
 
 # ================================================
-# Same result a second time with TOKEN_USER2
+# Should reject a second time with TOKEN_USER2
 # ================================================
 
 curl -i -X POST "http://localhost:8080/api/${API_VERSION}/scores" \
@@ -84,34 +91,7 @@ curl -i -X POST "http://localhost:8080/api/${API_VERSION}/scores" \
 
 ```
 
-## Some verifications
-
-```shell
-# ================================================
-# composerId=9999 → composer does not exist
-# ================================================
-NAME="Sonate au Clair de Lune"
-COMPOSER="Ludwig Van Beethoven"
-COMPOSER_ID=9999
-FILE_PATH="../testauto/backend/resources/scores/Ludwig Van Beethoven/Sonate No. 14 - Clair de lune.pdf"
-
-# To display the body -i
-curl -i -X POST "http://localhost:8080/api/${API_VERSION}/scores" \
-  -H "Authorization: Bearer $TOKEN_USER2" \
-  -F "uploadFile=@$FILE_PATH" \
-  -F "composerId=$COMPOSER_ID" \
-  -F "scoreName=$NAME" \
-  -F "releaseDate=1965-12-12T00:00:00Z" \
-  -F "categories=Classical,Romantic" \
-  -F "tags=Piano,Calm" \
-  -F "informationText=Automated test file for $COMPOSER"
-
-
-
-
-```
-
-## List of Scores
+### List of Scores
 
 ```shell
 
@@ -119,22 +99,44 @@ curl -H "Authorization: Bearer $TOKEN_USER2" "http://localhost:8080/api/${API_VE
 
 ```
 
-## List of a specific score
+### Pagination
 
 ```shell
-curl -H "Authorization: Bearer $TOKEN_USER2" "http://localhost:8080/api/${API_VERSION}/scores/1" | jq
 
+curl -H "Authorization: Bearer $TOKEN_USER2" \
+"http://localhost:8080/api/${API_VERSION}/scores?page=1&limit=2" | jq
+
+
+curl -H "Authorization: Bearer $TOKEN_USER2" \
+"http://localhost:8080/api/${API_VERSION}/scores?page=2&limit=2" | jq
 
 ```
 
-## Merge composer
+### Search
 
 ```shell
-curl -X PUT \
-  -H "Authorization: Bearer $TOKEN_USER2" \
-  -H "Content-Type: application/json" \
-  -d '{"source_id":2,"target_id":1}' \
-  http://localhost:8080/api/${API_VERSION}/composers/merge | jq
+curl -H "Authorization: Bearer $TOKEN_USER2" \
+"http://localhost:8080/api/${API_VERSION}/scores?search=Adagio" | jq
+```
 
+### Filter Compo
 
+```shell
+
+curl -H "Authorization: Bearer $TOKEN_USER2" \
+"http://localhost:8080/api/${API_VERSION}/scores?composer=Beethoven" | jq
+```
+
+### Filter Tag
+
+```shell
+curl -H "Authorization: Bearer $TOKEN_USER2" \
+"http://localhost:8080/api/${API_VERSION}/scores?tag=Piano" | jq
+```
+
+### Filter Category
+
+```shell
+curl -H "Authorization: Bearer $TOKEN_USER2" \
+"http://localhost:8080/api/${API_VERSION}/scores?category=Classical" | jq
 ```

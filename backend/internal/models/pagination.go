@@ -98,7 +98,7 @@ func (p *Pagination) GetSort() string {
 // - Computes total number of rows (without limit/offset).
 // - Updates Pagination fields (TotalRows, TotalPages).
 // - Returns a scoped query with offset, limit, and order applied.
-func paginate(pagination *Pagination, db *gorm.DB) func(db *gorm.DB) *gorm.DB {
+func paginate(pagination *Pagination, db *gorm.DB, sort string) func(db *gorm.DB) *gorm.DB {
 	var totalRows int64
 
 	// Clone session to avoid side effects
@@ -110,10 +110,20 @@ func paginate(pagination *Pagination, db *gorm.DB) func(db *gorm.DB) *gorm.DB {
 	totalPages := int(math.Ceil(float64(totalRows) / float64(limit)))
 	pagination.TotalPages = totalPages
 
+	// Former
+	//	return func(db *gorm.DB) *gorm.DB {
+	//		return db.
+	//			Offset(pagination.GetOffset()).
+	//			Limit(limit).
+	//			Order(pagination.GetSort())
+	//	}
+	// Issue : Order(pagination.GetSort())
+	// for a Score.List() with a JOIN on ‘composers’, a sort such as ‘updated_at’ descending becomes ambiguous.
+	// Solution we provide the sort in the function !
 	return func(db *gorm.DB) *gorm.DB {
 		return db.
 			Offset(pagination.GetOffset()).
 			Limit(limit).
-			Order(pagination.GetSort())
+			Order(sort)
 	}
 }

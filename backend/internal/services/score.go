@@ -11,6 +11,7 @@ package services
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"mime/multipart"
 	"os"
@@ -403,7 +404,7 @@ func (s *ScoreService) UpdateAnnotations(uid uint32, scoreID uint, annotations s
 }
 
 // GetScoresPage handles paginated listing with filters and search.
-func (s *ScoreService) GetScoresPage(uid uint32, form forms.GetScoresPageRequest, isDemo bool) (*models.Pagination, error) {
+func (s *ScoreService) GetScoresPage(uid uint32, isDemo bool, form forms.GetScoresPageRequest) (*models.Pagination, error) {
 	// 1. Defaults
 	if form.Page <= 0 {
 		form.Page = 1
@@ -422,23 +423,40 @@ func (s *ScoreService) GetScoresPage(uid uint32, form forms.GetScoresPageRequest
 	pagination.Sort = pagination.GetSort()
 
 	// 3. Prepare composer filter
-	var safeCompSearch string
-	if form.Composer != "" {
-		safeCompSearch = "%" + format.SanitizeName(form.Composer) + "%"
+	// We should always provide Composer name, BUT in case !!
+	var safeCompSearch *string
+	if form.Composer != nil {
+		safeCompName := format.SanitizeName(*form.Composer)
+		safeCompSearch = &safeCompName
+	} else {
+		safeCompSearch = nil
 	}
 
 	logger.Score.Debug("GetScoresPage: sort=%s", pagination.Sort)
 
 	var score models.Score
-	result, err := score.List(s.db, &pagination, safeCompSearch, form.Tag, form.Category, form.Search, uid, false)
+	// safeCompSearch, form.Tag, form.Category, form.Name can be nil
+	result, err := score.List(s.db, &pagination, safeCompSearch, form.Name, form.Tag, form.Category, uid, isDemo)
 	if err != nil {
-		logger.Score.Error("List failed: %v", err)
+		logger.Score.Error("Failed to List Scores: %v", err)
 		return nil, err
 	}
 
-	rows, ok := result.Rows.([]*models.Score)
-	if !ok || len(rows) == 0 {
-		logger.Score.Warn("No scores found for search=%s", form.Search)
+	if result == nil {
+		return nil, fmt.Errorf("invalid pagination result")
+	}
+
+	scores, ok := result.Rows.([]*models.Score)
+	if !ok {
+		return nil, fmt.Errorf("invalid scores type")
+	}
+
+	if len(scores) == 0 {
+		if form.Name != nil {
+			logger.Score.Warn("No scores found for search: %s", *form.Name)
+		} else {
+			logger.Score.Warn("No scores found")
+		}
 	}
 
 	return result, nil

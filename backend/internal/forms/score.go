@@ -56,15 +56,6 @@ import (
 // Update → pointers
 // -----------------------
 
-// GetScoresPageRequest defines pagination and filtering for score listing.
-type GetScoresPageRequest struct {
-	PaginatedRequest
-	Search   string `form:"search" json:"search"`
-	Tag      string `form:"tag" json:"tag"`
-	Category string `form:"category" json:"category"`
-	Composer string `form:"composer" json:"composer"`
-}
-
 // CreateScoreRequest defines the payload for creating a new score.
 type CreateScoreRequest struct {
 	File            *multipart.FileHeader `form:"uploadFile" binding:"required"`
@@ -74,6 +65,15 @@ type CreateScoreRequest struct {
 	Categories      string                `form:"categories"`
 	Tags            string                `form:"tags"`
 	InformationText string                `form:"informationText"`
+}
+
+// GetScoresPageRequest defines pagination and filtering for score listing.
+type GetScoresPageRequest struct {
+	PaginatedRequest
+	Name     *string `form:"search" json:"search"`
+	Composer *string `form:"composer" json:"composer"`
+	Tag      *string `form:"tag" json:"tag"`
+	Category *string `form:"category" json:"category"`
 }
 
 // UpdateScoreRequest defines the payload for updating an existing score.

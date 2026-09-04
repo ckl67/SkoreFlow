@@ -44,6 +44,8 @@ curl -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/${API_VER
 ## Create of a composer
 
 ```shell
+# To run in /backend
+
 curl -X POST "http://localhost:8080//${API_VERSION}api/composers" \
   -H "Authorization: Bearer $TOKEN_USER2" \
   -F "name=Beethoven 2" \
