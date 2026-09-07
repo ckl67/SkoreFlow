@@ -17,10 +17,10 @@ func RegisterScoreRoutes(rg *gin.RouterGroup, scoreCtrl *controllers.ScoreContro
 		scoreGroup.POST("/scores", scoreCtrl.CreateScore) // vitest
 
 		// Search & listing
-		scoreGroup.GET("/scores", scoreCtrl.GetScoresPage)
+		scoreGroup.GET("/scores", scoreCtrl.GetScoresPage) // vitest
+		scoreGroup.GET("/scores/:id", scoreCtrl.GetScore)  // vitest
 
 		// CRUD operations
-		scoreGroup.GET("/scores/:id", scoreCtrl.GetScore)
 		scoreGroup.PUT("/scores/:id", scoreCtrl.UpdateScore)
 		scoreGroup.DELETE("/scores/:id", scoreCtrl.DeleteScore)
 

@@ -140,3 +140,9 @@ curl -H "Authorization: Bearer $TOKEN_USER2" \
 curl -H "Authorization: Bearer $TOKEN_USER2" \
 "http://localhost:8080/api/${API_VERSION}/scores?category=Classical" | jq
 ```
+
+### To list 1 score
+
+```shell
+curl -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/${API_VERSION}/scores/11 | jq
+```

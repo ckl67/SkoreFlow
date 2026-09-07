@@ -14,6 +14,10 @@ In SkoreFlow project we will privilege TS and JSX
 | JSX Syntax extension for JavaScript. | Allows writing HTML-like                 | code inside JS.                              |
 | React                                | A UI Library.                            | Uses Components to build user interfaces.    |
 
+## Official documentation
+
+[Typescript official documentation](https://www.typescriptlang.org/docs/)
+
 ## compilation
 
 There is not only one Typescript !

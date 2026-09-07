@@ -188,32 +188,35 @@ func (ctrl *ScoreController) DeleteScore(c *gin.Context) {
 
 // GetScore
 // Retrieves a single score by ID.
-// Includes access control (owner or admin).
+// GetScore retrieves detailed information for a single score
 func (ctrl *ScoreController) GetScore(c *gin.Context) {
 	uid := c.GetUint32("user_id")
-	userRole := c.GetInt("user_role")
 
 	idParam := c.Param("id")
-	scoreID, err := strconv.ParseUint(idParam, 10, 32)
+	sid, err := strconv.ParseUint(idParam, 10, 32)
 	if err != nil {
 		responses.FAIL(c, http.StatusBadRequest, apperrors.ErrScoreInvalidID)
 		return
 	}
 
-	score, err := ctrl.service.GetScore(uid, uint(scoreID), userRole)
+	score, err := ctrl.service.GetScore(uid, uint(sid))
 	if err != nil {
 		switch err {
 		case apperrors.ErrScoreNotFound:
 			responses.FAIL(c, http.StatusNotFound, err)
-		case apperrors.ErrAccessForbidden:
-			responses.FAIL(c, http.StatusForbidden, err)
 		default:
 			responses.FAIL(c, http.StatusInternalServerError, err)
 		}
 		return
 	}
 
-	responses.SUCCESS(c, http.StatusOK, score)
+	response := dto.GetScoreResponse{
+		Message: "Score retrieved successfully",
+		Score:   dto.ToScorePublicResponse(score),
+	}
+
+	responses.SUCCESS(c, http.StatusOK, response)
+
 }
 
 // UpdateAnnotations
@@ -265,7 +268,7 @@ func (ctrl *ScoreController) GetScoresPage(c *gin.Context) {
 		return
 	}
 
-	logger.Score.Debug("(Controller GetScoresPage) : User: %d | Search: %v | Page: %d | PageSize: %d | SortBy: %s", uid, form.Name, form.Page, form.Limit, form.SortBy)
+	// logger.Score.Debug("(Controller GetScoresPage) : User: %d | Search: %v | Page: %d | PageSize: %d | SortBy: %s", uid, form.Name, form.Page, form.Limit, form.SortBy)
 
 	pageData, err := ctrl.service.GetScoresPage(uid, isDemo, form)
 	if err != nil {
@@ -274,7 +277,6 @@ func (ctrl *ScoreController) GetScoresPage(c *gin.Context) {
 	}
 
 	// Cast to scores
-
 	var scores []*models.Score
 	var ok bool
 	scores, ok = pageData.Rows.([]*models.Score)

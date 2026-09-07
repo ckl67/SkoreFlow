@@ -26,7 +26,6 @@ package forms
 // → Never duplicate binding validation inside ValidateForm()
 
 // PaginatedRequest defines common query parameters for paginated endpoints.
-//
 // Fields:
 // - SortBy: sorting field and direction (e.g., "created_at desc")
 // - Limit: number of items per page

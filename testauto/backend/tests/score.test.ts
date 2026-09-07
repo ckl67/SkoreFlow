@@ -3,11 +3,14 @@ import path from 'path';
 import { beforeAll, describe, expect, it } from 'vitest';
 
 import { login } from '../helpers/auth.js';
-import { createScore } from '../helpers/score';
 
+import { createScore } from '../helpers/score';
 import { CreateScorePayload } from '../../../shared/types/score.js';
 
 import { getComposersByName } from '../helpers/composer.js';
+
+import { GetScoresPage, GetScore } from '../helpers/score';
+
 // ----------------------------------------------------------------------------
 // LOCAL HELPER
 // ----------------------------------------------------------------------------
@@ -59,6 +62,7 @@ async function getComposerId(composerName: string, token: string): Promise<numbe
 
 describe('🎼 Score API - From the User Point of view', () => {
   let TOKEN_USER1: string;
+  let TOKEN_USER2: string;
   let TOKEN_ADMIN: string;
   let TOKEN_MODERATOR1: string;
 
@@ -79,6 +83,12 @@ describe('🎼 Score API - From the User Point of view', () => {
       password: 'password123',
     });
     TOKEN_USER1 = res.data.data!.token;
+
+    res = await login({
+      email: 'user2@test.com',
+      password: 'password123',
+    });
+    TOKEN_USER2 = res.data.data!.token;
 
     res = await login({
       email: 'moderator1@test.com',
@@ -208,6 +218,297 @@ describe('🎼 Score API - From the User Point of view', () => {
 
     expect(res.status).toBe(400);
     expect(res.data.error!.message).toBe('invalid date format');
+  });
+
+  // ----------------------------------------------------------------------------
+  // LIST SCORES
+  // ----------------------------------------------------------------------------
+
+  it('should get default page of scores', async () => {
+    const res = await GetScoresPage({}, TOKEN_USER1);
+
+    expect(res.status).toBe(200);
+    expect(res.data.success).toBe(true);
+
+    expect(res.data.data!.page).toBe(1);
+    expect(res.data.data!.limit).toBe(10);
+
+    expect(res.data.data!.scores.length).toBeGreaterThan(0);
+
+    expect(res.data.data!.total_rows).toBeGreaterThan(0);
+    expect(res.data.data!.total_pages).toBeGreaterThan(0);
+  });
+
+  // ----------------------------------------------------------------------------
+  //                                        SORT
+  // ----------------------------------------------------------------------------
+
+  // ----------------------------------------------------------------------------
+  // 1) EXPLICIT PAGINATION;
+  // ----------------------------------------------------------------------------
+
+  it('should get a specific page of scores', async () => {
+    const res = await GetScoresPage({ page: 1, limit: 2 }, TOKEN_USER1);
+
+    expect(res.status).toBe(200);
+    expect(res.data.success).toBe(true);
+
+    expect(res.data.data!.page).toBe(1);
+    expect(res.data.data!.limit).toBe(2);
+
+    expect(res.data.data!.scores.length).toBeLessThanOrEqual(2);
+    expect(res.data.data!.total_rows).toBeGreaterThan(0);
+    expect(res.data.data!.total_pages).toBeGreaterThan(0);
+  });
+
+  // ----------------------------------------------------------------------------
+  // 2) SECOND PAGE;
+  // ----------------------------------------------------------------------------
+  it('should get the second page of scores', async () => {
+    const page1 = await GetScoresPage({ page: 1, limit: 2, sort: 'id asc' }, TOKEN_USER1);
+
+    const page2 = await GetScoresPage({ page: 2, limit: 2, sort: 'id asc' }, TOKEN_USER1);
+
+    expect(page1.status).toBe(200);
+    expect(page2.status).toBe(200);
+
+    expect(page1.data.data!.page).toBe(1);
+    expect(page2.data.data!.page).toBe(2);
+
+    expect(page1.data.data!.limit).toBe(2);
+    expect(page2.data.data!.limit).toBe(2);
+
+    expect(page2.data.data!.scores.length).toBeGreaterThan(0);
+
+    // We are using map function with arrow function
+    // (score) => score.id : For each element in the array (temporarily named ‘score’), it returns its ‘.id’ value.
+    const page1Ids = page1.data.data!.scores.map((score) => score.id);
+    const page2Ids = page2.data.data!.scores.map((score) => score.id);
+
+    expect(page1Ids).not.toEqual(expect.arrayContaining(page2Ids));
+  });
+  // ----------------------------------------------------------------------------
+  // 3) PAGE OUTSIDE THE LIMITS;
+  // ----------------------------------------------------------------------------
+  it('should return an empty page when page is out of range', async () => {
+    const res = await GetScoresPage({ page: 999, limit: 10 }, TOKEN_USER1);
+
+    expect(res.status).toBe(200);
+    expect(res.data.success).toBe(true);
+
+    expect(res.data.data!.page).toBe(999);
+    expect(res.data.data!.scores).toHaveLength(0);
+
+    expect(res.data.data!.total_rows).toBeGreaterThan(0);
+    expect(res.data.data!.total_pages).toBeGreaterThan(0);
+  });
+  // ----------------------------------------------------------------------------
+  // 4) SORTING ASC and DESC;
+  // ----------------------------------------------------------------------------
+  it('should sort scores by id ascending', async () => {
+    const res = await GetScoresPage({ sort: 'id asc' }, TOKEN_USER1);
+
+    expect(res.status).toBe(200);
+    expect(res.data.success).toBe(true);
+
+    const scores = res.data.data!.scores;
+
+    for (let i = 1; i < scores.length; i++) {
+      expect(scores[i].id).toBeGreaterThanOrEqual(scores[i - 1].id);
+    }
+  });
+
+  it('should sort scores by id descending', async () => {
+    const res = await GetScoresPage({ sort: 'id desc' }, TOKEN_USER1);
+
+    expect(res.status).toBe(200);
+    expect(res.data.success).toBe(true);
+
+    const scores = res.data.data!.scores;
+
+    for (let i = 1; i < scores.length; i++) {
+      expect(scores[i].id).toBeLessThanOrEqual(scores[i - 1].id);
+    }
+  });
+
+  // ----------------------------------------------------------------------------
+  // 5) Test sorting by composer
+  // ----------------------------------------------------------------------------
+
+  it('should sort scores by composer name ascending', async () => {
+    const res = await GetScoresPage({ sort: 'composer asc' }, TOKEN_USER1);
+
+    expect(res.status).toBe(200);
+    expect(res.data.success).toBe(true);
+
+    const scores = res.data.data!.scores;
+
+    for (let i = 1; i < scores.length; i++) {
+      expect(scores[i].composer.name.localeCompare(scores[i - 1].composer.name)).toBeGreaterThanOrEqual(0);
+    }
+  });
+
+  it('should sort scores by composer name descending', async () => {
+    const res = await GetScoresPage({ sort: 'composer desc' }, TOKEN_USER1);
+
+    expect(res.status).toBe(200);
+    expect(res.data.success).toBe(true);
+
+    const scores = res.data.data!.scores;
+
+    for (let i = 1; i < scores.length; i++) {
+      expect(scores[i].composer.name.localeCompare(scores[i - 1].composer.name)).toBeLessThanOrEqual(0);
+    }
+  });
+
+  // ----------------------------------------------------------------------------
+  // 6) SEARCH BY NAME;
+  // ----------------------------------------------------------------------------
+  it('should filter scores by name', async () => {
+    const res = await GetScoresPage({ search: 'Marche' }, TOKEN_USER1);
+
+    expect(res.status).toBe(200);
+    expect(res.data.success).toBe(true);
+
+    const scores = res.data.data!.scores;
+
+    expect(scores.length).toBeGreaterThan(0);
+
+    for (const score of scores) {
+      console.log('Score Name : %s', score.name);
+      expect(score.name.toLowerCase()).toContain('marche');
+    }
+  });
+  // ----------------------------------------------------------------------------
+  // 7) COMPOSER FILTER;
+  // ----------------------------------------------------------------------------
+
+  it('should filter scores by composer', async () => {
+    const res = await GetScoresPage({ composer: 'Beethoven' }, TOKEN_USER1);
+
+    expect(res.status).toBe(200);
+    expect(res.data.success).toBe(true);
+
+    const scores = res.data.data!.scores;
+
+    expect(scores.length).toBeGreaterThan(0);
+
+    for (const score of scores) {
+      expect(score.composer.name).toContain('Beethoven');
+    }
+  });
+
+  it('should return no scores for an unknown composer', async () => {
+    const res = await GetScoresPage({ composer: 'ThisComposerDoesNotExist' }, TOKEN_USER1);
+
+    expect(res.status).toBe(200);
+    expect(res.data.success).toBe(true);
+
+    expect(res.data.data!.scores).toHaveLength(0);
+    expect(res.data.data!.total_rows).toBe(0);
+    expect(res.data.data!.total_pages).toBe(0);
+  });
+
+  // ----------------------------------------------------------------------------
+  // 8) TAG FILTER;
+  // ----------------------------------------------------------------------------
+
+  it('should filter scores by tag', async () => {
+    const res = await GetScoresPage({ tag: 'Piano' }, TOKEN_USER1);
+
+    expect(res.status).toBe(200);
+    expect(res.data.success).toBe(true);
+
+    expect(res.data.data!.scores.length).toBeGreaterThan(0);
+
+    for (const score of res.data.data!.scores) {
+      expect(score.tags.toLowerCase()).toContain('piano');
+    }
+  });
+  // ----------------------------------------------------------------------------
+  // 9) CATEGORY FILTER;
+  // ----------------------------------------------------------------------------
+
+  it('should filter scores by category', async () => {
+    const res = await GetScoresPage({ category: 'Classical' }, TOKEN_USER1);
+
+    expect(res.status).toBe(200);
+    expect(res.data.success).toBe(true);
+
+    expect(res.data.data!.scores.length).toBeGreaterThan(0);
+
+    for (const score of res.data.data!.scores) {
+      expect(score.categories.toLowerCase()).toContain('classical');
+    }
+  });
+  // ----------------------------------------------------------------------------
+  // 10) COMBINATION OF PAGINATION AND FILTERS;
+  // ----------------------------------------------------------------------------
+
+  it('should paginate filtered scores', async () => {
+    const res = await GetScoresPage(
+      {
+        composer: 'Beethoven',
+        page: 1,
+        limit: 1,
+      },
+      TOKEN_USER1
+    );
+
+    expect(res.status).toBe(200);
+    expect(res.data.success).toBe(true);
+
+    expect(res.data.data!.page).toBe(1);
+    expect(res.data.data!.limit).toBe(1);
+
+    expect(res.data.data!.scores.length).toBeLessThanOrEqual(1);
+
+    expect(res.data.data!.total_rows).toBeGreaterThan(0);
+  });
+  // ----------------------------------------------------------------------------
+  // 11) USER-SPECIFIC FILTERING.
+  // ----------------------------------------------------------------------------
+  it('should only return scores belonging to the authenticated user', async () => {
+    const res = await GetScoresPage({}, TOKEN_USER2);
+    const USER2_ID = 3;
+    expect(res.status).toBe(200);
+    expect(res.data.success).toBe(true);
+
+    for (const score of res.data.data!.scores) {
+      expect(score.uploaderId).toBe(USER2_ID);
+    }
+  });
+
+  // ----------------------------------------------------------------------------
+  // 12) UNIQUE LIST COMPOSER
+  // ----------------------------------------------------------------------------
+
+  it('should get one score by id', async () => {
+    // First we need to recover 1 scores
+    const res = await GetScoresPage({ page: 1, limit: 2 }, TOKEN_USER1);
+    expect(res.status).toBe(200);
+    expect(res.data.success).toBe(true);
+
+    const scores = res.data.data!.scores;
+    expect(scores.length).toBeGreaterThan(0);
+
+    // Index 0 !!
+    const scoreId: number = Number(scores[0].id);
+    console.log('We will get score with scoreId : ', scoreId);
+
+    const res1 = await GetScore(scoreId, TOKEN_USER1);
+
+    expect(res1.status).toBe(200);
+    expect(res1.data.success).toBe(true);
+    expect(res1.data.data!.score.id).toBe(scoreId);
+  });
+
+  // ----------------------------------------------------------------------------
+
+  it('should return 404 for unknown score', async () => {
+    const res = await GetScore(999999, TOKEN_ADMIN);
+
+    expect(res.status).toBe(404);
   });
 
   // ----------------------------------------------------------------------------

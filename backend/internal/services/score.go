@@ -264,9 +264,9 @@ func (s *ScoreService) GenerateResizedImage(fullFilePath string, fullThumbnailPa
 // - Applies partial updates
 // - Re-checks uniqueness if name changes
 // - Reprocesses file if provided
-func (s *ScoreService) UpdateScore(uid uint32, scoreID uint, form forms.UpdateScoreRequest, file *multipart.FileHeader) (*models.Score, error) {
+func (s *ScoreService) UpdateScore(userId uint32, scoreId uint, form forms.UpdateScoreRequest, file *multipart.FileHeader) (*models.Score, error) {
 	// 1. Fetch existing score
-	score, err := models.FindScoreByID(s.db, scoreID, false)
+	score, err := models.FindScoreByID(s.db, userId, scoreId, false)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, apperrors.ErrScoreNotFound
@@ -275,8 +275,8 @@ func (s *ScoreService) UpdateScore(uid uint32, scoreID uint, form forms.UpdateSc
 	}
 
 	// 2. Ownership check
-	if score.UploaderID != uid {
-		logger.Score.Warn("Unauthorized modification attempt: user=%d scoreID=%d owner=%d", uid, scoreID, score.UploaderID)
+	if score.UploaderID != userId {
+		logger.Score.Warn("Unauthorized modification attempt: user=%d scoreId=%d owner=%d", userId, scoreId, score.UploaderID)
 		return nil, apperrors.ErrAccessForbidden
 	}
 
@@ -285,7 +285,7 @@ func (s *ScoreService) UpdateScore(uid uint32, scoreID uint, form forms.UpdateSc
 	if form.ScoreName != "" {
 		newSafeName := format.SanitizeName(form.ScoreName)
 
-		exists, err := models.ScoreExists(s.db, newSafeName, score.ComposerID, uid)
+		exists, err := models.ScoreExists(s.db, newSafeName, score.ComposerID, userId)
 		if err != nil {
 			return nil, err
 		}
@@ -335,9 +335,9 @@ func (s *ScoreService) UpdateScore(uid uint32, scoreID uint, form forms.UpdateSc
 // Rules:
 // - Allowed for owner or admin
 // - Deletes physical files first, then DB record
-func (s *ScoreService) DeleteScore(uid uint32, scoreID uint, userRole int) error {
+func (s *ScoreService) DeleteScore(userId uint32, scoreId uint, userRole int) error {
 	// 1. Fetch score
-	score, err := models.FindScoreByID(s.db, scoreID, false)
+	score, err := models.FindScoreByID(s.db, userId, scoreId, false)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return apperrors.ErrScoreNotFound
@@ -347,26 +347,27 @@ func (s *ScoreService) DeleteScore(uid uint32, scoreID uint, userRole int) error
 
 	// 2. Authorization
 	isAdmin := userRole == domain.RoleAdmin
-	isOwner := score.UploaderID == uid
+	isOwner := score.UploaderID == userId
 
 	if !isAdmin && !isOwner {
-		logger.Score.Warn("Unauthorized deletion attempt: user=%d scoreID=%d", uid, scoreID)
+		logger.Score.Warn("Unauthorized deletion attempt: user=%d scoreId=%d", userId, scoreId)
 		return apperrors.ErrAccessForbidden
 	}
 
 	// 3. Orchestrate deletion
 	if err := s.deleteScoreOrchestrator(score); err != nil {
-		logger.Score.Error("Deletion failed: scoreID=%d error=%v", scoreID, err)
+		logger.Score.Error("Deletion failed: scoreId=%d error=%v", scoreId, err)
 		return err
 	}
 
-	logger.Score.Info("Score deleted: scoreID=%d user=%d", scoreID, uid)
+	logger.Score.Info("Score deleted: scoreId=%d user=%d", scoreId, userId)
 	return nil
 }
 
-// GetScore retrieves a score after verifying access permissions.
-func (s *ScoreService) GetScore(uid uint32, scoreID uint, userRole int) (*models.Score, error) {
-	score, err := models.FindScoreByID(s.db, scoreID, false)
+// GetScore retrieves a score
+// Will return only for the uid
+func (s *ScoreService) GetScore(uid uint32, scoreId uint) (*models.Score, error) {
+	score, err := models.FindScoreByID(s.db, uid, scoreId, false)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, apperrors.ErrScoreNotFound
@@ -374,33 +375,7 @@ func (s *ScoreService) GetScore(uid uint32, scoreID uint, userRole int) (*models
 		return nil, err
 	}
 
-	isAdmin := userRole == domain.RoleAdmin
-	isOwner := score.UploaderID == uid
-
-	if !isAdmin && !isOwner {
-		logger.Score.Error("Access denied: user=%d scoreID=%d owner=%d", uid, scoreID, score.UploaderID)
-		return nil, apperrors.ErrAccessForbidden
-	}
-
 	return score, nil
-}
-
-// UpdateAnnotations updates only the annotations field for a given score.
-func (s *ScoreService) UpdateAnnotations(uid uint32, scoreID uint, annotations string) error {
-	result := s.db.Model(&models.Score{}).
-		Where("id = ? AND uploader_id = ?", scoreID, uid).
-		Update("annotations", annotations).
-		Update("updated_at", time.Now())
-
-	if result.Error != nil {
-		return result.Error
-	}
-
-	if result.RowsAffected == 0 {
-		return apperrors.ErrScoreNotFound
-	}
-
-	return nil
 }
 
 // GetScoresPage handles paginated listing with filters and search.
@@ -423,7 +398,7 @@ func (s *ScoreService) GetScoresPage(uid uint32, isDemo bool, form forms.GetScor
 	pagination.Sort = pagination.GetSort()
 
 	// 3. Prepare composer filter
-	// We should always provide Composer name, BUT in case !!
+	// Composer name should be provided, however we test !!
 	var safeCompSearch *string
 	if form.Composer != nil {
 		safeCompName := format.SanitizeName(*form.Composer)
@@ -460,6 +435,24 @@ func (s *ScoreService) GetScoresPage(uid uint32, isDemo bool, form forms.GetScor
 	}
 
 	return result, nil
+}
+
+// UpdateAnnotations updates only the annotations field for a given score.
+func (s *ScoreService) UpdateAnnotations(uid uint32, scoreId uint, annotations string) error {
+	result := s.db.Model(&models.Score{}).
+		Where("id = ? AND uploader_id = ?", scoreId, uid).
+		Update("annotations", annotations).
+		Update("updated_at", time.Now())
+
+	if result.Error != nil {
+		return result.Error
+	}
+
+	if result.RowsAffected == 0 {
+		return apperrors.ErrScoreNotFound
+	}
+
+	return nil
 }
 
 // deleteScoreOrchestrator handles full deletion lifecycle (files + DB + cleanup).

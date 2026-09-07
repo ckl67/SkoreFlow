@@ -111,8 +111,7 @@ func (s *Score) List(
 	var scores []*Score
 
 	sort := pagination.GetSort()
-
-	// Base query (scoped to user)
+	//sort := pagination.Sort
 
 	// As soon as a query involves several tables,
 	// always specify the columns belonging to `scores`.
@@ -124,6 +123,8 @@ func (s *Score) List(
 		Where("scores.is_demo = ?", isDemo)
 
 	// JOIN is required for composer filtering or composer sorting.
+	// The variable will be set to true if at least one of the following conditions is met:
+	// 	A ‘composer’ is present  OR The sort order requested is ‘composer asc’. OR ‘composer desc’.
 	needsComposerJoin := composer != nil ||
 		sort == "composer asc" ||
 		sort == "composer desc"
@@ -166,9 +167,12 @@ func (s *Score) List(
 		)
 	}
 
+	// Computed Sort
+	finalSort := getScoreSort(sort)
+
 	// Execute query with pagination
 	err := query.Scopes(
-		paginate(pagination, query, getScoreSort(sort)),
+		paginate(pagination, query, finalSort),
 	).Find(&scores).Error
 
 	if err != nil {
@@ -218,18 +222,15 @@ func getScoreSort(sort string) string {
 }
 
 // FindScoreByID retrieves a score by its unique identifier.
-func FindScoreByID(db *gorm.DB, id uint, isDemo bool) (*Score, error) {
+func FindScoreByID(db *gorm.DB, userId uint32, scoreId uint, isDemo bool) (*Score, error) {
 	// Base query
-	query := db.Model(&Score{})
-
-	// If we are in demo mode, we hide the non demo elements
-	if isDemo {
-		query = query.Where("is_demo = ?", true)
-	}
+	query := db.Model(&Score{}).
+		Preload("Composer").
+		Where("scores.uploader_id = ?", userId).
+		Where("scores.is_demo = ?", isDemo)
 
 	var score Score
-	query = query.Preload("Composer")
-	err := query.First(&score, id).Error
+	err := query.First(&score, scoreId).Error
 	if err != nil {
 		return nil, err
 	}

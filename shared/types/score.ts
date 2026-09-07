@@ -17,6 +17,8 @@
 //     filePath: string,
 // )
 
+import { ComposerPublicResponse } from './composer';
+
 export type CreateScorePayload = {
   composerId: number;
   scoreName: string;
@@ -33,17 +35,23 @@ export type CreateScoreResponse = {
 };
 
 // ---------------------------
-
+// Must correspond 100% to the dto !
 export type ScorePublicResponse = {
   id: number;
   name: string;
   composerId: number;
-  scoreName: string;
+  composer: ComposerPublicResponse;
   releaseDate: string;
+  filepath: string;
+  thumbnailPath: string;
+  uploaderId: number;
   tags: string;
   categories: string;
   informationText: string;
   annotations: string;
+  createdAt: string;
+  updatedAt: string;
+  isDemo: boolean;
 };
 
 // ---------------------------
@@ -53,6 +61,10 @@ export type GetScoresPageRequest = {
   limit?: number;
   sort?: string;
   name?: string;
+  search?: string;
+  composer?: string;
+  tag?: string;
+  category?: string;
 };
 
 export type GetScoresPageResponse = {
@@ -67,7 +79,7 @@ export type GetScoresPageResponse = {
 
 // ---------------------------
 
-export type GetScoresResponse = {
+export type GetScoreResponse = {
   message: string;
   score: ScorePublicResponse;
 };
