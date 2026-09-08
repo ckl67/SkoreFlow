@@ -68,8 +68,40 @@ func (s *Score) Create(db *gorm.DB) error {
 // WARNING:
 // - All fields are overwritten, including zero values.
 // - The struct must be fully loaded beforehand.
+//
+// The Composer association requires special handling:
+// - The Score may have been loaded with Preload("Composer"), so Composer
+//   can contain the old composer while ComposerID has been changed.
+// - Omit("Composer") prevents GORM from saving the stale preloaded association
+//   and ensures that the new ComposerID is persisted.
+// - After saving, Preload("Composer") reloads the association so the in-memory
+//   Score is consistent with the database.
+//
+//	Example :
+// 			2026-09-08 23:59:23 [DEBUG] [SCORE] Before Update: Score ID=4 ComposerID=4 Composer=Wolfgang Amadeus Mozart
+//  Function
+//            ↓
+//    ComposerID = 4
+//    Composer = Mozart
+//            ↓
+//    Omit("Composer").Save()
+//            ↓
+//    DB : composer_id = 4
+//            ↓
+//    Preload("Composer")
+//            ↓
+//    Composer = Beethoven
+//            ↓
+//    return
+
 func (s *Score) Update(db *gorm.DB) error {
-	return db.Save(s).Error
+
+	if err := db.Omit("Composer").Save(s).Error; err != nil {
+		return err
+	}
+
+	// Preload("Composer") is used solely to resynchronise the Go object after saving.
+	return db.Preload("Composer").First(s, s.ID).Error
 }
 
 func (s *Score) UpdateAnnotations(

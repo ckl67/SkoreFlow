@@ -6,7 +6,7 @@ import { login } from '../helpers/auth.js';
 
 import { CreateScorePayload, Annotation } from '../../../shared/types/score.js';
 
-import { createScore } from '../helpers/score';
+import { createScore, UpdateScore } from '../helpers/score';
 
 import { getComposersByName } from '../helpers/composer.js';
 
@@ -35,6 +35,7 @@ function makeScore(composer_id: number, score_name: string): CreateScorePayload 
 
 // Could theoretically provide several composers !
 async function getComposerId(composerName: string, token: string): Promise<number> {
+  console.log('  --> Find score with composerName = %s --> (Name must match 100%)', composerName);
   const resComposer = await getComposersByName(composerName, token);
 
   expect(resComposer.status).toBe(200);
@@ -50,10 +51,12 @@ async function getComposerId(composerName: string, token: string): Promise<numbe
   // (composer) represents the current element in the array during the iteration.
   //  composer.name === '...' checks whether the name property of that element is exactly equal to the string 'Wolfgang Amadeus Mozart'.
   const composer = resComposer.data.data?.composers.find((composer) => composer.name === composerName);
+
   expect(composer).toBeDefined();
 
   if (!composer) {
-    throw new Error('Test setup error: Wolfgang Amadeus Mozart was not found');
+    let message = "Test setup error: %s was not found', composerName";
+    throw new Error(message);
   }
 
   console.log('Composer id :', composer.id);
@@ -519,7 +522,100 @@ describe('🎼 Score API - From the User Point of view', () => {
   // ----------------------------------------------------------------------------
 
   // Change the name of the score
+  it('should update score name', async () => {
+    const scores = await GetScoresPage({ limit: 1 }, TOKEN_USER1);
 
+    expect(scores.status).toBe(200);
+    expect(scores.data.data!.scores.length).toBeGreaterThan(0);
+
+    const score = scores.data.data!.scores[0];
+    const newName = `${score.name} Updated`;
+
+    const update = await UpdateScore(
+      score.id,
+      {
+        scoreName: newName,
+      },
+      undefined,
+      TOKEN_USER1
+    );
+
+    expect(update.status).toBe(200);
+    expect(update.data.success).toBe(true);
+    expect(update.data.data!.score.name).toBe(newName);
+
+    const result = await GetScore({ scoreId: score.id }, TOKEN_USER1);
+
+    expect(result.status).toBe(200);
+    expect(result.data.data!.score.name).toBe(newName);
+  });
+
+  // change composer
+  it('should update score composer', async () => {
+    const scores = await GetScoresPage({ limit: 1 }, TOKEN_USER1);
+    expect(scores.status).toBe(200);
+    const score = scores.data.data!.scores[0];
+
+    const newComposerId = await getComposerId('Ludwig van Beethoven', TOKEN_USER1);
+    console.log('Old ComposerId = %s --> %s = New ComposerId', score.composerId, newComposerId);
+
+    expect(score.composerId).not.toBe(newComposerId);
+
+    const update = await UpdateScore(
+      score.id,
+      {
+        composerId: newComposerId,
+      },
+      undefined,
+      TOKEN_USER1
+    );
+
+    expect(update.status).toBe(200);
+    expect(update.data.success).toBe(true);
+
+    expect(update.data.data!.score.composerId).toBe(newComposerId);
+
+    const result = await GetScore({ scoreId: score.id }, TOKEN_USER1);
+
+    expect(result.status).toBe(200);
+    expect(result.data.data!.score.composerId).toBe(newComposerId);
+  });
+
+  // combined test: title + composer
+  it('should update score name and composer', async () => {
+    const scores = await GetScoresPage({ limit: 1 }, TOKEN_USER1);
+
+    expect(scores.status).toBe(200);
+
+    const score = scores.data.data!.scores[0];
+
+    const newComposerId = await getComposerId('Wolfgang Amadeus Mozart', TOKEN_USER1);
+
+    const newName = `${score.name} Updated`;
+
+    const update = await UpdateScore(
+      score.id,
+      {
+        scoreName: newName,
+        composerId: newComposerId,
+      },
+      undefined,
+      TOKEN_USER1
+    );
+
+    expect(update.status).toBe(200);
+    expect(update.data.success).toBe(true);
+
+    expect(update.data.data!.score.name).toBe(newName);
+    expect(update.data.data!.score.composerId).toBe(newComposerId);
+
+    const result = await GetScore({ scoreId: score.id }, TOKEN_USER1);
+
+    expect(result.status).toBe(200);
+
+    expect(result.data.data!.score.name).toBe(newName);
+    expect(result.data.data!.score.composerId).toBe(newComposerId);
+  });
   // ----------------------------------------------------------------------------
   //                                      ANNOTATION
   // ----------------------------------------------------------------------------

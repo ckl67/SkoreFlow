@@ -91,15 +91,20 @@ export type GetScoreResponse = {
 // ---------------------------
 
 export type UpdateScoreRequestPayload = {
-  externalURL?: string;
-  epoch?: string;
-  isVerified?: boolean;
+  scoreName?: string;
+  composerId?: number;
+  releaseDate?: string;
+  categories?: string;
+  tags?: string;
+  informationText?: string;
 };
 
 export type UpdateScoreResponse = {
   message: string;
   score: ScorePublicResponse;
 };
+
+// ---------------------------
 
 // ---------------------------
 

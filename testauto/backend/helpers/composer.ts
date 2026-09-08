@@ -8,27 +8,16 @@ import { API_URL } from '../config.js';
 import { request } from './api.js';
 
 import { CreateComposerPayload, CreateComposerResponse } from '../../../shared/types/composer';
-import {
-  GetComposersPageRequest,
-  GetComposersPageResponse,
-  GetComposerResponse,
-} from '../../../shared/types/composer';
+import { GetComposersPageRequest, GetComposersPageResponse, GetComposerResponse } from '../../../shared/types/composer';
 
-import {
-  UpdateComposerRequestPayload,
-  UpdateComposerResponse,
-} from '../../../shared/types/composer';
+import { UpdateComposerRequestPayload, UpdateComposerResponse } from '../../../shared/types/composer';
 
 // --------------------------------------------------------------------------------
 // Create Composer
 // Usage in Vitest
 // const res = await CreateComposer(...)
 // --------------------------------------------------------------------------------
-async function createComposer(
-  { name, externalURL, epoch }: CreateComposerPayload,
-  filePath: string,
-  token: string
-) {
+async function createComposer({ name, externalURL, epoch }: CreateComposerPayload, filePath: string, token: string) {
   if (!name) {
     throw new Error('name is required');
   }
@@ -81,10 +70,7 @@ async function GetComposersPage(
   if (limit !== undefined) params.append('limit', String(limit));
   if (sort) params.append('sort', sort);
 
-  const url =
-    params.toString().length > 0
-      ? `${API_URL}/composers?${params.toString()}`
-      : `${API_URL}/composers`;
+  const url = params.toString().length > 0 ? `${API_URL}/composers?${params.toString()}` : `${API_URL}/composers`;
 
   const res = await request<GetComposersPageResponse>('GET', url, {
     token,
@@ -111,16 +97,12 @@ async function GetComposer(ComposerId: number, token: string) {
 // search within a paginated list.
 // Could theoretically return several results
 async function getComposersByName(ComposerName: string, token: string) {
-  const res = await request<GetComposersPageResponse>(
-    'GET',
-    `${API_URL}/composers?name=${ComposerName}`,
-    {
-      token,
-    }
-  );
+  const res = await request<GetComposersPageResponse>('GET', `${API_URL}/composers?name=${ComposerName}`, {
+    token,
+  });
 
-  console.log('\nComposers User response:', res.status, res.data);
-
+  console.log('\nComposers User response:', res.status);
+  console.dir(res.data, { depth: null, colors: true });
   return res;
 }
 

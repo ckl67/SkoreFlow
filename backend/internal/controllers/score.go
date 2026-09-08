@@ -130,10 +130,16 @@ func (ctrl *ScoreController) UpdateScore(c *gin.Context) {
 		switch {
 		case errors.Is(err, apperrors.ErrScoreNotFound):
 			responses.FAIL(c, http.StatusNotFound, err)
+
+		case errors.Is(err, apperrors.ErrComposerNotFound):
+			responses.FAIL(c, http.StatusNotFound, err)
+
 		case errors.Is(err, apperrors.ErrAccessForbidden):
 			responses.FAIL(c, http.StatusForbidden, err)
+
 		case errors.Is(err, apperrors.ErrInvalidDate):
 			responses.FAIL(c, http.StatusBadRequest, err)
+
 		default:
 			responses.FAIL(c, http.StatusInternalServerError, err)
 		}

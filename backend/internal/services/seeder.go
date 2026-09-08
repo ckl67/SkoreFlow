@@ -281,7 +281,7 @@ func (s *SeederService) SeederScore(
 		logger.Main.Error("cannot create %s Score: %v", scoreName, err)
 		return err
 	}
-	logger.Main.Info("%s Score created", scoreName)
+	//logger.Main.Info("%s Score created", scoreName)
 
 	return nil
 }

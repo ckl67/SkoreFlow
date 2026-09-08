@@ -103,7 +103,7 @@ func Start(version string) {
 
 		logger.Score.Info("Score seeder for %s", c.ScoreName)
 		for _, user_id := range c.UserID {
-			logger.Score.Info("   - Loop User : UserID: %d", user_id)
+			logger.Score.Info("   - created for user : %d", user_id)
 			if err := appServer.seederService.SeederScore(c.ComposerName, c.ScoreName, c.ReleaseDate, c.Tags, c.Categories, c.InformationText, c.Annotations, partitionPath, true, user_id); err != nil {
 				logger.Score.Fatal("Seed failed: %v", err)
 			}
@@ -350,9 +350,10 @@ func Start(version string) {
 			if c.PartitionFileName != "" {
 				partitionPath = "../testauto/backend/resources/scores/" + c.PartitionFileName
 			}
+
 			logger.Score.Info("Score seeder for %s", c.ScoreName)
 			for _, user_id := range c.UserID {
-				logger.Score.Info("   - Loop User : UserID: %d", user_id)
+				logger.Score.Info("   - created for user : %d", user_id)
 				if err := appServer.seederService.SeederScore(c.ComposerName, c.ScoreName, c.ReleaseDate, c.Tags, c.Categories, c.InformationText, c.Annotations, partitionPath, false, user_id); err != nil {
 					logger.Score.Fatal("Seed failed: %v", err)
 				}

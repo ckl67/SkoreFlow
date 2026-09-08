@@ -181,7 +181,7 @@ func (s *ScoreService) StoreScorePdfThumbnail(
 	}
 
 	if _, ok := media.AllowedScoreFileExt[ext]; !ok {
-		logger.Score.Debug("(StoreScorePdfThumbnail) invalid format: %s", ext)
+		//logger.Score.Debug("(StoreScorePdfThumbnail) invalid format: %s", ext)
 		return apperrors.ErrImageFormatInvalid
 	}
 
@@ -209,8 +209,8 @@ func (s *ScoreService) StoreScorePdfThumbnail(
 	uploadedPath := s.paths.ResolveDataRoot(relativePath)
 	thumbnailPath := s.paths.ResolveDataRoot(relativeThumbnailPath)
 
-	logger.Score.Debug("(StoreScorePdfThumbnail) uploadedPath=%s", uploadedPath)
-	logger.Score.Debug("(StoreScorePdfThumbnail) thumbnailPath=%s", thumbnailPath)
+	//logger.Score.Debug("(StoreScorePdfThumbnail) uploadedPath=%s", uploadedPath)
+	//logger.Score.Debug("(StoreScorePdfThumbnail) thumbnailPath=%s", thumbnailPath)
 
 	score.FilePath = uploadedPath
 	score.ThumbnailPath = thumbnailPath
@@ -241,8 +241,7 @@ func (s *ScoreService) StoreScorePdfThumbnail(
 
 // GenerateResizedImage
 func (s *ScoreService) GenerateResizedImage(fullFilePath string, fullThumbnailPath string, maxSize int) error {
-	//time.Sleep(100 * time.Millisecond)
-	logger.Score.Debug("(ScorePictureData) GenerateResizedImage %s  thumbnail=%s", fullFilePath, fullThumbnailPath)
+	//logger.Score.Debug("(ScorePictureData) GenerateResizedImage %s  thumbnail=%s", fullFilePath, fullThumbnailPath)
 
 	res := media.RequestThumbnail(
 		fullFilePath,
@@ -258,9 +257,19 @@ func (s *ScoreService) GenerateResizedImage(fullFilePath string, fullThumbnailPa
 }
 
 // UpdateScore updates score metadata and optionally replaces the file.
-func (s *ScoreService) UpdateScore(userId uint32, scoreId uint, form forms.UpdateScoreRequest) (*models.Score, error) {
-	// 1. Fetch existing Score
-	score, err := models.FindScoreByID(s.db, userId, scoreId, false)
+func (s *ScoreService) UpdateScore(
+	userId uint32,
+	scoreId uint,
+	form forms.UpdateScoreRequest,
+) (*models.Score, error) {
+
+	// 1. Fetch existing Score = base for save
+	score, err := models.FindScoreByID(
+		s.db,
+		userId,
+		scoreId,
+		false,
+	)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, apperrors.ErrScoreNotFound
@@ -268,28 +277,64 @@ func (s *ScoreService) UpdateScore(userId uint32, scoreId uint, form forms.Updat
 		return nil, err
 	}
 
+	// logger.Score.Debug( "After fetching: Score ID=%d ComposerID=%d Composer=%s", score.ID, score.ComposerID, score.Composer.Name, ) logger.Score.Debug("New Composer ID %d", *form.ComposerId)
+
+	oldSafeScoreName := score.SafeScoreName
+	oldComposerID := score.ComposerID
+
 	// 2. Ownership check
 	if score.UploaderID != userId {
-		logger.Score.Warn("Unauthorized modification attempt: user=%d scoreId=%d owner=%d", userId, scoreId, score.UploaderID)
+		logger.Score.Warn(
+			"Unauthorized modification attempt: user=%d scoreId=%d owner=%d",
+			userId,
+			scoreId,
+			score.UploaderID,
+		)
 		return nil, apperrors.ErrAccessForbidden
 	}
 
-	// 3. Apply updates
+	// 3. Prepare new score identity
 	if form.ScoreName != nil {
-		newSafeName := format.SanitizeName(*form.ScoreName)
+		score.ScoreName = *form.ScoreName
+		score.SafeScoreName = format.SanitizeName(*form.ScoreName)
+	}
 
-		exists, err := models.ScoreExists(s.db, newSafeName, score.ComposerID, userId)
+	if form.ComposerId != nil {
+		composer, err := models.FindComposerByID(
+			s.db,
+			*form.ComposerId,
+			false,
+		)
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return nil, apperrors.ErrComposerNotFound
+			}
+			return nil, err
+		}
+
+		score.ComposerID = composer.ID
+	}
+
+	// 4. Check score uniqueness with final name + composer
+	if oldSafeScoreName != score.SafeScoreName ||
+		oldComposerID != score.ComposerID {
+
+		exists, err := models.ScoreExists(
+			s.db,
+			score.SafeScoreName,
+			score.ComposerID,
+			userId,
+		)
 		if err != nil {
 			return nil, err
 		}
-		if exists && newSafeName != score.SafeScoreName {
+
+		if exists {
 			return nil, apperrors.ErrScoreAlreadyExists
 		}
-
-		score.ScoreName = *form.ScoreName
-		score.SafeScoreName = newSafeName
 	}
 
+	// 6. Other metadata
 	if form.ReleaseDate != nil {
 		releaseDate, err := createDate(*form.ReleaseDate)
 		if err != nil {
@@ -310,25 +355,34 @@ func (s *ScoreService) UpdateScore(userId uint32, scoreId uint, form forms.Updat
 		score.InformationText = *form.InformationText
 	}
 
-	// 4. File processing (if provided)
-	if err := s.ProcessScoreStorage(score, form.File); err != nil {
-		return nil, err
+	// 7. File processing if present
+	if form.File != nil {
+		if err := s.ProcessScoreStorage(score, form.File); err != nil {
+			return nil, err
+		}
 	}
 
-	// 5. Persist
-	// 7. Database persistence
-	if err := score.Create(s.db); err != nil {
+	// logger.Score.Debug( "Before Update: Score ID=%d ComposerID=%d Composer=%s", score.ID, score.ComposerID, score.Composer.Name, )
+
+	// 9. Persist
+	if err := score.Update(s.db); err != nil {
 		if strings.Contains(err.Error(), "UNIQUE") {
-			logger.Score.Error("(CreateScore Service) duplicate entry: %v", err)
+			logger.Score.Error(
+				"(UpdateScore Service) duplicate entry: %v",
+				err,
+			)
 			return nil, apperrors.ErrScoreAlreadyExists
 		}
-		logger.Score.Error("(CreateScore Service) DB error: %v", err)
+
+		logger.Score.Error(
+			"(UpdateScore Service) DB error: %v",
+			err,
+		)
 		return nil, err
 	}
 
-	logger.Score.Debug("(CreateScore Service) score created: %s", score.SafeScoreName)
+	// logger.Score.Debug( "After Update: Score ID=%d ComposerID=%d Composer=%s", score.ID, score.ComposerID, score.Composer.Name, )
 	return score, nil
-
 }
 
 // DeleteScore performs full deletion (authorization + files + database).

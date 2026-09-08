@@ -8,7 +8,12 @@ import fs from 'fs';
 import { API_URL } from '../config.js';
 import { request } from './api.js';
 
-import { CreateScorePayload, CreateScoreResponse } from '../../../shared/types/score';
+import {
+  CreateScorePayload,
+  CreateScoreResponse,
+  UpdateScoreRequestPayload,
+  UpdateScoreResponse,
+} from '../../../shared/types/score';
 import {
   GetScoresPageRequest,
   GetScoresPageResponse,
@@ -135,6 +140,65 @@ async function GetScore({ scoreId }: GetScoreRequest, token: string) {
 }
 
 // --------------------------------------------------------------------------------
+// Update Score
+// --------------------------------------------------------------------------------
+async function UpdateScore(
+  scoreId: number,
+  data: UpdateScoreRequestPayload,
+  filePath: string | undefined,
+  token: string
+) {
+  if (!scoreId) {
+    throw new Error('scoreId is required');
+  }
+
+  if (!Number.isInteger(scoreId) || scoreId <= 0) {
+    throw new Error('scoreId must be a positive integer');
+  }
+
+  const form = new FormData();
+
+  if (data.scoreName !== undefined) {
+    form.append('scoreName', data.scoreName);
+  }
+
+  if (data.composerId !== undefined) {
+    form.append('composerId', String(data.composerId));
+  }
+
+  if (data.releaseDate !== undefined) {
+    form.append('releaseDate', data.releaseDate);
+  }
+
+  if (data.categories !== undefined) {
+    form.append('categories', data.categories);
+  }
+
+  if (data.tags !== undefined) {
+    form.append('tags', data.tags);
+  }
+
+  if (data.informationText !== undefined) {
+    form.append('informationText', data.informationText);
+  }
+
+  if (filePath) {
+    form.append('uploadFile', fs.createReadStream(filePath));
+  }
+
+  const res = await request<UpdateScoreResponse>('PUT', `${API_URL}/scores/${scoreId}`, {
+    token,
+    data: form,
+    headers: form.getHeaders(),
+  });
+
+  console.log('\nScore Update response:', res.status);
+  console.dir(res.data, { depth: null, colors: true });
+
+  return res;
+}
+
+// --------------------------------------------------------------------------------
 // Update Score Annotations
 // --------------------------------------------------------------------------------
 
@@ -157,4 +221,4 @@ async function UpdateScoreAnnotations({ scoreId, annotations }: UpdateScoreAnnot
 // EXPORT (ESM)
 // --------------------------------------------------------------------------------
 
-export { createScore, GetScoresPage, GetScore, UpdateScoreAnnotations };
+export { createScore, GetScoresPage, GetScore, UpdateScore, UpdateScoreAnnotations };

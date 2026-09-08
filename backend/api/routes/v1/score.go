@@ -21,11 +21,11 @@ func RegisterScoreRoutes(rg *gin.RouterGroup, scoreCtrl *controllers.ScoreContro
 		scoreGroup.GET("/scores/:id", scoreCtrl.GetScore)  // vitest
 
 		// Other CRUD operations
-		scoreGroup.PUT("/scores/:id", scoreCtrl.UpdateScore) // vitest ongoing
+		scoreGroup.PUT("/scores/:id", scoreCtrl.UpdateScore) // vitest
 		scoreGroup.DELETE("/scores/:id", scoreCtrl.DeleteScore)
 
 		// Partial update (annotations only)
-		scoreGroup.PATCH("/scores/:id/annotations", scoreCtrl.UpdateAnnotations) // vitest ongoing
+		scoreGroup.PATCH("/scores/:id/annotations", scoreCtrl.UpdateAnnotations) // vitest
 
 	}
 }

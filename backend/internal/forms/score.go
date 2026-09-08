@@ -81,6 +81,7 @@ type GetScoresPageRequest struct {
 type UpdateScoreRequest struct {
 	File            *multipart.FileHeader `form:"uploadFile"`
 	ScoreName       *string               `form:"scoreName"`
+	ComposerId      *uint                 `form:"composerId" `
 	ReleaseDate     *string               `form:"releaseDate"`
 	Categories      *string               `form:"categories"`
 	Tags            *string               `form:"tags"`
