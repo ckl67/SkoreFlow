@@ -79,6 +79,10 @@ export type GetScoresPageResponse = {
 
 // ---------------------------
 
+export type GetScoreRequest = {
+  scoreId: number;
+};
+
 export type GetScoreResponse = {
   message: string;
   score: ScorePublicResponse;
@@ -96,3 +100,34 @@ export type UpdateScoreResponse = {
   message: string;
   score: ScorePublicResponse;
 };
+
+// ---------------------------
+
+export type Annotation = {
+  id: string;
+  page: number;
+  type: string;
+  geometry: {
+    x: number;
+    y: number;
+    radius?: number;
+    width?: number;
+    height?: number;
+  };
+  style: {
+    color: string;
+    strokeWidth: number;
+    opacity?: number;
+  };
+};
+
+export type UpdateScoreAnnotationRequest = {
+  scoreId: number;
+  annotations: Annotation[];
+};
+
+export type UpdateScoreAnnotationResponse = {
+  message: string;
+};
+
+// ---------------------------

@@ -1,4 +1,4 @@
-// cspell:ignore gorm storagepath JJTHH
+// cspell:ignore gorm storagepath datatypes  JJTHH
 package services
 
 // ===============================================================================================
@@ -9,7 +9,6 @@ package services
 // ===============================================================================================
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -29,6 +28,7 @@ import (
 	"backend/pkg/media"
 	"backend/pkg/storagepath"
 
+	"gorm.io/datatypes"
 	"gorm.io/gorm"
 )
 
@@ -120,7 +120,7 @@ func (s *ScoreService) CreateScore(uid uint32, form forms.CreateScoreRequest) (*
 		Tags:            format.ParseSemicolonList(form.Tags),
 		Categories:      format.ParseSemicolonList(form.Categories),
 		InformationText: form.InformationText,
-		Annotations:     "",
+		Annotations:     datatypes.JSON("[]"),
 	}
 
 	// 6. File processing : Read pdf --> store pdf + thumbnail
@@ -258,14 +258,8 @@ func (s *ScoreService) GenerateResizedImage(fullFilePath string, fullThumbnailPa
 }
 
 // UpdateScore updates score metadata and optionally replaces the file.
-//
-// Behavior:
-// - Verifies ownership
-// - Applies partial updates
-// - Re-checks uniqueness if name changes
-// - Reprocesses file if provided
-func (s *ScoreService) UpdateScore(userId uint32, scoreId uint, form forms.UpdateScoreRequest, file *multipart.FileHeader) (*models.Score, error) {
-	// 1. Fetch existing score
+func (s *ScoreService) UpdateScore(userId uint32, scoreId uint, form forms.UpdateScoreRequest) (*models.Score, error) {
+	// 1. Fetch existing Score
 	score, err := models.FindScoreByID(s.db, userId, scoreId, false)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -281,9 +275,8 @@ func (s *ScoreService) UpdateScore(userId uint32, scoreId uint, form forms.Updat
 	}
 
 	// 3. Apply updates
-
-	if form.ScoreName != "" {
-		newSafeName := format.SanitizeName(form.ScoreName)
+	if form.ScoreName != nil {
+		newSafeName := format.SanitizeName(*form.ScoreName)
 
 		exists, err := models.ScoreExists(s.db, newSafeName, score.ComposerID, userId)
 		if err != nil {
@@ -293,41 +286,49 @@ func (s *ScoreService) UpdateScore(userId uint32, scoreId uint, form forms.Updat
 			return nil, apperrors.ErrScoreAlreadyExists
 		}
 
-		score.ScoreName = form.ScoreName
+		score.ScoreName = *form.ScoreName
 		score.SafeScoreName = newSafeName
 	}
 
-	if form.ReleaseDate != "" {
-		date, err := time.Parse(time.RFC3339, form.ReleaseDate)
+	if form.ReleaseDate != nil {
+		releaseDate, err := createDate(*form.ReleaseDate)
 		if err != nil {
 			return nil, apperrors.ErrInvalidDate
 		}
-		score.ReleaseDate = date
+		score.ReleaseDate = releaseDate
 	}
 
-	if form.Tags != "" {
-		score.Tags = CleanTagsCategories(form.Tags)
+	if form.Tags != nil {
+		score.Tags = format.ParseSemicolonList(*form.Tags)
 	}
 
-	if form.Categories != "" {
-		score.Categories = CleanTagsCategories(form.Categories)
+	if form.Categories != nil {
+		score.Categories = format.ParseSemicolonList(*form.Categories)
 	}
 
-	if form.InformationText != "" {
-		score.InformationText = form.InformationText
+	if form.InformationText != nil {
+		score.InformationText = *form.InformationText
 	}
 
 	// 4. File processing (if provided)
-	if err := s.ProcessScoreStorage(score, file); err != nil {
+	if err := s.ProcessScoreStorage(score, form.File); err != nil {
 		return nil, err
 	}
 
 	// 5. Persist
-	if err := score.Update(s.db); err != nil {
+	// 7. Database persistence
+	if err := score.Create(s.db); err != nil {
+		if strings.Contains(err.Error(), "UNIQUE") {
+			logger.Score.Error("(CreateScore Service) duplicate entry: %v", err)
+			return nil, apperrors.ErrScoreAlreadyExists
+		}
+		logger.Score.Error("(CreateScore Service) DB error: %v", err)
 		return nil, err
 	}
 
+	logger.Score.Debug("(CreateScore Service) score created: %s", score.SafeScoreName)
 	return score, nil
+
 }
 
 // DeleteScore performs full deletion (authorization + files + database).
@@ -438,21 +439,39 @@ func (s *ScoreService) GetScoresPage(uid uint32, isDemo bool, form forms.GetScor
 }
 
 // UpdateAnnotations updates only the annotations field for a given score.
-func (s *ScoreService) UpdateAnnotations(uid uint32, scoreId uint, annotations string) error {
-	result := s.db.Model(&models.Score{}).
-		Where("id = ? AND uploader_id = ?", scoreId, uid).
-		Update("annotations", annotations).
-		Update("updated_at", time.Now())
-
-	if result.Error != nil {
-		return result.Error
+func (s *ScoreService) UpdateAnnotations(userId uint32, scoreId uint, form forms.UpdateScoreAnnotationRequest) error {
+	// 1. Fetch existing Score
+	score, err := models.FindScoreByID(s.db, userId, scoreId, false)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return apperrors.ErrScoreNotFound
+		}
+		return err
 	}
 
-	if result.RowsAffected == 0 {
-		return apperrors.ErrScoreNotFound
+	// 2. Ownership check
+	if score.UploaderID != userId {
+		logger.Score.Warn("Unauthorized modification attempt: user=%d scoreId=%d owner=%d", userId, scoreId, score.UploaderID)
+		return apperrors.ErrAccessForbidden
+	}
+
+	// 3. Apply updates
+
+	if form.Annotations != nil {
+		if err := score.UpdateAnnotations(
+			s.db,
+			form.Annotations,
+		); err != nil {
+			logger.Score.Error(
+				"(UpdateAnnotations Service) DB error: %v",
+				err,
+			)
+			return err
+		}
 	}
 
 	return nil
+
 }
 
 // deleteScoreOrchestrator handles full deletion lifecycle (files + DB + cleanup).
@@ -549,30 +568,4 @@ func createDate(date string) (time.Time, error) {
 	}
 
 	return time.Time{}, apperrors.ErrInvalidDate
-}
-
-// CleanTagsCategories sanitizes a semicolon-separated string of tags or categories.
-// - Trims whitespace
-// - Removes empty values
-// - Removes duplicates (case-insensitive)
-// - Returns a JSON string suitable for database storage
-func CleanTagsCategories(input string) string {
-	rawTags := strings.Split(input, ";")
-	uniqueMap := make(map[string]bool)
-	var cleanTags []string
-
-	for _, t := range rawTags {
-		trimmed := strings.TrimSpace(t)
-		lower := strings.ToLower(trimmed)
-
-		// Skip empty or duplicate entries
-		if trimmed != "" && !uniqueMap[lower] {
-			uniqueMap[lower] = true
-			cleanTags = append(cleanTags, trimmed)
-		}
-	}
-
-	// Convert to JSON string for DB storage
-	data, _ := json.Marshal(cleanTags)
-	return string(data)
 }

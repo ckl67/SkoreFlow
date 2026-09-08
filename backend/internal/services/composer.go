@@ -164,6 +164,7 @@ func (s *ComposerService) GetComposer(ComposerID uint) (*models.Composer, error)
 
 // Updates an existing composer entity.
 func (s *ComposerService) UpdateComposer(uid uint32, userRole int, ComposerID uint, form forms.UpdateComposerRequest) (*models.Composer, error) {
+	// 1. Fetch existing Composer
 	composer, err := models.FindComposerByID(s.db, ComposerID, false)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

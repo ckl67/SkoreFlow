@@ -1,3 +1,4 @@
+//cspell:ignore datatypes
 package api
 
 import (
@@ -5,6 +6,8 @@ import (
 	"backend/infrastructure/database"
 	"backend/infrastructure/logger"
 	"backend/internal/domain"
+
+	"gorm.io/datatypes"
 )
 
 // Type for seeding
@@ -22,7 +25,7 @@ type scores struct {
 	Tags              string
 	Categories        string
 	InformationText   string
-	Annotations       string
+	Annotations       datatypes.JSON
 	PartitionFileName string
 	UserID            []int32
 }
@@ -65,10 +68,29 @@ func Start(version string) {
 
 	// Scores
 	// ====>> Files stored in demo/scores/
+
+	// 1. Declaration of the raw JSON constant
+	const demoAnnotations = `[
+  {
+    "id": "annotation-124",
+    "page": 3,
+    "type": "rectangle",
+    "geometry": {
+      "x": 120,
+      "y": 180,
+      "width": 150,
+      "height": 60
+    },
+    "style": {
+      "color": "#ff0000",
+      "strokeWidth": 2
+    }
+  }]`
+
 	// cspell:disable
 	demoScores := []scores{
-		{"Wolfgang Amadeus Mozart Demo", "La Marche Turque Demo", "1965", "This is a Tag Demo", "This is a Category Demo", "This is an Information Demo", "This is a Annotation Demo", "Amadeus Mozart/La Marche Turque.pdf", []int32{1}},
-		{"Wolfgang Amadeus Mozart Demo", "Valse Favorite Demo", "1870", "This is a Tag Demo", "This is a Category Demo", "This is an Information Demo", "This is a Annotation Demo", "Amadeus Mozart/Valse favorite.pdf", []int32{1}},
+		{"Wolfgang Amadeus Mozart Demo", "La Marche Turque Demo", "1965", "This is a Tag Demo", "This is a Category Demo", "This is an Information Demo", datatypes.JSON(demoAnnotations), "Amadeus Mozart/La Marche Turque.pdf", []int32{1}},
+		{"Wolfgang Amadeus Mozart Demo", "Valse Favorite Demo", "1870", "This is a Tag Demo", "This is a Category Demo", "This is an Information Demo", datatypes.JSON(demoAnnotations), "Amadeus Mozart/Valse favorite.pdf", []int32{1}},
 	}
 	// cspell:enable
 
@@ -138,6 +160,41 @@ func Start(version string) {
 		// cspell:disable
 		// UserID : 1=admin, 2=user1; 3=user2
 		// cspell:disable
+
+		// 1. Declaration of the raw JSON constant
+		const testAnnotations = `[
+			{
+				"id": "annotation-122",
+				"page": 3,
+				"type": "rectangle",
+				"geometry": {
+					"x": 120,
+					"y": 180,
+					"width": 150,
+					"height": 60
+				},
+				"style": {
+					"color": "#ff0000",
+					"strokeWidth": 2
+				}
+			},
+			{
+			"id": "annotation-123",
+			"page": 3,
+			"type": "circle",
+			"geometry": {
+				"x": 150,
+				"y": 200,
+				"radius": 20
+			},
+			"style": {
+				"color": "#ff0000",
+				"strokeWidth": 2,
+				"opacity": 1
+			}
+		}
+	]`
+
 		testScores := []scores{
 			// -------------------------------------------------------------------------
 			// Wolfgang Amadeus Mozart
@@ -149,7 +206,7 @@ func Start(version string) {
 				"Mozart;Piano;Classical",
 				"Classical;Piano",
 				"Rondo alla turca, third movement of Piano Sonata No. 11 in A major, K. 331.",
-				"Solo piano",
+				datatypes.JSON(testAnnotations),
 				"Amadeus Mozart/La Marche Turque.pdf",
 				[]int32{1, 2, 5},
 			},
@@ -160,7 +217,7 @@ func Start(version string) {
 				"Mozart;Waltz;Piano",
 				"Classical;Piano",
 				"A piano piece attributed to Wolfgang Amadeus Mozart.",
-				"Solo piano",
+				datatypes.JSON(testAnnotations),
 				"Amadeus Mozart/Valse favorite.pdf",
 				[]int32{3, 2},
 			},
@@ -175,7 +232,7 @@ func Start(version string) {
 				"Chopin;Nocturne;Piano;Romantic",
 				"Romantic;Piano",
 				"Nocturne in E-flat major, Op. 9 No. 2.",
-				"Solo piano",
+				datatypes.JSON(testAnnotations),
 				"Frédéric Chopin/Nocturne Opus 9 N°2.pdf",
 				[]int32{4, 5, 2},
 			},
@@ -190,7 +247,7 @@ func Start(version string) {
 				"Beethoven;Piano;Classical",
 				"Classical;Piano",
 				"Adagio cantabile from Piano Sonata No. 8 in C minor, Op. 13, Pathétique.",
-				"Solo piano",
+				datatypes.JSON(testAnnotations),
 				"Ludwig Van Beethoven/Adagio Pathétique.pdf",
 				[]int32{3, 4},
 			},
@@ -201,7 +258,7 @@ func Start(version string) {
 				"Beethoven;Piano;Romantic",
 				"Classical;Piano",
 				"Bagatelle in A minor, WoO 59, commonly known as Für Elise.",
-				"Solo piano",
+				datatypes.JSON(testAnnotations),
 				"Ludwig Van Beethoven/La Lettre à Elise.pdf",
 				[]int32{4, 5},
 			},
@@ -212,7 +269,7 @@ func Start(version string) {
 				"Beethoven;Piano;Sonata;Classical",
 				"Classical;Piano;Sonata",
 				"Piano Sonata No. 14 in C-sharp minor, Op. 27 No. 2, commonly known as the Moonlight Sonata.",
-				"Solo piano",
+				datatypes.JSON(testAnnotations),
 				"Ludwig Van Beethoven/Sonate No. 14 - Clair de lune.pdf",
 				[]int32{1, 2, 3},
 			},
@@ -227,7 +284,7 @@ func Start(version string) {
 				"Paul de Senneville;Piano;Ballad",
 				"Contemporary;Piano",
 				"Ballade pour Adeline, a piano composition written by Paul de Senneville.",
-				"Solo piano",
+				datatypes.JSON(testAnnotations),
 				"Paul de Senneville/Balade Pour Adeline.pdf",
 				[]int32{4, 5, 6},
 			},
@@ -242,7 +299,7 @@ func Start(version string) {
 				"Supertramp;Rock;Progressive Rock",
 				"Rock;Progressive Rock",
 				"The Logical Song from the album Breakfast in America.",
-				"Piano;Band",
+				datatypes.JSON(testAnnotations),
 				"Supertramp/Logical Song.pdf",
 				[]int32{1, 4},
 			},
@@ -253,7 +310,7 @@ func Start(version string) {
 				"Supertramp;Rock;Progressive Rock",
 				"Rock;Progressive Rock",
 				"Alternative arrangement of The Logical Song from the album Breakfast in America.",
-				"Piano;Band",
+				datatypes.JSON(testAnnotations),
 				"Supertramp/Logical Song New.pdf",
 				[]int32{4, 5},
 			},
@@ -264,7 +321,7 @@ func Start(version string) {
 				"Supertramp;Rock;Progressive Rock",
 				"Rock;Progressive Rock",
 				"School from the album Crime of the Century.",
-				"Piano;Band",
+				datatypes.JSON(testAnnotations),
 				"Supertramp/School.pdf",
 				[]int32{2, 4, 5, 6},
 			},
@@ -280,7 +337,7 @@ func Start(version string) {
 				"Supertramp;Rock;Progressive Rock",
 				"Rock;Progressive Rock",
 				"Test score intended to be deleted by automated tests.",
-				"Test data",
+				datatypes.JSON(testAnnotations),
 				"SupertrampToDelete/Logical Song.pdf",
 				[]int32{1, 6},
 			},

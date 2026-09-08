@@ -102,15 +102,16 @@ func (ctrl *ScoreController) CreateScore(c *gin.Context) {
 // - Optional file replacement
 func (ctrl *ScoreController) UpdateScore(c *gin.Context) {
 	uid := c.GetUint32("user_id")
-	userRole := c.GetInt("user_role")
 
+	// Update for ScoreId id
 	idParam := c.Param("id")
-	scoreID, err := strconv.ParseUint(idParam, 10, 32)
+	scoreId, err := strconv.ParseUint(idParam, 10, 32)
 	if err != nil {
-		responses.FAIL(c, http.StatusBadRequest, errors.New("score ID must be a valid number"))
+		responses.FAIL(c, http.StatusBadRequest, apperrors.ErrScoreInvalidID)
 		return
 	}
 
+	// 2. Form binding (metadata + optional file)
 	var form forms.UpdateScoreRequest
 	if err := c.ShouldBind(&form); err != nil {
 		responses.FAIL(c, http.StatusBadRequest, err)
@@ -122,9 +123,9 @@ func (ctrl *ScoreController) UpdateScore(c *gin.Context) {
 		return
 	}
 
-	logger.Score.Debug("(Controller UpdateScore) : initiated by user %d - role %d for ID %d", uid, userRole, scoreID)
+	logger.Score.Debug("(Controller UpdateScore) : initiated by user: %d for scoreId: %d", uid, scoreId)
 
-	updatedScore, err := ctrl.service.UpdateScore(uid, uint(scoreID), form, form.File)
+	updatedScore, err := ctrl.service.UpdateScore(uid, uint(scoreId), form)
 	if err != nil {
 		switch {
 		case errors.Is(err, apperrors.ErrScoreNotFound):
@@ -139,10 +140,15 @@ func (ctrl *ScoreController) UpdateScore(c *gin.Context) {
 		return
 	}
 
-	responses.SUCCESS(c, http.StatusOK, gin.H{
-		"message": fmt.Sprintf("Score '%s' (ID: %d) updated", updatedScore.ScoreName, updatedScore.ID),
-		"id":      scoreID,
-	})
+	message := fmt.Sprintf("Score %d updated successfully", updatedScore.ID)
+
+	response := dto.UpdateScoreResponse{
+		Message: message,
+		Score:   dto.ToScorePublicResponse(updatedScore),
+	}
+
+	responses.SUCCESS(c, http.StatusOK, response)
+
 }
 
 // DeleteScore
@@ -225,6 +231,7 @@ func (ctrl *ScoreController) GetScore(c *gin.Context) {
 func (ctrl *ScoreController) UpdateAnnotations(c *gin.Context) {
 	uid := c.GetUint32("user_id")
 
+	// Update for ScoreId id
 	idParam := c.Param("id")
 	scoreID, err := strconv.ParseUint(idParam, 10, 32)
 	if err != nil {
@@ -232,26 +239,34 @@ func (ctrl *ScoreController) UpdateAnnotations(c *gin.Context) {
 		return
 	}
 
-	var input struct {
-		Annotations string `json:"annotations"`
-	}
-
-	if err := c.ShouldBindJSON(&input); err != nil {
-		responses.VALIDATION_ERROR(c, err)
+	// Form binding
+	var form forms.UpdateScoreAnnotationRequest
+	if err := c.ShouldBind(&form); err != nil {
+		responses.FAIL(c, http.StatusBadRequest, err)
 		return
 	}
 
-	err = ctrl.service.UpdateAnnotations(uid, uint(scoreID), input.Annotations)
+	err = ctrl.service.UpdateAnnotations(uid, uint(scoreID), form)
 	if err != nil {
 		if errors.Is(err, apperrors.ErrScoreNotFound) {
 			responses.FAIL(c, http.StatusNotFound, err)
+			return
+		}
+		if errors.Is(err, apperrors.ErrAccessForbidden) {
+			responses.FAIL(c, http.StatusForbidden, err)
 			return
 		}
 		responses.FAIL(c, http.StatusInternalServerError, err)
 		return
 	}
 
-	responses.SUCCESS(c, http.StatusOK, gin.H{"message": "Annotations saved"})
+	message := fmt.Sprintf("Score %d : Annotation saved successfully", scoreID)
+	response := dto.UpdateScoreAnnotationResponse{
+		Message: message,
+	}
+
+	responses.SUCCESS(c, http.StatusOK, response)
+
 }
 
 // GetScoresPage

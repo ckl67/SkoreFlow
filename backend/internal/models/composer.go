@@ -20,7 +20,7 @@ import (
 // - JSON tags (json:"...") define API serialization.
 //
 // File Storage:
-// - Picture stores the full file path to the composer's image.
+// - Picture stores the relative file path to the composer's image.
 //
 // Timestamps:
 // - CreatedAt is set on insert.

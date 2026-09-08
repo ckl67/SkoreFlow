@@ -1,4 +1,4 @@
-// cspell:ignore gonic webp
+// cspell:ignore gonic webp  datatypes
 package forms
 
 // ===============================================================================================
@@ -47,6 +47,7 @@ import (
 	_ "image/png"
 
 	_ "golang.org/x/image/webp"
+	"gorm.io/datatypes"
 )
 
 // -----------------------
@@ -79,11 +80,25 @@ type GetScoresPageRequest struct {
 // UpdateScoreRequest defines the payload for updating an existing score.
 type UpdateScoreRequest struct {
 	File            *multipart.FileHeader `form:"uploadFile"`
-	ScoreName       string                `form:"scoreName"`
-	ReleaseDate     string                `form:"releaseDate"`
-	Categories      string                `form:"categories"`
-	Tags            string                `form:"tags"`
-	InformationText string                `form:"informationText"`
+	ScoreName       *string               `form:"scoreName"`
+	ReleaseDate     *string               `form:"releaseDate"`
+	Categories      *string               `form:"categories"`
+	Tags            *string               `form:"tags"`
+	InformationText *string               `form:"informationText"`
+}
+
+// UpdateScoreAnnotationRequest
+// With datatypes.JSON :
+//
+//	{
+//	 "annotations": [
+//	   {
+//	     "id": "annotation-124"
+//	   }
+//	 ]
+//	}
+type UpdateScoreAnnotationRequest struct {
+	Annotations datatypes.JSON `json:"annotations" binding:"required"`
 }
 
 // TagRequest defines a payload for tag-related operations.

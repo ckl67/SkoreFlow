@@ -9,10 +9,16 @@ import { API_URL } from '../config.js';
 import { request } from './api.js';
 
 import { CreateScorePayload, CreateScoreResponse } from '../../../shared/types/score';
-import { GetScoresPageRequest, GetScoresPageResponse, GetScoreResponse } from '../../../shared/types/score';
+import {
+  GetScoresPageRequest,
+  GetScoresPageResponse,
+  GetScoreRequest,
+  GetScoreResponse,
+} from '../../../shared/types/score';
 
+import { UpdateScoreAnnotationRequest, UpdateScoreAnnotationResponse } from '../../../shared/types/score';
 // --------------------------------------------------------------------------------
-// Create Score
+// Create Score,
 // Usage in Vitest
 // const res = await CreateScore(...)
 // --------------------------------------------------------------------------------
@@ -115,8 +121,8 @@ async function GetScoresPage(
 // --------------------------------------------------------------------------------
 
 // Unique response
-async function GetScore(ScoreId: number, token: string) {
-  const res = await request<GetScoreResponse>('GET', `${API_URL}/scores/${ScoreId}`, {
+async function GetScore({ scoreId }: GetScoreRequest, token: string) {
+  const res = await request<GetScoreResponse>('GET', `${API_URL}/scores/${scoreId}`, {
     token,
   });
 
@@ -129,7 +135,26 @@ async function GetScore(ScoreId: number, token: string) {
 }
 
 // --------------------------------------------------------------------------------
+// Update Score Annotations
+// --------------------------------------------------------------------------------
+
+async function UpdateScoreAnnotations({ scoreId, annotations }: UpdateScoreAnnotationRequest, token: string) {
+  // Don't use FormData which expects a string | Blob, whereas annotations is an Annotation[].
+  const res = await request<UpdateScoreAnnotationResponse>('PATCH', `${API_URL}/scores/${scoreId}/annotations`, {
+    token,
+    data: {
+      annotations,
+    },
+  });
+
+  console.log('\n update score annotations response:', res.status);
+  console.log(JSON.stringify(res.data, null, 2));
+
+  return res;
+}
+
+// --------------------------------------------------------------------------------
 // EXPORT (ESM)
 // --------------------------------------------------------------------------------
 
-export { createScore, GetScoresPage, GetScore };
+export { createScore, GetScoresPage, GetScore, UpdateScoreAnnotations };

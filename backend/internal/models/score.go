@@ -1,4 +1,4 @@
-//cspell:ignore GORM
+//cspell:ignore GORM datatypes
 package models
 
 // ===============================================================================================
@@ -10,13 +10,24 @@ package models
 import (
 	"time"
 
+	"gorm.io/datatypes" //
 	"gorm.io/gorm"
 )
 
 // Score represents a musical score stored in the database.
-// via : OnDelete:RESTRICT
 //
-//	We cannot delete the composer whilst there are scores that reference them.
+// Notes:
+// - GORM tags (gorm:"...") define database schema and constraints.
+// - JSON tags (json:"...") define API serialization.
+//
+// File Storage:
+// - FilePath stores the relative pdf file path for the score
+//
+// Timestamps:
+// - CreatedAt is set on insert.
+// - UpdatedAt is set on insert and updated on each modification.
+// via : OnDelete:RESTRICT
+// -	We cannot delete the composer whilst there are scores that reference them.
 type Score struct {
 	ID            uint32 `gorm:"primary_key;auto_increment" json:"id"`
 	ScoreName     string `gorm:"size:255;not null" json:"score_name"`
@@ -39,10 +50,11 @@ type Score struct {
 	Tags            string    `gorm:"type:TEXT" json:"tags"`
 	Categories      string    `gorm:"type:TEXT" json:"categories"`
 	InformationText string    `gorm:"type:TEXT" json:"information_text"`
-	Annotations     string    `gorm:"type:TEXT;default:'[]'" json:"annotations"` // JSON string
-	IsDemo          bool      `gorm:"not null;default:false;index" json:"is_demo"`
-	CreatedAt       time.Time `json:"created_at"`
-	UpdatedAt       time.Time `json:"updated_at"`
+	// GORM will automatically detect the correct type (JSON or TEXT for SQLite, JSONB for Postgres if configured).
+	Annotations datatypes.JSON `gorm:"default:'[]'" json:"annotations"`
+	IsDemo      bool           `gorm:"not null;default:false;index" json:"is_demo"`
+	CreatedAt   time.Time      `json:"created_at"`
+	UpdatedAt   time.Time      `json:"updated_at"`
 }
 
 // Create inserts a new score record into the database.
@@ -60,14 +72,24 @@ func (s *Score) Update(db *gorm.DB) error {
 	return db.Save(s).Error
 }
 
+func (s *Score) UpdateAnnotations(
+	db *gorm.DB,
+	annotations datatypes.JSON,
+) error {
+	return db.
+		Model(s).
+		Update("annotations", annotations).
+		Error
+}
+
 // UpdateFields updates specific fields for a given score ID.
 //
 // Notes:
 // - Accepts struct or map[string]interface{}.
 // - Use map for partial updates or zero-value updates.
-func (s *Score) UpdateFields(db *gorm.DB, id uint, data interface{}) error {
-	return db.Model(&Score{}).Where("id = ?", id).Updates(data).Error
-}
+//func (s *Score) UpdateFields(db *gorm.DB, id uint, data interface{}) error {
+//	return db.Model(&Score{}).Where("id = ?", id).Updates(data).Error
+//}
 
 // ScoreExists checks if a score already exists for a given user and composer.
 func ScoreExists(db *gorm.DB, safeName string, composerID uint32, userID uint32) (bool, error) {

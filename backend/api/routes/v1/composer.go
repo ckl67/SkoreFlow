@@ -14,13 +14,18 @@ func RegisterComposerRoutes(rg *gin.RouterGroup, composerCtrl *controllers.Compo
 	// protected routes
 	composerGroup.Use(middlewares.AuthMiddleware())
 	{
-		composerGroup.POST("/composers", composerCtrl.CreateComposer)    // vitest
-		composerGroup.PUT("/composers/:id", composerCtrl.UpdateComposer) // vitest
-		composerGroup.DELETE("/composers/:id", composerCtrl.DeleteComposer)
-		composerGroup.PUT("/composers/merge", composerCtrl.MergeComposers)
+		// CRUD - Create operation
+		composerGroup.POST("/composers", composerCtrl.CreateComposer) // vitest
 
+		// Search & listing
 		composerGroup.GET("/composers", composerCtrl.GetComposersPage) // vitest
 		composerGroup.GET("/composers/:id", composerCtrl.GetComposer)  // vitest
+
+		// Other CRUD operations
+		composerGroup.PUT("/composers/:id", composerCtrl.UpdateComposer) // vitest
+
+		composerGroup.DELETE("/composers/:id", composerCtrl.DeleteComposer)
+		composerGroup.PUT("/composers/merge", composerCtrl.MergeComposers)
 
 		composerGroup.GET("/composers/:id/picture", composerCtrl.GetComposerPicture)
 		composerGroup.HEAD("/composers/:id/picture", composerCtrl.GetComposerPicture)

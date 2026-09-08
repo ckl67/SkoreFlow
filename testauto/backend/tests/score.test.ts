@@ -4,12 +4,15 @@ import { beforeAll, describe, expect, it } from 'vitest';
 
 import { login } from '../helpers/auth.js';
 
+import { CreateScorePayload, Annotation } from '../../../shared/types/score.js';
+
 import { createScore } from '../helpers/score';
-import { CreateScorePayload } from '../../../shared/types/score.js';
 
 import { getComposersByName } from '../helpers/composer.js';
 
 import { GetScoresPage, GetScore } from '../helpers/score';
+
+import { UpdateScoreAnnotations } from '../helpers/score';
 
 // ----------------------------------------------------------------------------
 // LOCAL HELPER
@@ -496,7 +499,7 @@ describe('🎼 Score API - From the User Point of view', () => {
     const scoreId: number = Number(scores[0].id);
     console.log('We will get score with scoreId : ', scoreId);
 
-    const res1 = await GetScore(scoreId, TOKEN_USER1);
+    const res1 = await GetScore({ scoreId: scoreId }, TOKEN_USER1);
 
     expect(res1.status).toBe(200);
     expect(res1.data.success).toBe(true);
@@ -506,9 +509,59 @@ describe('🎼 Score API - From the User Point of view', () => {
   // ----------------------------------------------------------------------------
 
   it('should return 404 for unknown score', async () => {
-    const res = await GetScore(999999, TOKEN_ADMIN);
+    const res = await GetScore({ scoreId: 999999 }, TOKEN_ADMIN);
 
     expect(res.status).toBe(404);
+  });
+
+  // ----------------------------------------------------------------------------
+  //                                       UPDATE
+  // ----------------------------------------------------------------------------
+
+  // Change the name of the score
+
+  // ----------------------------------------------------------------------------
+  //                                      ANNOTATION
+  // ----------------------------------------------------------------------------
+
+  it('should update and persist score annotations', async () => {
+    const scores = await GetScoresPage({ limit: 1 }, TOKEN_USER1);
+
+    expect(scores.status).toBe(200);
+    expect(scores.data.success).toBe(true);
+    expect(scores.data.data!.scores.length).toBeGreaterThan(0);
+
+    const scoreId = scores.data.data!.scores[0].id;
+
+    const annotations: Annotation[] = [
+      {
+        id: 'annotation-128',
+        page: 3,
+        type: 'rectangle',
+        geometry: {
+          x: 120,
+          y: 180,
+          width: 150,
+          height: 60,
+        },
+        style: {
+          color: '#ff0000',
+          strokeWidth: 2,
+        },
+      },
+    ];
+
+    const update = await UpdateScoreAnnotations({ scoreId, annotations }, TOKEN_USER1);
+
+    expect(update.status).toBe(200);
+    expect(update.data.success).toBe(true);
+
+    const result = await GetScore({ scoreId }, TOKEN_USER1);
+
+    expect(result.status).toBe(200);
+    expect(result.data.success).toBe(true);
+
+    expect(result.data.data!.score.annotations).toEqual(annotations);
   });
 
   // ----------------------------------------------------------------------------

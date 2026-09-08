@@ -1,4 +1,4 @@
-// cspell:ignore gorm  storagepath
+// cspell:ignore gorm datatypes storagepath
 package services
 
 import (
@@ -13,6 +13,7 @@ import (
 	"os"
 	"strings"
 
+	"gorm.io/datatypes"
 	"gorm.io/gorm"
 )
 
@@ -150,7 +151,7 @@ func (s *SeederService) SeederScore(
 	tags string,
 	categories string,
 	informationText string,
-	annotations string,
+	annotations datatypes.JSON,
 	partitionFilePath string,
 	demo bool,
 	userId int32,

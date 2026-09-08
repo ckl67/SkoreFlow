@@ -1,6 +1,11 @@
+//cspell:ignore datatypes
 package dto
 
-import "backend/internal/models"
+import (
+	"backend/internal/models"
+
+	"gorm.io/datatypes"
+)
 
 type CreateScoreResponse struct {
 	Message string `json:"message"`
@@ -19,7 +24,7 @@ type ScorePublicResponse struct {
 	Tags            string                 `json:"tags"`
 	Categories      string                 `json:"categories"`
 	InformationText string                 `json:"informationText"`
-	Annotations     string                 `json:"annotations"`
+	Annotations     datatypes.JSON         `json:"annotations"`
 	CreatedAt       string                 `json:"createdAt"`
 	UpdatedAt       string                 `json:"updatedAt"`
 	IsDemo          bool                   `json:"isDemo"`
@@ -37,6 +42,15 @@ type GetScoresPageResponse struct {
 type GetScoreResponse struct {
 	Message string              `json:"message"`
 	Score   ScorePublicResponse `json:"score"`
+}
+
+type UpdateScoreResponse struct {
+	Message string              `json:"message"`
+	Score   ScorePublicResponse `json:"score"`
+}
+
+type UpdateScoreAnnotationResponse struct {
+	Message string `json:"message"`
 }
 
 // --------------------------------------------------------------------------

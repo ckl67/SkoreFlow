@@ -13,18 +13,19 @@ func RegisterScoreRoutes(rg *gin.RouterGroup, scoreCtrl *controllers.ScoreContro
 	// protected routes
 	scoreGroup.Use(middlewares.AuthMiddleware())
 	{
-		// Upload
+		// CRUD - Create operation
 		scoreGroup.POST("/scores", scoreCtrl.CreateScore) // vitest
 
 		// Search & listing
 		scoreGroup.GET("/scores", scoreCtrl.GetScoresPage) // vitest
 		scoreGroup.GET("/scores/:id", scoreCtrl.GetScore)  // vitest
 
-		// CRUD operations
-		scoreGroup.PUT("/scores/:id", scoreCtrl.UpdateScore)
+		// Other CRUD operations
+		scoreGroup.PUT("/scores/:id", scoreCtrl.UpdateScore) // vitest ongoing
 		scoreGroup.DELETE("/scores/:id", scoreCtrl.DeleteScore)
 
 		// Partial update (annotations only)
-		scoreGroup.PATCH("/scores/:id/annotations", scoreCtrl.UpdateAnnotations)
+		scoreGroup.PATCH("/scores/:id/annotations", scoreCtrl.UpdateAnnotations) // vitest ongoing
+
 	}
 }
