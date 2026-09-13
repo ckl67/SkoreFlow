@@ -161,41 +161,47 @@ func (ctrl *ScoreController) UpdateScore(c *gin.Context) {
 // Deletes a score and its associated files.
 // Authorization:
 // - Allowed for owner or admin
-// Special cases:
-// - Partial file deletion failure still returns success with warning
 func (ctrl *ScoreController) DeleteScore(c *gin.Context) {
 	uid := c.GetUint32("user_id")
-	userRole := c.GetInt("user_role")
 
 	idParam := c.Param("id")
-	scoreID, err := strconv.ParseUint(idParam, 10, 32)
+	scoreId, err := strconv.ParseUint(idParam, 10, 32)
 	if err != nil {
-		responses.FAIL(c, http.StatusBadRequest, errors.New("invalid ID"))
+		responses.FAIL(c, http.StatusBadRequest, apperrors.ErrScoreInvalidID)
 		return
 	}
 
-	err = ctrl.service.DeleteScore(uid, uint(scoreID), userRole)
+	err = ctrl.service.DeleteScore(uid, uint(scoreId))
 	if err != nil {
 		switch {
 		case errors.Is(err, apperrors.ErrFileDeletion):
-			responses.SUCCESS(c, http.StatusOK, gin.H{
-				"message": "Score deleted, but some files could not be removed",
-			})
+			response := dto.DeleteScoreResponse{
+				Message: "Score deleted, but some files could not be removed",
+			}
+			responses.SUCCESS(c, http.StatusOK, response)
+
 		case errors.Is(err, apperrors.ErrFileNotFound):
-			responses.SUCCESS(c, http.StatusOK, gin.H{
-				"message": "Score deleted but some files were missing",
-			})
+			response := dto.DeleteScoreResponse{
+				Message: "Score deleted but some files were missing",
+			}
+			responses.SUCCESS(c, http.StatusOK, response)
+
 		case errors.Is(err, apperrors.ErrScoreNotFound):
 			responses.FAIL(c, http.StatusNotFound, err)
+
 		case errors.Is(err, apperrors.ErrAccessForbidden):
 			responses.FAIL(c, http.StatusForbidden, err)
+
 		default:
 			responses.FAIL(c, http.StatusInternalServerError, err)
 		}
 		return
 	}
 
-	responses.SUCCESS(c, http.StatusOK, gin.H{"message": "Score deleted successfully"})
+	response := dto.DeleteScoreResponse{
+		Message: "Score deleted successfully",
+	}
+	responses.SUCCESS(c, http.StatusOK, response)
 }
 
 // GetScore
@@ -288,30 +294,60 @@ func (ctrl *ScoreController) GetScoresPage(c *gin.Context) {
 		responses.FAIL(c, http.StatusBadRequest, err)
 		return
 	}
+	logger.Score.Info("(Controller GetScoresPage) : User: %d | Search: %v | Page: %d | PageSize: %d | SortBy: %s | SearchMode :%s ",
+		uid,
+		form.Name,
+		form.Page,
+		form.Limit,
+		form.SortBy,
+		form.SearchMode,
+	)
 
-	// logger.Score.Debug("(Controller GetScoresPage) : User: %d | Search: %v | Page: %d | PageSize: %d | SortBy: %s", uid, form.Name, form.Page, form.Limit, form.SortBy)
-
-	pageData, err := ctrl.service.GetScoresPage(uid, isDemo, form)
+	pagination, err := ctrl.service.GetScoresPage(uid, isDemo, form)
 	if err != nil {
 		responses.FAIL(c, http.StatusInternalServerError, err)
 		return
 	}
 
+	// Pagination.Rows is stored as interface{} because the same Pagination
+	// structure is reused for different entities (composers, scores, composers, ...).
+	// The "ok" value prevents a panic if Rows contains an unexpected type.
 	// Cast to scores
 	var scores []*models.Score
 	var ok bool
-	scores, ok = pageData.Rows.([]*models.Score)
+	scores, ok = pagination.Rows.([]*models.Score)
 	if !ok {
 		responses.FAIL(c, http.StatusInternalServerError, fmt.Errorf("invalid scores type"))
 		return
 	}
 
+	message := "scores retrieved successfully"
+
+	if pagination.TotalRows == 0 {
+		switch {
+		case form.Name != nil && pagination.SearchMode == "exact":
+			message = fmt.Sprintf(
+				"no score found with exact name: %s",
+				*form.Name,
+			)
+
+		case form.Name != nil:
+			message = fmt.Sprintf(
+				"no score found for search: %s",
+				*form.Name,
+			)
+
+		default:
+			message = "no scores found"
+		}
+	}
+
 	response := dto.GetScoresPageResponse{
-		Message:    "scores retrieved successfully",
-		Page:       pageData.Page,
-		Limit:      pageData.Limit,
-		TotalRows:  pageData.TotalRows,
-		TotalPages: pageData.TotalPages,
+		Message:    message,
+		Page:       pagination.Page,
+		Limit:      pagination.Limit,
+		TotalRows:  pagination.TotalRows,
+		TotalPages: pagination.TotalPages,
 		Scores:     dto.ToScoresPublicResponse(scores),
 	}
 

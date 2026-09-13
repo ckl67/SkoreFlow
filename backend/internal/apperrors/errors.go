@@ -80,7 +80,9 @@ var (
 	ErrImageFormatInvalid = errors.New("Image Format not allowed !")
 
 	// File
+
 	ErrFileDeletion = errors.New("failed to delete file(s)")
 	ErrFileNotFound = errors.New("file not found")
 	ErrFileTooLarge = errors.New("file too large")
+	ErrDirCreation  = errors.New("Directory unable to create")
 )

@@ -28,10 +28,12 @@ package forms
 // PaginatedRequest defines common query parameters for paginated endpoints.
 // Fields:
 // - SortBy: sorting field and direction (e.g., "created_at desc")
+// - SearchMode :contains, startsWith, exact
 // - Limit: number of items per page
 // - Page: current page number
 type PaginatedRequest struct {
-	SortBy string `form:"sort" json:"sort" binding:"omitempty"`
-	Limit  int    `form:"limit" json:"limit"`
-	Page   int    `form:"page" json:"page"`
+	Page       int    `form:"page" json:"page"`
+	Limit      int    `form:"limit" json:"limit"`
+	SortBy     string `form:"sort" json:"sort" binding:"omitempty"`
+	SearchMode string `form:"searchMode" json:"searchMode" binding:"omitempty"`
 }

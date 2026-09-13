@@ -155,7 +155,7 @@ func (s *Score) Delete(db *gorm.DB) (int64, error) {
 func (s *Score) List(
 	db *gorm.DB,
 	pagination *Pagination,
-	composer *string,
+	composerSafeName *string,
 	search *string,
 	tag *string,
 	category *string,
@@ -164,8 +164,9 @@ func (s *Score) List(
 ) (*Pagination, error) {
 	var scores []*Score
 
-	sort := pagination.GetSort()
-	//sort := pagination.Sort
+	// Sort and searchMode used
+	sort := pagination.Sort
+	searchMode := pagination.SearchMode
 
 	// As soon as a query involves several tables,
 	// always specify the columns belonging to `scores`.
@@ -179,7 +180,7 @@ func (s *Score) List(
 	// JOIN is required for composer filtering or composer sorting.
 	// The variable will be set to true if at least one of the following conditions is met:
 	// 	A ‘composer’ is present  OR The sort order requested is ‘composer asc’. OR ‘composer desc’.
-	needsComposerJoin := composer != nil ||
+	needsComposerJoin := composerSafeName != nil ||
 		sort == "composer asc" ||
 		sort == "composer desc"
 
@@ -189,16 +190,37 @@ func (s *Score) List(
 		)
 	}
 
-	// Composer filter
-	if composer != nil {
-		query = query.Where(
-			"composers.safe_name LIKE ?",
-			"%"+*composer+"%",
-		)
+	var searchTerm string
+
+	// Composer search filter
+	// 		% is a wildcard SQL used by LIKE --> no exact search !
+	if composerSafeName != nil {
+		switch searchMode {
+		case "contains":
+			searchTerm = "%" + *composerSafeName + "%"
+		case "startsWith":
+			searchTerm = *composerSafeName + "%"
+		case "exact":
+			searchTerm = *composerSafeName
+		default:
+			searchTerm = "%" + *composerSafeName + "%"
+		}
+		query = query.Where("composers.safe_name LIKE ?", searchTerm)
 	}
 
-	if search != nil {
-		searchTerm := "%" + *search + "%"
+	// Score Search filter
+	// 		% is a wildcard SQL used by LIKE --> no exact search !
+	if search != nil && *search != "" {
+		switch searchMode {
+		case "contains":
+			searchTerm = "%" + *search + "%"
+		case "startsWith":
+			searchTerm = *search + "%"
+		case "exact":
+			searchTerm = *search
+		default:
+			searchTerm = "%" + *search + "%"
+		}
 		query = query.Where(
 			"(scores.score_name LIKE ? OR scores.safe_score_name LIKE ?)",
 			searchTerm,
@@ -225,10 +247,8 @@ func (s *Score) List(
 	finalSort := getScoreSort(sort)
 
 	// Execute query with pagination
-	err := query.Scopes(
-		paginate(pagination, query, finalSort),
-	).Find(&scores).Error
-
+	// Scopes can accept several functions see: https://gorm.io/docs/scopes.html
+	err := query.Scopes(paginate(pagination, query, finalSort)).Find(&scores).Error
 	if err != nil {
 		return nil, err
 	}

@@ -61,7 +61,7 @@ async function createComposer({ name, externalURL, epoch }: CreateComposerPayloa
 //  Or {}, parameter optional --> first rang
 //
 async function GetComposersPage(
-  { page = 1, limit = 10, sort = 'id asc' }: GetComposersPageRequest = {},
+  { page = 1, limit = 10, sort = 'id asc', searchMode = 'contains', name, isVerified }: GetComposersPageRequest = {},
   token: string
 ) {
   const params = new URLSearchParams();
@@ -69,6 +69,9 @@ async function GetComposersPage(
   if (page !== undefined) params.append('page', String(page));
   if (limit !== undefined) params.append('limit', String(limit));
   if (sort) params.append('sort', sort);
+  if (searchMode) params.append('searchMode', searchMode);
+  if (name) params.append('name', name);
+  if (isVerified !== undefined) params.append('isVerified', String(isVerified));
 
   const url = params.toString().length > 0 ? `${API_URL}/composers?${params.toString()}` : `${API_URL}/composers`;
 
@@ -77,7 +80,7 @@ async function GetComposersPage(
   });
 
   console.log('\n composers Get Composers Page response:', res.status);
-  console.log(JSON.stringify(res.data, null, 2));
+  console.dir(res.data, { depth: null, colors: true });
 
   return res;
 }

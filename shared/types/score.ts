@@ -42,7 +42,7 @@ export type ScorePublicResponse = {
   composerId: number;
   composer: ComposerPublicResponse;
   releaseDate: string;
-  filepath: string;
+  filePath: string;
   thumbnailPath: string;
   uploaderId: number;
   tags: string;
@@ -60,8 +60,8 @@ export type GetScoresPageRequest = {
   page?: number;
   limit?: number;
   sort?: string;
+  searchMode?: string;
   name?: string;
-  search?: string;
   composer?: string;
   tag?: string;
   category?: string;
@@ -86,6 +86,16 @@ export type GetScoreRequest = {
 export type GetScoreResponse = {
   message: string;
   score: ScorePublicResponse;
+};
+
+// ---------------------------
+
+export type DeleteScoreRequest = {
+  scoreId: number;
+};
+
+export type DeleteScoreResponse = {
+  message: string;
 };
 
 // ---------------------------

@@ -243,6 +243,28 @@ describe('🎼 Composer API - From the User Point of view', () => {
   });
 
   // ----------------------------------------------------------------------------
+
+  it('should get composers per name - SearchMode:contains ', async () => {
+    const res = await GetComposersPage({ name: 'Beethoven' }, TOKEN_USER1);
+
+    expect(res.status).toBe(200);
+  });
+
+  it('should no composer found with exact name', async () => {
+    const res = await GetComposersPage({ name: 'Beethoven', searchMode: 'exact' }, TOKEN_USER1);
+
+    expect(res.status).toBe(200);
+    expect(res.data.data?.message).equal('no composer found with exact name: Beethoven');
+  });
+
+  it('should get composers per name with Exact name', async () => {
+    const res = await GetComposersPage({ name: 'Ludwig van Beethoven', searchMode: 'exact' }, TOKEN_USER1);
+
+    expect(res.status).toBe(200);
+    expect(res.data.data?.message).equal('composers retrieved successfully');
+  });
+
+  // ----------------------------------------------------------------------------
   // LIST COMPOSER
   // ----------------------------------------------------------------------------
 

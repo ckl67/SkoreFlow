@@ -71,7 +71,7 @@ type CreateScoreRequest struct {
 // GetScoresPageRequest defines pagination and filtering for score listing.
 type GetScoresPageRequest struct {
 	PaginatedRequest
-	Name     *string `form:"search" json:"search"`
+	Name     *string `form:"name" json:"name"`
 	Composer *string `form:"composer" json:"composer"`
 	Tag      *string `form:"tag" json:"tag"`
 	Category *string `form:"category" json:"category"`

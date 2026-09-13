@@ -12,6 +12,7 @@ import (
 	"path/filepath"
 
 	"backend/infrastructure/logger"
+	"backend/internal/apperrors"
 )
 
 // RemoveFileIfExists deletes a file if it exists.
@@ -26,14 +27,13 @@ func RemoveFileIfExists(path string) error {
 	err := os.Remove(path)
 	if err != nil {
 		if os.IsNotExist(err) {
-			logger.Score.Debug("File not found (nothing to delete): %s", path)
-			return nil
+			logger.Main.Warn("File not found (nothing to delete): %s", path)
+			return apperrors.ErrFileNotFound
 		}
-		logger.Score.Warn("Failed to delete file %s: %v", path, err)
+		logger.Main.Warn("Failed to delete file %s: %v", path, err)
 		return err
 	}
-
-	logger.Score.Debug("File deleted: %s", path)
+	logger.Main.Debug("File deleted: %s", path)
 	return nil
 }
 
@@ -42,7 +42,8 @@ func RemoveFileIfExists(path string) error {
 func CreateDir(path string) error {
 	err := os.MkdirAll(path, os.ModePerm)
 	if err != nil {
-		return fmt.Errorf("unable to create directory tree %s: %v", path, err)
+		logger.Main.Debug("unable to create directory tree %s: %v", path, err)
+		return apperrors.ErrDirCreation
 	}
 	return nil
 }

@@ -45,10 +45,12 @@ func Start(version string) {
 
 	// 3. Database Seeding
 
-	// 3.1. admin
+	// --------------------------- MANDATORY ----------------------------
+	// admin
 	appServer.seederService.User("admin", cfg.Admin.Email, cfg.Admin.Password, domain.RoleAdmin, "users/admin.png")
 
-	// 3.2. Demo composers
+	// ----------------------------- DEMO ----------------------------
+	// Demo composers
 	// ====>> Files stored in demo/composers/
 	// cspell:disable
 	demoComposers := []composers{
@@ -69,7 +71,6 @@ func Start(version string) {
 	// Scores
 	// ====>> Files stored in demo/scores/
 
-	// 1. Declaration of the raw JSON constant
 	const demoAnnotations = `[
   {
     "id": "annotation-124",
@@ -110,15 +111,14 @@ func Start(version string) {
 		}
 	}
 
-	// 3.3 Demo Score
-	// Files stored in demo/scores/
+	// ----------------------------- TEST  ----------------------------
 
-	// 4 Test Seeding
 	if config.Config().DevelopmentRuntime.SeedData {
 		// Users
 		appServer.seederService.User("user1", "user1@test.com", "password123", domain.RoleUser, "users/default.png")
 		appServer.seederService.User("user2", "user2@test.com", "password123", domain.RoleUser, "users/default.png")
 		appServer.seederService.User("user3", "user3@test.com", "password123", domain.RoleUser, "users/default.png")
+		appServer.seederService.User("user6", "user6@test.com", "password123", domain.RoleUser, "users/default.png")
 		appServer.seederService.User("moderator1", "moderator1@test.com", "password123", domain.RoleModerator, "users/moderator.png")
 		appServer.seederService.User("moderator2", "moderator2@test.com", "password123", domain.RoleModerator, "users/moderator.png")
 
@@ -129,6 +129,7 @@ func Start(version string) {
 		testComposers := []composers{
 			{"Wolfgang Amadeus Mozart", "Classical period", "https://fr.wikipedia.org/wiki/Wolfgang_Amadeus_Mozart", "Mozart.png"},
 			{"Ludwig van Beethoven", "Classical period", "https://fr.wikipedia.org/wiki/Ludwig_van_Beethoven", "Beethoven.png"},
+			{"Beethoven Son", "Fack", "", ""},
 			{"Supertramp", "Rock gradual, Pop, Art Rock, Blues-rock", "https://fr.wikipedia.org/wiki/Supertramp", "Supertramp.png"},
 			{"NightWish", "Hard Rock, Art Rock", "https://fr.wikipedia.org/wiki/Nightwish", ""},
 			{"Frédéric Chopin", "romantic", "https://fr.wikipedia.org/wiki/Fr%C3%A9d%C3%A9ric_Chopin", "Frédéric Chopin.png"},
@@ -161,7 +162,6 @@ func Start(version string) {
 		// UserID : 1=admin, 2=user1; 3=user2
 		// cspell:disable
 
-		// 1. Declaration of the raw JSON constant
 		const testAnnotations = `[
 			{
 				"id": "annotation-122",
@@ -275,6 +275,33 @@ func Start(version string) {
 			},
 
 			// -------------------------------------------------------------------------
+			// Beethoven Son (Fack)
+			// -------------------------------------------------------------------------
+			{
+				"Beethoven Son",
+				"Adagio Pathétique - Fack",
+				"1798",
+				"Beethoven;Piano;Classical",
+				"Classical;Piano",
+				"Cello Facke",
+				datatypes.JSON(testAnnotations),
+				"Ludwig Van Beethoven/Adagio Pathétique.pdf",
+				[]int32{3},
+			},
+
+			{
+				"Beethoven Son",
+				"Sonate No. 14 - Clair de lune - Fack",
+				"1801",
+				"Beethoven;Piano;Sonata;Classical",
+				"Classical;Piano;Sonata",
+				"Piano Fack",
+				datatypes.JSON(testAnnotations),
+				"Ludwig Van Beethoven/Sonate No. 14 - Clair de lune.pdf",
+				[]int32{3},
+			},
+
+			// -------------------------------------------------------------------------
 			// Paul de Senneville
 			// -------------------------------------------------------------------------
 			{
@@ -312,7 +339,7 @@ func Start(version string) {
 				"Alternative arrangement of The Logical Song from the album Breakfast in America.",
 				datatypes.JSON(testAnnotations),
 				"Supertramp/Logical Song New.pdf",
-				[]int32{4, 5},
+				[]int32{4},
 			},
 			{
 				"Supertramp",
@@ -323,7 +350,7 @@ func Start(version string) {
 				"School from the album Crime of the Century.",
 				datatypes.JSON(testAnnotations),
 				"Supertramp/School.pdf",
-				[]int32{2, 4, 5, 6},
+				[]int32{2, 4, 6},
 			},
 
 			// -------------------------------------------------------------------------
@@ -338,8 +365,19 @@ func Start(version string) {
 				"Rock;Progressive Rock",
 				"Test score intended to be deleted by automated tests.",
 				datatypes.JSON(testAnnotations),
-				"SupertrampToDelete/Logical Song.pdf",
-				[]int32{1, 6},
+				"Supertramp/Logical Song to-delete.pdf",
+				[]int32{1, 5},
+			},
+			{
+				"Supertramp",
+				"School to delete",
+				"1975",
+				"Supertramp;Rock;Progressive Rock",
+				"Rock;Progressive Rock",
+				"School from the album Crime of the Century.",
+				datatypes.JSON(testAnnotations),
+				"Supertramp/School to-delete.pdf",
+				[]int32{2, 4, 5},
 			},
 		}
 		// cspell:enable

@@ -45,6 +45,7 @@ export type GetComposersPageRequest = {
   page?: number;
   limit?: number;
   sort?: string;
+  searchMode?: string;
   name?: string;
   isVerified?: boolean;
 };

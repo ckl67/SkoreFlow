@@ -118,14 +118,19 @@ func (s *ComposerService) GetComposersPage(isDemo bool, form forms.GetComposersP
 	}
 
 	pagination := models.Pagination{
-		Sort:  form.SortBy,
-		Limit: form.Limit,
-		Page:  form.Page,
+		Sort:       form.SortBy,
+		SearchMode: form.SearchMode,
+		Limit:      form.Limit,
+		Page:       form.Page,
 	}
 
+	// Verify allowed Sort & SearchMode
 	pagination.Sort = pagination.GetSort()
+	pagination.SearchMode = pagination.GetSearchMode()
 
-	logger.Composer.Debug("(Service - GetComposersPage): sort=%s", pagination.Sort)
+	logger.Composer.Debug("(Service - GetComposersPage): sort=%s searchMode=%s ",
+		pagination.Sort,
+		pagination.SearchMode)
 
 	var composer models.Composer
 

@@ -7,6 +7,7 @@ package models
 // ===============================================================================================
 
 import (
+	"backend/infrastructure/logger"
 	"math"
 	"strings"
 
@@ -18,11 +19,15 @@ import (
 // Notes:
 // - JSON tags define API serialization.
 // - Query tags are used for request binding (e.g., Gin).
+//
+// Pagination.Rows is stored as interface{} because the same Pagination
+// structure is reused for different entities (composers, scores, composers, ...).
 
 type Pagination struct {
+	Sort       string      `json:"sort,omitempty" query:"sort"`
+	SearchMode string      `json:"searchMode,omitempty" query:"searchMode"`
 	Limit      int         `json:"limit,omitempty" query:"limit"`
 	Page       int         `json:"page,omitempty" query:"page"`
-	Sort       string      `json:"sort,omitempty" query:"sort"`
 	TotalRows  int64       `json:"total_rows"`
 	TotalPages int         `json:"total_pages"`
 	Rows       interface{} `json:"rows"`
@@ -52,11 +57,9 @@ func (p *Pagination) GetPage() int {
 }
 
 // GetSort validates and returns a safe SQL ORDER BY clause.
-//
 // Security:
 // - Only allows predefined fields and directions.
 // - Prevents SQL injection via uncontrolled input.
-//
 // Default:
 // - Falls back to "updated_at desc" if invalid.
 func (p *Pagination) GetSort() string {
@@ -88,8 +91,28 @@ func (p *Pagination) GetSort() string {
 	if allowed[sort] {
 		return sort
 	}
-
 	return "updated_at desc"
+}
+
+// GetSearchMode validates and returns a safe SQL request.
+// Security:
+// - Only allows predefined fields and directions.
+// - Prevents SQL injection via uncontrolled input.
+func (p *Pagination) GetSearchMode() string {
+	allowed := map[string]bool{
+		"contains":   true,
+		"startsWith": true,
+		"exact":      true,
+	}
+
+	mode := strings.ToLower(strings.TrimSpace(p.SearchMode))
+
+	logger.Main.Info("search Mode proposed : %s", mode)
+	if allowed[mode] {
+		return mode
+	}
+
+	return "contains"
 }
 
 // paginate applies pagination, sorting, and total count calculation to a GORM query.
@@ -110,16 +133,7 @@ func paginate(pagination *Pagination, db *gorm.DB, sort string) func(db *gorm.DB
 	totalPages := int(math.Ceil(float64(totalRows) / float64(limit)))
 	pagination.TotalPages = totalPages
 
-	// Former
-	//	return func(db *gorm.DB) *gorm.DB {
-	//		return db.
-	//			Offset(pagination.GetOffset()).
-	//			Limit(limit).
-	//			Order(pagination.GetSort())
-	//	}
-	// Issue : Order(pagination.GetSort())
-	// for a Score.List() with a JOIN on ‘composers’, a sort such as ‘updated_at’ descending becomes ambiguous.
-	// Solution we provide the sort in the function !
+	// To avoid ambiguity we indicate the sort in the function !
 	return func(db *gorm.DB) *gorm.DB {
 		return db.
 			Offset(pagination.GetOffset()).

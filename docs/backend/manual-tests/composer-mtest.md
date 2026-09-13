@@ -97,3 +97,15 @@ curl -H "Authorization: Bearer $TOKEN_USER2" -o avatar.png http://localhost:8080
 file avatar.png
 
 ```
+
+## Extra
+
+### With Search form
+
+```shell
+curl -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/${API_VERSION}/composers?name=Beethoven | jq
+
+curl -H "Authorization: Bearer $TOKEN_USER2" "http://localhost:8080/api/${API_VERSION}/composers?name=Beethoven&searchMode=exact" | jq
+
+
+```

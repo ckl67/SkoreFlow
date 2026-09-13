@@ -27,7 +27,11 @@ The document can be consulted
 
 ### User Guide
 
-- [User Guide](./user-guide/cover-page.md)
+- [SkoreFlow User Guide](./user-guide/cover-page.md)
+
+### Official Documentation & Reference Links
+
+- [Official Documentation & Reference Links](./general/prog-docs.md)
 
 ### visual studio code
 
@@ -53,9 +57,9 @@ The document can be consulted
 - [Go synchronous and asynchronous](./general/go-sync.md)
 - [Python Imports, Root Folders](./general/python-Imports-rootfolder.md)
 - [JWT](./general/jwt.md)
-- [HTTP Status Codes](./general/http_status_codes.md)
+- [HTTP Status Codes](./general/http-status-codes.md)
 - [API Response Standard](./backend/api-response.md)
-- [Javascript - ecosystem](./general/javascript_ecosystem.md)
+- [Javascript - ecosystem](./general/javascript-ecosystem.md)
 - [Javascript - some particularities](./general/javascript.md)
 - [Type vs Interface in TypeScript](./general/type-vs-interface.md)
 - [JSON Handling](./general/json.md)

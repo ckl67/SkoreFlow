@@ -1,4 +1,4 @@
-// cspell:ignore gorm storagepath datatypes  JJTHH
+// cspell:ignore gorm storagepath datatypes JJTHH Supertramp
 package services
 
 // ===============================================================================================
@@ -13,14 +13,12 @@ import (
 	"fmt"
 	"io"
 	"mime/multipart"
-	"os"
 	"path/filepath"
 	"strings"
 	"time"
 
 	"backend/infrastructure/logger"
 	"backend/internal/apperrors"
-	"backend/internal/domain"
 	"backend/internal/forms"
 	"backend/internal/models"
 	"backend/pkg/filedir"
@@ -108,12 +106,26 @@ func (s *ScoreService) CreateScore(uid uint32, form forms.CreateScoreRequest) (*
 		return nil, apperrors.ErrInvalidDate
 	}
 
+	// About
+	//		Composer: *composer,
+	// Normally not mandatory to associate Composer, because preload in the model, will do the staff
+	// However, to store the file, the function ProcessScoreStorage() will create the directory file including composer name
+	// Meaning that : score.Composer.SafeName must be known !
+	// Build storage path
+	//			├── scores/
+	//			│   ├── uploaded
+	//			│   │    ├── user-6/
+	//			│   │    │   ├── Supertramp/
+	//			│   │    │   │   └── Logical Song To delete.pdf
+	//			│   │    │   │   └── School to delete.pdf
 	// 5. Build model
 	score := models.Score{
 		ScoreName:     strings.TrimSpace(form.ScoreName),
 		SafeScoreName: safeScoreName,
 		ComposerID:    composer.ID,
-		ReleaseDate:   releaseDate,
+		// Normally "Composer:*composer" not mandatory - see above !
+		Composer:    *composer,
+		ReleaseDate: releaseDate,
 		//	FilePath:      relativePath,
 		//	ThumbnailPath: relativeThumbnailPath,
 		UploaderID:      uid,
@@ -212,8 +224,8 @@ func (s *ScoreService) StoreScorePdfThumbnail(
 	//logger.Score.Debug("(StoreScorePdfThumbnail) uploadedPath=%s", uploadedPath)
 	//logger.Score.Debug("(StoreScorePdfThumbnail) thumbnailPath=%s", thumbnailPath)
 
-	score.FilePath = uploadedPath
-	score.ThumbnailPath = thumbnailPath
+	score.FilePath = relativePath
+	score.ThumbnailPath = relativeThumbnailPath
 
 	// ---------------------------------------------------------
 	// 1. Save pdf file
@@ -386,11 +398,7 @@ func (s *ScoreService) UpdateScore(
 }
 
 // DeleteScore performs full deletion (authorization + files + database).
-//
-// Rules:
-// - Allowed for owner or admin
-// - Deletes physical files first, then DB record
-func (s *ScoreService) DeleteScore(userId uint32, scoreId uint, userRole int) error {
+func (s *ScoreService) DeleteScore(userId uint32, scoreId uint) error {
 	// 1. Fetch score
 	score, err := models.FindScoreByID(s.db, userId, scoreId, false)
 	if err != nil {
@@ -398,15 +406,6 @@ func (s *ScoreService) DeleteScore(userId uint32, scoreId uint, userRole int) er
 			return apperrors.ErrScoreNotFound
 		}
 		return err
-	}
-
-	// 2. Authorization
-	isAdmin := userRole == domain.RoleAdmin
-	isOwner := score.UploaderID == userId
-
-	if !isAdmin && !isOwner {
-		logger.Score.Warn("Unauthorized deletion attempt: user=%d scoreId=%d", userId, scoreId)
-		return apperrors.ErrAccessForbidden
 	}
 
 	// 3. Orchestrate deletion
@@ -444,16 +443,17 @@ func (s *ScoreService) GetScoresPage(uid uint32, isDemo bool, form forms.GetScor
 	}
 
 	pagination := models.Pagination{
-		Sort:  form.SortBy,
-		Limit: form.Limit,
-		Page:  form.Page,
+		Sort:       form.SortBy,
+		SearchMode: form.SearchMode,
+		Limit:      form.Limit,
+		Page:       form.Page,
 	}
 
-	// 2. Normalize sorting
+	// 2. Normalize sorting and SearchMode
 	pagination.Sort = pagination.GetSort()
+	pagination.SearchMode = pagination.GetSearchMode()
 
 	// 3. Prepare composer filter
-	// Composer name should be provided, however we test !!
 	var safeCompSearch *string
 	if form.Composer != nil {
 		safeCompName := format.SanitizeName(*form.Composer)
@@ -462,7 +462,7 @@ func (s *ScoreService) GetScoresPage(uid uint32, isDemo bool, form forms.GetScor
 		safeCompSearch = nil
 	}
 
-	logger.Score.Debug("GetScoresPage: sort=%s", pagination.Sort)
+	logger.Score.Debug("GetScoresPage: sort=%s, searchMode=%s", pagination.Sort, pagination.SearchMode)
 
 	var score models.Score
 	// safeCompSearch, form.Tag, form.Category, form.Name can be nil
@@ -555,11 +555,13 @@ func (s *ScoreService) deleteScoreOrchestrator(score *models.Score) error {
 		err := filedir.RemoveFileIfExists(path)
 		if err != nil {
 			switch {
-			case os.IsNotExist(err):
+			case errors.Is(err, apperrors.ErrFileNotFound):
+				//The expected file no longer existed.
+				// → The score can still be considered deleted.
 				hasNotFound = true
 				logger.Score.Warn("File missing: %s", path)
-
 			default:
+				// Here wa have a real issue !
 				hasDeletionError = true
 				logger.Score.Error("Deletion failed: %s (%v)", path, err)
 			}
@@ -582,11 +584,11 @@ func (s *ScoreService) deleteScoreOrchestrator(score *models.Score) error {
 	}
 
 	// 4. Return priority error
-	if hasDeletionError {
-		return apperrors.ErrFileDeletion
-	}
 	if hasNotFound {
 		return apperrors.ErrFileNotFound
+	}
+	if hasDeletionError {
+		return apperrors.ErrFileDeletion
 	}
 
 	return nil
@@ -594,12 +596,13 @@ func (s *ScoreService) deleteScoreOrchestrator(score *models.Score) error {
 
 // createDate parses an RFC3339 string into time.Time.
 // The frontend is responsible for providing a valid format.
-// 	The input format must strictly adhere to the AAAA-MM-JJTHH:MM:SSZ format
-// 	(or with a time zone offset such as +02:00).
-// 		1965-12-12T00:00:00Z: This works because it includes the year, month, day, the ‘T’ separator,
-// 		the hour, minutes, seconds and the UTC indicator ‘Z’.
+//
+//	The input format must strictly adhere to the AAAA-MM-JJTHH:MM:SSZ format
+//	(or with a time zone offset such as +02:00).
+//		1965-12-12T00:00:00Z: This works because it includes the year, month, day, the ‘T’ separator,
+//		the hour, minutes, seconds and the UTC indicator ‘Z’.
+//
 // However, we will accept simple format !
-
 func createDate(date string) (time.Time, error) {
 
 	// 1. Try the full RFC3339 format

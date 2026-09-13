@@ -241,7 +241,9 @@ func (s *SeederService) SeederScore(
 		ScoreName:     strings.TrimSpace(scoreName),
 		SafeScoreName: safeScoreName,
 		ComposerID:    composer.ID,
-		ReleaseDate:   parsedReleaseDate,
+		// Normally "Composer:*composer" not mandatory - see score.go services !
+		Composer:    *composer,
+		ReleaseDate: parsedReleaseDate,
 		//	FilePath:      relativePath,
 		//	ThumbnailPath: relativeThumbnailPath,
 		UploaderID:      uint32(userId),

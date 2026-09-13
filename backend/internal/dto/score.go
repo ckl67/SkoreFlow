@@ -53,6 +53,10 @@ type UpdateScoreAnnotationResponse struct {
 	Message string `json:"message"`
 }
 
+type DeleteScoreResponse struct {
+	Message string `json:"message"`
+}
+
 // --------------------------------------------------------------------------
 // Function
 // --------------------------------------------------------------------------

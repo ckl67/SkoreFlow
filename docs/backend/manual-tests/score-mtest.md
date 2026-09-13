@@ -1,3 +1,5 @@
+<!-- cspell:ignore Pathétique  -->
+
 # Setup Manual score tests
 
 [← back](../../doc.md)
@@ -145,6 +147,45 @@ curl -H "Authorization: Bearer $TOKEN_USER2" \
 
 ```shell
 curl -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/${API_VERSION}/scores/11 | jq
+```
+
+#### List with modeSearch
+
+```shell
+
+# ALL
+curl -H "Authorization: Bearer $TOKEN_USER2" "http://localhost:8080/api/${API_VERSION}/scores?page=1&limit=10" | jq
+
+# Contains Pathétique
+curl -H "Authorization: Bearer $TOKEN_USER2" \
+"http://localhost:8080/api/${API_VERSION}/scores?name=Pathétique" | jq
+
+# Contains Pathétique exact
+curl -H "Authorization: Bearer $TOKEN_USER2" \
+"http://localhost:8080/api/${API_VERSION}/scores?name=Pathétique&searchMode=exact" | jq
+
+# Contains all composers containing Beethoven
+curl -H "Authorization: Bearer $TOKEN_USER2" \
+"http://localhost:8080/api/${API_VERSION}/scores?composer=Beethoven" | jq
+
+
+curl -H "Authorization: Bearer $TOKEN_USER2" \
+"http://localhost:8080/api/${API_VERSION}/scores?composer=Beethoven&searchMode=exact" | jq
+
+# Contains Composer Exact : Ludwig van Beethoven
+curl -H "Authorization: Bearer $TOKEN_USER2" \
+"http://localhost:8080/api/${API_VERSION}/scores?composer=Ludwig%20van%20Beethoven&searchMode=exact" | jq
+
+
+# Contains Composer Exact : Ludwig van Beethoven + Pathétique
+curl -H "Authorization: Bearer $TOKEN_USER2" \
+"http://localhost:8080/api/${API_VERSION}/scores?composer=Ludwig%20van%20Beethoven&searchMode=exact&name=Pathétique" | jq
+
+# Contains Composer Exact : Ludwig van Beethoven + Adagio Pathétique
+curl -H "Authorization: Bearer $TOKEN_USER2" \
+"http://localhost:8080/api/${API_VERSION}/scores?composer=Ludwig%20van%20Beethoven&searchMode=exact&name=Adagio%20Pathétique" | jq
+
+
 ```
 
 ### Annotations

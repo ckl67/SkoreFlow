@@ -85,10 +85,24 @@ func (c *Composer) List(
 	// Base query
 	query := db.Model(&Composer{})
 
+	// Sort and searchMode used
+	sort := pagination.Sort
+	searchMode := pagination.SearchMode
+
 	// Search filter
+	var searchTerm string
 	if search != nil && *search != "" {
-		// % est un wildcard SQL (joker) used by LIKE  --> WHERE name LIKE '%beethoven%'
-		searchTerm := "%" + *search + "%"
+		// 		% is a wildcard SQL used by LIKE --> no exact search !
+		switch searchMode {
+		case "contains":
+			searchTerm = "%" + *search + "%"
+		case "startsWith":
+			searchTerm = *search + "%"
+		case "exact":
+			searchTerm = *search
+		default:
+			searchTerm = "%" + *search + "%"
+		}
 		query = query.Where("(name LIKE ? OR safe_name LIKE ?)", searchTerm, searchTerm)
 	}
 
@@ -98,7 +112,8 @@ func (c *Composer) List(
 		query = query.Where("is_verified = ?", *isVerified)
 	}
 	// Execute query with pagination
-	err := query.Scopes(paginate(pagination, query, pagination.GetSort())).Find(&composers).Error
+	// Scopes can accept several functions see: https://gorm.io/docs/scopes.html
+	err := query.Scopes(paginate(pagination, query, sort)).Find(&composers).Error
 	if err != nil {
 		return nil, err
 	}

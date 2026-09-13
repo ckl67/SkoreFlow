@@ -44,6 +44,17 @@
     },
 
     {
+      "name": "Vitest (Single Test)",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/node_modules/vitest/vitest.mjs",
+      "args": ["run", "${file}", "-t", "${selectedText}"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "skipFiles": ["<node_internals>/**"]
+    },
+
+    {
       "name": "CLI",
       "type": "go",
       "request": "launch",

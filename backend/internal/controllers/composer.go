@@ -99,47 +99,61 @@ func (ctrl *ComposerController) GetComposersPage(c *gin.Context) {
 	}
 
 	// form.IsVerified or form.name can be nil !
-	logger.Composer.Debug("(Controller GetComposersPage) : Search: %v IsVerified = %v (IsDemo =%t ) | Page: %d | PageSize: %d | SortBy: %s",
-		form.Name, form.IsVerified, isDemo, form.Page, form.Limit, form.SortBy)
+	//logger.Composer.Info("(Controller GetComposersPage) :")
+	//if form.Name != nil {
+	//	logger.Composer.Info("   Search: %s", *form.Name)
+	//}
+	//if form.IsVerified != nil {
+	//	logger.Composer.Info("   IsVerified = %t ", *form.IsVerified)
+	//}
+	//logger.Composer.Info("   (IsDemo =%t ) | Page: %d | PageSize: %d | SortBy: %s | SearchMode :%s",
+	//	isDemo, form.Page, form.Limit, form.SortBy, form.SearchMode)
 
-	pageData, err := ctrl.service.GetComposersPage(isDemo, form)
+	pagination, err := ctrl.service.GetComposersPage(isDemo, form)
 	if err != nil {
 		responses.FAIL(c, http.StatusInternalServerError, err)
 		return
 	}
 
-	// Cast to composers
 	// Pagination.Rows is stored as interface{} because the same Pagination
 	// structure is reused for different entities (composers, scores, composers, ...).
-	// Here we know that GetComposersPage() populated Rows with []*models.Composers,
-	// so we perform a type assertion to recover the concrete type.
-	//
 	// The "ok" value prevents a panic if Rows contains an unexpected type.
-	// This is mandatory to avoid a panic and a program stop !!
-	//
-	// Example
-	// var x interface{} --> x contains something but we don't know what
-	// Could be
-	//		x = 123
-	//		x = "hello"
-	//    x = []*models.Composers{}
-	// To get the right value
-	// 	composers, ok := x.([]*models.Composers)
-
+	// Cast to Composer
 	var composers []*models.Composer
 	var ok bool
-	composers, ok = pageData.Rows.([]*models.Composer)
+	composers, ok = pagination.Rows.([]*models.Composer)
 	if !ok {
 		responses.FAIL(c, http.StatusInternalServerError, fmt.Errorf("invalid composers type"))
 		return
 	}
 
+	message := "composers retrieved successfully"
+
+	if pagination.TotalRows == 0 {
+		switch {
+		case form.Name != nil && pagination.SearchMode == "exact":
+			message = fmt.Sprintf(
+				"no composer found with exact name: %s",
+				*form.Name,
+			)
+
+		case form.Name != nil:
+			message = fmt.Sprintf(
+				"no composers found for search: %s",
+				*form.Name,
+			)
+
+		default:
+			message = "no composers found"
+		}
+	}
+
 	response := dto.GetComposersPageResponse{
-		Message:    "composers retrieved successfully",
-		Page:       pageData.Page,
-		Limit:      pageData.Limit,
-		TotalRows:  pageData.TotalRows,
-		TotalPages: pageData.TotalPages,
+		Message:    message,
+		Page:       pagination.Page,
+		Limit:      pagination.Limit,
+		TotalRows:  pagination.TotalRows,
+		TotalPages: pagination.TotalPages,
 		Composers:  dto.ToComposersPublicResponse(composers),
 	}
 

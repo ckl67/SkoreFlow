@@ -21,6 +21,8 @@ import {
   GetScoreResponse,
 } from '../../../shared/types/score';
 
+import { DeleteScoreRequest, DeleteScoreResponse } from '../../../shared/types/score';
+
 import { UpdateScoreAnnotationRequest, UpdateScoreAnnotationResponse } from '../../../shared/types/score';
 // --------------------------------------------------------------------------------
 // Create Score,
@@ -94,7 +96,16 @@ async function createScore(
 //  Or {}, parameter optional --> first rang
 //
 async function GetScoresPage(
-  { page = 1, limit = 10, sort = 'id asc', search, composer, tag, category }: GetScoresPageRequest = {},
+  {
+    page = 1,
+    limit = 10,
+    sort = 'id asc',
+    searchMode = 'contains',
+    name,
+    composer,
+    tag,
+    category,
+  }: GetScoresPageRequest = {},
   token: string
 ) {
   const params = new URLSearchParams();
@@ -102,7 +113,8 @@ async function GetScoresPage(
   if (page !== undefined) params.append('page', String(page));
   if (limit !== undefined) params.append('limit', String(limit));
   if (sort) params.append('sort', sort);
-  if (search) params.append('search', search);
+  if (searchMode) params.append('searchMode', searchMode);
+  if (name) params.append('name', name);
   if (composer) params.append('composer', composer);
   if (tag) params.append('tag', tag);
   if (category) params.append('category', category);
@@ -135,6 +147,20 @@ async function GetScore({ scoreId }: GetScoreRequest, token: string) {
   // console.dir is a native Node.js method that allows you to display an object with color and indentation,
   // and to control the depth of the output.
   console.dir(res.data, { depth: null, colors: true });
+
+  return res;
+}
+
+// --------------------------------------------------------------------------------
+// DeleteScore
+// --------------------------------------------------------------------------------
+async function DeleteScore({ scoreId }: DeleteScoreRequest, token: string) {
+  const res = await request<DeleteScoreResponse>('DELETE', `${API_URL}/scores/${scoreId}`, {
+    token,
+  });
+
+  console.log('\n ---> DeleteScore response: (status = ', res.status, ' )');
+  console.log(res.data);
 
   return res;
 }
@@ -221,4 +247,4 @@ async function UpdateScoreAnnotations({ scoreId, annotations }: UpdateScoreAnnot
 // EXPORT (ESM)
 // --------------------------------------------------------------------------------
 
-export { createScore, GetScoresPage, GetScore, UpdateScore, UpdateScoreAnnotations };
+export { createScore, GetScoresPage, GetScore, DeleteScore, UpdateScore, UpdateScoreAnnotations };
