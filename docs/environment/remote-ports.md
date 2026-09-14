@@ -2,7 +2,8 @@
 
 [← back](../doc.md)
 
-This document explains what is happening when you develop inside a remote Ubuntu VM from VS Code on a Windows host, and why networking issues (localhost, ports, CORS, curl failures) occur.
+This document explains what is happening when you develop inside a remote Ubuntu VM from VS Code on a Windows host, and the rules to respect.
+This is the way that I have decided to develop (open to you)
 
 ## 🧠 Basic Mental Model
 
@@ -100,12 +101,12 @@ VS Code creates a tunnel from your local machine (Windows) → remote machine (U
 So you can access:
 
 ```shell
-http://localhost:8080 (Windows browser)
+## (Windows browser)
+http://localhost:8080/api/v1/health
+curl "http://localhost:8080/api/v1/health"
 ```
 
-even though the service is actually running on:
-
-Ubuntu VM:8080
+even though the service is actually running on Ubuntu VM:8080
 
 ### Two types of access
 
@@ -114,7 +115,8 @@ A. Without port forwarding
 You must use the VM IP:
 
 ```shell
-http://192.168.1.138:8080
+http://192.168.1.138:8080/api/v1/health
+curl "http://192.168.1.138:8080/api/v1/health"
 ```
 
 B. With port forwarding (VS Code Ports tab)
@@ -122,13 +124,11 @@ B. With port forwarding (VS Code Ports tab)
 VS Code creates a tunnel:
 Windows localhost:8080 → Ubuntu VM:8080
 
-So you can use:
+So you can use on Windows directly.
 
 ```shell
-http://localhost:8080
+http://localhost:8080/api/v1
 ```
-
-on Windows directly.
 
 ### Why VS Code shows “Forwarded” or “User Forwarded”
 
@@ -153,30 +153,6 @@ Port forwarding in VS Code:
 - Only affects your local development machine
 - Does NOT expose the service to your network
 - Does NOT replace proper networking configuration
-
-So:
-
-| Scenario                                 | Works |
-| ---------------------------------------- | ----- |
-| Windows browser → forwarded port         | ✔     |
-| Another device on Wi-Fi → forwarded port | ❌    |
-| Render / production usage                | ❌    |
-
-## 🔥 VS Code Remote does NOT change networking
-
-VS Code Remote:
-
-only moves terminal/editor execution
-does NOT unify networking
-
-So:
-
-| Action              | Runs where |
-| ------------------- | ---------- |
-| Go backend          | VM         |
-| Flask service       | VM         |
-| curl in VM terminal | VM         |
-| browser             | Windows    |
 
 ## 🌍 CORS in this architecture
 
@@ -204,45 +180,4 @@ AllowOrigins: [
 ]
 ```
 
-✔ This is correct
-
-## ⚙️ Required configuration rules
-
-### Backend (Go / VM)
-
-- Bind address MUST be:
-- 0.0.0.0:8080
-
-Why:
-
-- 127.0.0.1 → VM-only access
-- 0.0.0.0 → accessible from host
-
-### Frontend (Windows browser)
-
-```shell
-VITE_API_URL=http://192.168.1.138:8080/api
-```
-
-Never use:
-
-- localhost → ❌ wrong in VM setups
-
-```shell
-CORS backend
-FRONTEND_ORIGIN=http://localhost:5173
-```
-
-or
-
-```shell
-CORS_ALLOWED_ORIGINS=http://localhost:5173,http://192.168.1.141:5173 8. 🧪 Debug checklist
-```
-
-## 🧭 Summary
-
-- VS Code remote ≠ shared network
-- VM has its own localhost
-- Windows must use VM IP
-- VPN can modify routing but not change machine boundaries
 - CORS must match browser origin, not backend host

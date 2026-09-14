@@ -78,6 +78,16 @@ func (s *ScoreService) findOrCreateComposer(name string) (*models.Composer, erro
 }
 
 // CreateScore orchestrates the full creation workflow of a score.
+// It verifies the composer existence, sanitizes file paths, processes storage,
+// and persists the record in DB.
+//
+// Returns the score model apperrors.ErrComposerNotFound if composer ID does not exist,
+// or apperrors.ErrScoreAlreadyExists if a duplicate is found.
+
+// CreateScore
+
+// CreateScore
+
 func (s *ScoreService) CreateScore(uid uint32, form forms.CreateScoreRequest) (*models.Score, error) {
 	// 1. Composer ID verification
 	composer, err := models.FindComposerByID(s.db, form.ComposerId, false)

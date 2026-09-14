@@ -16,10 +16,11 @@ import time
 import uuid
 
 from flask import Flask, jsonify, request
-from my_app.logger import configure, get_current_level, logger
 from pdf2image import convert_from_path
 from pdf2image.exceptions import PDFPageCountError, PDFSyntaxError
 from PIL import Image, UnidentifiedImageError
+
+from my_app.logger import configure, get_current_level, logger
 
 try:
     from my_app._version import __build_date__, __commit__, __version__
@@ -37,7 +38,7 @@ app = Flask(__name__)
 # CONFIG (environment variables)
 # ------------------------------------------------------------
 MS_PORT = int(os.getenv("PORT", "5001"))
-VERSION = "0.1"
+MS_NAME = "Thumbnail Service"
 
 # ------------------------------------------------------------
 # STARTUP LOGGING
@@ -48,14 +49,11 @@ VERSION = "0.1"
 configure("INFO")
 
 logger.info("-------------------------------------------------------------------------")
-logger.info("Thumbnail Service started")
+logger.info("%s started", MS_NAME)
 logger.info("-------------------------------------------------------------------------")
 logger.info(" version     : %s", __version__)
 logger.info(" commit      : %s", __commit__)
 logger.info(" build_date  : %s", __build_date__)
-logger.info(" --> PORT     : %d", MS_PORT)
-logger.info("-------------------------------------------------------------------------")
-logger.info(" pdftoppm (cmd tool PDF 2 Image): %s", shutil.which("pdftoppm"))
 logger.info("-------------------------------------------------------------------------")
 
 
@@ -173,7 +171,7 @@ def create_thumbnail():
     logger.debug("[%s] input=%s", request_id, input_path)
     logger.debug("[%s] output=%s", request_id, output_path)
 
-    logger.info(
+    logger.debug(
         "[%s] Thumbnail %s -> %s (%d)",
         request_id,
         os.path.basename(input_path),
@@ -222,7 +220,7 @@ def create_thumbnail():
 
         elapsed = (time.perf_counter() - start) * 1000
 
-        logger.info(
+        logger.debug(
             "[%s] Thumbnail generated in %.1f ms",
             request_id,
             elapsed,
@@ -237,8 +235,14 @@ def create_thumbnail():
 
 # ------------------------------------------------------------
 # ENTRYPOINT (only for local dev, NOT used by gunicorn)
+#   make run-flask
 # ------------------------------------------------------------
 
 if __name__ == "__main__":
-    logger.info("Starting %s on port %d", "thumbnail-service", MS_PORT)
+    logger.info(
+        "Starting %s on port %d (service based on pdftoppm - PDF2Image conversion: %s)",
+        MS_NAME,
+        MS_PORT,
+        shutil.which("pdftoppm"),
+    )
     app.run(host="0.0.0.0", port=MS_PORT, debug=False)

@@ -1,10 +1,12 @@
+<!-- cspell:ignore ldflags -->
+
 # Versioning Strategy for a Monorepo Architecture
 
 This document explains how versioning, tagging, and deployment work across the SkoreFlow monorepo (backend, frontend, microservices).
 
 ## Versioning Standard (Semantic Versioning)
 
-All microservices must strictly comply with Semantic Versioning (SemVer 2.0.0).
+All microservices must strictly comply with Semantic Versioning
 
 A version number is formatted as: **MAJOR.MINOR.PATCH**
 
@@ -16,7 +18,7 @@ A version number is formatted as: **MAJOR.MINOR.PATCH**
 
 Managing a monorepo with multiple distinct modules requires a clear strategy to prevent build conflicts and versioning noise:
 
-Independent Module Versioning: Each component (backend, frontend, thumbnail) evolves at its own pace.
+Independent Module Versioning: Each component (backend, frontend, microservice ) evolves at its own pace.
 Changing the frontend code does not require bumping the thumbnail service version.
 
 Git Sub-Tags: Instead of a single global tag (e.g., v1.0.0), modules use domain-prefixed Git tags:
@@ -25,7 +27,7 @@ Git Sub-Tags: Instead of a single global tag (e.g., v1.0.0), modules use domain-
 - thumbnail/v1.1.0
 - frontend/v1.0.4
 
-No Committed Version Files: Generated version files (such as src/my_app/\_version.py) must never be committed to Git and should remain in .gitignore.
+No Committed Version Files: Generated version files must never be committed to Git and should remain in .gitignore.
 Version metadata is dynamically generated during the Build or Execution phase.
 
 ## Project Layout Overview

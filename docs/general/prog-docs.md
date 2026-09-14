@@ -1,5 +1,9 @@
 # Official Documentation & Reference Links
 
+## Foreword
+
+We recommend to mark the different links below in you un bookmark of your browser
+
 ## Backend
 
 ### GO

@@ -34,7 +34,7 @@ BUILD_DATE=$(shell date -u +%Y-%m-%dT%H:%M:%SZ)
 LDFLAGS=-ldflags="-X main.Version=$(VERSION) -X main.Commit=$(COMMIT) -X main.BuildDate=$(BUILD_DATE)"
 
 # Makefile Rules
-.PHONY: all version build run-test run-dev run cleandb-storage air air-test air-dev tidy clean-build reset debug-test debug-dev help
+.PHONY: all version build run-test run-dev run cleandb-storage air air-test air-dev tidy clean-build reset debug-test debug-dev doc help
 
 ## all: Clean, organize modules, and compile
 all: tidy build
@@ -153,6 +153,10 @@ reset:
 	@echo "==> Complete module cache cleanup..."
 	$(GO) clean -cache -modcache -testcache
 	$(GO) mod tidy
+
+doc:
+	@echo "Génération de la documentation des services Go..."
+	gomarkdoc ./internal/domain/... ./internal/services/... > ../docs/backend/backend-services.md
 
 ## help: Show available commands
 help:

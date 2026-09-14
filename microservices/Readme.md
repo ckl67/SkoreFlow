@@ -22,4 +22,4 @@ b4c90e1      | microservices/thumbnail/src/app.py    | thumbnail/v1.1.0
 a1b2c3d      | backend/cmd/main.go & thumbnail/      | backend/v2.0.1 , thumbnail/v1.2.0
 ```
 
-Consult the document [Versioning Strategy for a Monorepo Architecture](./../docs/skoreflow/version-strategy.md))
+Consult the document [Versioning Strategy for a Monorepo Architecture](./../docs/skoreflow/version-strategy.md)

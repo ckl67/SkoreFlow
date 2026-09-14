@@ -1,3 +1,5 @@
+<!-- cspell:ignore golangci -->
+
 # ESLint and Prettier Configuration Guide
 
 [← back](../doc.md)
@@ -27,7 +29,10 @@ In this project, both tools run side-by-side but have completely separated respo
 | **Examples**             | Tabs vs. spaces, line length, trailing commas, single quotes vs. double quotes | Unused variables, unresolved symbols, dead code, syntax anomalies |
 | **Execution**            | Rewrites and reformats your code structure on save                             | Highlights warnings/errors in your editor or CI pipeline          |
 
-> ⚠️ **Important Architecture Note:** In our `.code-workspace` settings, ESLint formatting is explicitly disabled (`"eslint.format.enable": false`). We delegate **100% of formatting to Prettier** and keep **100% of quality inspection to ESLint**.
+⚠️ In our `settings.json`, ESLint formatting is explicitly disabled (`"eslint.format.enable": false`).
+
+- We delegate 100% of formatting to Prettier and
+- keep 100% of quality inspection to ESLint.
 
 ---
 
@@ -53,11 +58,6 @@ Other modern languages used in this project are decoupled from ESLint and rely o
 ## Prettier (Code Formatter)
 
 While **ESLint** focuses on code quality, potential bugs, and logic practices, **Prettier** is an opinionated code formatter that handles all visual presentation. It automatically formats your code on save or via CLI to ensure consistent spacing, indentation, quotes, and line lengths across the entire codebase.
-
-### Key Distinction
-
-- **ESLint**: Catches code logic issues, unused variables, anti-patterns, and type safety errors.
-- **Prettier**: Enforces aesthetic code formatting (e.g., single vs. double quotes, trailing commas, tab width).
 
 ### Commands
 
@@ -113,9 +113,13 @@ Project-specific dictionary terms, custom jargon, and framework keywords are con
 ** matches any depth of subfolders (e.g. vendor/** targets everything inside the vendor folder).
 ```
 
-For Markdown files or temporary code blocks containing specific jargon, brand names, or technical acronyms, inline directives can be added directly in HTML comments:
+### Inline directives
 
 ```shell
+
+# =======================
+# For Markdown files
+# =======================
 # Ignore specific words in a file:
 <!-- cspell:ignore customTerm legacyKeyword -->
 
@@ -123,4 +127,10 @@ For Markdown files or temporary code blocks containing specific jargon, brand na
 <!-- cspell:disable -->
 Unchecked text or raw logs go here...
 <!-- cspell:enable -->
+
+# =======================
+# For Go
+# =======================
+//cspell:ignore datatypes
+
 ```

@@ -7,6 +7,7 @@
 ```shell
 
 tree -I 'node_modules' -L 3
+tree -I 'node_modules' -I 'assets' -I 'docs' -I 'testauto' -I 'tmp' -I 'test-results' -L 3
 
 ```
 

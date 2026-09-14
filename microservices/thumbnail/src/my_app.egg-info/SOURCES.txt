@@ -1,4 +1,8 @@
 setup.py
+src/my_app/__init__.py
+src/my_app/_version.py
+src/my_app/app.py
+src/my_app/logger.py
 src/my_app.egg-info/PKG-INFO
 src/my_app.egg-info/SOURCES.txt
 src/my_app.egg-info/dependency_links.txt
