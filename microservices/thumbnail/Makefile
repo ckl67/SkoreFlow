@@ -19,7 +19,8 @@ HOST = 0.0.0.0
 PORT = 5001
 
 # Versioning metadata (Git)
-VERSION    := $(shell git describe --tags --match "thumbnail/*" --always 2>/dev/null || echo "dev")
+RAW_VERSION := $(shell git describe --tags --match "microservices/thumbnail/*" --always 2>/dev/null || echo "dev")
+VERSION     := $(subst microservices/thumbnail/,,$(RAW_VERSION))
 COMMIT     := $(shell git rev-parse --short HEAD 2>/dev/null || echo "unknown")
 BUILD_DATE := $(shell date -u +%Y-%m-%dT%H:%M:%SZ)
 

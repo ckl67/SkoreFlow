@@ -24,10 +24,9 @@ Changing the frontend code does not require bumping the thumbnail service versio
 Git Sub-Tags: Instead of a single global tag (e.g., v1.0.0), modules use domain-prefixed Git tags:
 
 - backend/v2.0.1
-- thumbnail/v1.1.0
+- microservice/thumbnail/v1.0.0
 - frontend/v1.0.4
 
-No Committed Version Files: Generated version files must never be committed to Git and should remain in .gitignore.
 Version metadata is dynamically generated during the Build or Execution phase.
 
 ## Project Layout Overview
@@ -36,7 +35,7 @@ Version metadata is dynamically generated during the Build or Execution phase.
 
 SkoreFlow/ <-- Monorepo Root
   ├── backend/ <-- Go API (Receives version via Go -ldflags)
-  ├── frontend/ <-- Vite/React (Receives version via vite.config.ts)
+  ├── frontend/ <-- Vite/React
   └── microservices/
     └── thumbnail/ <-- Python/Flask (Receives version via \_version.py)
 ```
@@ -55,7 +54,7 @@ Here is a complete scenario where you update the Backend and the Thumbnail Micro
 
 ### Step 2: Commit and Push
 
-Save your changes in Git as a single atomic commit:
+Save your changes in Git as a single commit:
 
 ```Bash
 
@@ -81,7 +80,7 @@ Assign specific versions to the relevant modules for this commit:
 git tag backend/v2.0.1
 
 # Create a tag for the thumbnail service on the SAME commit
-git tag thumbnail/v1.1.0
+git tag microservices/thumbnail/v1.0.0
 
 # Push tags to the remote repository
 git push origin --tags
@@ -89,7 +88,7 @@ git push origin --tags
 
 Git Internal Mechanics:
 
-The commit a1b2c3d now carries two pointer labels: backend/v2.0.1 and thumbnail/v1.1.0.
+The commit a1b2c3d now carries two pointer labels: backend/v2.0.1 and thumbnail/v1.0.0.
 The frontend/ directory remains pointing to its previous tag (e.g., frontend/v1.0.0).
 
 ### Step 4: Build and Deployment (CI/CD or Server)
@@ -125,13 +124,13 @@ make gen-version
 The Makefile dynamically generates src/my_app/\_version.py on the target machine:
 
 ```Python
-**version** = "v1.1.0"
+**version** = "v1.0.0"
 **commit** = "a1b2c3d"
 **build_date** = "2026-07-29T13:00:00Z"
 ```
 
 - Python boots up and reads \_version.py at runtime.
-- Querying /version returns: {"version": "v1.1.0", "commit": "a1b2c3d"}.
+- Querying /version returns: {"version": "v1.0.0", "commit": "a1b2c3d"}.
 
 #### C. Frontend Deployment (TypeScript / Vite)
 
