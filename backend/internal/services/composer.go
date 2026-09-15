@@ -155,8 +155,8 @@ func (s *ComposerService) GetComposersPage(isDemo bool, form forms.GetComposersP
 // GetComposer
 // Retrieves a composer by its ID.
 // No authorization required (public access).
-func (s *ComposerService) GetComposer(ComposerID uint) (*models.Composer, error) {
-	composer, err := models.FindComposerByID(s.db, ComposerID, false)
+func (s *ComposerService) GetComposer(ComposerID uint, isDemo bool) (*models.Composer, error) {
+	composer, err := models.FindComposerByID(s.db, ComposerID, isDemo)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, apperrors.ErrComposerNotFound

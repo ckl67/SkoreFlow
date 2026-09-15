@@ -108,8 +108,9 @@ npm install -D @testing-library/react @testing-library/dom @testing-library/user
 ```shell
 npm ls --depth=0
 npm ls --depth=0 -w frontend
-```
 
 frontend@0.0.0 -> ./frontend
 
-Le -> ./frontend means that npm has well the link to workspace.
+# -> ./frontend means that npm has well the link to workspace.
+
+```

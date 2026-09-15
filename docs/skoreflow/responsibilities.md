@@ -9,8 +9,6 @@ The frontend is responsible for presenting data and providing a responsive user 
 
 This separation keeps the application scalable while maintaining a clean architecture.
 
----
-
 ## Backend Responsibilities
 
 The backend owns all operations that require access to the complete dataset.
@@ -49,8 +47,6 @@ Example response:
 }
 ```
 
----
-
 ## Frontend Responsibilities
 
 The frontend never assumes it owns the complete dataset.
@@ -87,8 +83,6 @@ Returns only page 4
 React updates the UI
 ```
 
----
-
 ## Why this approach?
 
 ### Scalability
@@ -106,8 +100,6 @@ It does **not** scale to:
 
 Server-side pagination keeps memory usage, network traffic and loading time under control.
 
----
-
 ### Single Source of Truth
 
 Sorting and filtering are implemented only once:
@@ -116,8 +108,6 @@ Sorting and filtering are implemented only once:
 - Frontend = presentation logic
 
 This avoids duplicated implementations and inconsistent results.
-
----
 
 ### Better Performance
 
@@ -138,51 +128,3 @@ the frontend downloads only:
 ```
 
 for the current page.
-
----
-
-## Frontend Hooks
-
-Hooks should represent the current page of data, not the entire database.
-
-Good:
-
-```ts
-useComposersPage({
-  page,
-  limit,
-  sort,
-  name,
-  isVerified,
-});
-```
-
-Avoid:
-
-```ts
-useComposers();
-```
-
-if it suggests loading every composer.
-
----
-
-## Guiding Principle
-
-The **Backend**
-
-- Owns the data.
-- Owns business rules.
-- Owns queries.
-- Owns performance.
-
-The **Frontend**
-
-- Owns the user experience.
-- Displays data.
-- Sends user requests.
-- Reacts to backend responses.
-
-The backend decides **what data exists**.
-
-The frontend decides **how that data is presented**.

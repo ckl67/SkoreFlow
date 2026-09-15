@@ -1,3 +1,5 @@
+<!-- cspell:ignore GOPATH cleandb -->
+
 # backend Run
 
 [← back](../doc.md)
@@ -53,4 +55,50 @@ Available commands:
   make reset       : Clear cache and reinstall everything
   make clean       : Remove the binary
   make help        : Show this help message
+```
+
+## Some clarifications about Air
+
+### Installing Air
+
+Open your terminal and install it using go install:
+
+Make sure that your $GOPATH/bin directory is included in your PATH so you can run the air command from anywhere.
+See [backend installation guide](install.md) for instructions on how to add Go binaries to your PATH.
+
+```shell
+go install github.com/air-verse/air@latest
+```
+
+### Configuration
+
+Navigate to the root of your backend project and initialize Air:
+
+```shell
+air init
+```
+
+This will create a `.air.toml` file.
+This file tells Air: "Watch all .go files, and whenever one changes, run go build and restart the binary."
+
+Configuration of air : `.air.toml`
+For example to avoid The message ‘watching storage/composers/...’ from the Hot Reload / File Watcher system such as Air.
+
+```shell
+exclude_dir = ["assets", "tmp", "vendor", "storage"]
+```
+
+### Usage
+
+Instead of running:
+
+```shell
+go run ./cmd/server/main.go
+# or as recommended by GO running the package
+go run ./cmd/server
+
+
+# Simply use:
+
+air
 ```

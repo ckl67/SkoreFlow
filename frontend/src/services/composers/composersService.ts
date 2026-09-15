@@ -1,5 +1,5 @@
 import { GetComposersPageRequest, GetComposersPageResponse } from '../../../../shared/types/composer';
-import { GetComposersResponse } from '../../../../shared/types/composer';
+import { GetComposerResponse } from '../../../../shared/types/composer';
 import { apiRequest } from '../../api/client';
 import { Pagination } from '../../config/pagination';
 import { apiBinaryRequest } from '../../api/client';
@@ -38,7 +38,7 @@ export function getComposersPage({
 }
 
 export function getComposer(id: number) {
-  return apiRequest<GetComposersResponse>('GET', `/composers/${id}`);
+  return apiRequest<GetComposerResponse>('GET', `/composers/${id}`);
 }
 
 /**

@@ -35,7 +35,7 @@ The project is developed incrementally, route by route, rather than relying on l
 
 ### Testing
 
-The FrontEnd test is performed through Vitest and Playwright in dedicated workspaces.
+The FrontEnd test is performed through Vitest and Manual tests, perhaps later Playwright if necessary, in dedicated workspaces.
 
 ### Responsibilities
 

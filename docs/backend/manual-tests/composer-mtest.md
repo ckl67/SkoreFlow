@@ -76,8 +76,6 @@ curl -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/${API_VER
 
 
 curl -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/${API_VERSION}/composers?name=Wolfgang%20Amadeus%20Mozart | jq
-
-
 ```
 
 - To list 1 composer
@@ -95,7 +93,6 @@ curl -I -H "Authorization: Bearer $TOKEN_USER2" http://192.168.1.138:8080/api/${
 
 curl -H "Authorization: Bearer $TOKEN_USER2" -o avatar.png http://localhost:8080/api/${API_VERSION}/me/avatar
 file avatar.png
-
 ```
 
 ## Extra
@@ -106,6 +103,4 @@ file avatar.png
 curl -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/${API_VERSION}/composers?name=Beethoven | jq
 
 curl -H "Authorization: Bearer $TOKEN_USER2" "http://localhost:8080/api/${API_VERSION}/composers?name=Beethoven&searchMode=exact" | jq
-
-
 ```

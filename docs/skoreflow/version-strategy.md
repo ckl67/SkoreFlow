@@ -27,7 +27,10 @@ Git Sub-Tags: Instead of a single global tag (e.g., v1.0.0), modules use domain-
 - microservice/thumbnail/v1.0.0
 - frontend/v1.0.4
 
-Version metadata is dynamically generated during the Build or Execution phase.
+Version metadata is dynamically generated during the **Build** or **Execution** phase on **dev** or on **production** servers.
+
+- version = "v1.0.0" will reflect the tag
+- commit = "a1b2c3d" will reflect the last commit version independently of the modules
 
 ## Project Layout Overview
 
@@ -35,9 +38,10 @@ Version metadata is dynamically generated during the Build or Execution phase.
 
 SkoreFlow/ <-- Monorepo Root
   ├── backend/ <-- Go API (Receives version via Go -ldflags)
-  ├── frontend/ <-- Vite/React
+  ├── frontend/ <-- Vite/React (Receives version via Go -ldflags)
   └── microservices/
-    └── thumbnail/ <-- Python/Flask (Receives version via \_version.py)
+    └── thumbnail/ <-- Python/Flask (Receives version via _version.py)
+
 ```
 
 ## End-to-End Workflow: Step-by-Step
@@ -46,10 +50,12 @@ Here is a complete scenario where you update the Backend and the Thumbnail Micro
 
 ### Step 1: Local Development
 
+Example thumbnail and backend
+
 - Modify Go code in backend/.
 - Modify Python code in microservices/thumbnail/.
 - Test locally using the respective Makefile.
-  - For Thumbnail, make run executes gen-version, creating `\_version.py` locally on the fly.
+  - For Thumbnail, make run executes gen-version, creating `_version.py` locally on the fly.
   - For Backend, Go injects the build flags at compile time.
 
 ### Step 2: Commit and Push
@@ -93,7 +99,7 @@ The frontend/ directory remains pointing to its previous tag (e.g., frontend/v1.
 
 ### Step 4: Build and Deployment (CI/CD or Server)
 
-During deployment or automated CI/CD pipelines, each service resolves its version metadata independently from the Git repository.
+During deployment local or on production each service resolves its version metadata independently from the Git repository.
 
 #### A. Backend Deployment (Go)
 
@@ -121,7 +127,8 @@ cd microservices/thumbnail
 make gen-version
 ```
 
-The Makefile dynamically generates src/my_app/\_version.py on the target machine:
+The Makefile dynamically generates the version based on the last commit and tag, via `src/my_app/_version.py`
+on the target machine: (**test** server as on the **production** server)
 
 ```Python
 **version** = "v1.0.0"
@@ -148,9 +155,3 @@ Vite executes git describe --tags --match "frontend/*".
 Since no new frontend/\* tag was created for this commit, Git calculates the distance from the last tag, producing frontend/v1.0.0-1-ga1b2c3d (1 commit ahead of v1.0.0).
 
 The static bundle is compiled with this metadata embedded in the environment variables.
-
-## Key Benefits of This Architecture
-
-- Zero Merge Conflicts: Generated files (\_version.py) are ignored by Git, eliminating version-related merge conflicts across branches.
-- Granular Traceability: Every deployed service exposes its commit hash and version on its health/version endpoints, allowing developers to trace production errors back to the exact line of code in Git.
-- Clean Release History: Component release logs remain isolated, clean, and meaningful.

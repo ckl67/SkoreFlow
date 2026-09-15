@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { getComposersPage } from '../../services/composers/composersService';
+import { getScoresPage } from '../../services/scores/scoresService';
 import { logger } from '../../../logger/logger';
-import { ComposerPublicResponse } from '../../../../shared/types/composer';
+import { ScorePublicResponse } from '../../../../shared/types/score';
 
 /* ====================================
 Responsibilities are:
-- loading a page of composers,
+- loading a page of scores,
 - managing pagination,
 - filters,
 - sorting,
@@ -16,29 +16,29 @@ Responsibilities are:
 
 // `await` cannot be used directly within a React component
 // A React component is not asynchronous --> We must use `useEffect()`.
-export function useComposers() {
+export function useScores() {
   // idem
-  //    const [composers, setComposers] = useState([
+  //    const [scores, setScores] = useState([
   //    { id: 1, uname: 'Beethoven',.. },
   //    ...
   //    ]);
-  const [composers, setComposers] = useState<ComposerPublicResponse[]>([]);
+  const [scores, setScores] = useState<ScorePublicResponse[]>([]);
 
   useEffect(() => {
-    async function loadComposers() {
+    async function loadScores() {
       try {
-        logger.debug('composer', 'Loading composers (Page 1 only)');
-        const res = await getComposersPage();
-        setComposers(res.composers ?? []);
+        logger.debug('score', 'Loading scores (Page 1 only)');
+        const res = await getScoresPage();
+        setScores(res.scores ?? []);
       } catch (error) {
-        logger.error('composer', 'Failed loading composers', error);
+        logger.error('score', 'Failed loading scores', error);
       }
     }
 
-    loadComposers();
+    loadScores();
   }, []);
   // The [] symbol means ‘once only during the mounting'.
   return {
-    composers,
+    scores,
   };
 }

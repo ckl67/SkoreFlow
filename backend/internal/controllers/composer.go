@@ -204,11 +204,7 @@ func (ctrl *ComposerController) GetDemoComposersPage(c *gin.Context) {
 		return
 	}
 
-	// form.IsVerified or form.name can be nil !
-	logger.Composer.Debug("(Controller GetDemoComposersPage) : Search: %v IsVerified = %v (IsDemo =%t ) | Page: %d | PageSize: %d | SortBy: %s",
-		form.Name, form.IsVerified, isDemo, form.Page, form.Limit, form.SortBy)
-
-	pageData, err := ctrl.service.GetComposersPage(isDemo, form)
+	pagination, err := ctrl.service.GetComposersPage(isDemo, form)
 	if err != nil {
 		responses.FAIL(c, http.StatusInternalServerError, err)
 		return
@@ -216,18 +212,39 @@ func (ctrl *ComposerController) GetDemoComposersPage(c *gin.Context) {
 
 	var composers []*models.Composer
 	var ok bool
-	composers, ok = pageData.Rows.([]*models.Composer)
+	composers, ok = pagination.Rows.([]*models.Composer)
 	if !ok {
 		responses.FAIL(c, http.StatusInternalServerError, fmt.Errorf("invalid composers type"))
 		return
 	}
 
+	message := "composers retrieved successfully"
+
+	if pagination.TotalRows == 0 {
+		switch {
+		case form.Name != nil && pagination.SearchMode == "exact":
+			message = fmt.Sprintf(
+				"no composer found with exact name: %s",
+				*form.Name,
+			)
+
+		case form.Name != nil:
+			message = fmt.Sprintf(
+				"no composers found for search: %s",
+				*form.Name,
+			)
+
+		default:
+			message = "no composers found"
+		}
+	}
+
 	response := dto.GetComposersPageResponse{
-		Message:    "composers retrieved successfully",
-		Page:       pageData.Page,
-		Limit:      pageData.Limit,
-		TotalRows:  pageData.TotalRows,
-		TotalPages: pageData.TotalPages,
+		Message:    message,
+		Page:       pagination.Page,
+		Limit:      pagination.Limit,
+		TotalRows:  pagination.TotalRows,
+		TotalPages: pagination.TotalPages,
 		Composers:  dto.ToComposersPublicResponse(composers),
 	}
 
@@ -245,7 +262,7 @@ func (ctrl *ComposerController) GetComposer(c *gin.Context) {
 		return
 	}
 
-	composer, err := ctrl.service.GetComposer(uint(cid))
+	composer, err := ctrl.service.GetComposer(uint(cid), false)
 	if err != nil {
 		switch err {
 		case apperrors.ErrComposerNotFound:
@@ -275,7 +292,7 @@ func (ctrl *ComposerController) GetDemoComposer(c *gin.Context) {
 		return
 	}
 
-	composer, err := ctrl.service.GetComposer(uint(cid))
+	composer, err := ctrl.service.GetComposer(uint(cid), true)
 	if err != nil {
 		switch err {
 		case apperrors.ErrComposerNotFound:

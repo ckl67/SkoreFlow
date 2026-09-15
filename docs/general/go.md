@@ -99,11 +99,6 @@ It is therefore a risky command outside the context of planned maintenance.
 - Always version `go.mod` and `go.sum`.
 - Use `go mod tidy` to clean up, not to update.
 
-## Visibility (encapsulation)
-
-- A name starting with an **uppercase** letter (`User`) is exported (public).
-- A name starting with a **lowercase** letter (`user`) is private to the package.
-
 ## Static binaries and CGO
 
 By default, Go sometimes relies on C libraries (via cgo) for certain features, such as DNS resolution or X.509 certificate handling.
@@ -137,20 +132,7 @@ ORMs exist in many languages:
 - Python → Django ORM / SQLAlchemy
 - PHP → Eloquent
 
-### Plain Go (without GORM)
-
-You write raw SQL queries and handle scanning and errors manually:
-
-```go
-row := db.QueryRow("SELECT id, email FROM users WHERE email = ?", email)
-row.Scan(&user.ID, &user.Email)
-```
-
-### Go with GORM
-
-```go
-db.Where("email = ?", email).First(&user)
-```
+[Gorm official document](https://gorm.io/docs/models.html)
 
 ## Gin
 
@@ -159,20 +141,15 @@ Gin is an HTTP framework for Go, built on top of `net/http`.
 - Routes: `r.GET()`, `r.POST()`, `r.PUT()`, `r.DELETE()`
 - Middleware:
 
-```go
-  r.Use(AuthMiddleware())
-```
+[Gin Official document](https://gin-gonic.com/en/)
 
 - Typical architecture:
   `Client → Gin → Services → GORM → Database`
 
-## Binding Requests: Bind, ShouldBind, BindJSON, ShouldBindWith
+### Binding Requests: Bind, ShouldBind, BindJSON, ShouldBindWith
 
 Gin's binding system parses incoming request data (JSON, XML, form, query string, URI params, etc.) directly into a Go struct, using struct tags. There are two families of binding methods, which only differ in **how they handle errors**.
 
-- Under the hood, these call `ShouldBindWith`.
-- If binding fails, they **only return the error** — Gin does not touch the HTTP response.
-- You decide what to do: log it, return a custom error format, use a different status code, etc.
 - **Recommended in production.**
 
 ```go
@@ -190,14 +167,3 @@ if err := c.ShouldBindJSON(&obj); err != nil {
 Prefer the `Should...` methods in production. They give you full control over error handling and response formatting, instead of letting Gin decide for you.
 
 `ShouldBind` is a Gin method that automatically inspects the incoming HTTP request's Content-Type header and parses the payload into a Go struct.
-
-- Smart Format Selection:
-  - application/json --> Uses json:"..." struct tags.
-  - multipart/form-data or application/x-www-form-urlencoded --> Uses form:"..." struct tags.
-  - GET Query String --> Falls back to query parameters.
-- Automatic Type Conversion:
-  - Converts string values from form fields or URLs into Go types (e.g., "42" to uint).
-- Validation: Enforces rules defined in the binding:"..."
-  - tag (e.g., binding:"required").
-- Error Handling:
-  - Returns an error if validation or type parsing fails, allowing you to decide how to handle the HTTP response (without automatically writing a 400 Bad Request like c.Bind() does).

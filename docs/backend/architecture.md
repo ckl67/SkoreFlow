@@ -92,8 +92,7 @@ storage/  #  Persistent runtime data (excluded from Git)
 ### Base URL
 
 ```bash
-/api
-# Or if necessary
+
 /api/v1
 ```
 

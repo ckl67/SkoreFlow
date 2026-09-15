@@ -86,7 +86,9 @@
     // 📊 GIT
     // =========================================================
 
-    "mhutchie.git-graph",
+    // Git Graph now integrated in vsc and other graph version no compatible with
+    // vsc Version: 1.137.0
+    //"mhutchie.git-graph",
     //"eamodio.gitlens",
 
     // =========================================================

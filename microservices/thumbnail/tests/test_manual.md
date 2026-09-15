@@ -8,10 +8,10 @@
 make run
 
 # Health
-curl http://localhost:5001/api/health
+curl http://localhost:5001/health
 
 #Version
-curl http://localhost:5001/api/version
+curl http://localhost:5001/version
 
 # Log level
 curl http://localhost:5001/loglevel

@@ -217,7 +217,40 @@ func (ctrl *ScoreController) GetScore(c *gin.Context) {
 		return
 	}
 
-	score, err := ctrl.service.GetScore(uid, uint(sid))
+	score, err := ctrl.service.GetScore(uid, uint(sid), false)
+	if err != nil {
+		switch err {
+		case apperrors.ErrScoreNotFound:
+			responses.FAIL(c, http.StatusNotFound, err)
+		default:
+			responses.FAIL(c, http.StatusInternalServerError, err)
+		}
+		return
+	}
+
+	response := dto.GetScoreResponse{
+		Message: "Score retrieved successfully",
+		Score:   dto.ToScorePublicResponse(score),
+	}
+
+	responses.SUCCESS(c, http.StatusOK, response)
+
+}
+
+// GetDemoScore
+// Retrieves a single score by ID.
+// GetScore retrieves detailed information for a single score
+func (ctrl *ScoreController) GetDemoScore(c *gin.Context) {
+	uid := c.GetUint32("user_id")
+
+	idParam := c.Param("id")
+	sid, err := strconv.ParseUint(idParam, 10, 32)
+	if err != nil {
+		responses.FAIL(c, http.StatusBadRequest, apperrors.ErrScoreInvalidID)
+		return
+	}
+
+	score, err := ctrl.service.GetScore(uid, uint(sid), true)
 	if err != nil {
 		switch err {
 		case apperrors.ErrScoreNotFound:
@@ -352,4 +385,193 @@ func (ctrl *ScoreController) GetScoresPage(c *gin.Context) {
 	}
 
 	responses.SUCCESS(c, http.StatusOK, response)
+}
+
+// GetDemoScoresPage
+// Retrieves a paginated list of scores.
+// Supports filtering (search, tags, categories, composer) and sorting.
+// Returns both data and pagination metadata.
+func (ctrl *ScoreController) GetDemoScoresPage(c *gin.Context) {
+	isDemo := true
+	uid := c.GetUint32("user_id")
+
+	var form forms.GetScoresPageRequest
+	if err := c.ShouldBind(&form); err != nil {
+		responses.FAIL(c, http.StatusBadRequest, err)
+		return
+	}
+	logger.Score.Info("(Controller GetScoresPage) : User: %d | Search: %v | Page: %d | PageSize: %d | SortBy: %s | SearchMode :%s ",
+		uid,
+		form.Name,
+		form.Page,
+		form.Limit,
+		form.SortBy,
+		form.SearchMode,
+	)
+
+	pagination, err := ctrl.service.GetScoresPage(uid, isDemo, form)
+	if err != nil {
+		responses.FAIL(c, http.StatusInternalServerError, err)
+		return
+	}
+
+	// Pagination.Rows is stored as interface{} because the same Pagination
+	// structure is reused for different entities (composers, scores, composers, ...).
+	// The "ok" value prevents a panic if Rows contains an unexpected type.
+	// Cast to scores
+	var scores []*models.Score
+	var ok bool
+	scores, ok = pagination.Rows.([]*models.Score)
+	if !ok {
+		responses.FAIL(c, http.StatusInternalServerError, fmt.Errorf("invalid scores type"))
+		return
+	}
+
+	message := "scores retrieved successfully"
+
+	if pagination.TotalRows == 0 {
+		switch {
+		case form.Name != nil && pagination.SearchMode == "exact":
+			message = fmt.Sprintf(
+				"no score found with exact name: %s",
+				*form.Name,
+			)
+
+		case form.Name != nil:
+			message = fmt.Sprintf(
+				"no score found for search: %s",
+				*form.Name,
+			)
+
+		default:
+			message = "no scores found"
+		}
+	}
+
+	response := dto.GetScoresPageResponse{
+		Message:    message,
+		Page:       pagination.Page,
+		Limit:      pagination.Limit,
+		TotalRows:  pagination.TotalRows,
+		TotalPages: pagination.TotalPages,
+		Scores:     dto.ToScoresPublicResponse(scores),
+	}
+
+	responses.SUCCESS(c, http.StatusOK, response)
+}
+
+// GetScoreFile
+func (ctrl *ScoreController) GetScoreFile(c *gin.Context) {
+	// We are Not in the same situation than for Avatar
+	// Because the same reference will always return the same picture
+	// So we can ask for a very long cover 24 x 3600 secondes = 86400
+	uid := c.GetUint32("user_id")
+	c.Header("Cache-Control", "private, max-age=86400")
+
+	isDemo := false
+	cidString := c.Param("id")
+	cid, err := strconv.ParseUint(cidString, 10, 32)
+	if err != nil || cid <= 0 {
+		responses.FAIL(c, http.StatusBadRequest, fmt.Errorf("invalid score id"))
+		return
+	}
+
+	logger.Score.Info(
+		"Origin=%q Authorization=%t",
+		c.GetHeader("Origin"),
+		c.GetHeader("Authorization") != "",
+	)
+
+	file, err := ctrl.service.ScoreFileData(uint32(cid), uid, isDemo)
+	logger.Score.Debug("(Ctrl-GetScoreFile) ScoreFileData : %s", file)
+	if err != nil {
+		responses.FAIL(c, http.StatusNotFound, err)
+		return
+	}
+
+	c.File(file)
+}
+
+// GetScoreThumbnail
+func (ctrl *ScoreController) GetScoreThumbnail(c *gin.Context) {
+	// We are Not in the same situation than for Avatar
+	// Because the same reference will always return the same picture
+	// So we can ask for a very long cover 24 x 3600 secondes = 86400
+	uid := c.GetUint32("user_id")
+	c.Header("Cache-Control", "private, max-age=86400")
+
+	isDemo := false
+	cidString := c.Param("id")
+	cid, err := strconv.ParseUint(cidString, 10, 32)
+	if err != nil || cid <= 0 {
+		responses.FAIL(c, http.StatusBadRequest, fmt.Errorf("invalid composer id"))
+		return
+	}
+
+	file, err := ctrl.service.ScoreThumbnailData(uint32(cid), uid, isDemo)
+	logger.Score.Debug("(Ctrl-GetScoreThumbnail) ScoreThumbnailData : %s", file)
+	if err != nil {
+		responses.FAIL(c, http.StatusNotFound, err)
+		return
+	}
+
+	c.File(file)
+}
+
+// GetDemoScoreFile
+func (ctrl *ScoreController) GetDemoScoreFile(c *gin.Context) {
+	// We are Not in the same situation than for Avatar
+	// Because the same reference will always return the same picture
+	// So we can ask for a very long cover 24 x 3600 secondes = 86400
+	uid := c.GetUint32("user_id")
+	c.Header("Cache-Control", "private, max-age=86400")
+
+	isDemo := false
+	cidString := c.Param("id")
+	cid, err := strconv.ParseUint(cidString, 10, 32)
+	if err != nil || cid <= 0 {
+		responses.FAIL(c, http.StatusBadRequest, fmt.Errorf("invalid score id"))
+		return
+	}
+
+	logger.Score.Info(
+		"Origin=%q Authorization=%t",
+		c.GetHeader("Origin"),
+		c.GetHeader("Authorization") != "",
+	)
+
+	file, err := ctrl.service.ScoreFileData(uint32(cid), uid, isDemo)
+	logger.Score.Debug("(Ctrl-GetDemoScoreFile) ScoreFileData : %s", file)
+	if err != nil {
+		responses.FAIL(c, http.StatusNotFound, err)
+		return
+	}
+
+	c.File(file)
+}
+
+// GetDemoScoreThumbnail
+func (ctrl *ScoreController) GetDemoScoreThumbnail(c *gin.Context) {
+	// We are Not in the same situation than for Avatar
+	// Because the same reference will always return the same picture
+	// So we can ask for a very long cover 24 x 3600 secondes = 86400
+	uid := c.GetUint32("user_id")
+	c.Header("Cache-Control", "private, max-age=86400")
+
+	isDemo := false
+	cidString := c.Param("id")
+	cid, err := strconv.ParseUint(cidString, 10, 32)
+	if err != nil || cid <= 0 {
+		responses.FAIL(c, http.StatusBadRequest, fmt.Errorf("invalid composer id"))
+		return
+	}
+
+	file, err := ctrl.service.ScoreThumbnailData(uint32(cid), uid, isDemo)
+	logger.Score.Debug("(Ctrl-GetDemoScoreThumbnail) ScoreThumbnailData : %s", file)
+	if err != nil {
+		responses.FAIL(c, http.StatusNotFound, err)
+		return
+	}
+
+	c.File(file)
 }

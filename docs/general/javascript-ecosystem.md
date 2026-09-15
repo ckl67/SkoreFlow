@@ -16,7 +16,8 @@ In SkoreFlow project we will privilege TS and JSX
 
 ## Official documentation
 
-[Typescript official documentation](https://www.typescriptlang.org/docs/)
+- [Javascript Reference](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference)
+  [Typescript official documentation](https://www.typescriptlang.org/docs/)
 
 ## compilation
 

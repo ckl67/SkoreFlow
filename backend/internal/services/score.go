@@ -430,8 +430,8 @@ func (s *ScoreService) DeleteScore(userId uint32, scoreId uint) error {
 
 // GetScore retrieves a score
 // Will return only for the uid
-func (s *ScoreService) GetScore(uid uint32, scoreId uint) (*models.Score, error) {
-	score, err := models.FindScoreByID(s.db, uid, scoreId, false)
+func (s *ScoreService) GetScore(uid uint32, scoreId uint, isDemo bool) (*models.Score, error) {
+	score, err := models.FindScoreByID(s.db, uid, scoreId, isDemo)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, apperrors.ErrScoreNotFound
@@ -635,4 +635,56 @@ func createDate(date string) (time.Time, error) {
 	}
 
 	return time.Time{}, apperrors.ErrInvalidDate
+}
+
+// ScoreFileData
+//
+//	├── scores/
+//	│   ├── uploaded
+//	│   │    ├── user-1/
+//	│   │    │   ├── Mozart/
+//	│   │    │   │   └── Pour Elise.pdf
+//	│   ├── thumbnails
+//	│   │    ├── user-1/
+//	│   │        └─── Mozart/
+//	│   │            └── Pour Elise.png
+func (s *ScoreService) ScoreFileData(scoreID uint32, userId uint32, isDemo bool) (string, error) {
+
+	score, err := models.FindScoreByID(s.db, userId, (uint)(scoreID), isDemo)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return "", apperrors.ErrScoreNotFound
+		}
+		return "", err
+	}
+
+	if score.FilePath == "" {
+		logger.Score.Error("(ScoreFileData) score.FilePath not found !")
+		return "", apperrors.ErrScoreNotFound
+	}
+
+	logger.Score.Debug("(ScoreFileData) Score.File=%s", score.FilePath)
+	return s.paths.ResolveDataRoot(score.FilePath), nil
+
+}
+
+// ScoreThumbnailData
+func (s *ScoreService) ScoreThumbnailData(scoreID uint32, userId uint32, isDemo bool) (string, error) {
+
+	score, err := models.FindScoreByID(s.db, userId, (uint)(scoreID), isDemo)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return "", apperrors.ErrScoreNotFound
+		}
+		return "", err
+	}
+
+	if score.FilePath == "" {
+		logger.Score.Error("(ScoreThumbnailData) score.FilePath not found !")
+		return "", apperrors.ErrScoreNotFound
+	}
+
+	logger.Score.Debug("(ScoreThumbnailData) ScorePicture=%s", score.ThumbnailPath)
+	return s.paths.ResolveDataRoot(score.ThumbnailPath), nil
+
 }

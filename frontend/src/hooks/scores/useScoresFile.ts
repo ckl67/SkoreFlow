@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { logger } from '../../../logger/logger';
-import { getComposerPicture } from '../../services/composers/composerService';
+import { getScoreThumbnail } from '../../services/scores/scoresService';
 
 // Remember
 // Always pairing:
@@ -8,7 +8,7 @@ import { getComposerPicture } from '../../services/composers/composerService';
 // with:
 // URL.revokeObjectURL(...)
 
-export function useComposersPicture(id: number) {
+export function useScoresThumbnail(id: number) {
   const [url, setURL] = useState<string | null>(null);
 
   useEffect(() => {
@@ -17,11 +17,11 @@ export function useComposersPicture(id: number) {
 
     async function load() {
       try {
-        //logger.debug('composer', 'Loading Picture for Composer', id);
+        //logger.debug('score', 'Loading Thumbnail for Score', id);
 
-        logger.debug('composer', '(getComposerPicture) BEFORE request', id);
-        const blob = await getComposerPicture(id);
-        logger.debug('composer', '(getComposerPicture) AFTER request', id);
+        logger.debug('score', '(getScoreThumbnail) BEFORE request', id);
+        const blob = await getScoreThumbnail(id);
+        logger.debug('score', '(getScoreThumbnail) AFTER request', id);
 
         objectURL = URL.createObjectURL(blob);
 
@@ -30,11 +30,11 @@ export function useComposersPicture(id: number) {
           return;
         }
 
-        logger.debug('composer', 'Created object URL', objectURL);
+        logger.debug('score', 'Created object URL', objectURL);
 
         setURL(objectURL);
       } catch (error) {
-        logger.error('composer', 'Failed loading picture', error);
+        logger.error('score', 'Failed loading thumbnail', error);
       }
     }
 
@@ -44,7 +44,7 @@ export function useComposersPicture(id: number) {
       cancelled = true;
 
       if (objectURL) {
-        logger.debug('composer', 'revoke', objectURL);
+        logger.debug('score', 'revoke', objectURL);
 
         URL.revokeObjectURL(objectURL);
       }

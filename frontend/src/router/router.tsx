@@ -12,6 +12,7 @@ import RegisterConfirmPage from '../pages/auth/RegisterConfirmPage';
 import MainPage from '../pages/main/MainPage';
 
 import ComposersPage from '../pages/composers/ComposersPage';
+import ScoresPage from '../pages/scores/ScoresPage';
 
 // Public routes
 // Accessible without authentication.
@@ -38,6 +39,7 @@ export const router = createBrowserRouter([
       // Controlled routes
       // Accessible with or without a token
       { path: '/composers', element: <ComposersPage /> },
+      { path: '/scores', element: <ScoresPage /> },
       {
         // Protected routes
         // Token mandatory

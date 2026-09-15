@@ -2,7 +2,7 @@
 
 [← back](../doc.md)
 
-The DOM (Document Object Model) is the bridge between a web page and your code (JavaScript).
+The DOM [Document Object Model](https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model) is the bridge between a web page and your code (JavaScript).
 Here is the breakdown:
 
 - The Blueprint: When a browser loads your HTML, it creates a "live" map of the page.

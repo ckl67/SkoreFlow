@@ -27,5 +27,10 @@ func RegisterScoreRoutes(rg *gin.RouterGroup, scoreCtrl *controllers.ScoreContro
 		// Partial update (annotations only)
 		scoreGroup.PATCH("/scores/:id/annotations", scoreCtrl.UpdateAnnotations) // vitest
 
+		scoreGroup.GET("/scores/:id/file", scoreCtrl.GetScoreFile)
+		scoreGroup.HEAD("/scores/:id/file", scoreCtrl.GetScoreFile)
+		scoreGroup.GET("/scores/:id/thumbnail", scoreCtrl.GetScoreThumbnail)
+		scoreGroup.HEAD("/scores/:id/thumbnail", scoreCtrl.GetScoreThumbnail)
+
 	}
 }

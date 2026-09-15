@@ -1,3 +1,5 @@
+<!-- cspell:ignore Println omitempty -->
+
 # JSON Fundamentals for REST APIs (Go / Gin)
 
 [← back](../doc.md)

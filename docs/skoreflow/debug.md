@@ -1,3 +1,5 @@
+<!--cspell:ignore ldflags multiclient  -->
+
 ## VS Code Debugging Configuration (Backend / Frontend)
 
 ### Overview
@@ -47,6 +49,9 @@ Example:
 }
 ```
 
+By default, the Go extension is configured to use Delve (dlv) as the standard debugging engine.
+When VS Code reads "type": "go", it will launch delve in debug mode
+
 Flow:
 
 ```txt
@@ -69,12 +74,6 @@ Advantages:
 
 - Simple for isolated debugging
 - No manual startup required
-- Good for small applications
-
-Limitations:
-
-- VS Code controls the application lifecycle
-- Not ideal when several services must run together
 
 ---
 
@@ -101,16 +100,12 @@ Flow:
 Terminal / Makefile
 
     make debug-dev
-
           |
           v
-
       Delve
       :2345
-
           |
           v
-
       VS Code Attach
 ```
 
@@ -388,3 +383,46 @@ The main principle:
 **Services are started by the project tooling. VS Code only attaches the required debuggers.**
 
 This approach keeps the development environment close to production and scales naturally when new services are added.
+
+## Understanding VS Code Variables
+
+### `${workspaceFolder}`
+
+- Root folder opened in VS Code
+
+Example:
+
+```shell
+/home/christian/SkoreFlow_Project/SkoreFlow
+```
+
+---
+
+### `${fileDirname}`
+
+- Directory of the currently opened file
+
+Example:
+
+If editing:
+
+```shell
+backend/cmd/cli/main.go
+```
+
+Then:
+
+```shell
+${fileDirname} = backend/cmd/cli
+```
+
+---
+
+## Key Difference
+
+| Variable             | Behavior               | Stability  |
+| -------------------- | ---------------------- | ---------- |
+| `${fileDirname}`     | Depends on active file | ❌ Fragile |
+| `${workspaceFolder}` | Fixed project root     | ✅ Stable  |
+
+---

@@ -1,5 +1,5 @@
 import { ComposerPublicResponse } from '../../../../shared/types/composer';
-import { useComposersPicture } from '../../hooks/composers/useComposerPicture';
+import { useComposersPicture } from '../../hooks/composers/useComposersPicture';
 
 type Props = {
   composer: ComposerPublicResponse;

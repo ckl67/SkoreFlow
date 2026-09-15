@@ -1,3 +1,5 @@
+<!-- cspell:ignore PYTHONPATH  -->
+
 # Overview
 
 ```text

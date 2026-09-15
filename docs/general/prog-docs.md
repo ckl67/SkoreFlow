@@ -19,6 +19,12 @@ GORM is an Object-Relational Mapping (ORM) library for Go, used to interact with
 
 - [GORM Documentation](https://gorm.io/docs/) — Official guide and API reference
 
+### GIN
+
+Gin is a high-performance HTTP web framework written in Go.
+
+- [Gin Documentation](https://gin-gonic.com/en/docs/)
+
 ## Microservice
 
 ### Python
@@ -70,3 +76,9 @@ Vitest is a Vite-native testing framework designed for unit and integration test
 Playwright is an end-to-end (E2E) testing framework by Microsoft that enables reliable cross-browser automation for modern web apps.
 
 - [Playwright Documentation](https://playwright.dev/docs/intro) — Official guide, assertion library, and CLI reference
+
+## Some videos which could be helpful
+
+- [react complete course](https://grafikart.fr/tutoriels/react-hook-useState-1327#autoplay)
+- [react in 1 hour](https://www.youtube.com/watch?v=h2a0cSC1Vz8)
+- [introduction to most of the web languages](https://www.youtube.com/@melvynxdev)
