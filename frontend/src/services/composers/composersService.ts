@@ -30,6 +30,11 @@ export function getComposersPage({
 
   const token = localStorage.getItem('token');
 
+  // Remark
+  // If there is no need to read the content on the spot:
+  //  `return apiRequest(...)` is sufficient (the Promise will be awaited by the React component or the final caller).
+  // If you need to read or manipulate the data immediately:
+  //  `await` is essential to convert `Promise<T>` to `T`.
   if (token) {
     return apiRequest<GetComposersPageResponse>('GET', `/composers?${params.toString()}`);
   }

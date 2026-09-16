@@ -10,7 +10,7 @@ import { logger } from '../../../logger/logger';
  * @param ..
  * @returns <GetScoresPageResponse>
  */
-export function getScoresPage({
+export async function getScoresPage({
   page = 1,
   limit = Pagination.scores.defaultLimit,
   sort = 'asc',
@@ -34,6 +34,12 @@ export function getScoresPage({
   if (category) params.append('category', category);
   const token = localStorage.getItem('token');
 
+  // Remark
+  // If there is no need to read the content on the spot:
+  //  `return apiRequest(...)` is sufficient (the Promise will be awaited by the React component or the final caller).
+  // If you need to read or manipulate the data immediately:
+  //  `await` is essential to convert `Promise<T>` to `T`.
+  // as export async function getScoresPage
   if (token) {
     return apiRequest<GetScoresPageResponse>('GET', `/scores?${params.toString()}`);
   }

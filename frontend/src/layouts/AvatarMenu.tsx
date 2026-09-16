@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../../hooks/auth/useAuth';
-import { useAvatar } from '../../hooks/users/useAvatar';
+import { useAuth } from '../hooks/auth/useAuth';
+import { useAvatar } from '../hooks/users/useAvatar';
 
 export default function AvatarMenu() {
   // Open the menu
@@ -66,19 +66,11 @@ export default function AvatarMenu() {
           </div>
 
           {/* Optional: The menu also closes when you click on a link */}
-          <Link
-            to="/me"
-            onClick={() => setMenuOpen(false)}
-            className="block px-4 py-2 hover:bg-gray-100"
-          >
+          <Link to="/me" onClick={() => setMenuOpen(false)} className="block px-4 py-2 hover:bg-gray-100">
             My Profile
           </Link>
 
-          <Link
-            to="/settings"
-            onClick={() => setMenuOpen(false)}
-            className="block px-4 py-2 hover:bg-gray-100"
-          >
+          <Link to="/settings" onClick={() => setMenuOpen(false)} className="block px-4 py-2 hover:bg-gray-100">
             Settings
           </Link>
 

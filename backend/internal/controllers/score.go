@@ -21,6 +21,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"backend/infrastructure/config"
 	"backend/infrastructure/logger"
 	"backend/internal/apperrors"
 	"backend/internal/dto"
@@ -241,8 +242,8 @@ func (ctrl *ScoreController) GetScore(c *gin.Context) {
 // Retrieves a single score by ID.
 // GetScore retrieves detailed information for a single score
 func (ctrl *ScoreController) GetDemoScore(c *gin.Context) {
-	uid := c.GetUint32("user_id")
-
+	//uid := c.GetUint32("user_id")
+	uid := config.UidDemo
 	idParam := c.Param("id")
 	sid, err := strconv.ParseUint(idParam, 10, 32)
 	if err != nil {
@@ -393,7 +394,7 @@ func (ctrl *ScoreController) GetScoresPage(c *gin.Context) {
 // Returns both data and pagination metadata.
 func (ctrl *ScoreController) GetDemoScoresPage(c *gin.Context) {
 	isDemo := true
-	uid := c.GetUint32("user_id")
+	uid := config.UidDemo
 
 	var form forms.GetScoresPageRequest
 	if err := c.ShouldBind(&form); err != nil {
@@ -465,10 +466,11 @@ func (ctrl *ScoreController) GetScoreFile(c *gin.Context) {
 	// We are Not in the same situation than for Avatar
 	// Because the same reference will always return the same picture
 	// So we can ask for a very long cover 24 x 3600 secondes = 86400
-	uid := c.GetUint32("user_id")
 	c.Header("Cache-Control", "private, max-age=86400")
 
 	isDemo := false
+	uid := c.GetUint32("user_id")
+
 	cidString := c.Param("id")
 	cid, err := strconv.ParseUint(cidString, 10, 32)
 	if err != nil || cid <= 0 {
@@ -497,10 +499,11 @@ func (ctrl *ScoreController) GetScoreThumbnail(c *gin.Context) {
 	// We are Not in the same situation than for Avatar
 	// Because the same reference will always return the same picture
 	// So we can ask for a very long cover 24 x 3600 secondes = 86400
-	uid := c.GetUint32("user_id")
 	c.Header("Cache-Control", "private, max-age=86400")
 
 	isDemo := false
+	uid := c.GetUint32("user_id")
+
 	cidString := c.Param("id")
 	cid, err := strconv.ParseUint(cidString, 10, 32)
 	if err != nil || cid <= 0 {
@@ -523,10 +526,11 @@ func (ctrl *ScoreController) GetDemoScoreFile(c *gin.Context) {
 	// We are Not in the same situation than for Avatar
 	// Because the same reference will always return the same picture
 	// So we can ask for a very long cover 24 x 3600 secondes = 86400
-	uid := c.GetUint32("user_id")
 	c.Header("Cache-Control", "private, max-age=86400")
 
-	isDemo := false
+	isDemo := true
+	uid := config.UidDemo
+
 	cidString := c.Param("id")
 	cid, err := strconv.ParseUint(cidString, 10, 32)
 	if err != nil || cid <= 0 {
@@ -555,10 +559,11 @@ func (ctrl *ScoreController) GetDemoScoreThumbnail(c *gin.Context) {
 	// We are Not in the same situation than for Avatar
 	// Because the same reference will always return the same picture
 	// So we can ask for a very long cover 24 x 3600 secondes = 86400
-	uid := c.GetUint32("user_id")
 	c.Header("Cache-Control", "private, max-age=86400")
 
-	isDemo := false
+	isDemo := true
+	uid := config.UidDemo
+
 	cidString := c.Param("id")
 	cid, err := strconv.ParseUint(cidString, 10, 32)
 	if err != nil || cid <= 0 {

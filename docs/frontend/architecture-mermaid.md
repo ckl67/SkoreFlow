@@ -1,3 +1,5 @@
+<!-- cspell:ignore DEVPANEL  MAINLAYOUT  SIDENAVBAR  TOPNAVBAR  -->
+
 # Frontend Architecture flow
 
 [← back](../doc.md)
@@ -11,7 +13,7 @@ See also that **AuthProvider.tsx** is the central authentication component !
 graph TD
 
 %% ClassDef
-classDef file fill:#990000,stroke:#6b7280;
+classDef dev fill:#997790,stroke:#6b7280;
 classDef component fill:#111122,stroke:#2563eb;
 classDef main fill:#00005F
 
@@ -23,6 +25,11 @@ MAIN["`📄 main.tsx
 *entry point*
 src/main.tsx`"]
 
+DEV["`📄 DevProvider.tsx
+*For Debug*
+src/dev/DevProvider.tsx`"
+]
+
 AUTH["`📄 AuthProvider.tsx
 src/auth/AuthProvider.tsx`"]
 
@@ -31,7 +38,8 @@ ROUTER["`📄 router.tsx
 src/router/router.tsx`"]
 
 INDEX --> MAIN
-MAIN --> AUTH
+MAIN --> DEV
+DEV --> AUTH
 AUTH --> ROUTER
 
 %% First element in router : MainLayout
@@ -44,9 +52,10 @@ ROUTER --> MAINLAYOUT
 
 %% In MainLayout
 TOPNAVBAR["`📄TopNavbar
-src/components/TopNavbar.tsx`"]
+src/layout/TopNavbar.tsx`"]
 
-SIDENAVBAR["`📄 SideNavbar src/components/SideNavbar.tsx`"]
+SIDENAVBAR["`📄 SideNavbar
+src/layout/SideNavbar.tsx`"]
 
 %% Then rest of the route to OUTLET
 OUTLET["`Main page
@@ -72,6 +81,6 @@ ROUTER --> |/login
 %% Class application
 
 class TOPNAVBAR,SIDENAVBAR,OUTLET component;
-class DEVPANEL file;
+class DEVPANEL,DEV dev;
 class MAINLAYOUT main;
 ```

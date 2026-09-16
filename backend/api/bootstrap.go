@@ -45,9 +45,22 @@ func Start(version string) {
 
 	// 3. Database Seeding
 
-	// --------------------------- MANDATORY ----------------------------
-	// admin
+	// --------------------------- ADMIN and DEMO ----------------------------
+	//	                  		USERS
+	//	                  		  │
+	//	        ┌───────────────┴─────────┐
+	//	        │               			    │
+	//	      admin             			   demo
+	//	        │               			    │
+	//	   data normal          			 data demo
+	//	        │                 			  │
+	//	        ▼                 			  ▼
+	//	     /scores            		/demo/scores
+	//	   uid connected   			 no authentication needed
+	//   admin = user id : 1 			demo = user id : 2
+	// -------------------------------------------------------------------------
 	appServer.seederService.User("admin", cfg.Admin.Email, cfg.Admin.Password, domain.RoleAdmin, "users/admin.png")
+	appServer.seederService.User("demo", "", "", domain.RoleUser, "users/default.png")
 
 	// ----------------------------- DEMO ----------------------------
 	// Demo composers
@@ -90,8 +103,8 @@ func Start(version string) {
 
 	// cspell:disable
 	demoScores := []scores{
-		{"Wolfgang Amadeus Mozart Demo", "La Marche Turque Demo", "1965", "This is a Tag Demo", "This is a Category Demo", "This is an Information Demo", datatypes.JSON(demoAnnotations), "Amadeus Mozart/La Marche Turque.pdf", []int32{1}},
-		{"Wolfgang Amadeus Mozart Demo", "Valse Favorite Demo", "1870", "This is a Tag Demo", "This is a Category Demo", "This is an Information Demo", datatypes.JSON(demoAnnotations), "Amadeus Mozart/Valse favorite.pdf", []int32{1}},
+		{"Wolfgang Amadeus Mozart Demo", "La Marche Turque Demo", "1965", "This is a Tag Demo", "This is a Category Demo", "This is an Information Demo", datatypes.JSON(demoAnnotations), "Amadeus Mozart/La Marche Turque.pdf", []int32{int32(config.UidDemo)}},
+		{"Wolfgang Amadeus Mozart Demo", "Valse Favorite Demo", "1870", "This is a Tag Demo", "This is a Category Demo", "This is an Information Demo", datatypes.JSON(demoAnnotations), "Amadeus Mozart/Valse favorite.pdf", []int32{int32(config.UidDemo)}},
 	}
 	// cspell:enable
 

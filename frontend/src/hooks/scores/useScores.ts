@@ -1,3 +1,4 @@
+// cspell:ignore Turque
 import { useEffect, useState } from 'react';
 import { getScoresPage } from '../../services/scores/scoresService';
 import { logger } from '../../../logger/logger';
@@ -19,7 +20,7 @@ Responsibilities are:
 export function useScores() {
   // idem
   //    const [scores, setScores] = useState([
-  //    { id: 1, uname: 'Beethoven',.. },
+  //    { id: 1, name: 'Marche Turque',.. },
   //    ...
   //    ]);
   const [scores, setScores] = useState<ScorePublicResponse[]>([]);
@@ -27,7 +28,7 @@ export function useScores() {
   useEffect(() => {
     async function loadScores() {
       try {
-        logger.debug('score', 'Loading scores (Page 1 only)');
+        logger.debug('score', 'Loading scores .. (Page 1 only)');
         const res = await getScoresPage();
         setScores(res.scores ?? []);
       } catch (error) {

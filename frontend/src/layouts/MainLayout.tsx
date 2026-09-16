@@ -1,8 +1,8 @@
 import { Outlet } from 'react-router-dom';
 import { config } from './../config/config';
 import { useState } from 'react';
-import TopNavbar from '../components/layouts/TopNavbar';
-import SideNavbar from '../components/layouts/SideNavbar';
+import TopNavbar from './TopNavbar';
+import SideNavbar from './SideNavbar';
 import DevPanel from '../dev/DevPanel';
 
 // +----------------------+

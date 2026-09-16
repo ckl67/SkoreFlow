@@ -3,6 +3,6 @@
 // If forget to set VITE_API_URL,
 // the application will continue to work correctly behind Nginx, which is the standard production architecture.
 export const config = {
-  apiUrl: import.meta.env.VITE_API_URL ?? '/api',
+  apiUrl: import.meta.env.VITE_API_URL ?? '/api/v1',
   testMode: import.meta.env.VITE_TEST_MODE === 'true',
 } as const;
