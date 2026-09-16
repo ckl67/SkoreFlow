@@ -3,46 +3,37 @@ import * as pdfjsLib from 'pdfjs-dist';
 
 import pdfWorker from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 
+import PdfPage from './PdfPage';
+
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker;
 
 type Props = {
   fileURL: string;
 };
 
-//PdfViewer
-//    ScoreViewer
-//        ↓
-//    useScoreFile()
-//        ↓
-//    PDF Blob → ObjectURL
-//        ↓
-//    PdfViewer
-//        ↓
-//    PDF.js
-//        ↓
-//    canvas page 1
-//    canvas page 2
-//    canvas page 3
-//       ...
-//
-// ------------------------
-//    useEffect #1
-//    ResizeObserver
-//         ↓
-//    containerWidth
-//
-//    useEffect #2
-//    fileURL + containerWidth
-//        ↓
-//      PDF.js
-//        ↓
-//    render pages
-
+/* PdfViewer
+│
+├── loads the PDF
+├── loads the PDFPageProxy
+├── monitors the width
+│
+├── PdfPage 1
+│   ├── PDF.js canvas
+│   └── React annotation layer
+│
+├── PdfPage 2
+│   ├── PDF.js canvas
+│   └── React annotation layer
+│
+└── PdfPage 3
+    ├── PDF.js canvas
+    └── React annotation layer
+ */
 export default function PdfViewer({ fileURL }: Props) {
-  const canvasRefs = useRef<(HTMLCanvasElement | null)[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
+  const renderTasks = useRef<Set<pdfjsLib.RenderTask>>(new Set());
 
-  const [pageCount, setPageCount] = useState(0);
+  const [pages, setPages] = useState<pdfjsLib.PDFPageProxy[]>([]);
   const [containerWidth, setContainerWidth] = useState(0);
 
   useEffect(() => {
@@ -67,71 +58,73 @@ export default function PdfViewer({ fileURL }: Props) {
 
   useEffect(() => {
     let cancelled = false;
+    let document: pdfjsLib.PDFDocumentProxy | null = null;
 
     async function loadPdf() {
       try {
-        const pdf = await pdfjsLib.getDocument(fileURL).promise;
+        document = await pdfjsLib.getDocument(fileURL).promise;
 
         if (cancelled) {
+          await document.destroy();
           return;
         }
 
-        setPageCount(pdf.numPages);
+        const loadedPages: pdfjsLib.PDFPageProxy[] = [];
 
-        for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
-          const page = await pdf.getPage(pageNumber);
+        for (let pageNumber = 1; pageNumber <= document.numPages; pageNumber++) {
+          const page = await document.getPage(pageNumber);
 
           if (cancelled) {
             return;
           }
 
-          const canvas = canvasRefs.current[pageNumber - 1];
-
-          if (!canvas) {
-            continue;
-          }
-
-          // Compute the scale
-          const initialViewport = page.getViewport({ scale: 1 });
-          const scale = containerWidth / initialViewport.width;
-          const viewport = page.getViewport({ scale });
-
-          const context = canvas.getContext('2d');
-
-          if (!context) {
-            continue;
-          }
-
-          canvas.width = viewport.width;
-          canvas.height = viewport.height;
-
-          await page.render({
-            canvasContext: context,
-            viewport,
-          }).promise;
+          loadedPages.push(page);
         }
+
+        setPages(loadedPages);
       } catch (error) {
-        console.error('Failed to render PDF', error);
+        if (!cancelled) {
+          console.error('Failed to load PDF', error);
+        }
       }
     }
 
+    setPages([]);
     loadPdf();
 
     return () => {
       cancelled = true;
-    };
-  }, [fileURL, containerWidth]);
 
-  // We will create n <canvas>:
+      for (const task of renderTasks.current) {
+        task.cancel();
+      }
+
+      renderTasks.current.clear();
+
+      if (document) {
+        document.destroy();
+      }
+    };
+  }, [fileURL]);
+
+  const handleRenderTask = (task: pdfjsLib.RenderTask) => {
+    renderTasks.current.add(task);
+
+    task.promise
+      .catch((error) => {
+        if (!(error instanceof pdfjsLib.RenderingCancelledException)) {
+          console.error('Failed to render PDF page', error);
+        }
+      })
+      .finally(() => {
+        renderTasks.current.delete(task);
+      });
+  };
+
   return (
     <div ref={containerRef} className="flex flex-col items-center gap-6">
-      {Array.from({ length: pageCount }, (_, index) => (
-        <canvas
-          key={index}
-          ref={(canvas) => {
-            canvasRefs.current[index] = canvas;
-          }}
-        />
+      {pages.map((page) => (
+        <PdfPage key={page.pageNumber} page={page} width={containerWidth} onRenderTask={handleRenderTask} />
       ))}
     </div>
   );

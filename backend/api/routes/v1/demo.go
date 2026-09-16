@@ -23,8 +23,8 @@ func RegisterDemoRoutes(rg *gin.RouterGroup, composerCtrl *controllers.ComposerC
 		demoGroup.GET("/scores", scoreCtrl.GetDemoScoresPage) // vitest
 		demoGroup.GET("/scores/:id", scoreCtrl.GetDemoScore)  // vitest
 
-		demoGroup.GET("/scores/:id/picture", scoreCtrl.GetDemoScoreFile)
-		demoGroup.HEAD("/scores/:id/picture", scoreCtrl.GetDemoScoreFile)
+		demoGroup.GET("/scores/:id/file", scoreCtrl.GetDemoScoreFile)
+		demoGroup.HEAD("/scores/:id/file", scoreCtrl.GetDemoScoreFile)
 		demoGroup.GET("/scores/:id/thumbnail", scoreCtrl.GetDemoScoreThumbnail)
 		demoGroup.HEAD("/scores/:id/thumbnail", scoreCtrl.GetDemoScoreThumbnail)
 

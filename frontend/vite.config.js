@@ -21,4 +21,9 @@ export default defineConfig({
     },
     sourcemapIgnoreList: false, // Prevents Vite from hiding certain files in VS Code
   },
+  optimizeDeps: {
+    exclude: ['pdfjs-dist'], // Prevent Vite from corrupting the PDF.js code
+    // To avoid
+    // Failed to render PDF TypeError: this[#methodPromises].getOrInsertComputed is not a function
+  },
 });

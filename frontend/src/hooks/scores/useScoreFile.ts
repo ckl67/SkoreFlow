@@ -61,12 +61,7 @@ export function useScoreFile(id: number) {
 
     async function load() {
       try {
-        logger.debug('score', '(getScoreFile) BEFORE request', id);
-
         const blob = await getScoreFile(id);
-
-        logger.debug('score', '(getScoreFile) AFTER request', id);
-
         objectURL = URL.createObjectURL(blob);
 
         // Avoid creating an ObjectURL that will never be revoked.
