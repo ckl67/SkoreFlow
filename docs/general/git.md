@@ -51,7 +51,26 @@ Important: WE will never use `git rebase dev` on main
 
 ### Updates branches
 
-From main to dev (locally)
+#### From dev to main (locally)
+
+```bash
+git status
+git checkout main
+git pull origin main
+git merge dev
+git push origin main
+```
+
+If you’ve made lots of small test commits on the dev branch and would prefer to have just one big, clean commit on the main branch:
+
+```bash
+git checkout main
+git merge --squash dev
+git commit -m "feat: integration of new development features"
+git push origin main
+```
+
+#### From main to dev (locally)
 
 After switch `dev`
 
