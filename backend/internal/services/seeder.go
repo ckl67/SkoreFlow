@@ -154,7 +154,7 @@ func (s *SeederService) SeederScore(
 	annotations datatypes.JSON,
 	partitionFilePath string,
 	demo bool,
-	userId int32,
+	userId uint32,
 ) error {
 
 	// ---------------------------------------------------------
@@ -169,7 +169,7 @@ func (s *SeederService) SeederScore(
 		Name: &composerName,
 	}
 
-	pageData, err := s.composerService.GetComposersPage(demo, form)
+	pageData, err := s.composerService.GetComposersPage(userId, demo, form)
 	if err != nil {
 		return err
 	}

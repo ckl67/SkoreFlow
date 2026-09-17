@@ -19,6 +19,8 @@ export function getComposersPage({
   params.append('limit', String(limit));
   params.append('sort', sort);
 
+  params.append('used', String(true));
+
   if (name) {
     params.append('name', name);
   }

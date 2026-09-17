@@ -27,7 +27,7 @@ type scores struct {
 	InformationText   string
 	Annotations       datatypes.JSON
 	PartitionFileName string
-	UserID            []int32
+	UserID            []uint32
 }
 
 // Start orchestrates the application setup and launches the server.
@@ -103,8 +103,9 @@ func Start(version string) {
 
 	// cspell:disable
 	demoScores := []scores{
-		{"Wolfgang Amadeus Mozart Demo", "La Marche Turque Demo", "1965", "This is a Tag Demo", "This is a Category Demo", "This is an Information Demo", datatypes.JSON(demoAnnotations), "Amadeus Mozart/La Marche Turque.pdf", []int32{int32(config.UidDemo)}},
-		{"Wolfgang Amadeus Mozart Demo", "Valse Favorite Demo", "1870", "This is a Tag Demo", "This is a Category Demo", "This is an Information Demo", datatypes.JSON(demoAnnotations), "Amadeus Mozart/Valse favorite.pdf", []int32{int32(config.UidDemo)}},
+		{"Wolfgang Amadeus Mozart Demo", "La Marche Turque Demo", "1965", "Piano", "Classical", "This is an Information Demo", datatypes.JSON(demoAnnotations), "Amadeus Mozart/La Marche Turque.pdf", []uint32{config.UidDemo}},
+		{"Wolfgang Amadeus Mozart Demo", "Valse Favorite Demo", "1870", "Piano", "Classical", "This is an Information Demo", datatypes.JSON(demoAnnotations), "Amadeus Mozart/Valse favorite.pdf", []uint32{config.UidDemo}},
+		{"Ludwig van Beethoven Demo", "Adagio Pathétique Demo", "1798", "Piano", "Classical", "Adagio cantabile from Piano Sonata No. 8 in C minor, Op. 13, Pathétique.", datatypes.JSON(demoAnnotations), "Ludwig Van Beethoven/Adagio Pathétique.pdf", []uint32{config.UidDemo}},
 	}
 	// cspell:enable
 
@@ -125,6 +126,17 @@ func Start(version string) {
 	}
 
 	// ----------------------------- TEST  ----------------------------
+
+	const (
+		uidAdmin      uint32 = 1
+		uidDemo       uint32 = 2
+		uidUser1      uint32 = 3
+		uidUser2      uint32 = 4
+		uidUser3      uint32 = 5
+		uidUser6      uint32 = 6
+		uidModerator1 uint32 = 7
+		uidModerator2 uint32 = 8
+	)
 
 	if config.Config().DevelopmentRuntime.SeedData {
 		// Users
@@ -221,7 +233,7 @@ func Start(version string) {
 				"Rondo alla turca, third movement of Piano Sonata No. 11 in A major, K. 331.",
 				datatypes.JSON(testAnnotations),
 				"Amadeus Mozart/La Marche Turque.pdf",
-				[]int32{1, 2, 5},
+				[]uint32{uidUser1, uidUser2, uidUser6},
 			},
 			{
 				"Wolfgang Amadeus Mozart",
@@ -232,7 +244,7 @@ func Start(version string) {
 				"A piano piece attributed to Wolfgang Amadeus Mozart.",
 				datatypes.JSON(testAnnotations),
 				"Amadeus Mozart/Valse favorite.pdf",
-				[]int32{3, 2},
+				[]uint32{uidUser1, uidUser2, uidUser3},
 			},
 
 			// -------------------------------------------------------------------------
@@ -247,7 +259,7 @@ func Start(version string) {
 				"Nocturne in E-flat major, Op. 9 No. 2.",
 				datatypes.JSON(testAnnotations),
 				"Frédéric Chopin/Nocturne Opus 9 N°2.pdf",
-				[]int32{4, 5, 2},
+				[]uint32{uidUser1, uidUser3, uidUser6},
 			},
 
 			// -------------------------------------------------------------------------
@@ -262,7 +274,7 @@ func Start(version string) {
 				"Adagio cantabile from Piano Sonata No. 8 in C minor, Op. 13, Pathétique.",
 				datatypes.JSON(testAnnotations),
 				"Ludwig Van Beethoven/Adagio Pathétique.pdf",
-				[]int32{3, 4},
+				[]uint32{uidUser1, uidUser2, uidUser3},
 			},
 			{
 				"Ludwig van Beethoven",
@@ -273,7 +285,7 @@ func Start(version string) {
 				"Bagatelle in A minor, WoO 59, commonly known as Für Elise.",
 				datatypes.JSON(testAnnotations),
 				"Ludwig Van Beethoven/La Lettre à Elise.pdf",
-				[]int32{4, 5},
+				[]uint32{uidUser2, uidUser3},
 			},
 			{
 				"Ludwig van Beethoven",
@@ -284,7 +296,7 @@ func Start(version string) {
 				"Piano Sonata No. 14 in C-sharp minor, Op. 27 No. 2, commonly known as the Moonlight Sonata.",
 				datatypes.JSON(testAnnotations),
 				"Ludwig Van Beethoven/Sonate No. 14 - Clair de lune.pdf",
-				[]int32{1, 2, 3},
+				[]uint32{uidUser1, uidUser2, uidUser3},
 			},
 
 			// -------------------------------------------------------------------------
@@ -299,7 +311,7 @@ func Start(version string) {
 				"Cello Facke",
 				datatypes.JSON(testAnnotations),
 				"Ludwig Van Beethoven/Adagio Pathétique.pdf",
-				[]int32{3},
+				[]uint32{uidUser1},
 			},
 
 			{
@@ -311,7 +323,7 @@ func Start(version string) {
 				"Piano Fack",
 				datatypes.JSON(testAnnotations),
 				"Ludwig Van Beethoven/Sonate No. 14 - Clair de lune.pdf",
-				[]int32{3},
+				[]uint32{uidUser1},
 			},
 
 			// -------------------------------------------------------------------------
@@ -326,7 +338,7 @@ func Start(version string) {
 				"Ballade pour Adeline, a piano composition written by Paul de Senneville.",
 				datatypes.JSON(testAnnotations),
 				"Paul de Senneville/Balade Pour Adeline.pdf",
-				[]int32{4, 5, 6},
+				[]uint32{uidUser1, uidModerator1, uidModerator2},
 			},
 
 			// -------------------------------------------------------------------------
@@ -341,7 +353,7 @@ func Start(version string) {
 				"The Logical Song from the album Breakfast in America.",
 				datatypes.JSON(testAnnotations),
 				"Supertramp/Logical Song.pdf",
-				[]int32{1, 4},
+				[]uint32{uidUser1, uidUser2},
 			},
 			{
 				"Supertramp",
@@ -352,7 +364,7 @@ func Start(version string) {
 				"Alternative arrangement of The Logical Song from the album Breakfast in America.",
 				datatypes.JSON(testAnnotations),
 				"Supertramp/Logical Song New.pdf",
-				[]int32{4},
+				[]uint32{uidUser2},
 			},
 			{
 				"Supertramp",
@@ -363,7 +375,7 @@ func Start(version string) {
 				"School from the album Crime of the Century.",
 				datatypes.JSON(testAnnotations),
 				"Supertramp/School.pdf",
-				[]int32{2, 4, 6},
+				[]uint32{uidUser1, uidUser3},
 			},
 
 			// -------------------------------------------------------------------------
@@ -379,7 +391,7 @@ func Start(version string) {
 				"Test score intended to be deleted by automated tests.",
 				datatypes.JSON(testAnnotations),
 				"Supertramp/Logical Song to-delete.pdf",
-				[]int32{1, 5},
+				[]uint32{uidUser1, uidUser3},
 			},
 			{
 				"Supertramp",
@@ -390,7 +402,7 @@ func Start(version string) {
 				"School from the album Crime of the Century.",
 				datatypes.JSON(testAnnotations),
 				"Supertramp/School to-delete.pdf",
-				[]int32{2, 4, 5},
+				[]uint32{uidUser1, uidUser2, uidUser3},
 			},
 		}
 		// cspell:enable

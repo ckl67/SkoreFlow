@@ -76,9 +76,11 @@ func (c *Composer) Delete(db *gorm.DB) (int64, error) {
 // - search: matches name or safe name
 func (c *Composer) List(
 	db *gorm.DB,
+	userId uint32,
 	pagination *Pagination,
 	search *string,
 	isVerified *bool,
+	isUsed *bool,
 	isDemo bool,
 ) (*Pagination, error) {
 	var composers []*Composer
@@ -106,10 +108,22 @@ func (c *Composer) List(
 		query = query.Where("(name LIKE ? OR safe_name LIKE ?)", searchTerm, searchTerm)
 	}
 
-	query = query.Where("is_demo = ?", isDemo)
+	// The JOIN is specifically used to include the ‘scores’ table in the query:
+	// The JOIN operation potentially produces:
+	// Beethoven - Beethoven - Beethoven ... Mozart - Mozart ...
+	// DISTINCT transforms this into:
+	// Beethoven - Mozart - Chopin
+	if isUsed != nil && *isUsed {
+		query = query.
+			Joins("JOIN scores ON scores.composer_id = composers.id").
+			Where("scores.uploader_id = ?", userId).
+			Distinct("composers.*")
+	}
+
+	query = query.Where("composers.is_demo = ?", isDemo)
 
 	if isVerified != nil {
-		query = query.Where("is_verified = ?", *isVerified)
+		query = query.Where("composers.is_verified = ?", *isVerified)
 	}
 	// Execute query with pagination
 	// Scopes can accept several functions see: https://gorm.io/docs/scopes.html

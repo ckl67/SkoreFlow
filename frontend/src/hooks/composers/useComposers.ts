@@ -14,9 +14,14 @@ Responsibilities are:
 - and handling errors.
 =====================================*/
 
+type UseComposersReturn = {
+  composers: ComposerPublicResponse[];
+  // isLoading?: boolean;
+};
+
 // `await` cannot be used directly within a React component
 // A React component is not asynchronous --> We must use `useEffect()`.
-export function useComposers() {
+export function useComposers(): UseComposersReturn {
   // idem
   //    const [composers, setComposers] = useState([
   //    { id: 1, uname: 'Beethoven',.. },

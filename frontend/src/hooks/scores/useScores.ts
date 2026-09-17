@@ -17,29 +17,43 @@ Responsibilities are:
 
 // `await` cannot be used directly within a React component
 // A React component is not asynchronous --> We must use `useEffect()`.
-export function useScores() {
+export function useScores(page: number = 1) {
   // idem
   //    const [scores, setScores] = useState([
   //    { id: 1, name: 'Marche Turque',.. },
   //    ...
   //    ]);
   const [scores, setScores] = useState<ScorePublicResponse[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [totalPages, setTotalPages] = useState<number>(1);
 
   useEffect(() => {
     async function loadScores() {
       try {
-        logger.debug('score', 'Loading scores .. (Page 1 only)');
-        const res = await getScoresPage();
+        setIsLoading(true);
+        setError(null);
+        logger.debug('score', `Loading scores for page ${page}..`);
+
+        const res = await getScoresPage({ page });
         setScores(res.scores ?? []);
-      } catch (error) {
-        logger.error('score', 'Failed loading scores', error);
+        setTotalPages(res.total_pages ?? 1);
+      } catch (err) {
+        logger.error('score', 'Failed loading scores', err);
+        setError('Unable to load the sheet music.');
+      } finally {
+        setIsLoading(false);
       }
     }
 
     loadScores();
-  }, []);
-  // The [] symbol means ‘once only during the mounting'.
+  }, [page]);
+  // By passing an empty array [], you’re telling React: ‘Run this effect just once, immediately after the component is first mounted.’
+  // Triggers a re-fetch as soon as 'page' changes
   return {
     scores,
+    isLoading,
+    error,
+    totalPages,
   };
 }

@@ -54,7 +54,7 @@ curl -H "Authorization: Bearer $TOKEN_USER2" "http://localhost:8080/api/${API_VE
 curl -H "Authorization: Bearer $TOKEN_USER2" "http://localhost:8080/api/${API_VERSION}/composers?isVerified=false&page=1&limit=5&" | jq
 
 # Beethoven Composer
-curl -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/${API_VERSION}/composers?name=Ludwig%20Van %20Beethoven| jq
+curl -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/${API_VERSION}/composers?name=Ludwig%20Van%20Beethoven| jq
 ```
 
 ### Create score

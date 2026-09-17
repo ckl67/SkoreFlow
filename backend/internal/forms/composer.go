@@ -67,6 +67,7 @@ type GetComposersPageRequest struct {
 	PaginatedRequest
 	Name       *string `form:"name" json:"name"`
 	IsVerified *bool   `form:"isVerified" json:"isVerified"`
+	Used       *bool   `form:"used"` // used by the userId
 }
 
 // For merging

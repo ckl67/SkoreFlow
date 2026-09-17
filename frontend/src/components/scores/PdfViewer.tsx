@@ -5,29 +5,25 @@ import pdfWorker from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 
 import PdfPage from './PdfPage';
 
+import type { Annotation } from '../../../../shared/types/score';
+
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker;
 
 type Props = {
   fileURL: string;
 };
 
-/* PdfViewer
-│
-├── loads the PDF
-├── loads the PDFPageProxy
-├── monitors the width
-│
-├── PdfPage 1
-│   ├── PDF.js canvas
-│   └── React annotation layer
-│
-├── PdfPage 2
-│   ├── PDF.js canvas
-│   └── React annotation layer
-│
-└── PdfPage 3
-    ├── PDF.js canvas
-    └── React annotation layer
+/*
+                  PdfViewer
+                     │
+              annotations[]
+                     │
+        ┌────────────┼────────────┐
+        ↓            ↓            ↓
+     PdfPage 1    PdfPage 2    PdfPage 3
+        │            │            │
+     page 1        page 2        page 3
+     annotations   annotations   annotations
  */
 export default function PdfViewer({ fileURL }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -35,6 +31,35 @@ export default function PdfViewer({ fileURL }: Props) {
 
   const [pages, setPages] = useState<pdfjsLib.PDFPageProxy[]>([]);
   const [containerWidth, setContainerWidth] = useState(0);
+
+  // Default
+  const [annotations, setAnnotations] = useState<Annotation[]>([
+    {
+      id: crypto.randomUUID(),
+      page: 1,
+      type: 'circle',
+      geometry: {
+        x: 143.3,
+        y: 698.7,
+        radius: 20,
+      },
+      style: {
+        color: 'red',
+        strokeWidth: 2,
+        opacity: 1,
+      },
+    },
+  ]);
+
+  const [selectedAnnotationId, setSelectedAnnotationId] = useState<string | null>(null);
+
+  const selectAnnotation = (id: string) => {
+    setSelectedAnnotationId(id);
+  };
+
+  const createAnnotation = (annotation: Annotation) => {
+    setAnnotations((current) => [...current, annotation]);
+  };
 
   useEffect(() => {
     if (!containerRef.current) {
@@ -124,7 +149,17 @@ export default function PdfViewer({ fileURL }: Props) {
   return (
     <div ref={containerRef} className="flex flex-col items-center gap-6">
       {pages.map((page) => (
-        <PdfPage key={page.pageNumber} page={page} width={containerWidth} onRenderTask={handleRenderTask} />
+        <PdfPage
+          key={page.pageNumber}
+          page={page}
+          pageNumber={page.pageNumber}
+          width={containerWidth}
+          annotations={annotations}
+          selectedAnnotationId={selectedAnnotationId}
+          onCreateAnnotation={createAnnotation}
+          onSelectAnnotation={selectAnnotation}
+          onRenderTask={handleRenderTask}
+        />
       ))}
     </div>
   );

@@ -67,6 +67,15 @@ curl -H "Authorization: Bearer $TOKEN_USER2" "http://localhost:8080/api/${API_VE
 
 ```
 
+- To list all composers belonging to the logged user
+
+```shell
+curl -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/${API_VERSION}/composers?used=true | jq
+
+curl -H "Authorization: Bearer $TOKEN_USER2" "http://localhost:8080/api/${API_VERSION}/composers?used=true&page=1&limit=5" | jq
+
+```
+
 - To list 1 specific composer
 
 ```shell

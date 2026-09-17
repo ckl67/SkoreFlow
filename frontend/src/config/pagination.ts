@@ -1,13 +1,13 @@
 export const Pagination = {
   composers: {
-    defaultLimit: 9,
+    defaultLimit: 2,
   },
 
   scores: {
-    defaultLimit: 50,
+    defaultLimit: 5,
   },
 
   users: {
-    defaultLimit: 25,
+    defaultLimit: 7,
   },
 };

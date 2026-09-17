@@ -1,28 +1,41 @@
 import { useEffect, useRef, useState } from 'react';
 import * as pdfjsLib from 'pdfjs-dist';
+
 import AnnotationLayer from './AnnotationLayer';
+import type { Annotation } from '../../../../shared/types/score';
 
 type Props = {
   page: pdfjsLib.PDFPageProxy;
+  pageNumber: number;
   width: number;
+  annotations: Annotation[];
+  onCreateAnnotation: (annotation: Annotation) => void;
   onRenderTask: (task: pdfjsLib.RenderTask) => void;
+  selectedAnnotationId: string | null;
+  onSelectAnnotation: (id: string) => void;
 };
+
 /*
 PdfPage
-   │
-   ├── page
-   ├── width
-   │
-   ├── viewport ← React state
-   │
-   ├── canvas
-   │
-   └── AnnotationLayer
-          ↑
-       viewport
+ ├── canvas PDF.js
+ ├── viewport
+ └── annotations[]
+        ↓
+   AnnotationLayer
+        ↓
+     display
 */
 
-export default function PdfPage({ page, width, onRenderTask }: Props) {
+export default function PdfPage({
+  page,
+  pageNumber,
+  width,
+  annotations,
+  selectedAnnotationId,
+  onCreateAnnotation,
+  onSelectAnnotation,
+  onRenderTask,
+}: Props) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   const [viewport, setViewport] = useState<pdfjsLib.PageViewport | null>(null);
@@ -74,19 +87,16 @@ export default function PdfPage({ page, width, onRenderTask }: Props) {
     >
       <canvas ref={canvasRef} />
 
-      <div className="absolute inset-0">
-        {viewport && (
-          <AnnotationLayer
-            viewport={viewport}
-            annotation={{
-              type: 'circle',
-              x: 143.3,
-              y: 698.7,
-              radius: 20,
-            }}
-          />
-        )}
-      </div>
+      {viewport && (
+        <AnnotationLayer
+          viewport={viewport}
+          pageNumber={pageNumber}
+          annotations={annotations.filter((annotation) => annotation.page === pageNumber)}
+          selectedAnnotationId={selectedAnnotationId}
+          onCreate={onCreateAnnotation}
+          onSelect={onSelectAnnotation}
+        />
+      )}
     </div>
   );
 }

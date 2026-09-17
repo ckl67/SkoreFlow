@@ -108,7 +108,7 @@ func (s *ComposerService) CreateComposer(uid uint32, userRole int, req forms.Cre
 
 // GetComposersPage
 // Retrieves a paginated list of composers based on search criteria.
-func (s *ComposerService) GetComposersPage(isDemo bool, form forms.GetComposersPageRequest) (*models.Pagination, error) {
+func (s *ComposerService) GetComposersPage(userID uint32, isDemo bool, form forms.GetComposersPageRequest) (*models.Pagination, error) {
 
 	if form.Page <= 0 {
 		form.Page = 1
@@ -135,7 +135,7 @@ func (s *ComposerService) GetComposersPage(isDemo bool, form forms.GetComposersP
 	var composer models.Composer
 
 	// form.Name or form.IsVerified can be nil
-	result, err := composer.List(s.db, &pagination, form.Name, form.IsVerified, isDemo)
+	result, err := composer.List(s.db, userID, &pagination, form.Name, form.IsVerified, form.Used, isDemo)
 	if err != nil {
 		logger.Composer.Error("Failed to list composers: %v", err)
 		return nil, err

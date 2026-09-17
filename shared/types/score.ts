@@ -121,7 +121,7 @@ export type UpdateScoreResponse = {
 export type Annotation = {
   id: string;
   page: number;
-  type: string;
+  type: string; // type: 'circle' | 'line' | 'highlight' | 'text';
   geometry: {
     x: number;
     y: number;

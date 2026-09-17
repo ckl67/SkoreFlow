@@ -3,3 +3,8 @@ export enum UserRole {
   Moderator = 1,
   Admin = 2,
 }
+
+export enum UserId {
+  Admin = 1,
+  Demo = 2,
+}

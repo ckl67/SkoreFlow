@@ -21,6 +21,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"backend/infrastructure/config"
 	"backend/infrastructure/logger"
 	"backend/internal/apperrors"
 	"backend/internal/dto"
@@ -89,6 +90,8 @@ func (ctrl *ComposerController) CreateComposer(c *gin.Context) {
 
 // GetComposersPage fetches a paginated list of composers with optional search filters
 func (ctrl *ComposerController) GetComposersPage(c *gin.Context) {
+	uid := c.GetUint32("user_id")
+
 	isDemo := false
 
 	var form forms.GetComposersPageRequest
@@ -109,7 +112,7 @@ func (ctrl *ComposerController) GetComposersPage(c *gin.Context) {
 	//logger.Composer.Info("   (IsDemo =%t ) | Page: %d | PageSize: %d | SortBy: %s | SearchMode :%s",
 	//	isDemo, form.Page, form.Limit, form.SortBy, form.SearchMode)
 
-	pagination, err := ctrl.service.GetComposersPage(isDemo, form)
+	pagination, err := ctrl.service.GetComposersPage(uid, isDemo, form)
 	if err != nil {
 		responses.FAIL(c, http.StatusInternalServerError, err)
 		return
@@ -196,6 +199,7 @@ func (ctrl *ComposerController) MergeComposers(c *gin.Context) {
 // GetDemoComposersPage fetches a paginated list of composers with optional search filters
 func (ctrl *ComposerController) GetDemoComposersPage(c *gin.Context) {
 	isDemo := true
+	uid := config.UidDemo
 
 	var form forms.GetComposersPageRequest
 
@@ -204,7 +208,7 @@ func (ctrl *ComposerController) GetDemoComposersPage(c *gin.Context) {
 		return
 	}
 
-	pagination, err := ctrl.service.GetComposersPage(isDemo, form)
+	pagination, err := ctrl.service.GetComposersPage(uid, isDemo, form)
 	if err != nil {
 		responses.FAIL(c, http.StatusInternalServerError, err)
 		return
