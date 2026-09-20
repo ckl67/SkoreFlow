@@ -268,7 +268,7 @@ The React application should load.
 Verify the backend:
 
 ```text
-http://<server-ip>/version
+http://<server-ip>/api/version
 ```
 
 (or any available API endpoint)

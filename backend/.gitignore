@@ -2,7 +2,7 @@
 
 # Ignore environment variables
 .env
-!.env.sample
+.env.ovh
 
 # Ignore directory where scores/scores and database are stored
 # Note: A leading '/' targets the git root.

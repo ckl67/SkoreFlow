@@ -141,7 +141,7 @@ Modern email delivery relies on three complementary mechanisms.
 
 ## SPF
 
-**Sender Policy Framework**
+Param : **Sender Policy Framework**
 
 SPF defines which servers are allowed to send emails for a domain.
 
@@ -165,7 +165,7 @@ Purpose:
 
 ## DKIM
 
-**DomainKeys Identified Mail**
+Param : **DomainKeys Identified Mail**
 
 DKIM uses asymmetric cryptography.
 
@@ -188,7 +188,7 @@ Purpose:
 
 ## DMARC
 
-**Domain-based Message Authentication, Reporting and Conformance**
+Param : **Domain-based Message Authentication, Reporting and Conformance**
 
 DMARC defines the policy applied when SPF or DKIM checks fail.
 

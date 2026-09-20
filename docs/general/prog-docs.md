@@ -63,6 +63,18 @@ React is a JavaScript library for building user interfaces based on component ar
 
 - [React](https://react.dev/reference/react) — Official API reference for React Hooks and core APIs
 
+### Vite
+
+Vite is a build tool that aims to provide a faster and leaner development experience for modern web projects
+
+- [vite](https://v3.vitejs.dev/guide/)
+
+### NGINX
+
+nginx ("engine x") is an HTTP web server, reverse proxy
+
+- [nginx](https://nginx.org/)
+
 ## Testing & Quality Assurance
 
 ### Vitest

@@ -3,14 +3,12 @@
   "language": "en",
   "files": ["**/*.{js,ts,jsx,tsx,md,json,go}"],
   "ignorePaths": [
-    ".cspell/custom-dictionary.txt",
     "node_modules/**",
     ".git/**",
     ".vscode/**",
     "**/.gitignore",
     "**/venv/**",
     "**/.*",
-    "docs/draft/**",
     "**/package.json"
   ],
   "dictionaries": ["custom-dictionary"],

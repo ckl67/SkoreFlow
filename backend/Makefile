@@ -86,9 +86,6 @@ run-dev:
 
 run:
 	@echo "==> Running PROD main.go (Version: $(VERSION))..."
-	APP_ENV=production \
-	TEST_MODE=false \
-	SMTP_ENABLED=true \
 	PROTECTION_LEVEL=full \
 	$(GO) run $(LDFLAGS) $(MAIN_FILE)
 
