@@ -10,6 +10,29 @@ export PATH="/usr/local/go/bin:/usr/bin:/bin:$PATH"
 
 set -euo pipefail
 
+# By default, Git changes are fetched
+FETCH_GIT=true
+
+# Parsing des arguments
+while [[ $# -gt 0 ]]; do
+	case "$1" in
+	-n | --no-fetch | --local)
+		FETCH_GIT=false
+		shift
+		;;
+	-h | --help)
+		echo "Usage: $0 [-n|--no-fetch|--local]"
+		echo "  -n, --no-fetch, --local   Does not fetch the latest Git version (retains local modifications))"
+		exit 0
+		;;
+	*)
+		echo "Unknown option : $1"
+		echo "Use $0 --help to view the options."
+		exit 1
+		;;
+	esac
+done
+
 echo "=============================="
 echo "Updating SkoreFlow"
 echo "=============================="
@@ -19,10 +42,14 @@ PROJECT=/opt/skoreflow
 cd "$PROJECT"
 
 echo
-echo "Updating repository..."
-git fetch origin
-git reset --hard origin/main
-git clean -fd
+if [ "$FETCH_GIT" = true ]; then
+	echo "Updating repository from Git..."
+	git fetch origin
+	git reset --hard origin/main
+	git clean -fd
+else
+	echo "Skipping Git update (local mode active)..."
+fi
 
 ####################################################
 # Thumbnail service
@@ -82,6 +109,6 @@ echo "sudo systemctl reload nginx"
 ####################################################
 
 echo "=========================================="
-echo " Check you configuration files"
+echo " Check your configuration files"
 echo "=========================================="
 echo " - backend .env file : backend/.env "

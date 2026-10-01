@@ -70,11 +70,11 @@ export function useScoreFile(id: number) {
           return;
         }
 
-        logger.debug('score', 'Created PDF object URL', objectURL);
+        logger.debug('score', '[useScoreFile] Created PDF object URL', objectURL);
 
         setURL(objectURL);
       } catch (error) {
-        logger.error('score', 'Failed loading score file', error);
+        logger.error('score', '[useScoreFile] Failed loading score file', error);
       }
     }
 
@@ -84,7 +84,7 @@ export function useScoreFile(id: number) {
       cancelled = true;
 
       if (objectURL) {
-        logger.debug('score', 'revoke PDF', objectURL);
+        logger.debug('score', '[useScoreFile] revoke PDF', objectURL);
         URL.revokeObjectURL(objectURL);
       }
     };

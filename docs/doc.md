@@ -95,6 +95,7 @@ The document can be consulted
 - [Architecture - Handbook](./frontend/frontend-handbook.md)
 - [Architecture - Flow](./frontend/architecture-mermaid.md)
 - [React Installation](./frontend/react-install.md)
+- [React Javascript Pdf.js most important rules](./frontend/most-important-rules.md.md)
 - [Annotation Coordinate System](./frontend/annotation-coordinate-system.md)
 - [Tailwind css](./frontend/tailwind.md)
 - [Deployment Guide](./frontend/deployment-guide.md)

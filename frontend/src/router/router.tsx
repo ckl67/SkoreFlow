@@ -13,7 +13,7 @@ import MainPage from '../pages/main/MainPage';
 
 import ComposersPage from '../pages/composers/ComposersPage';
 import ScoresPage from '../pages/scores/ScoresPage';
-import ScoreViewer from '../pages/scores/ScoreViewer';
+import ScoreSinglePage from '../pages/scores/ScoreSinglePage';
 
 // Public routes
 // Accessible without authentication.
@@ -41,7 +41,7 @@ export const router = createBrowserRouter([
       // Accessible with or without a token
       { path: '/composers', element: <ComposersPage /> },
       { path: '/scores', element: <ScoresPage /> },
-      { path: '/scores/:id', element: <ScoreViewer /> },
+      { path: '/scores/:id', element: <ScoreSinglePage /> },
       {
         // Protected routes
         // Token mandatory

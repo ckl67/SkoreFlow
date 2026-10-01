@@ -26,9 +26,9 @@ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
 source ~/.bashrc
 
 # Install Node.js LTS
-nvm install 20
-nvm use 20
-nvm alias default 20
+nvm install 22
+nvm use 22
+nvm alias default 22
 
 #Verify installation:
 
@@ -74,6 +74,7 @@ npm create vite@latest . -- --template react
 ```shell
 # from the root
  npm install
+ npm install -g npm@11
 ```
 
 ## 1.6. Add React Router

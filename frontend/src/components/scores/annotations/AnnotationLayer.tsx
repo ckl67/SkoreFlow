@@ -1,7 +1,9 @@
 import type { MouseEvent } from 'react';
 import type { PageViewport } from 'pdfjs-dist';
 
-import type { Annotation } from '../../../../shared/types/score';
+import type { Annotation } from '../../../../../shared/types/score';
+
+import { getRandomId } from '../../../tools/tools';
 
 type Props = {
   viewport: PageViewport;
@@ -29,7 +31,7 @@ export default function AnnotationLayer({
     const [pdfX, pdfY] = viewport.convertToPdfPoint(viewportX, viewportY);
 
     const annotation: Annotation = {
-      id: crypto.randomUUID(),
+      id: getRandomId(),
       page: pageNumber,
       type: 'circle',
       geometry: {

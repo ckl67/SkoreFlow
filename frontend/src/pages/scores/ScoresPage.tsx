@@ -28,7 +28,6 @@ export default function ScoresPage() {
       {/* Barre de pagination */}
       <div className="mt-8 flex items-center justify-center gap-4">
         <button
-          onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
           disabled={page === 1 || isLoading}
           className="rounded bg-gray-200 px-4 py-2 font-medium hover:bg-gray-300 disabled:opacity-50"
         >

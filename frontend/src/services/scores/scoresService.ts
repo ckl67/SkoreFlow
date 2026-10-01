@@ -53,7 +53,12 @@ export async function getScoresPage({
  * @returns GetScoreResponse
  */
 export function getScore(id: number) {
-  return apiRequest<GetScoreResponse>('GET', `/scores/${id}`);
+  const token = localStorage.getItem('token');
+
+  if (token) {
+    return apiRequest<GetScoreResponse>('GET', `/scores/${id}`);
+  }
+  return apiRequest<GetScoreResponse>('GET', `/demo/scores/${id}`);
 }
 
 /**

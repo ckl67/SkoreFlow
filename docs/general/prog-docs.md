@@ -57,17 +57,23 @@ Node.js Architecture: V8 Engine (executes JS) + Native C++ Bindings (bridges JS 
 
 - [Node.js](https://nodejs.org/docs/latest/api/) — Official API documentation for all built-in modules
 
+### Vite
+
+Vite is a build tool that aims to provide a faster and leaner development experience for modern web projects
+
+- [vite](https://v3.vitejs.dev/guide/)
+
 ### React
 
 React is a JavaScript library for building user interfaces based on component architecture, reactive state management, and virtual DOM rendering.
 
 - [React](https://react.dev/reference/react) — Official API reference for React Hooks and core APIs
 
-### Vite
+### PDF.js
 
-Vite is a build tool that aims to provide a faster and leaner development experience for modern web projects
+PDF.js is a Portable Document Format (PDF) viewer that is built with HTML5.
 
-- [vite](https://v3.vitejs.dev/guide/)
+- [PDF.js](https://mozilla.github.io/pdf.js/getting_started/)
 
 ### NGINX
 

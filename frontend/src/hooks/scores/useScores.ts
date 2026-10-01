@@ -34,22 +34,26 @@ export function useScores(page: number = 1) {
         setIsLoading(true);
         setError(null);
         logger.debug('score', `Loading scores for page ${page}..`);
+        // React immediately applies the pending changes (isLoading = true and error = null)
+        // and performs the first re-render (to display the spinner, for example).
 
+        // ⏸️ PAUSE (Execution pauses here whilst waiting for the server)
         const res = await getScoresPage({ page });
+
+        // The 'await' request has completed; the code continues:
         setScores(res.scores ?? []);
         setTotalPages(res.total_pages ?? 1);
       } catch (err) {
         logger.error('score', 'Failed loading scores', err);
         setError('Unable to load the sheet music.');
       } finally {
+        // Second and last re-render
         setIsLoading(false);
       }
     }
 
     loadScores();
   }, [page]);
-  // By passing an empty array [], you’re telling React: ‘Run this effect just once, immediately after the component is first mounted.’
-  // Triggers a re-fetch as soon as 'page' changes
   return {
     scores,
     isLoading,

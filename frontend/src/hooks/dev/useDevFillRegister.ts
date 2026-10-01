@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
-
-import type { RegisterRequest } from '../../../shared/types/auth';
+import { RegisterRequest } from '../../../../shared/types/auth';
 
 // Hook
 type DevFillRegisterEvent = CustomEvent<RegisterRequest>;

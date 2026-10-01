@@ -1,3 +1,5 @@
+<!-- cspell:ignore Flexbox -->
+
 # Tailwind CSS
 
 [← back](../doc.md)

@@ -6,10 +6,12 @@ type Props = {
   onSelect: () => void;
 };
 
+// --------------------------------------------------------------------------------------
 // 'key' is never passed in the 'props' object
 // For
 //   <ScoreItem key={score.id} score={score} onSelect={() => navigate(`/scores/${score.id}`)} />
 // There are only 2 parameters
+// --------------------------------------------------------------------------------------
 export default function ScoreItem({ score, onSelect }: Props) {
   const fileURL = useScoresThumbnail(score.id);
 
