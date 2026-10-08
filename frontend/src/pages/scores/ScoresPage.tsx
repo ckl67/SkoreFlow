@@ -5,8 +5,17 @@ import ScoreItem from '../../components/scores/ScoresItem';
 
 export default function ScoresPage() {
   const [page, setPage] = useState<number>(1);
+  // the hook being called during rendering.
   const { scores, isLoading, error, totalPages } = useScores(page);
   const navigate = useNavigate();
+
+  const previousPage = () => {
+    setPage((current) => Math.max(1, current - 1));
+  };
+
+  const nextPage = () => {
+    setPage((current) => Math.min(totalPages, current + 1));
+  };
 
   return (
     <div className="mx-auto max-w-5xl p-6">
@@ -28,6 +37,8 @@ export default function ScoresPage() {
       {/* Barre de pagination */}
       <div className="mt-8 flex items-center justify-center gap-4">
         <button
+          onClick={previousPage}
+          //onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
           disabled={page === 1 || isLoading}
           className="rounded bg-gray-200 px-4 py-2 font-medium hover:bg-gray-300 disabled:opacity-50"
         >
@@ -39,7 +50,8 @@ export default function ScoresPage() {
         </span>
 
         <button
-          onClick={() => setPage((prev) => prev + 1)}
+          onClick={nextPage}
+          //onClick={() => setPage((prev) => prev + 1)}
           disabled={page >= totalPages || isLoading}
           className="rounded bg-gray-200 px-4 py-2 font-medium hover:bg-gray-300 disabled:opacity-50"
         >

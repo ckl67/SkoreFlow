@@ -28,7 +28,7 @@
     // 🤖 MERMAID
     // =========================================================
 
-    "bierner.markdown-mermaid",
+    //"bierner.markdown-mermaid",
     "mermaidchart.vscode-mermaid-chart",
 
     // =========================================================
@@ -50,6 +50,7 @@
     "yzhang.markdown-all-in-one",
     "davidanson.vscode-markdownlint",
     "hediet.vscode-drawio",
+    //"shd101wyy.markdown-preview-enhanced",
 
     // For documentation view via show preview
     // Open the docs/index.html file the menu : "Show Preview"

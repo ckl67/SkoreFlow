@@ -2,6 +2,223 @@
 
 # React and Javascript most important rules
 
+## React Design rules
+
+Anything that represents data whose change must trigger an update to the interface is a "state" triggering render
+
+Or expressed in another way
+
+If the data needs to be retained by React and any change to it must trigger a re-render, then it must be stored in state.
+
+## React Core Concept: Effects vs. Renders in React
+
+### Rules of rendering
+
+If there should be one rule to understand, it would will this one !
+A useEffect hook on its own NEVER TRIGGERS A RENDER.
+
+If a useEffect performs background operations (e.g., data fetching, logging, storage sync, analytics) **WITHOUT** invoking a **setState**
+👉 React will NEVER trigger a re-render — even if the dependency array value changes 1,000 times!
+
+🧠 Why? The Fundamental Mechanics
+
+What actually triggers a React render:
+
+- State Updates: Direct calls to a state updater (setState).
+- Prop Changes: Parent re-renders passing updated props.
+- Context Updates: Changes in consumed React Context.
+- Explicit Overrides: Calling forceUpdate().
+
+useEffect plays ZERO role in initiating this process.
+The true role of the dependency array ([page]):
+
+```ts
+  useEffect(() => {
+    async function loadScores() {
+      ...
+    }
+
+    loadScores();
+  }, [page]);
+  return {
+    scores,
+    isLoading,
+    error,
+    totalPages,
+  };
+  }
+
+```
+
+The [page] dependency array DOES NOT mean "render when page changes".
+
+It strictly means: "AFTER a render has already occurred (because page was mutated via setPage), execute this side effect **if page differs from the previous render.**"
+
+- Effects are passive subscribers to renders, not render producers.
+- setState is the sole engine of re-renders.
+
+### Important
+
+useEffect is as a post-render reaction, not as something that directly triggers the render.
+
+🖱 onClick
+↓
+📦 setPage(...)
+↓
+🔄 Render ScoresPage
+↓
+🔹 useScores(page)
+↓
+⚡ useEffect [page]
+↓
+⏳ await getScoresPage(...)
+↓
+📦 setScores(...)
+📦 setTotalPages(...)
+📦 setIsLoading(false)
+↓
+🔄 Render ScoresPage
+
+IMPORTANT : The declaration of useState line does not trigger rendering;
+`const [page, setPage] = useState<number>(1);`
+--> will not render !!
+
+### Routes
+
+It is the route (/scores) that triggers the first render.
+👉 The routing event initiates the rendering phase (Mounting).
+
+- Navigation (/scores)
+  - The user navigates to the route /scores.
+  - React Router identifies the match `{ path: '/scores', element: <ScoresPage/> }`.
+  - React Router instructs React to mount and execute the <ScoresPage/> component.
+  - 👉 This routing event initiates the **rendering phase** (Mounting).
+
+- What happens after during the rendering process
+  - Once React starts executing the ScoresPage() function is called :
+  - `const [page, setPage] = useState<number>(1);`
+    - React initializes the component’s internal state with the value 1.
+    - The useState line does not trigger rendering;
+    - it runs within the rendering process that is already underway, and just reserve memory space.
+
+## Integrating PDF.js with React
+
+### Goal
+
+### State Initialization (useState)
+
+```TypeScript
+const [pages, setPages] = useState<pdfjsLib.PDFPageProxy[]>([]);
+```
+
+A PDFPageProxy object represents an individual page of a PDF document
+extracted using PDF.js.
+It does not directly contain an HTML image, but provides methods
+for interacting with that page:
+
+- page.getViewport({ scale: 1.0 }):
+  - calculates the size and dimensions of the page.
+- page.render({ canvasContext, viewport }):
+  - renders the page onto an HTML `<canvas>` element.
+- page.getTextContent():
+  - extracts the plain text from the page for searching or selection.
+
+TypeScript Generics: indicates that this property will contain an array ([]) of objects of type PDFPageProxy (provided by the PDF.js library).
+
+Calling setPages triggers a component re-render once PDF pages are loaded and ready to be displayed.
+
+Managing Asynchronous Canvas Rendering (useRef + useCallback)
+
+The Problem: PDF.js renders pages asynchronously onto HTML <canvas> elements. Rapid UI updates (window resizing, route changes, or page switching) cause React to unmount canvas nodes before PDF.js finishes drawing, leading to memory leaks and the error:
+
+`Error: Canvas rendering page already in progress`
+
+The Solution:
+
+### useRef(renderTasks)
+
+```TypeScript
+  const renderTasks = useRef<Set<pdfjsLib.RenderTask>>(new Set());
+```
+
+useRef(renderTasks): Acts as a silent, mutable registry holding active pdfjsLib.RenderTask objects without triggering unnecessary React re-renders.
+
+renderTasks useRef: Allows to keep a set of tasks in memory without triggering a React re-render. Every time a task is added or removed.
+Set: A JavaScript collection of unique elements, ideal for adding (.add()) or removing (.delete()) active tasks.
+
+### useCallback
+
+```TypeScript
+const onRenderTask = useCallback((task: pdfjsLib.RenderTask) => {
+renderTasks.current.add(task);
+}, []);
+```
+
+useCallback: Memoizes onRenderTask so child components receive a stable function reference across renders.
+
+### Cleanup Lifecycle
+
+During component unmounting or dependency changes, the cleanup function iterates through renderTasks.current and calls .cancel() on every pending task to abort canvas operations cleanly.
+
+### Summary
+
+What exactly does `onRenderTask` capture?
+
+```typescript
+
+        {page && (
+          <ScoreViewerItem
+            key={page.pageNumber}
+            page={page}
+            pageNumber={page.pageNumber}
+            width={containerWidth}
+            zoom={zoom}
+            onRenderTask={onRenderTask}
+          />
+        )}
+```
+
+`onRenderTask` does NOT capture clicks on the Prev, Next or Zoom buttons.
+
+This function serves as a top-down communication channel:
+
+- You click on `nextPage`.
+  - React updates `currentPage` → this triggers a React re-render.
+
+- The child component `<ScoreViewerItem/>` runs with the new page.
+  - Inside `<ScoreViewerItem/>`, the PDF.js library begins rendering the score onto an HTML `<canvas>` and generates a task:
+    `const task = page.render(...)`.
+- <ScoreViewerItem/> calls onRenderTask(task) to return the task to ScoreViewer so that it is stored in renderTasks.current.
+
+👉 In summary:
+onRenderTask only records ongoing Canvas drawing tasks.
+It allows you to cancel pending drawings if you press Next or Zoom again whilst the previous page has not finished loading.
+
+Why is this approach NOT applied to all React renders (such as ScoresPage)?
+
+In ScoresPage, you have a simple standard React component (HTML / JSX). React already handles cancellation automatically (Virtual DOM)
+React’s virtual DOM is ultra-fast and synchronous in memory: you don’t have to manage anything manually.
+
+Why It is needed with PDF.js
+
+PDF.js is an external graphics engine (Imperative Canvas API)
+A `<canvas>` does not have a virtual DOM. When PDF.js renders a score:
+It sends thousands of direct graphics instructions to the CPU/GPU.
+Unless you explicitly call `task.cancel()`, it will continue rendering in the background even if the React component has disappeared from the screen,
+which causes the browser to crash or throws errors.
+
+### Key Architectural Takeaway
+
+Connecting imperative DOM/Canvas libraries (like PDF.js) with React's declarative state model requires decoupling the render pipeline from side effects. Using useRef for side-effect registries and .cancel() inside useEffect cleanup functions is the standard industry pattern to ensure crash-free, high-performance rendering.
+
+## Path
+
+It is recommended to use an absolute path for resources in the ‘public/’ directory:
+
+```javascript
+src = '/images/linear-300x64.png'; // ✅ With / at the beginning
+```
+
 ## JavaScript Equality Operators: `==` vs `===`
 
 ### Core Difference
@@ -182,6 +399,24 @@ function handleClick() {
 ```
 
 React will store the next state, render your component again with the new values, and update the UI.
+
+With React’s setPage accepts two types of arguments:
+
+- Direct form:
+
+```TypeScript
+//You pass it the new value, calculated from the page variable, directly.
+setPage(page + 1)
+```
+
+- Functional form (with a callback):
+  It is React itself that will call this function when the update takes place and pass the current/previous value of the state variable to it as an argument.
+
+```TypeScript
+//Instead of passing a value, you provide React with a function.
+setPage((prev) => prev + 1)
+
+```
 
 ## Hook : useEffect
 

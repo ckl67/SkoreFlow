@@ -13,7 +13,10 @@ type Props = {
 // There are only 2 parameters
 // --------------------------------------------------------------------------------------
 export default function ScoreItem({ score, onSelect }: Props) {
-  const fileURL = useScoresThumbnail(score.id);
+  // Recover the blob data
+  // We will not return isLoading and error because if something not happen
+  // then the possibility is foreseen with {fileURL ?
+  const { fileURL } = useScoresThumbnail(score.id);
 
   return (
     <li

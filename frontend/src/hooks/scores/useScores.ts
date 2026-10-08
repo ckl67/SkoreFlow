@@ -23,12 +23,18 @@ export function useScores(page: number = 1) {
   //    { id: 1, name: 'Marche Turque',.. },
   //    ...
   //    ]);
-  const [scores, setScores] = useState<ScorePublicResponse[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [totalPages, setTotalPages] = useState<number>(1);
+  const [scores, setScores] = useState<ScorePublicResponse[]>([]);
 
   useEffect(() => {
+    // Flag to prevent race conditions and memory leaks
+    // If the request for page 1 takes longer to respond than
+    // the one for page 3, page 1 will eventually arrive last
+    // and overwrite the result for page 3 in the state!
+    let isCancelled = false;
+
     async function loadScores() {
       try {
         setIsLoading(true);
@@ -40,12 +46,18 @@ export function useScores(page: number = 1) {
         // ⏸️ PAUSE (Execution pauses here whilst waiting for the server)
         const res = await getScoresPage({ page });
 
+        // If the page has changed or the component has
+        // been unmounted, the result is ignored
+        if (isCancelled) return;
+
         // The 'await' request has completed; the code continues:
         setScores(res.scores ?? []);
         setTotalPages(res.total_pages ?? 1);
       } catch (err) {
-        logger.error('score', 'Failed loading scores', err);
-        setError('Unable to load the sheet music.');
+        if (!isCancelled) {
+          logger.error('score', 'Failed loading scores', err);
+          setError('Unable to load the sheet music.');
+        }
       } finally {
         // Second and last re-render
         setIsLoading(false);
@@ -53,6 +65,12 @@ export function useScores(page: number = 1) {
     }
 
     loadScores();
+
+    // Clean-up function executed if 'page' changes
+    // or if the component is unmounted
+    return () => {
+      isCancelled = true;
+    };
   }, [page]);
   return {
     scores,

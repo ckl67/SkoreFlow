@@ -1,3 +1,4 @@
+<!-- cspell:ignore emark rganize xchange  -->
 <style>
   body {
     background-color: #ffffff !important;
@@ -7,6 +8,11 @@
 
 <div align="center">
   <p style="bold; font-size: 60px;">SkoreFlow</p>
+
+  <p style="font-size: 20px;">
+  <b>S</b>core → <b>K</b>eep → <b>O</b>rganize → <b>R</b>emark → <b>E</b>xchange →  <b>Flow</b></p>
+  <br>
+  <br>
   <p style="bold; font-size: 30px;">User Guide</p>
   <br>
   <br>

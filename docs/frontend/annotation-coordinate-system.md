@@ -15,8 +15,6 @@ To achieve this, annotation coordinates are stored independently of the current 
 
 SkoreFlow uses the **PDF coordinate system** as the reference coordinate system.
 
-Annotation coordinates are **not stored as screen pixels or percentages**.
-
 For example:
 
 ```json
@@ -82,31 +80,6 @@ PDF:
 ```
 
 Therefore, **the conversion must always be performed through PDF.js** rather than manually calculating the Y coordinate.
-
-## Scaling
-
-The current PDF display scale must never be stored in an annotation.
-
-For example, this should **not** be stored:
-
-```json
-{
-  "x": 320,
-  "y": 450,
-  "scale": 1.5
-}
-```
-
-Instead, the annotation stores only its PDF coordinates:
-
-```json
-{
-  "x": 148.75,
-  "y": 693.25
-}
-```
-
-The current viewport scale is handled entirely by React/PDF.js when the annotation is rendered.
 
 ## Geometric Dimensions
 

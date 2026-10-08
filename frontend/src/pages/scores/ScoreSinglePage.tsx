@@ -10,8 +10,10 @@ export default function ScoreSinglePage() {
 
   console.log('score', '[ScoreSinglePage] scoreId ', scoreId);
 
-  const fileURL = useScoreFile(scoreId);
-  const { score, isLoading, error } = useScore(scoreId);
+  // Recover the blob data
+  // We will not return isLoading and error because if something not happen
+  // then the possibility is foreseen with {fileURL ?
+  const { fileURL, isLoading, error } = useScoreFile(scoreId);
 
   console.log('score', '[ScoreSinglePage] fileURL', fileURL);
 
@@ -21,13 +23,12 @@ export default function ScoreSinglePage() {
   }
 
   // Error handling if the request failed
-  if (error || !score) {
+  if (error) {
     return <div className="flex h-screen items-center justify-center text-red-500">{error ?? 'Score not found'}</div>;
   }
 
   return (
     <div className="p-6">
-      <h1 className="mb-4 w-full text-left text-sm font-semibold text-gray-400">{score.score.name}</h1>
       <ScoreViewer fileURL={fileURL} />
     </div>
   );

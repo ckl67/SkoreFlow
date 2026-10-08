@@ -1,6 +1,6 @@
 <!-- cspell:ignore DEVPANEL  MAINLAYOUT  SIDENAVBAR  TOPNAVBAR  -->
 
-# Frontend Architecture flow
+# Frontend Architecture Entry Point Flow
 
 [← back](../doc.md)
 

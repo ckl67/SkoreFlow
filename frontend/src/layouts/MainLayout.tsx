@@ -4,13 +4,14 @@ import { useState } from 'react';
 import TopNavbar from './TopNavbar';
 import SideNavbar from './SideNavbar';
 import DevPanel from '../dev/DevPanel';
+import MainBottomNavbar from './MainBottomNavbar';
 
 // +----------------------+
 // | TopNavbar            |
 // +----------------------+
 // | Side |   Content     |
 // | Nav  |               |
-// | bar  |               |
+// | bar  |   <Bottom>    |
 // +----------------------+
 
 export default function MainLayout() {
@@ -22,7 +23,6 @@ export default function MainLayout() {
       <header className="h-16 border-b">
         <TopNavbar />
       </header>
-
       {/* BODY */}
       <div className="flex flex-1 relative overflow-hidden">
         {/* SIDEBAR: displayed only if isOpen is true */}
@@ -37,12 +37,10 @@ export default function MainLayout() {
             </button>
           </aside>
         )}
-
         {/* MAIN CONTENT */}
         <main className="flex-1 p-4 overflow-auto">
           <Outlet />
         </main>
-
         {/* BUTTON: appears if the sidebar is CLOSED */}
         {!isOpen && (
           <button

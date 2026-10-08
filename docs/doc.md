@@ -91,14 +91,15 @@ The document can be consulted
 
 ### Frontend Guides
 
-- [Architecture](./frontend/architecture-base.md)
-- [Architecture - Handbook](./frontend/frontend-handbook.md)
-- [Architecture - Flow](./frontend/architecture-mermaid.md)
 - [React Installation](./frontend/react-install.md)
+- [Deployment Guide](./frontend/deployment-guide.md)
 - [React Javascript Pdf.js most important rules](./frontend/most-important-rules.md.md)
+- [Frontend Handbook](./frontend/frontend-handbook.md)
+- [Architecture](./frontend/architecture.md)
+  - [Entry point](./frontend/sub-archi-entry-point.md)
+  - [Scores](./frontend/sub-archi-scores.md)
 - [Annotation Coordinate System](./frontend/annotation-coordinate-system.md)
 - [Tailwind css](./frontend/tailwind.md)
-- [Deployment Guide](./frontend/deployment-guide.md)
 - [React DevTools](./frontend/react-devtools.md)
 
 ### End to End Test Guides

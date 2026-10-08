@@ -69,6 +69,12 @@ React is a JavaScript library for building user interfaces based on component ar
 
 - [React](https://react.dev/reference/react) — Official API reference for React Hooks and core APIs
 
+### Tailwind CSS
+
+Tailwind CSS works by scanning all of your HTML files, JavaScript components, and any other templates for class names, generating the corresponding styles and then writing them to a static CSS file.
+
+- [Tailwind CSS](https://tailwindcss.com/docs/installation/using-vite)
+
 ### PDF.js
 
 PDF.js is a Portable Document Format (PDF) viewer that is built with HTML5.

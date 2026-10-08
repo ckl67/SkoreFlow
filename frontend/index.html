@@ -1,6 +1,9 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <!-- To avoid NS_BINDING_ABORTED   -->
+    <!-- We Preload the image in index.html so that the browser no longer cancels it: -->
+    <link rel="preload" href="/images/linear-300x64.png" as="image" />
     <meta charset="UTF-8" />
     <!-- Vite is configured -->
     <!-- to expose all files present in /public to /dist -->

@@ -9,7 +9,7 @@ export default function TopNavbar() {
   return (
     <div className="flex items-center justify-between px-4 h-full">
       <Link to="/">
-        <img src="images/linear-300x64.png" alt="SkoreFlow" className="h-8 w-auto cursor-pointer" />
+        <img src="/images/linear-300x64.png" alt="SkoreFlow" className="h-8 w-auto cursor-pointer" />
       </Link>
 
       {!isAuthenticated ? (

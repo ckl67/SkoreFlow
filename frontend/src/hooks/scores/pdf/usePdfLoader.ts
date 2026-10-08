@@ -2,6 +2,20 @@ import { useEffect, useState, useRef } from 'react';
 import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs';
 
 export function usePdfLoader(fileURL: string) {
+  // A PDFPageProxy object represents an individual page of a PDF document
+  // extracted using PDF.js.
+  // It does not directly contain an HTML image, but provides methods
+  // for interacting with that page:
+  //  page.getViewport({ scale: 1.0 }):
+  //      calculates the size and dimensions of the page.
+  //  page.render({ canvasContext, viewport }):
+  //    renders the page onto an HTML `<canvas>` element.
+  //  page.getTextContent():
+  //    extracts the plain text from the page for searching or selection.
+
+  // TypeScript Generics: indicates that this property will contain
+  // an array ([]) of objects of type PDFPageProxy
+  // (provided by the PDF.js library).
   const [pages, setPages] = useState<pdfjsLib.PDFPageProxy[]>([]);
 
   // renderTasks
