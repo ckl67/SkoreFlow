@@ -19,16 +19,24 @@ export default function ScoreSinglePage() {
 
   // Handling the loading status (if the PDF file OR the metadata is currently being loaded)
   if (!fileURL || isLoading) {
-    return <div className="flex h-screen items-center justify-center">Loading score...</div>;
+    return (
+      <div className="flex h-screen items-center justify-center">
+        Loading score...
+      </div>
+    );
   }
 
   // Error handling if the request failed
   if (error) {
-    return <div className="flex h-screen items-center justify-center text-red-500">{error ?? 'Score not found'}</div>;
+    return (
+      <div className="flex h-screen items-center justify-center text-red-500">
+        {error ?? 'Score not found'}
+      </div>
+    );
   }
 
   return (
-    <div className="p-6">
+    <div className="flex h-full min-h-0 flex-col">
       <ScoreViewer fileURL={fileURL} />
     </div>
   );

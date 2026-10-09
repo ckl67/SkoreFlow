@@ -3,15 +3,23 @@ import { useComposersPicture } from '../../hooks/composers/useComposersPicture';
 
 type Props = {
   composer: ComposerPublicResponse;
+  onSelect: () => void;
 };
 
-export default function ComposerItem({ composer }: Props) {
+export default function ComposerItem({ composer, onSelect }: Props) {
   const pictureURL = useComposersPicture(composer.id);
 
   return (
-    <li className=" flex items-center gap-4 rounded-xl bg-gray-400 p-4 shadow-md transition duration-200 hover:shadow-xl ">
+    <li
+      onClick={onSelect}
+      className=" flex items-center gap-4 rounded-xl bg-gray-400 p-4 shadow-md transition duration-200 hover:shadow-xl "
+    >
       {pictureURL ? (
-        <img src={pictureURL} alt={composer.name} className="h-40 w-40 rounded-lg object-cover " />
+        <img
+          src={pictureURL}
+          alt={composer.name}
+          className="h-40 w-40 rounded-lg object-cover "
+        />
       ) : (
         <div className=" flex h-20 w-20  items-center justify-center rounded-lg bg-gray-200 text-2xl font-bold ">
           {composer.name.charAt(0).toUpperCase()}
@@ -31,7 +39,9 @@ export default function ComposerItem({ composer }: Props) {
             📖 More information
           </a>
         </p>
-        {composer.isVerified && <span className="text-xs text-green-600">Verified</span>}
+        {composer.isVerified && (
+          <span className="text-xs text-green-600">Verified</span>
+        )}
       </div>
     </li>
   );

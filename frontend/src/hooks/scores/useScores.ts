@@ -17,7 +17,7 @@ Responsibilities are:
 
 // `await` cannot be used directly within a React component
 // A React component is not asynchronous --> We must use `useEffect()`.
-export function useScores(page: number = 1) {
+export function useScores(page: number = 1, composer?: string | null) {
   // idem
   //    const [scores, setScores] = useState([
   //    { id: 1, name: 'Marche Turque',.. },
@@ -44,7 +44,10 @@ export function useScores(page: number = 1) {
         // and performs the first re-render (to display the spinner, for example).
 
         // ⏸️ PAUSE (Execution pauses here whilst waiting for the server)
-        const res = await getScoresPage({ page });
+        const res = await getScoresPage({
+          page: page,
+          composer: composer ?? undefined,
+        });
 
         // If the page has changed or the component has
         // been unmounted, the result is ignored
@@ -71,7 +74,7 @@ export function useScores(page: number = 1) {
     return () => {
       isCancelled = true;
     };
-  }, [page]);
+  }, [page, composer]);
   return {
     scores,
     isLoading,

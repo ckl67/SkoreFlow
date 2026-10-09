@@ -1,4 +1,4 @@
-<!-- cspell:ignore Flexbox     -->
+<!-- cspell:ignore Flexbox  Limites jamais écrasé    -->
 
 # React and Javascript most important rules
 
@@ -11,6 +11,12 @@ Or expressed in another way
 If the data needs to be retained by React and any change to it must trigger a re-render, then it must be stored in state.
 
 ## React Core Concept: Effects vs. Renders in React
+
+### Variables
+
+In a useEffect example in `useComposers` hook, if we set `let totalPages = 0;` as variable, it is reset every time the component is rendered. The value assigned in `useEffect` is lost once the effect ends.
+
+SO WE need to convert it to a React state (`useState`):
 
 ### Rules of rendering
 
@@ -546,7 +552,11 @@ In React, it is the standard way to transform an array of data objects into an a
   !isLoading && !error && (
     <ul>
       {scores.map((score) => (
-        <ScoreItem key={score.id} score={score} onSelect={() => navigate(`/scores/${score.id}`)} />
+        <ScoreItem
+          key={score.id}
+          score={score}
+          onSelect={() => navigate(`/scores/${score.id}`)}
+        />
       ))}
     </ul>
   );
@@ -572,7 +582,16 @@ Given an array of 3 scores:
 ];
 
 // .map() transforms it behind the scenes into: Resulting JSX Array
-[<ScoreItem key="{101}" score="{...}" />, <ScoreItem key="{102}" score="{...}" />];
+[
+  <ScoreItem
+    key="{101}"
+    score="{...}"
+  />,
+  <ScoreItem
+    key="{102}"
+    score="{...}"
+  />,
+];
 ```
 
 ## React Router `useParams`
@@ -691,14 +710,107 @@ export function useScore(id: number) {
 
 ## Tailwind
 
-```javascript
-className = 'relative mx-auto shrink-0';
-```
+### flex
+
+Enables Flexbox and defines the axis
+
+flex-col, flex-row
+
+- flex-col: children vertically (from top to bottom)
+- flex-row : from left to right
+
+### Size & Flex
+
+- flex-1 : Use ALL the remaining space available in the parent box.
+- flex-2 : Use the HALF of the remaining space available in the parent box.
+
+- If two children have flex-1, they share the free space equally (50 per cent each).
+- If one child has flex-1 and another has flex-2, the second child will take up twice as much free space as the first.
 
 ### shrink-0 (Crucial)
+
+- shrink-0 = is never squeezed (jamais écrasé !)
+- with `<header className="h-16 shrink-0">`
+  - The browser locks the 64px width of the `<header>`.
+  - It tells the section: “The top bar won’t move a millimeter.
+  - If you’re too wide, it’s up to you to manage your own scrolling (overflow-auto) within the space you have left.”
 
 By default, within a Flexbox container, children have `flex-shrink: 1`, which means that the browser attempts to shrink the element so that it fits on the screen. By setting `shrink-0` (`flex-shrink: 0`), you’re telling Flexbox: ‘Do not shrink this div; strictly maintain the width calculated by the viewport (`viewport.width`).’
 
 ### mx-auto
 
 When combined with `items-center` on the parent, `mx-auto` forces automatic margins on the left and right. As soon as the width exceeds the edge of the window, the browser sets the left edge to `x=0` instead of pushing the content into the inaccessible negative area.
+
+### Screen Size
+
+- h-screen
+  - the full height of the screen
+- w-screen
+  - the full width of the screen
+
+- h-full
+  - Takes up 100 per cent of the height of its PARENT element.
+- w-full
+  - Takes up 100 per cent of the width of its PARENT element.
+
+- In child elements (such as ScoreViewer) set `h-full` to say Fill 100 per cent of the space allocated by the parent component.
+- This is **Crucial** for unlocking the internal scroll
+
+### overflow
+
+overflow-hidden,
+overflow-auto
+
+By default, if a child element (for example, a large section or a zoomed-in canvas) exceeds the size of its parent container,
+the browser either allows to create a scroll bar across the entire browser window.
+With overflow-hidden sets a strict rule: Anything that extends beyond the physical boundaries of this <div> is hidden (clipped) -> NO Scroll BAR
+
+Scrolling will only occur within the areas you have selected (overflow-auto).
+
+The `overflow-auto` property only works if the browser knows the maximum height of the container.
+Meaning that --> **h-full remains mandatory**
+
+In other words
+“Set the height to h-full (100% of the height of <main>), and IF your content exceeds this height, scroll (overflow-auto).”
+
+### relative
+
+The relative element acts as a geometric anchor (a reference point).
+It is required whenever a child element located within it uses absolute positioning (position: absolute, or the Tailwind classes absolute, fixed, inset-0).
+
+Relative positioning turns the parent element into a ‘magnet’ (a fixed reference point) for its children that use absolute positioning
+
+### min-h-0
+
+In Flexbox, by default, all elements have a hidden property: min-height: auto.
+This means that the browser will not shrink an element below the minimum size of its text or image content.
+
+`min-h-0` does not mean ‘set to 0 pixels’, but ‘remove the minimum height imposed by your content’.
+To understand this, you need to recognize the trap that CSS sets for us by default.
+
+When you write:
+
+```Typescript
+  <main className="flex-1 overflow-auto"> {/* WITHOUT min-h-0 */}
+    <GrandePartition /> {/* Makes it 2000px high */}
+  </main>
+```
+
+The browser secretly applies this rule: min-height: auto.
+This `min-height: auto` means:
+The absolute minimum height of this box must be AT LEAST equal to the height of its content (2000px).’
+
+Result: Even though you’ve written `flex-1` to say ‘take up the remaining space on the screen’, the floor rule (`min-height: auto`) wins the battle!
+The <main> stretches to 2000px, causes your screen to overflow (h-screen) and pushes your footer right to the bottom, out of view.
+
+What min-h-0 REALLY does
+When you add min-h-0 (min-height: 0px), you’re not telling the <main> to become invisible or to be 0px.
+
+You’re simply telling it:
+**“Remove that default minimum height. Don’t let your 2000px content force your hand. Your true minimum allowed height is 0px if necessary.”**
+
+As soon as this minimum height is removed:
+
+flex-1 takes control: The <main> adjusts exactly to the remaining height of the screen (e.g. 800px).
+
+overflow-auto is triggered: As the container is 2000px but the <main> is restricted to 800px, the scroll bar finally appears within the <main>.

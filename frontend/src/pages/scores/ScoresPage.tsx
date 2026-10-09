@@ -2,12 +2,21 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useScores } from '../../hooks/scores/useScores';
 import ScoreItem from '../../components/scores/ScoresItem';
+import { useSearchParams } from 'react-router-dom';
 
 export default function ScoresPage() {
-  const [page, setPage] = useState<number>(1);
-  // the hook being called during rendering.
-  const { scores, isLoading, error, totalPages } = useScores(page);
+  const [searchParams] = useSearchParams();
+  const composerFilter = searchParams.get('composer'); // ex: "Beethoven" ou null
   const navigate = useNavigate();
+
+  const [page, setPage] = useState<number>(1);
+
+  // the hook being called during rendering.
+  // If composerFilter changes, composerFilter is passed to the hook
+  const { scores, isLoading, error, totalPages } = useScores(
+    page,
+    composerFilter
+  );
 
   const previousPage = () => {
     setPage((current) => Math.max(1, current - 1));
@@ -19,7 +28,11 @@ export default function ScoresPage() {
 
   return (
     <div className="mx-auto max-w-5xl p-6">
-      <h1 className="mb-8 text-center text-4xl font-bold">List of scores</h1>
+      <h1 className="mb-8 text-center text-4xl font-bold">
+        {composerFilter
+          ? `Partitions of ${composerFilter}`
+          : 'All the partitions'}
+      </h1>
 
       {/* Handling loading and error states */}
       {isLoading && <p className="text-center text-gray-500">Loading...</p>}
@@ -29,7 +42,11 @@ export default function ScoresPage() {
       {!isLoading && !error && (
         <ul className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {scores.map((score) => (
-            <ScoreItem key={score.id} score={score} onSelect={() => navigate(`/scores/${score.id}`)} />
+            <ScoreItem
+              key={score.id}
+              score={score}
+              onSelect={() => navigate(`/scores/${score.id}`)}
+            />
           ))}
         </ul>
       )}

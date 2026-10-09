@@ -127,7 +127,7 @@ func (c *Composer) List(
 	}
 	// Execute query with pagination
 	// Scopes can accept several functions see: https://gorm.io/docs/scopes.html
-	err := query.Scopes(paginate(pagination, query, sort)).Find(&composers).Error
+	err := query.Scopes(paginate(pagination, query, sort, "composers")).Find(&composers).Error
 	if err != nil {
 		return nil, err
 	}

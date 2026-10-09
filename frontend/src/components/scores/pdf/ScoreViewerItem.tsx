@@ -22,7 +22,6 @@ type Props = {
   width: number;
   zoom: number;
   onRenderTask: (task: pdfjsLib.RenderTask) => void;
-  scrollOffset: number;
 };
 
 // The purely visual component of a page in the score (Canvas + Annotations).
@@ -32,7 +31,6 @@ export default function ScoreViewerItem({
   width,
   zoom,
   onRenderTask,
-  scrollOffset,
 }: Props) {
   // Complete delegation of the drawing mechanism to the hook
   const { canvasRef, viewport } = useScorePageRenderer({
@@ -48,8 +46,6 @@ export default function ScoreViewerItem({
       style={{
         width: viewport?.width,
         height: viewport?.height,
-        // We physically move the Canvas block upwards
-        transform: `translateY(-${scrollOffset}px)`,
       }}
     >
       <canvas ref={canvasRef} />

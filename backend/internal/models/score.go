@@ -248,7 +248,7 @@ func (s *Score) List(
 
 	// Execute query with pagination
 	// Scopes can accept several functions see: https://gorm.io/docs/scopes.html
-	err := query.Scopes(paginate(pagination, query, finalSort)).Find(&scores).Error
+	err := query.Scopes(paginate(pagination, query, finalSort, "scores")).Find(&scores).Error
 	if err != nil {
 		return nil, err
 	}

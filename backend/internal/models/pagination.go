@@ -116,17 +116,24 @@ func (p *Pagination) GetSearchMode() string {
 }
 
 // paginate applies pagination, sorting, and total count calculation to a GORM query.
-//
+// Usage : err := query.Scopes(paginate(pagination, query, sort, "composers")).Find(&composers).Error
 // Behavior:
 // - Computes total number of rows (without limit/offset).
 // - Updates Pagination fields (TotalRows, TotalPages).
 // - Returns a scoped query with offset, limit, and order applied.
-func paginate(pagination *Pagination, db *gorm.DB, sort string) func(db *gorm.DB) *gorm.DB {
+func paginate(pagination *Pagination, db *gorm.DB, sort string, tableName ...string) func(db *gorm.DB) *gorm.DB {
 	var totalRows int64
 
 	// Clone session to avoid side effects
-	db.Session(&gorm.Session{}).Count(&totalRows)
+	query := db.Session(&gorm.Session{})
 
+	// In case of JOIN, we do not know which table to use !!
+	// Solution : db.Session(&gorm.Session{}).Select("COUNT(DISTINCT composers.id)").Count(&totalRows)
+	if len(tableName) > 0 && tableName[0] != "" {
+		query.Select("COUNT(DISTINCT " + tableName[0] + ".id)").Count(&totalRows)
+	} else {
+		query.Count(&totalRows)
+	}
 	pagination.TotalRows = totalRows
 
 	limit := pagination.GetLimit()

@@ -101,6 +101,7 @@ func (ctrl *ComposerController) GetComposersPage(c *gin.Context) {
 		return
 	}
 
+	// logger.Composer.Info("(Controller GetComposersPage) user_id =%d:", uid)
 	// form.IsVerified or form.name can be nil !
 	//logger.Composer.Info("(Controller GetComposersPage) :")
 	//if form.Name != nil {

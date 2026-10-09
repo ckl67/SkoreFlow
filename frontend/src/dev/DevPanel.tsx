@@ -29,7 +29,7 @@ export default function DevPanel() {
   if (!isOpen) {
     return (
       <button
-        className="fixed bottom-4 right-4 rounded-full bg-gray-800 p-3 shadow-lg hover:scale-105 transition-transform"
+        className="absolute bottom-10 right-4 rounded-full bg-gray-800 p-3 shadow-lg hover:scale-105 transition-transform"
         onClick={() => setIsOpen(true)}
         title="Open Dev Tools"
       >
@@ -123,7 +123,10 @@ export default function DevPanel() {
     <div className="fixed bottom-4 right-4 w-64 rounded-lg border bg-white p-3 shadow-xl text-xs text-gray-700">
       <div className="flex items-center justify-between mb-2 border-b pb-1">
         <span className="font-bold text-gray-900">🛠️ Dev Tools</span>
-        <button className="text-gray-400 hover:text-gray-600 px-1" onClick={() => setIsOpen(false)}>
+        <button
+          className="text-gray-400 hover:text-gray-600 px-1"
+          onClick={() => setIsOpen(false)}
+        >
           ✕
         </button>
       </div>
@@ -174,7 +177,8 @@ export default function DevPanel() {
               name="confEmail"
               checked={confEmail}
               onChange={handleChange}
-            />: {confEmail ? '(true)' : '(false)'}
+            />
+            : {confEmail ? '(true)' : '(false)'}
           </div>
         </label>
       </div>
