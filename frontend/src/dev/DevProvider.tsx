@@ -1,5 +1,9 @@
-import { createContext, useState } from 'react';
+import { createContext, useState, ReactNode } from 'react';
 import { logger } from '../../logger/logger';
+
+type Props = {
+  children: ReactNode;
+};
 
 export type DevUser = {
   username: string;
@@ -19,17 +23,18 @@ export const DevContext = createContext<DevContextType | null>(null);
 
 // --------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------
-export function DevProvider({ children }: { children: React.ReactNode }) {
+export function DevProvider({ children }: Props) {
   // The use of an arrow function () is known as the ‘Lazy Initial State’.
   // React will read localStorage (which is a slow operation) just once when the application starts,
   // and not every time the component is re-rendered.
 
   logger.debug('dev', 'DevProvider Start');
 
-  const [lastRegisteredUser, setLastRegisteredUserState] = useState<DevUser | null>(() => {
-    const stored = localStorage.getItem('devUser');
-    return stored ? JSON.parse(stored) : null;
-  });
+  const [lastRegisteredUser, setLastRegisteredUserState] =
+    useState<DevUser | null>(() => {
+      const stored = localStorage.getItem('devUser');
+      return stored ? JSON.parse(stored) : null;
+    });
 
   // --------------------------------------------------
   // SET LAST REGISTER USER
@@ -39,11 +44,9 @@ export function DevProvider({ children }: { children: React.ReactNode }) {
     setLastRegisteredUserState(user);
   }
 
-  // The component returns a special component: <DevContext.Provider>.
-  //  value={{ ... }}: This is where we inject all our variables and functions.
-  //    They become accessible to any child component, no matter how deeply nested it is within the application.
-  //  {children}: Represents the rest of your application.
-  //    By wrapping your app in <DevProvider>, your entire app has access to this context.
+  // "value" is a generic react terminology used by Provider to pass the variable value to the children
+  // value={{ ... }}: This is where we inject all variables and functions.
+  // Value become accessible to any child component, no matter how deeply nested it is within the application.
   return (
     <DevContext.Provider
       value={{

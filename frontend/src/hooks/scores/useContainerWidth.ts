@@ -1,6 +1,15 @@
 import { useEffect, useState } from 'react';
 
-export function useContainerWidth(containerRef: React.RefObject<HTMLDivElement | null>) {
+/**
+ * Custom hook that tracks and returns the dynamic width of a DOM container element
+ * using the ResizeObserver API.
+ *
+ * @param containerRef - A React reference object pointing to the target HTMLDivElement.
+ * @returns The current measured width of the container in pixels.
+ */
+export function useContainerWidth(
+  containerRef: React.RefObject<HTMLDivElement | null>
+) {
   const [width, setWidth] = useState(0);
 
   useEffect(() => {

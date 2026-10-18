@@ -1,6 +1,14 @@
 import { useEffect, useState, useRef } from 'react';
 import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs';
 
+/**
+ * Custom hook that loads a PDF document asynchronously using PDF.js,
+ * extracts all page proxy objects (`PDFPageProxy`), and manages ongoing render tasks
+ * with cleanup handling to prevent memory leaks or cancelled state errors.
+ *
+ * @param fileURL - The URL or blob string of the PDF file to load.
+ * @returns An object containing the loaded array of `pdfPages` and a reference `Set` of active `renderTasks`.
+ */
 export function usePdfLoader(fileURL: string) {
   // A PDFPageProxy object represents an individual page of a PDF document
   // extracted using PDF.js.
@@ -16,7 +24,7 @@ export function usePdfLoader(fileURL: string) {
   // TypeScript Generics: indicates that this property will contain
   // an array ([]) of objects of type PDFPageProxy
   // (provided by the PDF.js library).
-  const [pages, setPages] = useState<pdfjsLib.PDFPageProxy[]>([]);
+  const [pdfPages, setPdfPages] = useState<pdfjsLib.PDFPageProxy[]>([]);
 
   // renderTasks
   // useRef: Allows you to keep a set of tasks in memory without triggering a React re-render
@@ -31,6 +39,8 @@ export function usePdfLoader(fileURL: string) {
 
     async function loadPdf() {
       try {
+        // pdfjsLib.getDocument() function is the main entry point for the PDF.js library.
+        // It allows to load a PDF document from various sources (URL, byte array, etc.).
         document = await pdfjsLib.getDocument(fileURL).promise;
         if (cancelled) return document.destroy();
 
@@ -40,13 +50,13 @@ export function usePdfLoader(fileURL: string) {
           if (cancelled) return;
           loadedPages.push(page);
         }
-        setPages(loadedPages);
+        setPdfPages(loadedPages);
       } catch (err) {
         if (!cancelled) console.error(err);
       }
     }
 
-    setPages([]);
+    setPdfPages([]);
     loadPdf();
 
     return () => {
@@ -58,5 +68,5 @@ export function usePdfLoader(fileURL: string) {
     };
   }, [fileURL]);
 
-  return { pages, renderTasks };
+  return { pdfPages, renderTasks };
 }

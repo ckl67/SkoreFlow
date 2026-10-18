@@ -8,10 +8,6 @@ From React Fundamentals to Production Architecture
 
 This handbook explains the architecture adopted for SkoreFlow's frontend.
 
-Its goal is not only to explain _what_ to write, but _why_ each layer exists and how all layers work together.
-
-This document should become the main reference when implementing future modules such as:
-
 - Authentication
 - Composer
 - Scores
@@ -19,19 +15,15 @@ This document should become the main reference when implementing future modules 
 - Settings
 - User Profiles
 
----
-
 ## Convention
 
-| Type                           | Convention              |
-| ------------------------------ | ----------------------- |
-| Component React                | PascalCase              |
-| Hook                           | camelCase with `use`    |
-| Function                       | camelCase               |
-| Utility Files                  | camelCase               |
+| Type | Convention |
+| | -- |
+| Component React | PascalCase |
+| Hook | camelCase with `use` |
+| Function | camelCase |
+| Utility Files | camelCase |
 | Entry Point of the application | low case (Ex: main.tsx) |
-
----
 
 ## Part 1 - React Fundamentals
 
@@ -63,8 +55,6 @@ React rerender
 DOM update
 ```
 
----
-
 ### Components
 
 A component is a **Personal** function that returns JSX.
@@ -77,23 +67,6 @@ function LoginPage() {
 ```
 
 Components should start with PascalCase.
-
-Good:
-
-```tsx
-LoginPage;
-AvatarMenu;
-AuthProvider;
-```
-
-Bad:
-
-```tsx
-loginPage;
-avatarMenu;
-```
-
----
 
 ### Props
 
@@ -110,12 +83,6 @@ function FormInput({ label }) {
   ...
 }
 ```
-
-Think:
-
-Parent → Props → Child
-
----
 
 ### State
 
@@ -141,8 +108,6 @@ State updated
 Rerender
 ```
 
----
-
 ### Hooks
 
 Hooks are special React functions.
@@ -164,7 +129,7 @@ useEffect();
 useContext();
 ```
 
-Custom hooks:
+Or of course the Custom hooks:
 
 ```tsx
 useAuth();
@@ -173,8 +138,6 @@ useRegister();
 ```
 
 A custom hook is used to encapsulate logic that can be reused.
-
----
 
 ## Part 2 - Routing
 
@@ -188,8 +151,6 @@ Entry point:
 <RouterProvider router={router} />
 ```
 
----
-
 ### Link
 
 For visual navigation:
@@ -199,8 +160,6 @@ For visual navigation:
 ```
 
 Use Link whenever the user clicks a visible navigation element.
-
----
 
 ### useNavigate
 
@@ -213,8 +172,6 @@ navigate('/me');
 ```
 
 after a successful login.
-
----
 
 ### Outlet
 
@@ -239,8 +196,6 @@ If route = /me
 Outlet = MePage
 ```
 
----
-
 ## Part 3 - Context and Global State
 
 ### The Problem
@@ -264,8 +219,6 @@ From component App(...prop) --> Navbar(...props) and so one !
 
 This becomes painful.
 
----
-
 ### AuthContext
 
 AuthContext stores authentication state globally.
@@ -277,8 +230,6 @@ user;
 token;
 isAuthenticated;
 ```
-
----
 
 ### AuthProvider
 
@@ -303,8 +254,6 @@ AuthProvider
  ├── logout()
  └── refreshMe()
 ```
-
----
 
 ### useAuth
 

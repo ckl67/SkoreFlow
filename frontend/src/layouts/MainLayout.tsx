@@ -71,9 +71,12 @@ export default function MainLayout() {
       </footer>
 
       {/* ------------------------------------------------------------- */}
-      {/*                 +++ FLOATING BUTTONS ++++                     */}
+      {/*                   +++ ACTION BUTTONS ++++                     */}
       {/* ------------------------------------------------------------- */}
 
+      {/* ------------------------- */}
+      {/*  --- SIDEBAR BUTTON ---   */}
+      {/* ------------------------- */}
       {!isOpen && (
         <button
           type="button"
@@ -85,6 +88,9 @@ export default function MainLayout() {
         </button>
       )}
 
+      {/* ------------------------- */}
+      {/*    --- DEV BUTTON  ---    */}
+      {/* ------------------------- */}
       {config.testMode && <DevPanel />}
     </div>
   );

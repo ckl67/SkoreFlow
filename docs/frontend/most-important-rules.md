@@ -2,6 +2,35 @@
 
 # React and Javascript most important rules
 
+## React Hook
+
+Many developers mistakenly associate hooks with `useEffect`.
+In reality, the official definition of a custom hook in React is very simple:
+
+- Its name must begin with the ‘use’ prefix _(this tells React and ESLint to follow the hook rules)_
+
+- It must call at least one native React hook (such as useState, useContext, useRef, etc.).
+
+In useAnnotations we uses only useState (twice). That’s enough to make it a hook. useEffect has to be to use it we need to synchronize code with external events (such as a mouse move or an API loading). If there are no side effects, there’s no need for useEffect!
+
+## spread operator (...)
+
+### Definition
+
+In JavaScript, the three dots (...) represent the spread operator.
+
+[...current, annotation] means: ‘Create a brand-new array containing all the elements of the current array, and add the new annotation at the end.’
+
+In JavaScript, and particularly with React, we should never modify the existing state directly (the state is said to be immutable).
+
+If you were to use `current.push(annotation)`, you would modify the original array in place. BUT React would not detect this change and would not update the screen.
+
+The ... operator is used to copy elements:
+
+- current: represents your existing array (e.g. ['A', 'B']).
+- ...current: ‘unpacks’ the elements into the new array (e.g. 'A', 'B').
+- [...current, annotation]: creates a new array combining the old and new elements (e.g. ['A', 'B', 'C']).
+
 ## React Design rules
 
 Anything that represents data whose change must trigger an update to the interface is a "state" triggering render
@@ -281,6 +310,7 @@ const add = (a, b) => {
 // const add = (a, b) => (a + b);
 // or
 const add = (a, b) => a + b;
+add(2, 5); //=7
 ```
 
 ```javascript
@@ -372,7 +402,7 @@ const value = myCounter.getCount(); // value = 1
 A closure is: **A function + Its scope (its variables)**
 It is not what the return : **it is what the returned function retains in memory.**
 
-## Hook : useState
+## React Hook : useState
 
 useState is a React Hook that lets you add a state variable to your component.
 
@@ -424,7 +454,7 @@ setPage((prev) => prev + 1)
 
 ```
 
-## Hook : useEffect
+## React Hook : useEffect
 
 useEffect is a React Hook that lets you synchronize a component with an external system.
 
@@ -737,10 +767,6 @@ flex-col, flex-row
 
 By default, within a Flexbox container, children have `flex-shrink: 1`, which means that the browser attempts to shrink the element so that it fits on the screen. By setting `shrink-0` (`flex-shrink: 0`), you’re telling Flexbox: ‘Do not shrink this div; strictly maintain the width calculated by the viewport (`viewport.width`).’
 
-### mx-auto
-
-When combined with `items-center` on the parent, `mx-auto` forces automatic margins on the left and right. As soon as the width exceeds the edge of the window, the browser sets the left edge to `x=0` instead of pushing the content into the inaccessible negative area.
-
 ### Screen Size
 
 - h-screen
@@ -814,3 +840,163 @@ As soon as this minimum height is removed:
 flex-1 takes control: The <main> adjusts exactly to the remaining height of the screen (e.g. 800px).
 
 overflow-auto is triggered: As the container is 2000px but the <main> is restricted to 800px, the scroll bar finally appears within the <main>.
+
+### mx-auto
+
+In Tailwind CSS, mx-auto stands for Margin X (horizontal): auto.
+
+When combined with `items-center` on the parent, `mx-auto` forces automatic margins on the left and right.
+As soon as the width exceeds the edge of the window, the browser sets the left edge to `x=0` instead of pushing the content into the inaccessible negative area.
+
+The essential condition: For mx-auto to work, the element must have a defined width (which is the case here thanks to the dynamic style: width: viewport?.width).
+
+## Principle of React Context
+
+React Context allows you to pass variables and functions to other components without having to manually pass them via props through every level of the component tree (prop drilling).
+The prop value of the <DevContext.Provider> acts as the communication bridge (or ‘toolkit’) that you make available to all child components within your DevProvider.
+Take care about the role of `value`
+
+### Usage in the App Tree
+
+```javascript
+<DevProvider>
+  {/* All children here can access the context */}
+  <App />
+</DevProvider>
+```
+
+### DevProvider.tsx
+
+#### Contract Definition
+
+Defines what data and functions the context will expose.
+
+```javascript
+export type DevContextType = {
+  lastRegisteredUser: DevUser | null;
+  setLastRegisteredUser: (user: DevUser) => void;
+};
+```
+
+#### Context Creation
+
+Initializes the React Context object.
+
+```javascript
+export const DevContext = (createContext < DevContextType) | (null > null);
+// Will return DevContextType when consumed inside a Provider, or null by default
+```
+
+#### Provider Component
+
+Shares the values down to child components.
+
+```javascript
+
+export function DevProvider({ children }: Props) {
+
+// State management and helper functions here...
+ ...
+
+return (
+  <DevContext.Provider
+    value={{
+        lastRegisteredUser,
+        setLastRegisteredUser,
+      }} >
+    {children}
+  </DevContext.Provider>
+ );
+}
+```
+
+- <DevContext.Provider>:
+  - A built-in React component that wraps your app/children to make values available.
+  - `value`: A reserved React prop name required by the Provider component to inject data/functions into the context.
+
+#### Consuming the Context
+
+In any child component, we can consume the context, using the `useContext` hook:
+
+```javascript
+const context = useContext(DevContext);
+```
+
+## PDF.js & React Integration
+
+### Overview
+
+PDFPageProxy Class
+The PDFPageProxy class in PDF.js represents a PDF page in the worker thread and allows you to manipulate, render, or extract data from a specific page.
+
+Key Properties
+
+- pageNumber: Page number (starting from 1).
+- rotate: Current rotation angle of the page (in degrees: 0, 90, 180, 270).
+- view: Array defining the viewport rectangle [xMin, yMin, xMax, yMax].
+- userUnit: Value of the page’s user unit.
+- ..
+  Main Methods
+- getViewport(params): Returns a PageViewport object required for rendering or scaling calculations.
+- render(params): Starts rendering the page on a canvas context (CanvasRenderingContext2D) or via a render task (RenderTask).
+- getTextContent(params): Extracts the structured text from the page (returns a Promise).
+- getAnnotations(params): Retrieves the page’s annotations (links, forms, comments).
+- getOperatorList(params): Obtains the list of drawing operators for the page.
+- cleanup(resetStats): Frees up the memory resources associated with the page.
+- ...
+
+### Principle of the Display of a Specific Score
+
+From the initial routing (/scores/:id), the execution flow follows a clear hierarchy:
+
+- ScoreSinglePage: Loads the data and the file URL (fileURL).
+- ScoreViewer: Manages the overall interface logic (zoom, navigation between PDF pages, container dimensions) and retrieves the page’s proxy object via a dedicated hook (usePDFLoader).
+- ScoreViewerItem: Isolates the rendering of a specific page and delegates all the technical complexity to a custom hook: useScorePageRenderer.
+
+Inside useScorePageRenderer & The Canvas Sequencing
+
+Because a React component renders before the HTML elements physically exist in the browser, rendering a PDF onto a canvas requires a specific timing mechanism:
+
+```typescript
+export function useScorePageRenderer({
+  pdfPage,
+  width,
+  zoom,
+  onRenderTask,
+}: UseScorePageRendererOptions) {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const [viewport, setViewport] = useState<pdfjsLib.PageViewport | null>(null);
+```
+
+- useRef: Creates a reference "box" (canvasRef) which is initially empty (null).
+- The Render Phase: React reads the JSX, creates the <canvas ref={canvasRef} /> element in the virtual DOM, and then paints it into the real HTML page.
+- Automatic Binding: Once the real HTML canvas is created in the browser, React automatically puts it inside the box: canvasRef.current = <actual_canvas_element>.
+
+```typescript
+  return (
+    <div
+      className="relative mx-auto shrink-0"
+      style={{
+        width: viewport?.width,
+        height: viewport?.height,
+      }}
+    >
+      <canvas ref={canvasRef} />
+
+      {viewport && (
+        <AnnotationEditor
+          viewport={viewport}
+          pageNumber={pageNumber}
+        />
+      )}
+    </div>
+  );
+}
+```
+
+The Key Timing Principle (useEffect):
+
+In React, code placed inside a useEffect only runs after the HTML has been fully created and displayed on the page.
+
+The Result: When the line const canvas = canvasRef.current; runs inside the useEffect, the box is no longer empty.
+It contains the real HTML canvas, allowing PDF.js to draw the PDF onto it successfully!

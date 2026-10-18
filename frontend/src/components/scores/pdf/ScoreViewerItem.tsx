@@ -17,24 +17,41 @@ import AnnotationEditor from '../annotations/AnnotationEditor';
 import { useScorePageRenderer } from '../../../hooks/scores/useScorePageRenderer';
 
 type Props = {
-  page: pdfjsLib.PDFPageProxy;
+  pdfPage: pdfjsLib.PDFPageProxy;
   pageNumber: number;
   width: number;
   zoom: number;
   onRenderTask: (task: pdfjsLib.RenderTask) => void;
 };
 
-// The purely visual component of a page in the score (Canvas + Annotations).
+// .
+
+/**
+ * ScoreViewerItem renders an individual page of a PDF score onto an HTML5 canvas
+ * and manages its corresponding interactive annotation layer.
+ * Visual component of a page of score (Canvas + Annotations)
+ *
+ * @param props - The component properties.
+ * @param props.pdfPage - The PDFPageProxy object representing the PDF page from PDF.js.
+ * @param props.pageNumber - The page number of the score.
+ * @param props.width - The target width available for the page container.
+ * @param props.zoom - The current zoom scaling factor applied to the score.
+ * @param props.onRenderTask - Callback function to register the active PDF.js render task
+ * @returns The rendered ScoreViewerItem component.
+ */
 export default function ScoreViewerItem({
-  page,
+  pdfPage,
   pageNumber,
   width,
   zoom,
   onRenderTask,
 }: Props) {
-  // Complete delegation of the drawing mechanism to the hook
+  // ...
+
+  // This hook is the application’s graphics engine.
+  // It acts as a bridge between the raw object provided by PDF.js and the HTML5 <canvas> element interface.
   const { canvasRef, viewport } = useScorePageRenderer({
-    page,
+    pdfPage,
     width,
     zoom,
     onRenderTask,
@@ -48,8 +65,10 @@ export default function ScoreViewerItem({
         height: viewport?.height,
       }}
     >
+      {/* Here we displays the pdf score */}
       <canvas ref={canvasRef} />
 
+      {/* AnnotationEditor is responsible for displaying and managing the editor for annotations */}
       {viewport && (
         <AnnotationEditor
           viewport={viewport}

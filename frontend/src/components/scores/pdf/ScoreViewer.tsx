@@ -12,36 +12,45 @@ type Props = {
   fileURL: string;
 };
 
+/**
+ * ScoreViewer manages the main interface logic for displaying a score,
+ * including zoom controls, pagination (+/-) between PDF pages, container width observation,
+ * and the rendering of the active score page item.
+ *
+ * @param props - The component properties.
+ * @param props.fileURL - The URL of the PDF file to be loaded and rendered.
+ * @returns The rendered ScoreViewer component layout containing top zoom bar, central score canvas, and bottom navigation.
+ */
 export default function ScoreViewer({ fileURL }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const containerWidth = useContainerWidth(containerRef);
-  const { pages, renderTasks } = usePdfLoader(fileURL);
+  const { pdfPages, renderTasks } = usePdfLoader(fileURL);
 
   const onRenderTask = useCallback((task: pdfjsLib.RenderTask) => {
     renderTasks.current.add(task);
   }, []);
 
-  const [zoom, setZoom] = useState(1);
+  // Pages
   const [currentPage, setCurrentPage] = useState(1);
+  const previousPage = () => {
+    setCurrentPage((current) => Math.max(1, current - 1));
+  };
+  const nextPage = () => {
+    setCurrentPage((current) => Math.min(pdfPages.length, current + 1));
+  };
+  const currentPdfPage = pdfPages[currentPage - 1];
 
-  const STEP_HEIGHT = 150;
-
+  // Zoom
+  const [zoom, setZoom] = useState(1);
   const zoomOut = () => setZoom((current) => Math.max(0.5, current - 0.25));
   const zoomIn = () => setZoom((current) => Math.min(5, current + 0.25));
   const resetZoom = () => setZoom(1);
 
-  const previousPage = () => {
-    setCurrentPage((current) => Math.max(1, current - 1));
-  };
-
-  const nextPage = () => {
-    setCurrentPage((current) => Math.min(pages.length, current + 1));
-  };
-
-  const page = pages[currentPage - 1];
   return (
     <div className="flex h-full flex-col justify-between ">
+      {/* ------------------------ */}
       {/* 1. TOP BAR: ZOOM (Fixed) */}
+      {/* ------------------------ */}
       <div className="flex shrink-0 items-center justify-center gap-3 border-b  border-gray-200 pb-2 ">
         <button
           type="button"
@@ -66,16 +75,19 @@ export default function ScoreViewer({ fileURL }: Props) {
         </button>
       </div>
 
+      {/* ----------------------------------------------------- */}
       {/* 2. CENTRAL AREA: PARTITION (The only scrollable area) */}
+      {/* ----------------------------------------------------- */}
       <div
+        // Reference to compute the width
         className="flex flex-1 min-h-0 overflow-auto "
         ref={containerRef}
       >
-        {page && (
+        {currentPdfPage && (
           <ScoreViewerItem
-            key={page.pageNumber}
-            page={page}
-            pageNumber={page.pageNumber}
+            key={currentPdfPage.pageNumber}
+            pdfPage={currentPdfPage}
+            pageNumber={currentPdfPage.pageNumber}
             width={containerWidth}
             zoom={zoom}
             onRenderTask={onRenderTask}
@@ -83,7 +95,9 @@ export default function ScoreViewer({ fileURL }: Props) {
         )}
       </div>
 
+      {/* ----------------------------------------------------- */}
       {/* 3. BARRE DU BAS : NAVIGATION (Fixe) */}
+      {/* ----------------------------------------------------- */}
       <div className="mt-2 flex shrink-0 items-center justify-center gap-3 border-t border-gray-200 pt-3">
         <button
           type="button"
@@ -94,12 +108,12 @@ export default function ScoreViewer({ fileURL }: Props) {
           ◀
         </button>
         <span className="text-sm font-medium">
-          Page {currentPage} / {pages.length}
+          Page {currentPage} / {pdfPages.length}
         </span>
         <button
           type="button"
           onClick={nextPage}
-          disabled={currentPage === pages.length}
+          disabled={currentPage === pdfPages.length}
           className="rounded border border-gray-500  px-3 py-1 disabled:opacity-50 shadow-md transition  hover:shadow-xl  hover:bg-blue-200"
         >
           ▶

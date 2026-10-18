@@ -60,6 +60,7 @@ The document can be consulted
 - [Javascript - Object Creation vs Destructuring](./general/javascript.md)
 - [Type vs Interface in TypeScript](./general/type-vs-interface.md)
 - [JSON Handling](./general/json.md)
+- [DOM explanation](./general/dom.md)
 
 ### Development Environment
 
@@ -72,7 +73,7 @@ The document can be consulted
 - [Routes versioning](./backend/routes.md)
 - [API Response Standard](./backend/api-response.md)
 - [Some specificities - Architecture Diagram](./backend/architecture.dio)
-- [cors explanation](./backend/cors.md) and [dom explanation](./backend/dom.md)
+- [cors explanation](./backend/cors.md)
 - [Installation](./backend/install.md)
 - [Database migration](./backend/database.md)
 - [Automatic Code Reloading with Air](./backend/air.md)

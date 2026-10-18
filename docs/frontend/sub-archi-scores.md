@@ -206,28 +206,25 @@ Will display one score
 Page : ScoreSinglePage.tsx
 ├─ param : scoreId
 ├─ useScoreFile(scoreId)
-└─ useScore(scoreId);
 
 Hook : useScoreFile.ts
+├─ param : id
 ├─ useState
-│ └─ urlBlob
-├─ useEffect [id]
-└─ return → urlBlob = fileURL
-
-Hook : useScore.ts
-├─ useState
-│ ├─ score
+│ ├─ fileURL
 │ ├─ isLoading
 │ └─ error
 ├─ useEffect [id]
-└─ return → score, isLoading, error
+└─ return → fileURL, isLoading, error
 
 ScoreViewer is the container/viewer (it manages the controls: zoom, next/previous buttons, width).
 
 Component : ScoreViewer.tsx
 ├─ useRef : containerRef (Canvas width)
 ├─ useContainerWidth(containerRef)
-└─ usePdfLoader(fileURL)
+├─ usePdfLoader(fileURL)
+├─ useState
+│ ├─ zoom
+│ └─ currentPage
 
 Hook : useContainerWidth.ts
 ├─ useState
@@ -243,3 +240,26 @@ Hook : usePdfLoader.ts
 └─ return → pages, renderTasks
 
 ScoreViewerItem represents the individual page currently being displayed, which renders the <canvas>.
+
+Component : ScoreViewerItem.tsx
+├─ useScorePageRenderer( page,width,zoom,onRenderTask)
+├─ AnnotationEditor
+
+Hook : useScorePageRenderer
+├─ param : page, width, zoom, onRenderTask
+├─ useState
+│ ├─ useRef : canvasRef
+│ └─ viewport
+├─ useEffect [canvasRef, viewport]
+└─ return → page, width, zoom, onRenderTask
+
+Component : AnnotationEditor.tsx
+├─ useAnnotations
+AnnotationLayer
+
+Hook : useAnnotations.ts
+├─ useState
+│ ├─ annotations
+│ └─ selectedId
+
+Component : AnnotationLayer.tsx
