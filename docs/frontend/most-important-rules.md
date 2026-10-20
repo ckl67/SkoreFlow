@@ -1,6 +1,39 @@
-<!-- cspell:ignore Flexbox  Limites jamais écrasé    -->
+<!-- cspell:ignore Flexbox Haut Limites jamais écrasé    -->
 
 # React and Javascript most important rules
+
+## Coordinate
+
+### Rectangle
+
+```typescript
+    if (annotation.type === 'rectangle') {
+      // In the PDF coordinate system, the point (0,0) is at the bottom left of the page.
+      const geom = annotation.geometry;
+      const x1 = geom.x1 ?? 0;
+      const y1 = geom.y1 ?? 0;
+      const width = geom.width ?? 0;
+      const height = geom.height ?? 0;
+```
+
+PDF coordinates (x1, y1, width, height):
+These are the units, relating to the native format of the PDF page.
+The stored variable - zoom-independent !
+
+```typescript
+const [x2Screen, y2Screen] = viewport.convertToViewportPoint(x2, y2);
+```
+
+The conversion (viewport.convertToViewportPoint):
+Takes the PDF coordinates and converts them into actual pixels on your screen, taking the current zoom level (scale) into account.
+
+The rectangle trap (the corners):
+In the PDF system, the origin (0,0) is at the bottom left.
+Consequently, y1 (starting point) is the top of the rectangle
+So:
+
+- Top-left corner (Haut, Gauche) = (x1, y1)
+- Bottom-right corner (Bas, Droit) = (x1 + width, y1 - height)
 
 ## React Hook
 
@@ -325,6 +358,10 @@ const renderItem = (score) => (
   </div>
 );
 ```
+
+- renderItem is an Arrow function assigned to a constant
+  or more generally
+- **renderItem is a function expression.**
 
 ## JavaScript Closures & Returning Object Methods
 

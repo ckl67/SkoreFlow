@@ -39,7 +39,7 @@ type Props = {
  * @param props.onRenderTask - Callback function to register the active PDF.js render task
  * @returns The rendered ScoreViewerItem component.
  */
-export default function ScoreViewerItem({
+export function ScoreViewerItem({
   pdfPage,
   pageNumber,
   width,

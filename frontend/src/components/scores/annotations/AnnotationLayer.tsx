@@ -1,11 +1,13 @@
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useState } from 'react';
 import type { MouseEvent } from 'react';
 import type { PageViewport } from 'pdfjs-dist';
 import type { Annotation } from '../../../../../shared/types/score';
-
 import { getRandomId } from '../../../tools/tools';
 
-import { AnnotationToolsContext } from './AnnotationTools';
+import { AnnotationItem } from './AnnotationItem';
+import { useAnnotationDrag } from '../../../hooks/scores/annotations/useAnnotationDrag';
+import { useAnnotationDraw } from '../../../hooks/scores/annotations/useAnnotationDraw';
+import { AnnotationToolsContext } from '../../../components/scores/annotations/AnnotationTools';
 
 type Props = {
   viewport: PageViewport;
@@ -16,16 +18,6 @@ type Props = {
   onSelect: (id: string) => void;
   onDelete: (id: string) => void;
   onUpdateGeometry: (id: string, newGeometry: Annotation['geometry']) => void;
-};
-
-// Information needed for move
-type DragState = {
-  id: string;
-  startPdfX: number;
-  startPdfY: number;
-  initialGeometry: Annotation['geometry'];
-  layerLeft: number;
-  layerTop: number;
 };
 
 /**
@@ -44,6 +36,7 @@ type DragState = {
  * @param props.onCreate - Callback function triggered when a new annotation is created.
  * @param props.onSelect - Callback function triggered when an existing annotation is clicked/selected.
  * @param props.onDelete - Callback function triggered when an annotation is requested for deletion.
+ * @param props.onUpdateGeometry - - Callback function triggered when an New geometry is requested
  * @returns The rendered interactive AnnotationLayer component.
  */
 export default function AnnotationLayer({
@@ -56,72 +49,50 @@ export default function AnnotationLayer({
   onDelete,
   onUpdateGeometry,
 }: Props) {
+  // 0. Context
   const annotationToolsContext = useContext(AnnotationToolsContext);
+
   if (!annotationToolsContext) {
     throw new Error(
       'useAnnotationTools must be used within an AnnotationTools provider'
     );
   }
 
-  // Context consummation
-  const {
-    activeTool,
-    circleDiameter,
-    strokeWidth,
-    rectangleWidth,
-    rectangleHeight,
-    fontSize,
-    color,
-  } = annotationToolsContext;
+  const { activeTool, strokeWidth, color, fontSize } = annotationToolsContext;
 
-  // 'drag' preserves the initial position and geometry of the annotation.
-  // This allows each displacement to be calculated from the starting position,
-  // rather than accumulating displacement errors.
-  const [drag, setDrag] = useState<DragState | null>(null);
-  const suppressNextClick = useRef(false);
+  // 1. Hook for dragging and moving existing annotations (manages suppressNextClick)
+  const { handleMouseDownDrag, suppressNextClick } = useAnnotationDrag({
+    viewport,
+    onSelect,
+    onUpdateGeometry,
+  });
 
-  // Move annotation
-  const handleMouseDown = (
-    event: MouseEvent<HTMLDivElement>,
-    annotation: Annotation
-  ) => {
-    if (event.button !== 0) return;
+  // 2. Hook for drawing/creating new annotations via click
+  const { handleMouseDown, handleClick, preview } = useAnnotationDraw({
+    viewport,
+    pageNumber,
+    onCreate,
+    suppressNextClick,
+  });
 
-    event.preventDefault();
-    event.stopPropagation();
+  // 3. Hook Text input
+  const [textInput, setTextInput] = useState<{
+    pdfX: number;
+    pdfY: number;
+    viewportX: number;
+    viewportY: number;
+  } | null>(null);
 
-    // `parentElement` refers to the layer containing the annotations.
-    // It is relative to this layer that we calculate the pointer’s coordinates
-    const layerRect =
-      event.currentTarget.parentElement?.getBoundingClientRect();
-
-    if (!layerRect) return;
-
-    const [startPdfX, startPdfY] = viewport.convertToPdfPoint(
-      event.clientX - layerRect.left,
-      event.clientY - layerRect.top
-    );
-
-    onSelect(annotation.id);
-
-    setDrag({
-      id: annotation.id,
-      startPdfX,
-      startPdfY,
-      initialGeometry: annotation.geometry,
-      layerLeft: layerRect.left,
-      layerTop: layerRect.top,
-    });
-  };
-
-  //Create Annotations
-  const handleClick = (event: MouseEvent<HTMLDivElement>) => {
-    if (activeTool !== 'circle' && activeTool !== 'rectangle') return;
-
+  const handleLayerClick = (event: MouseEvent<HTMLDivElement>) => {
+    // Ignore the click generated after drawing or dragging.
     if (suppressNextClick.current) {
-      suppressNextClick.current = false;
+      handleClick();
       return;
     }
+
+    handleClick();
+
+    if (activeTool !== 'text') return;
 
     const rect = event.currentTarget.getBoundingClientRect();
 
@@ -130,146 +101,140 @@ export default function AnnotationLayer({
 
     const [pdfX, pdfY] = viewport.convertToPdfPoint(viewportX, viewportY);
 
-    const annotation: Annotation = {
-      id: getRandomId(),
-      page: pageNumber,
-      type: activeTool,
-      geometry:
-        activeTool === 'circle'
-          ? {
-              x: pdfX,
-              y: pdfY,
-              radius: circleDiameter / (2 * viewport.scale),
-            }
-          : {
-              x: pdfX,
-              y: pdfY,
-              width: rectangleWidth / viewport.scale,
-              height: rectangleHeight / viewport.scale,
-            },
-      style: {
-        color,
-        strokeWidth,
-        opacity: 1,
-      },
-    };
-
-    onCreate(annotation);
+    setTextInput({
+      pdfX,
+      pdfY,
+      viewportX,
+      viewportY,
+    });
   };
-
-  // Handling mouse movement
-  useEffect(() => {
-    if (!drag) return;
-
-    const handleMouseMove = (event: globalThis.MouseEvent) => {
-      const [pdfX, pdfY] = viewport.convertToPdfPoint(
-        event.clientX - drag.layerLeft,
-        event.clientY - drag.layerTop
-      );
-
-      const dx = pdfX - drag.startPdfX;
-      const dy = pdfY - drag.startPdfY;
-
-      onUpdateGeometry(drag.id, {
-        ...drag.initialGeometry,
-        x: drag.initialGeometry.x + dx,
-        y: drag.initialGeometry.y + dy,
-      });
-
-      suppressNextClick.current = true;
-    };
-
-    const handleMouseUp = () => {
-      setDrag(null);
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseup', handleMouseUp);
-
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [drag, viewport, onUpdateGeometry]);
 
   return (
     <div
       className="pointer-events-auto absolute inset-0"
-      onClick={handleClick}
+      onMouseDown={handleMouseDown}
+      onClick={handleLayerClick}
     >
-      {/*Pass through all the annotations to display them on screen */}
-      {annotations.map((annotation) => {
-        if (annotation.type !== 'circle' && annotation.type !== 'rectangle') {
-          return null;
-        }
+      {textInput && (
+        <input
+          autoFocus
+          type="text"
+          placeholder="Type your text..."
+          className="absolute bg-white/90 border border-blue-500 rounded px-1 shadow-md z-50 outline-none"
+          style={{
+            left: textInput.viewportX,
+            top: textInput.viewportY,
+            fontSize: `${fontSize * viewport.scale}px`,
+            color,
+          }}
+          onMouseDown={(event) => event.stopPropagation()}
+          onClick={(event) => event.stopPropagation()}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter') {
+              const value = event.currentTarget.value.trim();
 
-        const [x, y] = viewport.convertToViewportPoint(
-          annotation.geometry.x,
-          annotation.geometry.y
-        );
+              if (value) {
+                onCreate({
+                  id: getRandomId(),
+                  page: pageNumber,
+                  type: 'text',
+                  textContent: value,
+                  geometry: {
+                    x1: textInput.pdfX,
+                    y1: textInput.pdfY,
+                  },
+                  style: {
+                    color,
+                    strokeWidth,
+                    fontSize,
+                    opacity: 1,
+                  },
+                });
+              }
 
-        const isSelected = selectedAnnotationId === annotation.id;
+              setTextInput(null);
+            } else if (event.key === 'Escape') {
+              setTextInput(null);
+            }
+          }}
+          onBlur={() => setTextInput(null)}
+        />
+      )}
+      {/* The temporary geometry must be included to AnnotationLayer */}
+      {preview?.type === 'circle' &&
+        (() => {
+          const [x, y] = viewport.convertToViewportPoint(preview.x, preview.y);
 
-        // For each annotation, we have defined a onClick event
-        // onClick will launch onSelect(annotation.id);
+          const radius = preview.radius * viewport.scale;
 
-        const border = `${
-          isSelected ? 4 : annotation.style.strokeWidth
-        }px solid ${annotation.style.color}`;
-
-        if (annotation.type === 'rectangle') {
-          const width = (annotation.geometry.width ?? 0) * viewport.scale;
-          const height = (annotation.geometry.height ?? 0) * viewport.scale;
-
-          //-----------------
-          // rectangle
-          //-----------------
           return (
             <div
-              key={annotation.id}
-              className="pointer-events-auto absolute hover:bg-black/10 cursor-pointer"
-              onClick={(event) => {
-                event.stopPropagation();
-                onSelect(annotation.id);
-              }}
-              onMouseDown={(event) => handleMouseDown(event, annotation)}
+              className="pointer-events-none absolute rounded-full"
               style={{
-                left: x,
-                top: y,
-                width,
-                height,
-                border,
-                opacity: annotation.style.opacity ?? 1,
+                left: x - radius,
+                top: y - radius,
+                width: radius * 2,
+                height: radius * 2,
+                border: `${strokeWidth}px solid ${color}`,
+                opacity: 0.7,
               }}
             />
           );
-        }
+        })()}
+      {preview?.type === 'rectangle' &&
+        (() => {
+          return (
+            <div
+              className="pointer-events-none absolute"
+              style={{
+                left: preview.x1,
+                top: preview.y1,
+                width: preview.width,
+                height: preview.height,
+                border: `${strokeWidth}px solid ${color}`,
+                opacity: 0.7,
+              }}
+            />
+          );
+        })()}
+      {preview?.type === 'arrow' &&
+        (() => {
+          const [x1, y1] = viewport.convertToViewportPoint(
+            preview.x1,
+            preview.y1
+          );
+          const [x2, y2] = viewport.convertToViewportPoint(
+            preview.x2,
+            preview.y2
+          );
+          console.log('preview.x', preview.x1, 'x1', x1);
+          return (
+            <svg className="pointer-events-none absolute inset-0 overflow-visible">
+              <line
+                x1={preview.x1}
+                y1={preview.y1}
+                x2={preview.x2}
+                y2={preview.y2}
+                stroke={color}
+                strokeWidth={strokeWidth}
+                strokeLinecap="round"
+                opacity={0.7}
+              />
+            </svg>
+          );
+        })()}
 
-        //-----------------
-        // circle
-        // rounded-full (Tailwind class): transforms a square into a circle.
-        //-----------------
-        const radius = (annotation.geometry.radius ?? 0) * viewport.scale;
-        return (
-          <div
-            key={annotation.id}
-            className="pointer-events-auto absolute rounded-full  hover:bg-black/10 cursor-pointer"
-            onClick={(event) => {
-              event.stopPropagation();
-              onSelect(annotation.id);
-            }}
-            onMouseDown={(event) => handleMouseDown(event, annotation)}
-            style={{
-              left: x - radius,
-              top: y - radius,
-              width: radius * 2,
-              height: radius * 2,
-              border,
-              opacity: annotation.style.opacity ?? 1,
-            }}
-          />
-        );
-      })}
+      {annotations.map((annotation) => (
+        <AnnotationItem
+          key={annotation.id}
+          annotation={annotation}
+          viewport={viewport}
+          isSelected={selectedAnnotationId === annotation.id}
+          onDelete={onDelete}
+          onSelect={onSelect}
+          onMouseDown={handleMouseDownDrag}
+        />
+      ))}
     </div>
   );
 }

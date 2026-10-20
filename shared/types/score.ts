@@ -122,16 +122,20 @@ export type Annotation = {
   id: string;
   page: number;
   type: string; // type: 'circle' | 'line' | 'highlight' | 'text';
+  textContent: string;
   geometry: {
-    x: number;
-    y: number;
-    radius?: number;
-    width?: number;
-    height?: number;
+    x1: number; // Centre (circle), top-left corner (rectangle), or starting point (arrow)
+    y1: number; // Centre (circle), top-left corner (rectangle), or starting point (arrow)
+    radius?: number; // Only for the circle
+    width?: number; // Only for the rectangle
+    height?: number; // Only for the rectangle
+    x2?: number; // Only for the arrow (end point X)
+    y2?: number; // Only for the arrow (end point Y)
   };
   style: {
     color: string;
     strokeWidth: number;
+    fontSize?: number;
     opacity?: number;
   };
 };

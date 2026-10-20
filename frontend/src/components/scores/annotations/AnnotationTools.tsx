@@ -12,10 +12,7 @@ type AnnotationTool = 'circle' | 'arrow' | 'rectangle' | 'text';
 // ---------------------------------------------------------------------
 export type AnnotationToolsContextType = {
   activeTool: AnnotationTool;
-  circleDiameter: number;
   strokeWidth: number;
-  rectangleWidth: number;
-  rectangleHeight: number;
   fontSize: number;
   color: string;
 };
@@ -56,10 +53,7 @@ export default function AnnotationTools({ children }: Props) {
 
   // Active tool and drawing settings.
   const [activeTool, setActiveTool] = useState<AnnotationTool>('circle');
-  const [circleDiameter, setCircleDiameter] = useState(40);
   const [strokeWidth, setStrokeWidth] = useState(2);
-  const [rectangleWidth, setRectangleWidth] = useState(100);
-  const [rectangleHeight, setRectangleHeight] = useState(60);
   const [fontSize, setFontSize] = useState(16);
   const [color, setColor] = useState('#ff0000');
 
@@ -128,10 +122,7 @@ export default function AnnotationTools({ children }: Props) {
     <AnnotationToolsContext.Provider
       value={{
         activeTool,
-        circleDiameter,
         strokeWidth,
-        rectangleWidth,
-        rectangleHeight,
         fontSize,
         color,
       }}
@@ -178,7 +169,7 @@ export default function AnnotationTools({ children }: Props) {
               </button>
             </div>
 
-            <div className="space-y-4 p-3 max-h-[60vh] overflow-y-auto">
+            <div className="space-y-4 p-3 overflow-y-auto">
               {/* Shape and text tools. */}
               <section>
                 <h3 className="mb-2 text-xs font-semibold uppercase text-gray-500">
@@ -218,69 +209,6 @@ export default function AnnotationTools({ children }: Props) {
                     T Text
                   </button>
                 </div>
-              </section>
-
-              {/* Circle settings. */}
-              <section className="space-y-2 ">
-                <h3 className="text-xs font-semibold uppercase text-gray-500">
-                  Circle
-                </h3>
-
-                <label className="flex items-center justify-between gap-3 text-sm">
-                  Diameter
-                  <span className="flex items-center gap-2 ">
-                    <input
-                      type="number"
-                      min={2}
-                      max={500}
-                      value={circleDiameter}
-                      onChange={(event) =>
-                        setCircleDiameter(
-                          Math.max(2, Number(event.target.value))
-                        )
-                      }
-                      className={settingInputClass}
-                    />
-                    <span className="text-gray-500">px</span>
-                  </span>
-                </label>
-              </section>
-
-              {/* Rectangle settings. */}
-              <section className="space-y-2">
-                <h3 className="text-xs font-semibold uppercase text-gray-500">
-                  Rectangle
-                </h3>
-
-                <label className="flex items-center justify-between gap-3 text-sm">
-                  Width
-                  <input
-                    type="number"
-                    min={2}
-                    max={1000}
-                    value={rectangleWidth}
-                    onChange={(event) =>
-                      setRectangleWidth(Math.max(2, Number(event.target.value)))
-                    }
-                    className={settingInputClass}
-                  />
-                </label>
-
-                <label className="flex items-center justify-between gap-3 text-sm">
-                  Height
-                  <input
-                    type="number"
-                    min={2}
-                    max={1000}
-                    value={rectangleHeight}
-                    onChange={(event) =>
-                      setRectangleHeight(
-                        Math.max(2, Number(event.target.value))
-                      )
-                    }
-                    className={settingInputClass}
-                  />
-                </label>
               </section>
 
               {/* Line and text appearance. */}
@@ -336,15 +264,12 @@ export default function AnnotationTools({ children }: Props) {
 
               <div className="border-t border-gray-200 pt-2 text-xs text-gray-500">
                 <strong>
-                  {activeTool.charAt(0).toUpperCase() + activeTool.slice(1)} :
+                  {activeTool.charAt(0).toUpperCase() + activeTool.slice(1)}
                 </strong>
-                {activeTool === 'circle' &&
-                  ` Diam = ${circleDiameter}  (${color}) `}
-                {activeTool === 'rectangle' &&
-                  ` ${rectangleWidth} x ${rectangleHeight} (${color}) `}
-                {activeTool === 'arrow' &&
-                  ` Width = ${strokeWidth}  (${color}) `}
-                {activeTool === 'text' && ` Font = ${fontSize}  (${color}) `}
+                {activeTool !== 'text' &&
+                  ` ::  Size ${strokeWidth} - Color ${color}`}
+                {activeTool === 'text' &&
+                  ` - Font ${fontSize} - Color ${color}`}
               </div>
             </div>
           </div>
