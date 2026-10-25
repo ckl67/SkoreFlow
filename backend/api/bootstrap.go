@@ -85,21 +85,37 @@ func Start(version string) {
 	// ====>> Files stored in demo/scores/
 
 	const demoAnnotations = `[
-  {
-    "id": "annotation-124",
-    "page": 3,
-    "type": "rectangle",
-    "geometry": {
-      "x": 120,
-      "y": 180,
-      "width": 150,
-      "height": 60
-    },
-    "style": {
-      "color": "#ff0000",
-      "strokeWidth": 2
-    }
-  }]`
+			{
+				"id": "annotation-DemoB",
+				"page": 2,
+				"type": "rectangle",
+				"geometry": {
+					"x1": 120,
+					"y1": 180,
+					"width": 150,
+					"height": 60
+				},
+				"style": {
+					"color": "#ff0000",
+					"strokeWidth": 2
+				}
+			},
+			{
+			"id": "annotation-DemoA",
+			"page": 1,
+			"type": "circle",
+			"geometry": {
+				"x1": 150,
+				"y1": 200,
+				"radius": 20
+			},
+			"style": {
+				"color": "#ff0000",
+				"strokeWidth": 2,
+				"opacity": 1
+			}
+		}
+	]`
 
 	// cspell:disable
 	demoScores := []scores{
@@ -189,12 +205,12 @@ func Start(version string) {
 
 		const testAnnotations = `[
 			{
-				"id": "annotation-122",
-				"page": 3,
+				"id": "annotation-B",
+				"page": 2,
 				"type": "rectangle",
 				"geometry": {
-					"x": 120,
-					"y": 180,
+					"x1": 120,
+					"y1": 180,
 					"width": 150,
 					"height": 60
 				},
@@ -204,12 +220,12 @@ func Start(version string) {
 				}
 			},
 			{
-			"id": "annotation-123",
-			"page": 3,
+			"id": "annotation-A",
+			"page": 1,
 			"type": "circle",
 			"geometry": {
-				"x": 150,
-				"y": 200,
+				"x1": 150,
+				"y1": 200,
 				"radius": 20
 			},
 			"style": {

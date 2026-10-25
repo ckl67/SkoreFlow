@@ -15,6 +15,12 @@ type Props = {
   onMouseDown: (event: MouseEvent<Element>, annotation: Annotation) => void;
 };
 
+/**
+ * Represent 1 Annotation item : either circle/ rectangle /...
+ *
+ * @param param0
+ * @returns
+ */
 export function AnnotationItem({
   annotation,
   viewport,
@@ -49,7 +55,7 @@ export function AnnotationItem({
         key={annotation.id}
         className="pointer-events-auto absolute hover:bg-black/10 cursor-pointer"
         onClick={(event) => {
-          event.stopPropagation();
+          event.stopPropagation(); // ‘Stop right there! Don’t pass the event any further up!”
           onSelect(annotation.id);
         }}
         onMouseDown={(event) => onMouseDown(event, annotation)}

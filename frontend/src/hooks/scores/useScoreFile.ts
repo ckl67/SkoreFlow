@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
 import { logger } from '../../../logger/logger';
-import { getScoreThumbnail, getScoreFile } from '../../services/scores/scoresService';
+import {
+  getScoreThumbnail,
+  getScoreFile,
+} from '../../services/scores/scoresService';
 
 // Remember
 // Always pairing:
@@ -84,11 +87,19 @@ export function useScoreFile(id: number) {
         }
 
         createdUrl = objectURL;
-        logger.debug('score', '[useScoreFile] Created PDF object URL', objectURL);
+        logger.debug(
+          'score',
+          '[useScoreFile] Created PDF object URL',
+          objectURL
+        );
         setFileURL(objectURL);
       } catch (error) {
         if (!cancelled) {
-          logger.error('score', '[useScoreFile] Failed loading score file', error);
+          logger.error(
+            'score',
+            '[useScoreFile] Failed loading score file',
+            error
+          );
           setError('Unable to load the partition information.');
         }
       } finally {

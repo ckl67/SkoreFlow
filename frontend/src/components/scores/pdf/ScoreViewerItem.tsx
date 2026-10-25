@@ -15,8 +15,16 @@ import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs';
 
 import AnnotationEditor from '../annotations/AnnotationEditor';
 import { useScorePageRenderer } from '../../../hooks/scores/useScorePageRenderer';
+import type { Dispatch, SetStateAction } from 'react';
+import type {
+  Annotation,
+  ScorePublicResponse,
+} from '../../../../../shared/types/score';
 
 type Props = {
+  score: ScorePublicResponse;
+  allAnnotations: Annotation[];
+  setAllAnnotations: Dispatch<SetStateAction<Annotation[]>>;
   pdfPage: pdfjsLib.PDFPageProxy;
   pageNumber: number;
   width: number;
@@ -40,6 +48,9 @@ type Props = {
  * @returns The rendered ScoreViewerItem component.
  */
 export function ScoreViewerItem({
+  score,
+  allAnnotations,
+  setAllAnnotations,
   pdfPage,
   pageNumber,
   width,
@@ -65,12 +76,14 @@ export function ScoreViewerItem({
         height: viewport?.height,
       }}
     >
-      {/* Here we displays the pdf score */}
+      {/* Here we display the pdf score */}
       <canvas ref={canvasRef} />
 
       {/* AnnotationEditor is responsible for displaying and managing the editor for annotations */}
       {viewport && (
         <AnnotationEditor
+          allAnnotations={allAnnotations}
+          setAllAnnotations={setAllAnnotations}
           viewport={viewport}
           pageNumber={pageNumber}
         />

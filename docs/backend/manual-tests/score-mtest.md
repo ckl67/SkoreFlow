@@ -23,6 +23,57 @@ curl http://localhost:8080/api/${API_VERSION}
 
 ## public - demo
 
+```shell
+# All Scores
+curl "http://localhost:8080/api/${API_VERSION}/demo/scores?page=1&limit=5" | jq
+
+# A score
+curl "http://localhost:8080/api/${API_VERSION}/demo/scores/2" | jq
+
+# Annotations
+# Frontend is responsible about the annotations.
+# Meaning that the annotation update will completely remove the
+# stored annotation, to replace them with the new annotations
+curl -X PATCH "http://localhost:8080/api/${API_VERSION}/demo/scores/2/annotations" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "annotations": [
+      {
+        "id": "NEW-annotation-120",
+        "page": 1,
+        "type": "rectangle",
+        "geometry": {
+          "x1": 120,
+          "y1": 180,
+          "width": 150,
+          "height": 60
+        },
+        "style": {
+          "color": "#ff0000",
+          "strokeWidth": 2
+        }
+      },
+            {
+        "id": "NEW-annotation-125",
+        "page": 2,
+        "type": "circle",
+        "geometry": {
+          "x1": 120,
+          "y1": 180,
+          "radius": 150
+        },
+        "style": {
+          "color": "#ffff00",
+          "strokeWidth": 2
+        }
+      }
+
+    ]
+  }' | jq
+
+
+```
+
 ## private
 
 ### Prerequisite
@@ -212,8 +263,8 @@ curl -X PATCH "http://localhost:8080/api/${API_VERSION}/scores/11/annotations" \
         "page": 3,
         "type": "rectangle",
         "geometry": {
-          "x": 120,
-          "y": 180,
+          "x1": 120,
+          "y1": 180,
           "width": 150,
           "height": 60
         },

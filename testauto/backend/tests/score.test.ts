@@ -19,7 +19,11 @@ import { UpdateScoreAnnotations } from '../helpers/score';
 // ----------------------------------------------------------------------------
 // LOCAL HELPER
 // ----------------------------------------------------------------------------
-function makeScore(composer_id: number, score_name: string, scoreRandomName: boolean): CreateScorePayload {
+function makeScore(
+  composer_id: number,
+  score_name: string,
+  scoreRandomName: boolean
+): CreateScorePayload {
   const id = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
   let scoreName: string;
@@ -42,8 +46,14 @@ function makeScore(composer_id: number, score_name: string, scoreRandomName: boo
 // ----------------------------------------------------------------------------
 
 // Could theoretically provide several composers !
-async function getComposerId(composerName: string, token: string): Promise<number> {
-  console.log('  --> Find score with composerName = %s --> (Name must match 100%)', composerName);
+async function getComposerId(
+  composerName: string,
+  token: string
+): Promise<number> {
+  console.log(
+    '  --> Find score with composerName = %s --> (Name must match 100%)',
+    composerName
+  );
   const resComposer = await getComposersByName(composerName, token);
 
   expect(resComposer.status).toBe(200);
@@ -58,7 +68,9 @@ async function getComposerId(composerName: string, token: string): Promise<numbe
   // This is an arrow function called for each element in the composers array.
   // (composer) represents the current element in the array during the iteration.
   //  composer.name === '...' checks whether the name property of that element is exactly equal to the string 'Wolfgang Amadeus Mozart'.
-  const composer = resComposer.data.data?.composers.find((composer) => composer.name === composerName);
+  const composer = resComposer.data.data?.composers.find(
+    (composer) => composer.name === composerName
+  );
 
   expect(composer).toBeDefined();
 
@@ -122,10 +134,16 @@ describe('🎼 Score API - From the User Point of view', () => {
   // CREATE SCORE
   // ----------------------------------------------------------------------------
   it('should create a score', async () => {
-    const composerId = await getComposerId('Wolfgang Amadeus Mozart', TOKEN_USER1);
+    const composerId = await getComposerId(
+      'Wolfgang Amadeus Mozart',
+      TOKEN_USER1
+    );
     const score = makeScore(composerId, 'La Marche Turque', true);
 
-    const resourceFilePath = path.resolve(__dirname, '../resources/scores/Amadeus Mozart/La Marche Turque.pdf');
+    const resourceFilePath = path.resolve(
+      __dirname,
+      '../resources/scores/Amadeus Mozart/La Marche Turque.pdf'
+    );
     const res = await createScore(score, resourceFilePath, TOKEN_USER1);
 
     expect(res.status).toBe(201);
@@ -137,9 +155,15 @@ describe('🎼 Score API - From the User Point of view', () => {
   // ----------------------------------------------------------------------------
 
   it('should not create a score because already exists', async () => {
-    const resourceFilePath = path.resolve(__dirname, '../resources/scores/Amadeus Mozart/La Marche Turque.pdf');
+    const resourceFilePath = path.resolve(
+      __dirname,
+      '../resources/scores/Amadeus Mozart/La Marche Turque.pdf'
+    );
 
-    const composerId = await getComposerId('Wolfgang Amadeus Mozart', TOKEN_USER1);
+    const composerId = await getComposerId(
+      'Wolfgang Amadeus Mozart',
+      TOKEN_USER1
+    );
 
     const score = makeScore(composerId, 'La Marche Turque', true);
     const res1 = await createScore(score, resourceFilePath, TOKEN_USER1);
@@ -147,7 +171,9 @@ describe('🎼 Score API - From the User Point of view', () => {
 
     expect(res1.status).toBe(201);
     expect(res2.status).toBe(409);
-    expect(res2.data.error!.message).toBe('score already exists for this user and composer');
+    expect(res2.data.error!.message).toBe(
+      'score already exists for this user and composer'
+    );
   });
 
   // ----------------------------------------------------------------------------
@@ -155,7 +181,10 @@ describe('🎼 Score API - From the User Point of view', () => {
   // ----------------------------------------------------------------------------
 
   it('should not create a score because composer does not exist', async () => {
-    const resourceFilePath = path.resolve(__dirname, '../resources/scores/Amadeus Mozart/La Marche Turque.pdf');
+    const resourceFilePath = path.resolve(
+      __dirname,
+      '../resources/scores/Amadeus Mozart/La Marche Turque.pdf'
+    );
 
     const score = makeScore(999999, 'Score with invalid composer', true);
 
@@ -178,7 +207,10 @@ describe('🎼 Score API - From the User Point of view', () => {
   });
 
   it('should not create a score because wrong file ', async () => {
-    const resourceFilePath = path.resolve(__dirname, '../resources/scores/Amadeus Mozart/La Marche Turque.pdff');
+    const resourceFilePath = path.resolve(
+      __dirname,
+      '../resources/scores/Amadeus Mozart/La Marche Turque.pdff'
+    );
 
     const composerId = await getComposerId('Iron Maiden', TOKEN_USER1);
 
@@ -191,55 +223,73 @@ describe('🎼 Score API - From the User Point of view', () => {
   // SHOULD ACCEPT DIFFERENT DATE FORMAT
   // ----------------------------------------------------------------------------
 
-  it.each(['1962', '1962-05-14', '1962-05-14T00:00:00Z'])('should accept release date "%s"', async (releaseDate) => {
-    const composerId = await getComposerId('Wolfgang Amadeus Mozart', TOKEN_USER1);
-    const score = makeScore(composerId, 'La Marche Turque', true);
+  it.each(['1962', '1962-05-14', '1962-05-14T00:00:00Z'])(
+    'should accept release date "%s"',
+    async (releaseDate) => {
+      const composerId = await getComposerId(
+        'Wolfgang Amadeus Mozart',
+        TOKEN_USER1
+      );
+      const score = makeScore(composerId, 'La Marche Turque', true);
 
-    const resourceFilePath = path.resolve(__dirname, '../resources/scores/Amadeus Mozart/La Marche Turque.pdf');
-    const res = await createScore(
-      {
-        composerId: score.composerId,
-        scoreName: score.scoreName,
-        releaseDate: releaseDate,
-        categories: score.categories,
-        tags: score.tags,
-        informationText: score.informationText,
-        annotations: score.annotations,
-      },
-      resourceFilePath,
-      TOKEN_USER1
-    );
+      const resourceFilePath = path.resolve(
+        __dirname,
+        '../resources/scores/Amadeus Mozart/La Marche Turque.pdf'
+      );
+      const res = await createScore(
+        {
+          composerId: score.composerId,
+          scoreName: score.scoreName,
+          releaseDate: releaseDate,
+          categories: score.categories,
+          tags: score.tags,
+          informationText: score.informationText,
+          annotations: score.annotations,
+        },
+        resourceFilePath,
+        TOKEN_USER1
+      );
 
-    expect(res.status).toBe(201);
-    expect(res.data.data!.message).toBe('Score created successfully');
-  });
+      expect(res.status).toBe(201);
+      expect(res.data.data!.message).toBe('Score created successfully');
+    }
+  );
 
   // ----------------------------------------------------------------------------
   // SHOULD NOT ACCEPT DIFFERENT DATE FORMAT
   // ----------------------------------------------------------------------------
 
-  it.each(['1962-13-01', '1962-99-99'])('should not accept release date "%s"', async (releaseDate) => {
-    const composerId = await getComposerId('Wolfgang Amadeus Mozart', TOKEN_USER1);
-    const score = makeScore(composerId, 'La Marche Turque', true);
+  it.each(['1962-13-01', '1962-99-99'])(
+    'should not accept release date "%s"',
+    async (releaseDate) => {
+      const composerId = await getComposerId(
+        'Wolfgang Amadeus Mozart',
+        TOKEN_USER1
+      );
+      const score = makeScore(composerId, 'La Marche Turque', true);
 
-    const resourceFilePath = path.resolve(__dirname, '../resources/scores/Amadeus Mozart/La Marche Turque.pdf');
-    const res = await createScore(
-      {
-        composerId: score.composerId,
-        scoreName: score.scoreName,
-        releaseDate: releaseDate,
-        categories: score.categories,
-        tags: score.tags,
-        informationText: score.informationText,
-        annotations: score.annotations,
-      },
-      resourceFilePath,
-      TOKEN_USER1
-    );
+      const resourceFilePath = path.resolve(
+        __dirname,
+        '../resources/scores/Amadeus Mozart/La Marche Turque.pdf'
+      );
+      const res = await createScore(
+        {
+          composerId: score.composerId,
+          scoreName: score.scoreName,
+          releaseDate: releaseDate,
+          categories: score.categories,
+          tags: score.tags,
+          informationText: score.informationText,
+          annotations: score.annotations,
+        },
+        resourceFilePath,
+        TOKEN_USER1
+      );
 
-    expect(res.status).toBe(400);
-    expect(res.data.error!.message).toBe('invalid date format');
-  });
+      expect(res.status).toBe(400);
+      expect(res.data.error!.message).toBe('invalid date format');
+    }
+  );
 
   // ----------------------------------------------------------------------------
   // LIST SCORES
@@ -286,9 +336,15 @@ describe('🎼 Score API - From the User Point of view', () => {
   // 2) SECOND PAGE;
   // ----------------------------------------------------------------------------
   it('should get the second page of scores', async () => {
-    const page1 = await GetScoresPage({ page: 1, limit: 2, sort: 'id asc' }, TOKEN_USER1);
+    const page1 = await GetScoresPage(
+      { page: 1, limit: 2, sort: 'id asc' },
+      TOKEN_USER1
+    );
 
-    const page2 = await GetScoresPage({ page: 2, limit: 2, sort: 'id asc' }, TOKEN_USER1);
+    const page2 = await GetScoresPage(
+      { page: 2, limit: 2, sort: 'id asc' },
+      TOKEN_USER1
+    );
 
     expect(page1.status).toBe(200);
     expect(page2.status).toBe(200);
@@ -365,7 +421,9 @@ describe('🎼 Score API - From the User Point of view', () => {
     const scores = res.data.data!.scores;
 
     for (let i = 1; i < scores.length; i++) {
-      expect(scores[i].composer.name.localeCompare(scores[i - 1].composer.name)).toBeGreaterThanOrEqual(0);
+      expect(
+        scores[i].composer.name.localeCompare(scores[i - 1].composer.name)
+      ).toBeGreaterThanOrEqual(0);
     }
   });
 
@@ -378,7 +436,9 @@ describe('🎼 Score API - From the User Point of view', () => {
     const scores = res.data.data!.scores;
 
     for (let i = 1; i < scores.length; i++) {
-      expect(scores[i].composer.name.localeCompare(scores[i - 1].composer.name)).toBeLessThanOrEqual(0);
+      expect(
+        scores[i].composer.name.localeCompare(scores[i - 1].composer.name)
+      ).toBeLessThanOrEqual(0);
     }
   });
 
@@ -407,29 +467,47 @@ describe('🎼 Score API - From the User Point of view', () => {
   });
 
   it('should filter scores : Contains Pathétique exact', async () => {
-    const res = await GetScoresPage({ name: 'Pathétique', searchMode: 'exact' }, TOKEN_USER2);
+    const res = await GetScoresPage(
+      { name: 'Pathétique', searchMode: 'exact' },
+      TOKEN_USER2
+    );
     expect(res.status).toBe(200);
-    expect(res.data.data?.message).equal('no score found with exact name: Pathétique');
+    expect(res.data.data?.message).equal(
+      'no score found with exact name: Pathétique'
+    );
   });
 
   it('should filter scores : Contains all composers containing Beethoven', async () => {
-    const res = await GetScoresPage({ composer: 'Beethoven', searchMode: 'exact' }, TOKEN_USER2);
+    const res = await GetScoresPage(
+      { composer: 'Beethoven', searchMode: 'exact' },
+      TOKEN_USER2
+    );
     expect(res.status).toBe(200);
     expect(res.data.data?.message).equal('no scores found');
   });
 
   it('should filter scores : Contains Composer Exact : Ludwig van Beethoven + Pathétique', async () => {
     const res = await GetScoresPage(
-      { composer: 'Ludwig van Beethoven', searchMode: 'exact', name: 'Pathétique' },
+      {
+        composer: 'Ludwig van Beethoven',
+        searchMode: 'exact',
+        name: 'Pathétique',
+      },
       TOKEN_USER2
     );
     expect(res.status).toBe(200);
-    expect(res.data.data?.message).equal('no score found with exact name: Pathétique');
+    expect(res.data.data?.message).equal(
+      'no score found with exact name: Pathétique'
+    );
   });
 
   it('should filter scores : Contains Composer Exact : Ludwig van Beethoven + Adagio Pathétique', async () => {
     const res = await GetScoresPage(
-      { composer: 'Ludwig van Beethoven', searchMode: 'exact', name: 'Adagio Pathétique' },
+      {
+        composer: 'Ludwig van Beethoven',
+        searchMode: 'exact',
+        name: 'Adagio Pathétique',
+      },
       TOKEN_USER2
     );
     expect(res.status).toBe(200);
@@ -456,7 +534,10 @@ describe('🎼 Score API - From the User Point of view', () => {
   });
 
   it('should return no scores for an unknown composer', async () => {
-    const res = await GetScoresPage({ composer: 'ThisComposerDoesNotExist' }, TOKEN_USER1);
+    const res = await GetScoresPage(
+      { composer: 'ThisComposerDoesNotExist' },
+      TOKEN_USER1
+    );
 
     expect(res.status).toBe(200);
     expect(res.data.success).toBe(true);
@@ -611,8 +692,15 @@ describe('🎼 Score API - From the User Point of view', () => {
     expect(scores.status).toBe(200);
     const score = scores.data.data!.scores[0];
 
-    const newComposerId = await getComposerId('Ludwig van Beethoven', TOKEN_USER1);
-    console.log('Old ComposerId = %s --> %s = New ComposerId', score.composerId, newComposerId);
+    const newComposerId = await getComposerId(
+      'Ludwig van Beethoven',
+      TOKEN_USER1
+    );
+    console.log(
+      'Old ComposerId = %s --> %s = New ComposerId',
+      score.composerId,
+      newComposerId
+    );
 
     expect(score.composerId).not.toBe(newComposerId);
 
@@ -733,7 +821,10 @@ describe('🎼 Score API - From the User Point of view', () => {
   // ----------------------------------------------------------------------------
 
   it('should Update the File of a score', async () => {
-    const resourceFilePath = path.resolve(__dirname, '../resources/scores/Supertramp/Logical Song.pdf');
+    const resourceFilePath = path.resolve(
+      __dirname,
+      '../resources/scores/Supertramp/Logical Song.pdf'
+    );
 
     const scores = await GetScoresPage({ limit: 1 }, TOKEN_USER1);
 
@@ -761,10 +852,16 @@ describe('🎼 Score API - From the User Point of view', () => {
   // REVERT BACK TO THE ORIGIN
   // ----------------------------------------------------------------------------
   it('should Revert back to the origin', async () => {
-    const resourceFilePath = path.resolve(__dirname, '../resources/scores/Amadeus Mozart/La Marche Turque.pdf');
+    const resourceFilePath = path.resolve(
+      __dirname,
+      '../resources/scores/Amadeus Mozart/La Marche Turque.pdf'
+    );
 
     // Get Mozart Id
-    const newComposerId = await getComposerId('Wolfgang Amadeus Mozart', TOKEN_USER1);
+    const newComposerId = await getComposerId(
+      'Wolfgang Amadeus Mozart',
+      TOKEN_USER1
+    );
 
     // Get the first score
     const scores = await GetScoresPage({ limit: 1 }, TOKEN_USER1);
@@ -813,9 +910,10 @@ describe('🎼 Score API - From the User Point of view', () => {
         id: 'annotation-128',
         page: 3,
         type: 'rectangle',
+        textContent: '',
         geometry: {
-          x: 120,
-          y: 180,
+          x1: 120,
+          y1: 180,
           width: 150,
           height: 60,
         },
@@ -826,7 +924,10 @@ describe('🎼 Score API - From the User Point of view', () => {
       },
     ];
 
-    const update = await UpdateScoreAnnotations({ scoreId, annotations }, TOKEN_USER1);
+    const update = await UpdateScoreAnnotations(
+      { scoreId, annotations },
+      TOKEN_USER1
+    );
 
     expect(update.status).toBe(200);
     expect(update.data.success).toBe(true);
@@ -870,7 +971,10 @@ describe('🎼 Score API - From the User Point of view', () => {
 
   it('should delete 1 score', async () => {
     // 1. Find the score to delete
-    const scores = await GetScoresPage({ name: 'Logical Song To delete' }, TOKEN_USER6);
+    const scores = await GetScoresPage(
+      { name: 'Logical Song To delete' },
+      TOKEN_USER6
+    );
 
     expect(scores.status).toBe(200);
     expect(scores.data.success).toBe(true);
@@ -886,7 +990,10 @@ describe('🎼 Score API - From the User Point of view', () => {
 
     debugger;
     // 3. Verify that score has been deleted
-    const result = await GetScoresPage({ name: 'Logical Song To delete' }, TOKEN_USER6);
+    const result = await GetScoresPage(
+      { name: 'Logical Song To delete' },
+      TOKEN_USER6
+    );
 
     expect(result.status).toBe(200);
     expect(result.data.success).toBe(true);
@@ -896,7 +1003,10 @@ describe('🎼 Score API - From the User Point of view', () => {
     const composerId = await getComposerId('Supertramp', TOKEN_USER6);
 
     const scoreNew = makeScore(composerId, 'Logical Song To delete', false);
-    const resourceFilePath = path.resolve(__dirname, '../resources/scores/Supertramp/Logical Song to-delete.pdf');
+    const resourceFilePath = path.resolve(
+      __dirname,
+      '../resources/scores/Supertramp/Logical Song to-delete.pdf'
+    );
 
     const res = await createScore(scoreNew, resourceFilePath, TOKEN_USER6);
 
@@ -904,7 +1014,10 @@ describe('🎼 Score API - From the User Point of view', () => {
     expect(res.data.data!.message).toBe('Score created successfully');
 
     // 5. Reverify that score is again there
-    const scoresRC = await GetScoresPage({ name: 'Logical Song To delete' }, TOKEN_USER6);
+    const scoresRC = await GetScoresPage(
+      { name: 'Logical Song To delete' },
+      TOKEN_USER6
+    );
 
     expect(scoresRC.status).toBe(200);
     expect(scoresRC.data.success).toBe(true);
@@ -917,7 +1030,10 @@ describe('🎼 Score API - From the User Point of view', () => {
 
   it('should delete 1 score when the score file is missing', async () => {
     // 1. Find the score to delete
-    const scores = await GetScoresPage({ name: 'Logical Song To delete' }, TOKEN_USER6);
+    const scores = await GetScoresPage(
+      { name: 'Logical Song To delete' },
+      TOKEN_USER6
+    );
 
     expect(scores.status).toBe(200);
     expect(scores.data.success).toBe(true);
@@ -946,17 +1062,25 @@ describe('🎼 Score API - From the User Point of view', () => {
 
     expect(scoreDeleted.status).toBe(200);
     expect(scoreDeleted.data.success).toBe(true);
-    expect(scoreDeleted.data.data?.message).toBe('Score deleted but some files were missing');
+    expect(scoreDeleted.data.data?.message).toBe(
+      'Score deleted but some files were missing'
+    );
 
     // 4. Verify that the score has been deleted from the database
-    const result = await GetScoresPage({ name: 'Logical Song To delete' }, TOKEN_USER6);
+    const result = await GetScoresPage(
+      { name: 'Logical Song To delete' },
+      TOKEN_USER6
+    );
 
     expect(result.status).toBe(200);
     expect(result.data.success).toBe(true);
     expect(result.data.data!.scores.length).toBe(0);
 
     // 5. Recreate the score
-    const resourceFilePath = path.resolve(__dirname, '../resources/scores/Supertramp/Logical Song to-delete.pdf');
+    const resourceFilePath = path.resolve(
+      __dirname,
+      '../resources/scores/Supertramp/Logical Song to-delete.pdf'
+    );
 
     const composerId = await getComposerId('Supertramp', TOKEN_USER6);
     const scoreNew = makeScore(composerId, 'Logical Song To delete', false);
@@ -966,7 +1090,10 @@ describe('🎼 Score API - From the User Point of view', () => {
     expect(res.data.data!.message).toBe('Score created successfully');
 
     // 6. Verify that the score is again there
-    const scoresRC = await GetScoresPage({ name: 'Logical Song To delete' }, TOKEN_USER6);
+    const scoresRC = await GetScoresPage(
+      { name: 'Logical Song To delete' },
+      TOKEN_USER6
+    );
 
     expect(scoresRC.status).toBe(200);
     expect(scoresRC.data.success).toBe(true);
@@ -977,16 +1104,25 @@ describe('🎼 Score API - From the User Point of view', () => {
   // DELETE 2 SCORES AND CLEAN EMPTY DIRECTORY
   // ----------------------------------------------------------------------------
   it('should delete 2 scores', async () => {
-    const scoreDirectory = path.resolve(__dirname, '../../../backend/storage/scores/uploaded/user-5/supertramp');
+    const scoreDirectory = path.resolve(
+      __dirname,
+      '../../../backend/storage/scores/uploaded/user-5/supertramp'
+    );
 
     // 1. Find the scores to delete
-    const scores1 = await GetScoresPage({ name: 'Logical Song To delete' }, TOKEN_USER6);
+    const scores1 = await GetScoresPage(
+      { name: 'Logical Song To delete' },
+      TOKEN_USER6
+    );
 
     expect(scores1.status).toBe(200);
     expect(scores1.data.success).toBe(true);
     expect(scores1.data.data!.scores.length).toBe(1);
 
-    const scores2 = await GetScoresPage({ name: 'School To delete' }, TOKEN_USER6);
+    const scores2 = await GetScoresPage(
+      { name: 'School To delete' },
+      TOKEN_USER6
+    );
 
     expect(scores2.status).toBe(200);
     expect(scores2.data.success).toBe(true);
@@ -996,7 +1132,10 @@ describe('🎼 Score API - From the User Point of view', () => {
     const score2 = scores2.data.data!.scores[0];
 
     // 2. Delete first score
-    const score1Deleted = await DeleteScore({ scoreId: score1.id }, TOKEN_USER6);
+    const score1Deleted = await DeleteScore(
+      { scoreId: score1.id },
+      TOKEN_USER6
+    );
 
     expect(score1Deleted.status).toBe(200);
     expect(score1Deleted.data.success).toBe(true);
@@ -1006,7 +1145,10 @@ describe('🎼 Score API - From the User Point of view', () => {
     await expect(fs.access(scoreDirectory)).resolves.toBeUndefined();
 
     // 3. Delete second score
-    const score2Deleted = await DeleteScore({ scoreId: score2.id }, TOKEN_USER6);
+    const score2Deleted = await DeleteScore(
+      { scoreId: score2.id },
+      TOKEN_USER6
+    );
 
     expect(score2Deleted.status).toBe(200);
     expect(score2Deleted.data.success).toBe(true);
@@ -1016,20 +1158,29 @@ describe('🎼 Score API - From the User Point of view', () => {
     await expect(fs.access(scoreDirectory)).rejects.toThrow();
 
     // 4. Verify that both scores have been deleted from the database
-    const result1 = await GetScoresPage({ name: 'Logical Song To delete' }, TOKEN_USER6);
+    const result1 = await GetScoresPage(
+      { name: 'Logical Song To delete' },
+      TOKEN_USER6
+    );
 
     expect(result1.status).toBe(200);
     expect(result1.data.success).toBe(true);
     expect(result1.data.data!.scores.length).toBe(0);
 
-    const result2 = await GetScoresPage({ name: 'School To delete' }, TOKEN_USER6);
+    const result2 = await GetScoresPage(
+      { name: 'School To delete' },
+      TOKEN_USER6
+    );
 
     expect(result2.status).toBe(200);
     expect(result2.data.success).toBe(true);
     expect(result2.data.data!.scores.length).toBe(0);
 
     // 5. Recreate the score
-    const resourceFilePath1 = path.resolve(__dirname, '../resources/scores/Supertramp/Logical Song to-delete.pdf');
+    const resourceFilePath1 = path.resolve(
+      __dirname,
+      '../resources/scores/Supertramp/Logical Song to-delete.pdf'
+    );
 
     const composerId1 = await getComposerId('Supertramp', TOKEN_USER6);
     const scoreNew1 = makeScore(composerId1, 'Logical Song To delete', false);
@@ -1037,7 +1188,10 @@ describe('🎼 Score API - From the User Point of view', () => {
     expect(res1.status).toBe(201);
     expect(res1.data.data!.message).toBe('Score created successfully');
 
-    const resourceFilePath2 = path.resolve(__dirname, '../resources/scores/Supertramp/School To delete.pdf');
+    const resourceFilePath2 = path.resolve(
+      __dirname,
+      '../resources/scores/Supertramp/School To delete.pdf'
+    );
     const composerId2 = await getComposerId('Supertramp', TOKEN_USER6);
     const scoreNew2 = makeScore(composerId2, 'School To delete', false);
     const res2 = await createScore(scoreNew2, resourceFilePath1, TOKEN_USER6);
@@ -1045,12 +1199,18 @@ describe('🎼 Score API - From the User Point of view', () => {
     expect(res2.data.data!.message).toBe('Score created successfully');
 
     // 6. Verify that the scores are again there
-    const scoresRC1 = await GetScoresPage({ name: 'Logical Song To delete' }, TOKEN_USER6);
+    const scoresRC1 = await GetScoresPage(
+      { name: 'Logical Song To delete' },
+      TOKEN_USER6
+    );
     expect(scoresRC1.status).toBe(200);
     expect(scoresRC1.data.success).toBe(true);
     expect(scoresRC1.data.data!.scores.length).toBeGreaterThan(0);
 
-    const scoresRC2 = await GetScoresPage({ name: 'School To delete' }, TOKEN_USER6);
+    const scoresRC2 = await GetScoresPage(
+      { name: 'School To delete' },
+      TOKEN_USER6
+    );
     expect(scoresRC2.status).toBe(200);
     expect(scoresRC2.data.success).toBe(true);
     expect(scoresRC2.data.data!.scores.length).toBeGreaterThan(0);

@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useRef, useState } from 'react';
 import type { MouseEvent } from 'react';
 import type { PageViewport } from 'pdfjs-dist';
 import type { Annotation } from '../../../../../shared/types/score';
@@ -15,7 +15,7 @@ type Props = {
   annotations: Annotation[];
   selectedAnnotationId: string | null;
   onCreate: (annotation: Annotation) => void;
-  onSelect: (id: string) => void;
+  onSelect: (id: string | null) => void;
   onDelete: (id: string) => void;
   onUpdateGeometry: (id: string, newGeometry: Annotation['geometry']) => void;
 };
@@ -25,8 +25,7 @@ type Props = {
  * and renders existing annotations onto the page by translating PDF coordinates
  * into viewport (screen) coordinates using the PDF.js viewport scaling.
  * It’s a key component! It provides the crucial link between the screen space (browser pixels)
- * and the PDF space (vector coordinates) thanks to PDF.js’s ‘magic’ methods:
- * `convertToPdfPoint` and `convertToViewportPoint`.
+ * and the PDF space (vector coordinates) thanks to PDF.js’s methods: `convertToPdfPoint` and `convertToViewportPoint`.
  *
  * @param props - The component properties.
  * @param props.viewport - The current PageViewport object from PDF.js.
@@ -49,33 +48,70 @@ export default function AnnotationLayer({
   onDelete,
   onUpdateGeometry,
 }: Props) {
+  //---------------------------
   // 0. Context
+  //---------------------------
   const annotationToolsContext = useContext(AnnotationToolsContext);
-
   if (!annotationToolsContext) {
     throw new Error(
       'useAnnotationTools must be used within an AnnotationTools provider'
     );
   }
-
   const { activeTool, strokeWidth, color, fontSize } = annotationToolsContext;
 
-  // 1. Hook for dragging and moving existing annotations (manages suppressNextClick)
-  const { handleMouseDownDrag, suppressNextClick } = useAnnotationDrag({
-    viewport,
-    onSelect,
-    onUpdateGeometry,
-  });
+  //---------------------------
+  // 1. Handle : suppressNextClick
+  // The browser automatically triggers a click event immediately after the mouseup.
+  // We have to handle this event
+  //  If we do nothing, this ‘automatic’ click will land on the layer and CAN
+  //  do a unwanted action from occurring where you have just finished drawing.
+  // The value changes in the cache, ‘behind the scenes’ without rerender
+  //---------------------------
+  const suppressNextClick = useRef(false);
 
-  // 2. Hook for drawing/creating new annotations via click
-  const { handleMouseDown, handleClick, preview } = useAnnotationDraw({
+  //---------------------------
+  // 2. Overview of Mouse Move
+  // * handleMouseDownDrag
+  // * handleMouseDownDraw
+  // These Functions are relative to the MOVE of the mouse
+  //    When we start MOVE the mouse
+  //      - Create : drag and drop (for example, to draw a rectangle or an arrow) or
+  //      - move or Modify an annotation or
+  //  We perform a sequence: mousedown -> mousemove (0 x several times) -> mouseup.
+  //  The problem is that the browser automatically triggers a click event immediately after the mouseup.
+  //---------------------------
+
+  //---------------------------
+  // 2.1 Hook for creating-drawing a new shape-annotation from scratch
+  //  handleMouseDownDraw : Expression function
+  //    Attachment: will be attached to The global background container (<div onMouseDown={handleMouseDown} >).
+  //    Role: It detects clicks made in empty space (on the score, where there are no annotations).
+  //    What: It is used to draw a new shape (start drawing a circle, a rectangle or an arrow by dragging the mouse).
+  //---------------------------
+  const { handleMouseDownDraw, preview } = useAnnotationDraw({
     viewport,
     pageNumber,
     onCreate,
     suppressNextClick,
   });
 
+  //---------------------------
+  // 2.2. Hook for moving an existing annotation
+  //  handleMouseDownDrag : Expression function
+  //    Attachment: On each AnnotationItem (onMouseDown={handleMouseDownDrag})..
+  //    Role: It detects clicks made on an existing annotation
+  //    What: It is used to move (drag and drop) or resize this specific annotation to a different position.
+  //---------------------------
+  const { handleMouseDownDrag } = useAnnotationDrag({
+    viewport,
+    onSelect,
+    onUpdateGeometry,
+    suppressNextClick,
+  });
+
+  //---------------------------
   // 3. Hook Text input
+  //---------------------------
   const [textInput, setTextInput] = useState<{
     pdfX: number;
     pdfY: number;
@@ -83,15 +119,27 @@ export default function AnnotationLayer({
     viewportY: number;
   } | null>(null);
 
+  //---------------------------
+  // Handle Real Click or non wanted click after move
+  //---------------------------
   const handleLayerClick = (event: MouseEvent<HTMLDivElement>) => {
-    // Ignore the click generated after drawing or dragging.
+    console.log(
+      '[handleLayerClick] <Click> suppressNextClick :',
+      suppressNextClick.current
+    );
+
     if (suppressNextClick.current) {
-      handleClick();
+      console.log(
+        '[handleLayerClick] Unwanted Click (suppressNextClick : true-->false) !'
+      );
+      suppressNextClick.current = false;
       return;
     }
 
-    handleClick();
+    // 2. This is a real ‘click into the viewport
+    onSelect(null);
 
+    // 3. Next, if the active tool is text, we handle the addition of the text
     if (activeTool !== 'text') return;
 
     const rect = event.currentTarget.getBoundingClientRect();
@@ -112,7 +160,9 @@ export default function AnnotationLayer({
   return (
     <div
       className="pointer-events-auto absolute inset-0"
-      onMouseDown={handleMouseDown}
+      // Here We Move
+      onMouseDown={handleMouseDownDraw}
+      // Here We click
       onClick={handleLayerClick}
     >
       {textInput && (
@@ -223,7 +273,6 @@ export default function AnnotationLayer({
             </svg>
           );
         })()}
-
       {annotations.map((annotation) => (
         <AnnotationItem
           key={annotation.id}

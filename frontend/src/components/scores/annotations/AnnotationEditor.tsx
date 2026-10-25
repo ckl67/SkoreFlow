@@ -1,10 +1,13 @@
 import type { PageViewport } from 'pdfjs-dist';
-
+import type { Dispatch, SetStateAction } from 'react';
 import { useAnnotations } from '../../../hooks/scores/annotations/useAnnotations';
 import AnnotationLayer from '../annotations/AnnotationLayer';
 import AnnotationTools from './AnnotationTools';
+import { Annotation } from '../../../../../shared/types/score';
 
 type Props = {
+  allAnnotations: Annotation[];
+  setAllAnnotations: Dispatch<SetStateAction<Annotation[]>>;
   viewport: PageViewport;
   pageNumber: number;
 };
@@ -17,9 +20,17 @@ type Props = {
  * @param props.pageNumber - The page number of the score.
  * @returns The rendered AnnotationEditor component.
  */
-export default function AnnotationEditor({ viewport, pageNumber }: Props) {
+export default function AnnotationEditor({
+  allAnnotations,
+  setAllAnnotations,
+  viewport,
+  pageNumber,
+}: Props) {
+  // ----------------
+  // useAnnotations
+  // ----------------
   const { annotations, selectedId, create, select, remove, updateGeometry } =
-    useAnnotations();
+    useAnnotations(pageNumber, allAnnotations, setAllAnnotations);
 
   // console.log('annotation', annotations)
   return (

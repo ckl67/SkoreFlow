@@ -20,8 +20,12 @@ func RegisterDemoRoutes(rg *gin.RouterGroup, composerCtrl *controllers.ComposerC
 		demoGroup.GET("/composers/:id/thumbnail", composerCtrl.GetDemoComposerThumbnail)
 		demoGroup.HEAD("/composers/:id/thumbnail", composerCtrl.GetDemoComposerThumbnail)
 
+		// Scores
 		demoGroup.GET("/scores", scoreCtrl.GetDemoScoresPage) // vitest
 		demoGroup.GET("/scores/:id", scoreCtrl.GetDemoScore)  // vitest
+
+		// Partial update (annotations only BUT All the annotations)
+		demoGroup.PATCH("/scores/:id/annotations", scoreCtrl.UpdateDemoAnnotations)
 
 		demoGroup.GET("/scores/:id/file", scoreCtrl.GetDemoScoreFile)
 		demoGroup.HEAD("/scores/:id/file", scoreCtrl.GetDemoScoreFile)

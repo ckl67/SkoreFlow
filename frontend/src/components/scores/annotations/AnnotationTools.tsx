@@ -1,11 +1,14 @@
 import { createContext, useEffect, useState } from 'react';
 import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react';
-
-type Props = {
-  children: ReactNode;
-};
-
-type AnnotationTool = 'circle' | 'arrow' | 'rectangle' | 'text';
+import {
+  Circle,
+  Undo2,
+  Redo2,
+  MoveUpRight,
+  RectangleHorizontal,
+  WholeWord,
+  SquareDashedPlus,
+} from 'lucide-react'; // For nicer icons https://lucide.dev/icons/
 
 // ---------------------------------------------------------------------
 // Context
@@ -19,7 +22,18 @@ export type AnnotationToolsContextType = {
 
 export const AnnotationToolsContext =
   createContext<AnnotationToolsContextType | null>(null);
+
 // ---------------------------------------------------------------------
+// TYPE
+// ---------------------------------------------------------------------
+
+type Props = {
+  children: ReactNode;
+};
+
+// Current Tools
+type AnnotationTool =
+  'noTool' | 'circle' | 'arrow' | 'rectangle' | 'text' | 'undo' | 'redo';
 
 type ToolbarPosition = {
   x: number;
@@ -31,8 +45,7 @@ type ToolbarPosition = {
  * that manages drawing tool states (active tool, dimensions, stroke width, font size, and color)
  * and handles context menu interactions to position the toolbar over the score.
  *    It handles the display of the toolbox and provides access to the context :
- *    activeTool, circleDiameter, strokeWidth, rectangleWidth,  rectangleHeight,
- *    fontSize,color, ..
+ *    activeTool, fontSize, color, ..
  *
  * @param props - The component properties.
  * @param props.children - The child components wrapped within the annotation tools context provider.
@@ -40,9 +53,8 @@ type ToolbarPosition = {
 
  */
 export default function AnnotationTools({ children }: Props) {
-  const [toolbarOpen, setToolbarOpen] = useState(false);
-
   // Position relative to the browser viewport.
+  const [toolbarOpen, setToolbarOpen] = useState(false);
   const [toolbarPosition, setToolbarPosition] = useState<ToolbarPosition>({
     x: 100,
     y: 100,
@@ -82,6 +94,7 @@ export default function AnnotationTools({ children }: Props) {
     });
 
     event.preventDefault();
+    event.stopPropagation();
   };
 
   // Track dragging outside the toolbar and clean up event listeners.
@@ -108,15 +121,13 @@ export default function AnnotationTools({ children }: Props) {
     };
   }, [isDragging, dragOffset]);
 
+  // Button Selection
   const toolButtonClass = (tool: AnnotationTool) =>
-    `rounded border px-3 py-2 text-sm ${
+    `rounded border p-1 flex items-center justify-center shadow-md transition-all  ${
       activeTool === tool
         ? 'border-blue-600 bg-blue-100 text-blue-800'
         : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-100'
     }`;
-
-  const settingInputClass =
-    'w-20 rounded border border-gray-300 px-2 py-1 text-sm';
 
   return (
     <AnnotationToolsContext.Provider
@@ -135,7 +146,15 @@ export default function AnnotationTools({ children }: Props) {
 
         {toolbarOpen && (
           <div
-            className="fixed z-50 w-72 rounded-lg border bg-white shadow-2xl "
+            // TOOLBAR WINDOW
+            // - fixed: The toolbox floats on the screen and is independent.
+            // - z-50: It moves to the absolute foreground, over the PDF and the rest of the page.
+            // - w-xx: It has a compact fixed width (approximately 288px).
+            // - bg-white: Opaque white background (so that the text in the PDF cannot be seen through it).
+            // - rounded-lg: Modern rounded corners.
+            // - border: A thin grey border to define the frame.
+            // - shadow-2xl: A wide, deep drop shadow that gives the effect of ‘floating’ above the page.
+            className="fixed z-50 bg-white backdrop-blur-sm rounded-lg border border-gray-500 shadow-xl select-none"
             style={{
               left: toolbarPosition.x,
               top: toolbarPosition.y,
@@ -145,21 +164,36 @@ export default function AnnotationTools({ children }: Props) {
               event.stopPropagation();
             }}
           >
-            {/* Draggable toolbar header. */}
             <div
-              className="flex cursor-move items-center justify-between rounded-t-lg border-b border-gray-200 bg-gray-50 px-3 py-2 select-none"
+              // Area that the user drags with the mouse to move the window around the screen).
+              //    flex: Enables Flexbox mode to align child elements  horizontally.
+              //    cursor-move: Changes the mouse cursor to a move icon (a cross with arrows ✥)
+              //    select-none: Prevents accidental selection of the text
+              //    items-center: Vertically centres the text and icons within the header.
+              //    justify-between: Spaces the elements as far apart as possible:
+              //    px-3 py-2: Adds generous internal spacing (padding)
+              //    rounded-t-lg: Rounds only the top corners of the bar.
+              //      The main container (fixed ... rounded-lg): It rounds the entire box,
+              //      but it also applies an implicit `overflow: hidden`
+              //      The problem with the grey background (bg-gray-50):
+              //      The header is a rectangular element positioned at the very top of the box.
+              //      --> Meaning we have to round the top of the rectangle
+              //    border-b border-gray-200: Draws a thin grey border at the bottom (border-b).
+              //    bg-gray-50: Provides a very light grey background, which is the visual standard for distinguishing a title bar from the rest of a white panel.
+              //    onMouseDown={handleMouseDown}: This is the magic trigger! This is where the event listener fires when the user clicks and holds down the mouse button on the bar to start dragging (drag & drop) the toolbox across the screen.
+              className="flex cursor-move items-center justify-between rounded-t-lg border-b border-gray-200 bg-gray-100 px-2 py-1"
               onMouseDown={handleMouseDown}
             >
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-gray-400">⠿</span>
-                <span className="text-sm font-semibold text-gray-700">
+              <div className="flex items-center gap-1">
+                <span className="text-[10px]  text-gray-400">⠿</span>
+                <span className="text-xs font-medium text-gray-600">
                   Annotation Tools
                 </span>
               </div>
 
               <button
                 type="button"
-                className="rounded px-1.5 py-0.5 font-bold text-gray-400 hover:text-gray-700"
+                className="rounded px-1 text-xs font-bold text-gray-400 hover:text-gray-700"
                 onMouseDown={(event) => event.stopPropagation()}
                 onClick={() => setToolbarOpen(false)}
                 title="Close"
@@ -169,57 +203,81 @@ export default function AnnotationTools({ children }: Props) {
               </button>
             </div>
 
-            <div className="space-y-4 p-3 overflow-y-auto">
+            <div className="flex flex-col gap-2 p-2 ">
               {/* Shape and text tools. */}
-              <section>
-                <h3 className="mb-2 text-xs font-semibold uppercase text-gray-500">
-                  Tools
-                </h3>
 
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    className={toolButtonClass('circle')}
-                    onClick={() => setActiveTool('circle')}
-                  >
-                    ○ Circle
-                  </button>
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  className={toolButtonClass('noTool')}
+                  onClick={() => setActiveTool('noTool')}
+                  title="Move/Modify/Delete"
+                >
+                  <SquareDashedPlus className="w-4 h-4" />
+                </button>
 
-                  <button
-                    type="button"
-                    className={toolButtonClass('arrow')}
-                    onClick={() => setActiveTool('arrow')}
-                  >
-                    ↗ Arrow
-                  </button>
+                <button
+                  type="button"
+                  className={toolButtonClass('circle')}
+                  onClick={() => setActiveTool('circle')}
+                  title="Circle"
+                >
+                  <Circle className="w-4 h-4" />
+                </button>
 
-                  <button
-                    type="button"
-                    className={toolButtonClass('rectangle')}
-                    onClick={() => setActiveTool('rectangle')}
-                  >
-                    □ Rectangle
-                  </button>
+                <button
+                  type="button"
+                  className={toolButtonClass('arrow')}
+                  onClick={() => setActiveTool('arrow')}
+                  title="Arrow"
+                >
+                  <MoveUpRight className="w-4 h-4" />
+                </button>
 
-                  <button
-                    type="button"
-                    className={toolButtonClass('text')}
-                    onClick={() => setActiveTool('text')}
-                  >
-                    T Text
-                  </button>
-                </div>
-              </section>
+                <button
+                  type="button"
+                  className={toolButtonClass('rectangle')}
+                  onClick={() => setActiveTool('rectangle')}
+                  title="Rectangle"
+                >
+                  <RectangleHorizontal className="w-4 h-4" />
+                </button>
+
+                <button
+                  type="button"
+                  className={toolButtonClass('text')}
+                  onClick={() => setActiveTool('text')}
+                  title="Text"
+                >
+                  <WholeWord className="w4 h-4" />
+                </button>
+
+                <div className="w-px h-5 bg-gray-200 mx-0.5" />
+
+                <button
+                  type="button"
+                  className={toolButtonClass('undo')}
+                  onClick={() => setActiveTool('undo')}
+                  title="Undo"
+                >
+                  <Undo2 className="w-4 h-4" />
+                </button>
+
+                <button
+                  type="button"
+                  className={toolButtonClass('redo')}
+                  onClick={() => setActiveTool('redo')}
+                  title="Redo"
+                >
+                  <Redo2 className="w-4 h-4" />
+                </button>
+              </div>
 
               {/* Line and text appearance. */}
-              <section className="space-y-2">
-                <h3 className="text-xs font-semibold uppercase text-gray-500">
-                  Style
-                </h3>
-
-                <label className="flex items-center justify-between gap-3 text-sm">
-                  Line thickness
-                  <span className="flex items-center gap-2">
+              <div className="flex items-center justify-between gap-2 pt-1.5 border-t border-gray-100 text-xs">
+                {['circle', 'rectangle', 'arrow'].includes(activeTool) && (
+                  <label className="flex items-center gap-1 text-gray-500">
+                    <span>Line thickness </span>
                     <input
                       type="number"
                       min={1}
@@ -228,15 +286,15 @@ export default function AnnotationTools({ children }: Props) {
                       onChange={(event) =>
                         setStrokeWidth(Math.max(1, Number(event.target.value)))
                       }
-                      className={settingInputClass}
+                      className="w-12 rounded border border-gray-300 px-1 py-0.5 text-center text-xs"
                     />
                     <span className="text-gray-500">px</span>
-                  </span>
-                </label>
+                  </label>
+                )}
 
-                <label className="flex items-center justify-between gap-3 text-sm">
-                  Font size
-                  <span className="flex items-center gap-2">
+                {activeTool === 'text' && (
+                  <label className="flex items-center gap-1 text-gray-500">
+                    <span>Font size </span>
                     <input
                       type="number"
                       min={6}
@@ -245,31 +303,25 @@ export default function AnnotationTools({ children }: Props) {
                       onChange={(event) =>
                         setFontSize(Math.max(6, Number(event.target.value)))
                       }
-                      className={settingInputClass}
+                      className="w-12 rounded border border-gray-300 px-1 py-0.5 text-center text-xs"
                     />
                     <span className="text-gray-500">px</span>
-                  </span>
-                </label>
+                  </label>
+                )}
 
-                <label className="flex items-center justify-between gap-3 text-sm">
-                  Color
-                  <input
-                    type="color"
-                    value={color}
-                    onChange={(event) => setColor(event.target.value)}
-                    className="h-8 w-12 cursor-pointer rounded border border-gray-300"
-                  />
-                </label>
-              </section>
-
-              <div className="border-t border-gray-200 pt-2 text-xs text-gray-500">
-                <strong>
-                  {activeTool.charAt(0).toUpperCase() + activeTool.slice(1)}
-                </strong>
-                {activeTool !== 'text' &&
-                  ` ::  Size ${strokeWidth} - Color ${color}`}
-                {activeTool === 'text' &&
-                  ` - Font ${fontSize} - Color ${color}`}
+                {['circle', 'rectangle', 'arrow', 'text'].includes(
+                  activeTool
+                ) && (
+                  <div className="flex items-center gap-1 text-gray-500 ml-auto">
+                    <span>Color</span>
+                    <input
+                      type="color"
+                      value={color}
+                      onChange={(event) => setColor(event.target.value)}
+                      className="h-6 w-7 cursor-pointer rounded border border-gray-300 p-0 bg-white"
+                    />
+                  </div>
+                )}
               </div>
             </div>
           </div>

@@ -1,18 +1,24 @@
 import { useEffect, useState } from 'react';
 import { logger } from '../../../logger/logger';
 import { getScore } from '../../services/scores/scoresService';
-import { GetScoreResponse } from '../../../../shared/types/score';
+import { ScorePublicResponse } from '../../../../shared/types/score';
 
 // Remember
-
+/**
+ * Return the score information : ScorePublicResponse
+ * @param id
+ * @returns : score, isLoading, error
+ */
 export function useScore(id: number) {
-  const [score, setScore] = useState<GetScoreResponse | null>(null);
+  const [score, setScore] = useState<ScorePublicResponse | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!id || Number.isNaN(id)) return;
-
+    if (!id || Number.isNaN(id)) {
+      setIsLoading(false);
+      return;
+    }
     let cancelled = false;
 
     async function load() {
@@ -34,11 +40,26 @@ export function useScore(id: number) {
           // Here’s the result, res.
           // Add it to the score state and trigger a new re-render so that
           // the screen finally displays the sheet music!"
-          setScore(res);
+          if (res && res.score) {
+            setScore(res.score); // We only extract the 'score' property
+          } else {
+            // Error handling if the response is invalid or incomplete
+            // Reset the score to null if the attempt fails
+            setScore(null);
+            setError('Invalid score payload received from server');
+          }
         }
       } catch (error) {
         if (!cancelled) {
-          logger.error('score', '[useScore] Failed to load scoreId:', id, 'err:', error);
+          logger.error(
+            'score',
+            '[useScore] Failed to load scoreId:',
+            id,
+            'err:',
+            error
+          );
+          // Reset the score to null if the attempt fails
+          setScore(null);
           setError('Unable to load the partition information.');
         }
       } finally {

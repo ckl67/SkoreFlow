@@ -503,9 +503,9 @@ func (s *ScoreService) GetScoresPage(uid uint32, isDemo bool, form forms.GetScor
 }
 
 // UpdateAnnotations updates only the annotations field for a given score.
-func (s *ScoreService) UpdateAnnotations(userId uint32, scoreId uint, form forms.UpdateScoreAnnotationRequest) error {
+func (s *ScoreService) UpdateAnnotations(userId uint32, scoreId uint, isDemo bool, form forms.UpdateScoreAnnotationRequest) error {
 	// 1. Fetch existing Score
-	score, err := models.FindScoreByID(s.db, userId, scoreId, false)
+	score, err := models.FindScoreByID(s.db, userId, scoreId, isDemo)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return apperrors.ErrScoreNotFound
@@ -520,7 +520,6 @@ func (s *ScoreService) UpdateAnnotations(userId uint32, scoreId uint, form forms
 	}
 
 	// 3. Apply updates
-
 	if form.Annotations != nil {
 		if err := score.UpdateAnnotations(
 			s.db,

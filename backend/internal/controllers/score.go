@@ -292,7 +292,7 @@ func (ctrl *ScoreController) UpdateAnnotations(c *gin.Context) {
 		return
 	}
 
-	err = ctrl.service.UpdateAnnotations(uid, uint(scoreID), form)
+	err = ctrl.service.UpdateAnnotations(uid, uint(scoreID), false, form)
 	if err != nil {
 		if errors.Is(err, apperrors.ErrScoreNotFound) {
 			responses.FAIL(c, http.StatusNotFound, err)
@@ -579,4 +579,46 @@ func (ctrl *ScoreController) GetDemoScoreThumbnail(c *gin.Context) {
 	}
 
 	c.File(file)
+}
+
+// UpdateDemoAnnotations
+func (ctrl *ScoreController) UpdateDemoAnnotations(c *gin.Context) {
+	//uid := c.GetUint32("user_id")
+	uid := config.UidDemo
+	// Update for ScoreId id
+	idParam := c.Param("id")
+	scoreID, err := strconv.ParseUint(idParam, 10, 32)
+	if err != nil {
+		responses.FAIL(c, http.StatusBadRequest, apperrors.ErrScoreInvalidID)
+		return
+	}
+
+	// Form binding
+	var form forms.UpdateScoreAnnotationRequest
+	if err := c.ShouldBind(&form); err != nil {
+		responses.FAIL(c, http.StatusBadRequest, err)
+		return
+	}
+
+	err = ctrl.service.UpdateAnnotations(uid, uint(scoreID), true, form)
+	if err != nil {
+		if errors.Is(err, apperrors.ErrScoreNotFound) {
+			responses.FAIL(c, http.StatusNotFound, err)
+			return
+		}
+		if errors.Is(err, apperrors.ErrAccessForbidden) {
+			responses.FAIL(c, http.StatusForbidden, err)
+			return
+		}
+		responses.FAIL(c, http.StatusInternalServerError, err)
+		return
+	}
+
+	message := fmt.Sprintf("Score %d : Annotation saved successfully", scoreID)
+	response := dto.UpdateScoreAnnotationResponse{
+		Message: message,
+	}
+
+	responses.SUCCESS(c, http.StatusOK, response)
+
 }

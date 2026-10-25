@@ -19,6 +19,7 @@ type Props = {
   viewport: PageViewport;
   onSelect: (id: string) => void;
   onUpdateGeometry: (id: string, newGeometry: Annotation['geometry']) => void;
+  suppressNextClick: React.RefObject<boolean>;
 };
 
 /**
@@ -30,18 +31,26 @@ export function useAnnotationDrag({
   viewport,
   onSelect,
   onUpdateGeometry,
+  suppressNextClick,
 }: Props) {
-  // 'drag' preserves the initial position and geometry of the annotation.
-  // This allows each displacement to be calculated from the starting position,
-  // rather than accumulating displacement errors.
+  // When `drag` is `null`, this means that no drag operation
+  // is currently in progress.
+  // As soon as a drag operation begins, an object containing
+  // the relevant information (the ID of the annotation being moved,
+  // the mouse’s starting position, etc.) is stored there.
   const [drag, setDrag] = useState<DragState | null>(null);
-  const suppressNextClick = useRef(false);
+
+  // Indicates whether the mouse has actually moved during a drag operation.
+  const hasMovedRef = useRef(false);
 
   /**
    * Handles the start of a mouse interaction on an annotation.
-   * handleMouseDownDrag was originally written for divs (HTMLDivElement);
-   * it refuses to accept an event from an SVG element (SVGLineElement).
-   * To fix :  <-- Changed from HTMLDivElement to Element
+   * At this specific line (handleMouseDownDrag), we do not yet know whether
+   * a drag or click will take place,
+   * We do know that the user has just
+   * clicked and is holding down the left mouse button on an annotation
+   *
+   * For SVG compatibility HTMLDivElement --> Element
    *
    * @param event - The mouse event triggered by the user.
    * @param annotation - The annotation being interacted with.
@@ -50,10 +59,27 @@ export function useAnnotationDrag({
     event: MouseEvent<Element>,
     annotation: Annotation
   ) => {
+    console.log(
+      '[handleMouseDownDrag] <mouseMove> suppressNextClick : ',
+      suppressNextClick.current
+    );
+    // We check that it is a left-click
     if (event.button !== 0) return;
 
+    // is used to prevent the browser from carrying out its usual
+    // automatic action (its default behavior).
+    // Select hyperlink for example
     event.preventDefault();
+
+    //This prevents the click from ‘bubbling’ up to
+    // the background layer (AnnotationLayer)
     event.stopPropagation();
+
+    // --------------------------------------------------------------
+    // From this point, the first action is to determine in which mode
+    // we might be enter - in other words - What to do in case we Keep
+    // the button pushed
+    // --------------------------------------------------------------
 
     // Get the position of the annotation layer relative to the viewport.
     // event.currentTarget
@@ -194,6 +220,10 @@ export function useAnnotationDrag({
     // (which object is currently active in the application).
     onSelect(annotation.id);
 
+    hasMovedRef.current = false;
+
+    // This is where we initialize your `state drag` to say:
+    // “Let’s start moving this specific annotation”:
     setDrag({
       id: annotation.id,
       startPdfX,
@@ -209,8 +239,14 @@ export function useAnnotationDrag({
   useEffect(() => {
     if (!drag) return;
 
-    //console.log('drag.mode :', drag.mode);
+    // This function is triggered at the exact moment the user moves
+    // the mouse button
+    // The connection is done via window - mousemove
+    //    window.removeEventListener('mousemove', handleMouseMove);
+    // The Listening is across the entire window in order
+    // not to lose track of the drawing.
     const handleMouseMove = (event: globalThis.MouseEvent) => {
+      hasMovedRef.current = true;
       const [pdfX, pdfY] = viewport.convertToPdfPoint(
         event.clientX - drag.layerLeft,
         event.clientY - drag.layerTop
@@ -276,11 +312,30 @@ export function useAnnotationDrag({
       }
 
       onUpdateGeometry(drag.id, newGeometry);
-
-      suppressNextClick.current = true;
     };
 
+    // The "mouseup" event is essential because it is the switch (the ‘Off’ signal) that tells the code:
+    //  ‘The user has released the mouse button we stop tracking the mouse movements and record the action’.
+    // Without that the shape stays attached to the cursor forever
+    // The browser, which is too crazy :-) , triggers a native click event immediately after a mouseup !!!!
+    // This function is triggered at the exact moment the user releases
+    // the mouse button to finish drawing their annotation.
+    // The connection is done via window - mouseup
+    //      window.addEventListener('mouseup', handleMouseUp);
+    // The Listening is across the entire window in order
+    // not to lose track of the drawing.
     const handleMouseUp = () => {
+      console.log(
+        '[useAnnotationDrag] <mouseup> hasMoved:',
+        hasMovedRef.current,
+        'suppressNextClick:',
+        suppressNextClick.current
+      );
+
+      if (hasMovedRef.current) {
+        suppressNextClick.current = true;
+      }
+
       setDrag(null);
     };
 
@@ -295,6 +350,5 @@ export function useAnnotationDrag({
 
   return {
     handleMouseDownDrag,
-    suppressNextClick,
   };
 }

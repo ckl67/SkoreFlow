@@ -1,3 +1,4 @@
+//cspell:ignore déposé glissé
 import { useContext, useEffect, useRef, useState } from 'react';
 
 import type { MouseEvent } from 'react';
@@ -49,7 +50,18 @@ type UseAnnotationDrawOptions = {
 };
 
 /** ---------------------------------------------------------------
- * Starts drawing a new annotation.
+ Starts drawing a new annotation.
+ Principle :
+ 1) You click to draw (handleMouseDownDraw):
+    The code runs, we an active drawing tool (circle, rectangle or arrow),
+    and We immediately set the trap: suppressNextClick.current = true.
+ 2) We "drag and drop" (glissé-déposé) to draw the shape,
+ 3) Then release the mouse (mouseup).
+    --> This will by construction !! trigger a Click = The browser generates its
+        automatic post-release click:
+4) We have to intercept and neutralize the event:
+
+
  * @param param0
  * @returns
  */
@@ -59,14 +71,13 @@ export function useAnnotationDraw({
   onCreate,
   suppressNextClick,
 }: UseAnnotationDrawOptions) {
+  // Context
   const annotationToolsContext = useContext(AnnotationToolsContext);
-
   if (!annotationToolsContext) {
     throw new Error(
       'useAnnotationTools must be used within an AnnotationTools provider'
     );
   }
-
   const { activeTool, strokeWidth, color, fontSize } = annotationToolsContext;
 
   const drawingRef = useRef<DrawState | null>(null);
@@ -75,7 +86,16 @@ export function useAnnotationDraw({
   // Default text value
   const textContent = '';
 
-  const handleMouseDown = (event: MouseEvent<HTMLDivElement>) => {
+  /**
+   * 1. handleMouseDownDraw (from useAnnotationDraw)
+   *
+   *
+   * @param event
+   *
+   *
+   * @returns
+   */
+  const handleMouseDownDraw = (event: MouseEvent<HTMLDivElement>) => {
     if (
       (activeTool !== 'circle' &&
         activeTool !== 'rectangle' &&
@@ -84,6 +104,11 @@ export function useAnnotationDraw({
     ) {
       return;
     }
+
+    console.log(
+      '[useAnnotationDraw] <mousemove> suppressNextClick : ',
+      suppressNextClick.current
+    );
 
     event.preventDefault();
 
@@ -113,8 +138,6 @@ export function useAnnotationDraw({
       layerTop: rect.top,
     };
 
-    // Suppress the click generated after the mouse button is released.
-    suppressNextClick.current = true;
     if (activeTool === 'circle') {
       setPreview({
         type: 'circle',
@@ -137,12 +160,15 @@ export function useAnnotationDraw({
   useEffect(() => {
     // This function is triggered at the exact moment the user moves
     // the mouse button
-    // globalThis.MouseEvent (a native JavaScript browser event).
-    // We listen directly Windows and not React !!
-    // Listen across the entire window in order not to lose track of the drawing.
+    // The connection is done via window - mousemove
+    //    window.removeEventListener('mousemove', handleMouseMove);
+    // The Listening is across the entire window in order
+    // not to lose track of the drawing.
     const handleMouseMove = (event: globalThis.MouseEvent) => {
       const drawing = drawingRef.current;
       if (!drawing) return;
+
+      suppressNextClick.current = true;
 
       const viewportX = event.clientX - drawing.layerLeft;
       const viewportY = event.clientY - drawing.layerTop;
@@ -212,12 +238,23 @@ export function useAnnotationDraw({
 
     // This function is triggered at the exact moment the user releases
     // the mouse button to finish drawing their annotation.
-    // globalThis.MouseEvent (a native JavaScript browser event).
-    // We listen directly Windows and not React !!
-    // Listen across the entire window in order not to lose track of the drawing.
+    // The connection is done via window - mouseup
+    //      window.addEventListener('mouseup', handleMouseUp);
+    // The Listening is across the entire window in order
+    // not to lose track of the drawing.
     const handleMouseUp = (event: globalThis.MouseEvent) => {
       const drawing = drawingRef.current;
       if (!drawing) return;
+
+      console.log(
+        '[useAnnotationDraw] <mouseup> suppressNextClick : ',
+        suppressNextClick.current
+      );
+      suppressNextClick.current = true;
+      console.log(
+        '[useAnnotationDraw] <mouseup> suppressNextClick : ',
+        suppressNextClick.current
+      );
 
       const viewportX = event.clientX - drawing.layerLeft;
       const viewportY = event.clientY - drawing.layerTop;
@@ -334,16 +371,9 @@ export function useAnnotationDraw({
     };
   }, [viewport, pageNumber, onCreate, color, strokeWidth, suppressNextClick]);
 
-  const handleClick = () => {
-    // Consume the click generated after drawing or dragging.
-    if (suppressNextClick.current) {
-      suppressNextClick.current = false;
-    }
-  };
-
   return {
-    handleMouseDown,
-    handleClick,
+    handleMouseDownDraw,
+    suppressNextClick,
     preview,
   };
 }

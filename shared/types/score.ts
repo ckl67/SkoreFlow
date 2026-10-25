@@ -48,7 +48,7 @@ export type ScorePublicResponse = {
   tags: string;
   categories: string;
   informationText: string;
-  annotations: string;
+  annotations: Annotation[];
   createdAt: string;
   updatedAt: string;
   isDemo: boolean;

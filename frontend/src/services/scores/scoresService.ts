@@ -1,4 +1,9 @@
-import { GetScoresPageRequest, GetScoresPageResponse } from '../../../../shared/types/score';
+import {
+  GetScoresPageRequest,
+  GetScoresPageResponse,
+  UpdateScoreAnnotationRequest,
+  UpdateScoreAnnotationResponse,
+} from '../../../../shared/types/score';
 import { GetScoreResponse } from '../../../../shared/types/score';
 import { apiRequest } from '../../api/client';
 import { Pagination } from '../../config/pagination';
@@ -41,10 +46,16 @@ export async function getScoresPage({
   //  `await` is essential to convert `Promise<T>` to `T`.
   // as export async function getScoresPage
   if (token) {
-    return apiRequest<GetScoresPageResponse>('GET', `/scores?${params.toString()}`);
+    return apiRequest<GetScoresPageResponse>(
+      'GET',
+      `/scores?${params.toString()}`
+    );
   }
 
-  return apiRequest<GetScoresPageResponse>('GET', `/demo/scores?${params.toString()}`);
+  return apiRequest<GetScoresPageResponse>(
+    'GET',
+    `/demo/scores?${params.toString()}`
+  );
 }
 
 /**
@@ -92,4 +103,37 @@ export async function getScoreThumbnail(id: number) {
 
   const blob = await apiBinaryRequest('GET', `/demo/scores/${id}/thumbnail`);
   return blob;
+}
+
+/**
+ * Will update all the annotations from a score
+ * @param param0
+ * @returns
+ */
+export async function UpdateScoreAnnotations({
+  scoreId,
+  annotations,
+}: UpdateScoreAnnotationRequest) {
+  const token = localStorage.getItem('token');
+
+  // The body of the request sent to the backend (matches the format of your cURL command)
+  const payload = { annotations };
+
+  if (token) {
+    return apiRequest<UpdateScoreAnnotationResponse>(
+      'PATCH',
+      `/scores/${scoreId}/annotations`,
+      {
+        data: { annotations },
+      }
+    );
+  } else {
+    return apiRequest<UpdateScoreAnnotationResponse>(
+      'PATCH',
+      `/demo/scores/${scoreId}/annotations`, // Demo route if no token
+      {
+        data: { annotations },
+      }
+    );
+  }
 }

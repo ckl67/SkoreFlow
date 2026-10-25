@@ -24,7 +24,7 @@ func RegisterScoreRoutes(rg *gin.RouterGroup, scoreCtrl *controllers.ScoreContro
 		scoreGroup.PUT("/scores/:id", scoreCtrl.UpdateScore) // vitest
 		scoreGroup.DELETE("/scores/:id", scoreCtrl.DeleteScore)
 
-		// Partial update (annotations only)
+		// Partial update (annotations only BUT All the annotations)
 		scoreGroup.PATCH("/scores/:id/annotations", scoreCtrl.UpdateAnnotations) // vitest
 
 		scoreGroup.GET("/scores/:id/file", scoreCtrl.GetScoreFile)
