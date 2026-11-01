@@ -12,14 +12,11 @@ Nginx is the public entry point of the SkoreFlow application.
 It is responsible for:
 
 - serving the React frontend;
-- forwarding API requests to the Go backend;
+- forwarding API requests to the backend;
 - acting as a reverse proxy;
 - providing a single HTTP entry point for clients.
 
-At this stage, HTTPS is not configured yet.
-TLS certificates will be installed in the next document.
-
----
+_TLS certificates will be installed in the next document._
 
 ## Architecture
 
@@ -34,16 +31,14 @@ TLS certificates will be installed in the next document.
         |                       |
         v                       v
  Frontend React              Backend Go
-    /                          /api/*
+     /                         /api/*
    dist/                   localhost:8080
                                 |
                                 v
-                        Thumbnail service
-                        localhost:5001
+                         Thumbnail service
+                          localhost:5001
 
 ```
-
----
 
 ## Step 1 — Install Nginx
 
@@ -60,14 +55,6 @@ Verify the installation:
 ```bash
 nginx -v
 ```
-
-Example:
-
-```text
-nginx version: nginx/1.24.x
-```
-
----
 
 ## Step 2 — Verify the service
 
@@ -88,15 +75,9 @@ Verify that the service starts automatically:
 
 ```bash
 sudo systemctl is-enabled nginx
+# Expected:
+# enabled
 ```
-
-Expected:
-
-```text
-enabled
-```
-
----
 
 ## Step 3 — Remove the default site
 
@@ -106,15 +87,9 @@ Remove it before configuring SkoreFlow.
 
 ```bash
 sudo rm /etc/nginx/sites-enabled/default
+# The default configuration remains available in:
+# /etc/nginx/sites-available/default
 ```
-
-The default configuration remains available in:
-
-```text
-/etc/nginx/sites-available/default
-```
-
----
 
 ## Step 4 — Create the SkoreFlow site
 
@@ -125,19 +100,22 @@ sudo nano /etc/nginx/sites-available/skoreflow
 ```
 
 Insert the following configuration:
+Remark:
+In case the domain name is modified, it is mandatory to edit Nginx configuration file (/etc/nginx/sites-available/skoreflow) to include server_name skoreflow.fr, then simply run `sudo certbot --nginx`
 
 ```shell
 server {
 
     listen 80;
-    server_name skoreflow-app.com;
+    server_name skoreflow.fr;
 
     root /opt/skoreflow/frontend/dist;
     index index.html;
 
-
     # Backend API
     location /api/ {
+        # Because there is **no** trailing slash at the end of `http://localhost:8080`, Nginx **preserves** the `/api/` prefix.
+        # A request to `https://skoreflow.fr/api/users` is forwarded to the backend as `http://localhost:8080/api/users`
         proxy_pass http://localhost:8080;
 
         proxy_http_version 1.1;
@@ -155,43 +133,29 @@ server {
 }
 ```
 
-Example
-`curl http://localhost/version` will ask Nginx for:
-
-GET /
-└── /version
-
-However, your current configuration says:
-
-```shell
-location / {
-    try_files $uri $uri/ /index.html;
-}
-```
-
-So Nginx looks for: `/opt/skoreflow/frontend/dist/version`
-As it cannot find this file, it applies: `/index.html`
-
 ### Focus on the configuration
 
 - `listen 80;`
   - Listening on the standard HTTP port (80)
-- `server*name *;`
-  - Responds to any domain name or IP address
+- `server_name *;`
+  - domain name or IP address
 - `location / {try_files $uri $uri/ /index.html; }`
-  - Crucial for SPAs: Nginx first looks for the file ($uri),
-  - then the directory ($uri/). If it cannot find it, it always returns /index.html.
-  - This allows the JavaScript router (React Router, Vue Router, etc.) to handle front-end URLs.
-- `location /api/ {proxy_pass http://127.0.0.1:8080/;`
-  - Redirects /api/ requests to the backend on port 8080.
-  - The trailing slash '/' removes the '/api/' prefix from the request sent to the backend.
+  - For SPAs (Single Page Application) : Nginx first looks for
+    - the file ($uri),
+    - then the directory ($uri/).
+    - If it cannot find it, it always returns /index.html
+      - Nginx does not return a 404 error (Page not found) it always returns the file /index.html.
+- `location /api/ { proxy_pass http://localhost:8080; }`
+  - Redirects the requests starting with `/api/` to the backend on port 8080.
+  - **Important note on the trailing slash:** Because there is **no** trailing slash at the end of `http://localhost:8080`, Nginx **preserves** the `/api/` prefix.
+    - For example, a request to `https://skoreflow.fr/api/users` is forwarded to the backend as `http://localhost:8080/api/users`
+      - With the trailing slash: `http://localhost:8080/`; (with the /) the trailing slash acts like an eraser.
+        - It removes the word /api/ before sending the request to the backend.
 
 ### Focus on the headers
 
 When Nginx acts as a proxy, it creates a new HTTP request to the backend.
 By default, certain original information (such as the client’s IP address) would be lost and replaced by Nginx’s own details (127.0.0.1).
-
-These headers (proxy_set_header) allow the user’s original context to be passed to the backend:
 
 1. proxy_set_header Host $host;
    - Passes the original domain name (or IP address) that the user typed into their browser to the backend.
@@ -206,8 +170,6 @@ These headers (proxy_set_header) allow the user’s original context to be passe
    - Passes on the protocol used by the client (http or https).
    - Why this is important: If you add SSL/HTTPS to Nginx at a later stage, the Nginx $\rightarrow$ Backend connection will often remain as plain HTTP on the local machine. This header informs the backend that the end user is communicating securely via HTTPS (useful for creating secure cookies).
 
----
-
 ## Step 5 — Enable the site
 
 Create the symbolic link.
@@ -218,24 +180,16 @@ sudo ln -s \
 /etc/nginx/sites-enabled/
 ```
 
----
-
 ## Step 6 — Validate the configuration
 
 Always validate the configuration before reloading Nginx.
 
 ```bash
 sudo nginx -t
+# Expected:
+# syntax is ok
+# test is successful
 ```
-
-Expected:
-
-```text
-syntax is ok
-test is successful
-```
-
----
 
 ## Step 7 — Reload Nginx
 
@@ -251,125 +205,15 @@ If Nginx was not running:
 sudo systemctl restart nginx
 ```
 
----
-
-## Step 8 — Verify the deployment
-
-Check the frontend:
-
-```text
-http://<server-ip>/
-```
-
-The React application should load.
-
----
-
-Verify the backend:
-
-```text
-http://<server-ip>/api/version
-```
-
-(or any available API endpoint)
-
-The request should be forwarded to the Go backend.
-
----
-
-## Result
-
-The production architecture is now:
-
-```text
-                     Internet
-                          │
-                          ▼
-                     HTTP :80
-                          │
-                    +------------+
-                    |   Nginx    |
-                    +------------+
-                     │         │
-                     │         │
-                     ▼         ▼
-          React Frontend   Go Backend
-      /frontend/dist       localhost:8080
-```
-
-Nginx now serves the frontend and forwards API requests to the backend.
-
-The next document covers HTTPS configuration using Let's Encrypt and Certbot.
-
 ## Relative API URLs
 
-When SkoreFlow is deployed behind Nginx, the frontend does **not** communicate directly with the backend.
+Same Logic, Two Environments: Nginx vs. Vite Proxy
 
-The browser sees a relative URL.
-As the page was loaded from: `http://137.74.168.176/`
-or : `https://skoreflow-app.com/`
+By using relative URLs (/api), your frontend never hardcodes a backend IP or port.
+It always calls the current domain, and a local server intercepts and forwards the request:
 
-it automatically converts:
-`/api/auth/login`
-to:
-`http://137.74.168.176/api/auth/login`
+- In Production (Nginx): `sudo nano /etc/nginx/sites-available/skoreflow`
+  - The browser requests [https://skoreflow.fr/api/]..., and Nginx forwards it to `http://localhost:8080/api/`....
 
-Instead of using an absolute API URL such as:
-
-```javascript
-export const config = {
-  apiUrl: import.meta.env.VITE_API_URL ?? 'http://localhost:8080/api/v1',
-  testMode: import.meta.env.VITE_TEST_MODE === 'true',
-} as const;
-```
-
-```env
-VITE_API_URL=http://localhost:8080/api/v1
-```
-
-the frontend simply uses:
-
-```env
-VITE_API_URL=/api
-```
-
-The `/api` path is a **relative URL**.
-
-When the browser executes a request such as:
-
-```text
-GET /api/auth/login
-```
-
-it automatically sends the request to the same host that served the frontend.
-
-For example:
-
-| Frontend URL                | Browser request                     |
-| --------------------------- | ----------------------------------- |
-| `http://137.74.168.176`     | `http://137.74.168.176/api/...`     |
-| `https://skoreflow-app.com` | `https://skoreflow-app.com/api/...` |
-
-Nginx then forwards the request to the backend:
-
-```text
-Browser
-    │
-    ▼
-https://skoreflow-app.com/api/...
-    │
-    ▼
-Nginx
-    │
-    ▼
-http://localhost:8080/api/v1/...
-```
-
-This approach has several advantages:
-
-- the frontend never needs to know where the backend is running;
-- the backend can move to another host or port without modifying the frontend;
-- switching from HTTP to HTTPS requires no frontend changes;
-- the same frontend build works in development, staging, and production by only changing the reverse proxy configuration.
-
-Using relative API URLs is considered a best practice when a frontend is served through a reverse proxy.
+- In Local Development (Vite Proxy): `vite.config.js`
+  - The browser requests `http://localhost:5173/api/`..., and Vite's dev server forwards it to `http://localhost:8080/api/`....

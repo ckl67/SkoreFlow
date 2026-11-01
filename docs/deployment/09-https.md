@@ -5,7 +5,6 @@
 ## Objective
 
 This document secures the SkoreFlow web server using HTTPS.
-
 A TLS certificate is obtained from **Let's Encrypt** and automatically renewed.
 
 At the end of this step:
@@ -13,8 +12,6 @@ At the end of this step:
 - HTTP requests are automatically redirected to HTTPS;
 - all communications between the browser and the server are encrypted;
 - certificate renewal is fully automatic.
-
----
 
 ## How HTTPS works
 
@@ -25,7 +22,7 @@ The Certificate Authority verifies that a server really owns a domain name and i
 When a browser connects to:
 
 ```text
-https://skoreflow-app.com
+https://skoreflow.fr
 ```
 
 the following sequence occurs:
@@ -33,14 +30,13 @@ the following sequence occurs:
 ```text
 Browser
     │
-    │ 1. Connect to skoreflow-app.com
+    │ 1. Connect to skoreflow.fr
     ▼
 Nginx
     │
     │ 2. Presents its TLS certificate
     ▼
-Certificate issued by
-Let's Encrypt
+Certificate provided by Let's Encrypt
     │
     │ 3. Browser verifies the certificate
     ▼
@@ -48,8 +44,6 @@ Encrypted HTTPS connection established
 ```
 
 Since Let's Encrypt is trusted by all modern operating systems and browsers, users automatically trust the certificate without installing anything.
-
----
 
 ## Why Let's Encrypt?
 
@@ -61,8 +55,6 @@ Let's Encrypt provides:
 - industry-standard security.
 
 Certificates are valid for **90 days**, but are automatically renewed before expiration.
-
----
 
 ## Install Certbot
 
@@ -84,19 +76,15 @@ Verify the installation:
 certbot --version
 ```
 
----
-
 ## Verify DNS
 
 Before requesting a certificate, verify that the domain points to the server.
 
 ```bash
-nslookup skoreflow-app.com
+nslookup skoreflow.fr
 ```
 
 The returned IP address must match your VPS public IP.
-
----
 
 ## Request the certificate
 
@@ -106,6 +94,10 @@ Run:
 sudo certbot --nginx
 ```
 
+`sudo certbot --nginx` will check the existing Nginx configuration files and identify `server_name` (which contained `skoreflow.fr`).
+It therefore used this to determine which certificate to create.
+In case the domain name is modified, it is mandatory to edit Nginx configuration file (/etc/nginx/sites-available/skoreflow) to include server_name skoreflow.fr, then simply run `sudo certbot --nginx`
+
 Certbot will:
 
 - detect the Nginx configuration;
@@ -114,14 +106,12 @@ Certbot will:
 - install the certificate;
 - optionally configure automatic HTTP → HTTPS redirection.
 
----
-
 ## Verify the installation
 
 Open:
 
 ```text
-https://skoreflow-app.com
+https://skoreflow.fr
 ```
 
 The browser should display:
@@ -133,10 +123,8 @@ The browser should display:
 You can also verify the certificate:
 
 ```bash
-openssl s_client -connect skoreflow-app.com:443
+openssl s_client -connect skoreflow.fr:443
 ```
-
----
 
 ## Automatic renewal
 
@@ -156,8 +144,6 @@ sudo certbot renew --dry-run
 
 No changes are made during this test.
 
----
-
 ## Final architecture
 
 ```text
@@ -165,7 +151,7 @@ No changes are made during this test.
                 (TLS encrypted)
                        │
                        ▼
-            https://skoreflow-app.com
+            https://skoreflow.fr
                        │
                        ▼
                    Nginx
@@ -181,15 +167,3 @@ No changes are made during this test.
 The browser communicates only with Nginx.
 
 Internal communications between Nginx and the backend services remain on the local machine and therefore do not require TLS.
-
----
-
-## Summary
-
-After completing this step:
-
-- HTTPS is enabled;
-- certificates are issued by Let's Encrypt;
-- certificates are automatically renewed;
-- all browser communications are encrypted;
-- Nginx remains the single public entry point to the application.

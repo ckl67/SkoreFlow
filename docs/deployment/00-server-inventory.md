@@ -47,7 +47,7 @@ ssh ubuntu@137.74.168.176
 ```
 
 Note :
-**_The skoreflow user is a dedicated system account intended to run the application and perform build operations. It is not intended for direct SSH login. Server administration should always be performed using the administrative account (ubuntu), then switch to the application user when needed:_**
+_The skoreflow user is a dedicated system account intended to run the application and perform build operations. It is not intended for direct SSH login. Server administration should always be performed using the administrative account (ubuntu), then switch to the application user when needed:_
 
 ## Hardware
 
@@ -65,7 +65,7 @@ Note :
 | Git      | 2.53.0  |
 | Python   | 3.14.4  |
 
-The following software is **not** installed yet:
+The following software was **not** installed :
 
 - Go
 - Node.js

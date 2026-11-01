@@ -1,141 +1,111 @@
-<!-- cspell:ignore DMARC domainkey lwsdns lwsdns  SASL  STARTTLS  lwspanel     -->
+<!-- cspell:ignore  webmail DMARC domainkey lwsdns lwsdns  SASL  STARTTLS  lwspanel     -->
 
 [← back](../doc.md)
 
 # SkoreFlow Infrastructure: DNS and Email Configuration
 
-## Objective
+## Objective this Document
 
-This document describes the DNS and email infrastructure configuration required for SkoreFlow production deployment.
+This document describes the DNS and email configuration required for SkoreFlow production deployment.
 
-The objectives are:
+## Reminder
 
-- expose the web application through the public domain;
-- keep email services managed by the external mail provider;
-- configure the DNS records required for reliable email delivery;
-- prepare the infrastructure required by the backend email service.
+Email :
 
-The application code responsible for sending emails is documented separately in the backend documentation.
+- **Transport** protocols (which route email from one mailbox to another)
+- **Retrieval** protocols (which allow a user to read their email).
 
----
+### Sending - Transfer email - Transport
 
-# Part 1 — DNS Architecture
+- SMTP: Simple Mail Transfer Protocol (SMTP) is the standard protocol used to **transmit** emails.
+  - from one client or server to another
+    - from outlook - Gmail to LWS,
+    - from LWS to Google, or
+    - from OVH backend to LWS.
+  - It is used to send and route emails.
 
-## 1. DNS fundamentals
+- SMTP Ports **(Transport)**
+  - Port 25: SMTP direct transfers between servers (unencrypted).
+  - Port 465: SMTP encapsulated in SSL/TLS (connection starts encrypted).
+  - Port 587: STARTTLS - connection starts unencrypted, then upgrades
 
-The **Domain Name System (DNS)** is the mechanism that translates human-readable domain names into network addresses.
+- SPF, DKIM, DMARC **(Authentication)**
+  - Are DNS records that define who is authorized to send emails on behalf of this domain and how to prove that the message is legitimate.
 
-Example:
+### Receiving emails - Retrieval - Consultation
 
-```text
-skoreflow-app.com
-        |
-        v
-137.74.168.176
-        |
-        v
-SkoreFlow VPS
-```
+IMAP and POP are two protocols for receiving emails.
+They determine how your emails are stored and accessed.
+Once an email has arrived and been stored on the final server (at LWS Orange, or Google), your desktop client (Thunderbird, mobile app) or Webmail service uses IMAP to access, sort or delete it.
 
-When a user accesses:
+- IMAP protocol
+  - With IMAP, emails remain stored on the mail server.
+  - Email clients simply display a synchronized copy of the inbox.
+  - If an action is carried out on one device (deletion, moving, reading), it is reflected on all other devices.
+- POP protocol
+  - With POP, emails are downloaded to the device that retrieves the email.
+  - In most cases, messages are stored locally on the device.
 
-```text
-https://skoreflow-app.com
-```
+## Skoreflow infrastructure overview
 
-the browser first resolves the domain through DNS, then connects to the server hosting the application.
+SkoreFlow uses two separate infrastructures :
 
----
-
-# 2. DNS record types
-
-| Record | Name                | Purpose                                                  |
-| ------ | ------------------- | -------------------------------------------------------- |
-| A      | Address record      | Maps a hostname to an IPv4 address                       |
-| AAAA   | IPv6 address record | Maps a hostname to an IPv6 address                       |
-| CNAME  | Canonical name      | Creates an alias to another hostname                     |
-| MX     | Mail exchange       | Defines the mail server responsible for receiving emails |
-| TXT    | Text record         | Stores configuration data such as SPF, DKIM and DMARC    |
-| NS     | Name server         | Defines the authoritative DNS servers                    |
-
----
-
-# 3. Production DNS architecture
-
-SkoreFlow uses two separate infrastructures:
-
-- the VPS hosts the web application;
-- LWS continues to provide email hosting.
+- OVH : which hosts the web application on a VPS
+- LWS : which provide the domain and email hosting.
 
 The domain therefore has two independent roles:
 
 ```text
-                 skoreflow-app.com
-
+                   skoreflow.fr
                          |
         +----------------+----------------+
         |                                 |
         v                                 v
-
-    Web traffic                      Email services
-
-       VPS                              LWS
-137.74.168.176                 mail.skoreflow-app.com
-       |                                 |
-    Nginx                              SMTP
+    Web traffic                     Email services
+       VPS                               LWS
+  137.74.168.176                  mail.skoreflow.fr
+       |                                  |
+     Nginx                              SMTP
        |
- React + Go Backend
+   Frontend
+    Backend
+    ......
 ```
 
----
+- nginx : _`("engine x")`_ is an HTTP web server, reverse proxy, content cache, load balancer,
+- OVH (Backend) instructs LWS to send the email via SMTP to the recipient (Gmail, Outlook, etc.).
 
-# 4. DNS records
+LWS Email can be consulted on `https://mail65.lwspanel.com`
 
-Example production configuration:
+## Configuration on LWS
 
-```text
-# ------------------------------------------------
-# WEB APPLICATION
-# ------------------------------------------------
+Summary of the configuration on LWS
 
-A       @                 137.74.168.176
+- Section : Zone DNS
+  - Type A Name @ : `137.74.168.176` = @IP of OVH VPS
+- Section : Emails
+  - Create a new entry : `noreply@skoreflow.fr`
+    - This entry will provide SMTP configuration to add in **.env file**
+      - username: `noreply@skoreflow.fr`
+      - password: Use the password for your email account.
+      - Outgoing server: mail65.lwspanel.com
+      - SMTP port: 465 (SSL) / 587 (Other)
 
-CNAME   www               @
+## DNS configuration
 
+Overview of the DNS parameters
 
-# ------------------------------------------------
-# EMAIL SERVICE (LWS)
-# ------------------------------------------------
+| Type      | Name              | Value / Target                                                            | Purpose                                       |
+| :-------- | :---------------- | :------------------------------------------------------------------------ | :-------------------------------------------- |
+| **A**     | `@`               | `137.74.168.176`                                                          | Points the web application to the VPS         |
+| **CNAME** | `www`             | `@`                                                                       | Aliases `www` to the root domain              |
+| **A**     | `mail`            | `213.255.195.65`                                                          | Points to the mail server (LWS)               |
+| **MX**    | `@`               | `10 mail.skoreflow.fr.`                                                   | Directs incoming mail to LWS                  |
+| **TXT**   | `@`               | `v=spf1 mx:skoreflow.fr a:mail.skoreflow.fr include:lws-hosting.com ~all` | **SPF**: Authorizes sending servers           |
+| **TXT**   | `dkim._domainkey` | `v=DKIM1; k=rsa; p=<public-key>`                                          | **DKIM**: Signs emails cryptographically      |
+| **TXT**   | `_dmarc`          | `v=DMARC1; p=none`                                                        | **DMARC**: Defines handling for failed checks |
 
-A       mail              213.255.195.65
-
-MX      @                 10 mail.skoreflow-app.com.
-
-
-# ------------------------------------------------
-# EMAIL SECURITY
-# ------------------------------------------------
-
-TXT     @
-
-v=spf1 mx:skoreflow-app.com a:mail.skoreflow-app.com include:lws-hosting.com ~all
-
-
-TXT     dkim._domainkey
-
-v=DKIM1; k=rsa; p=<public-key>
-
-
-TXT     _dmarc
-
-v=DMARC1; p=none
-```
-
-The exact values depend on the email provider configuration.
-
----
-
-# Part 2 — Email Security
+# Email Authentication - Security
 
 Modern email delivery relies on three complementary mechanisms.
 
@@ -143,171 +113,23 @@ Modern email delivery relies on three complementary mechanisms.
 
 Param : **Sender Policy Framework**
 
-SPF defines which servers are allowed to send emails for a domain.
-
-Example:
-
-```text
-skoreflow-app.com
-        |
-        |
-        +-- authorized SMTP servers
-```
-
-Receiving servers check the sender IP against the SPF record.
-
-Purpose:
-
-- prevent domain spoofing;
-- improve email reputation.
-
----
+The SPF (Who is authorized to send?)
+It informs email servers worldwide that only LWS’s servers are authorized to send emails on behalf of skoreflow.fr
 
 ## DKIM
 
 Param : **DomainKeys Identified Mail**
 
-DKIM uses asymmetric cryptography.
+DKIM (Cryptographic signature) proves that the email has not been modified during the transit.
 
-The mail server signs outgoing messages with a private key.
-
-The public key is published in DNS:
-
-```text
-dkim._domainkey.skoreflow-app.com
-```
-
-Receiving servers verify the signature.
-
-Purpose:
-
-- guarantee message integrity;
-- prove that the email was sent by an authorized server.
-
----
+- DKIM uses asymmetric cryptography.
+  - The mail server signs outgoing messages with a private key.
+  - The public key is published in DNS:
+  - Receiving servers verify the signature.
 
 ## DMARC
 
 Param : **Domain-based Message Authentication, Reporting and Conformance**
 
 DMARC defines the policy applied when SPF or DKIM checks fail.
-
-Example:
-
-```text
-SPF failed
-        +
-DKIM failed
-        |
-        v
-DMARC policy applied
-```
-
-Possible policies:
-
-| Policy     | Meaning             |
-| ---------- | ------------------- |
-| none       | Monitoring only     |
-| quarantine | Treat as suspicious |
-| reject     | Reject the message  |
-
-During initial deployment, `p=none` is often recommended to monitor before enforcing stricter rules.
-
----
-
-# Part 3 — SMTP configuration
-
-SkoreFlow uses an external SMTP provider.
-
-The backend connects to the SMTP server to send:
-
-- account confirmation emails;
-- password reset emails;
-- notification emails.
-
-The SMTP configuration is stored in backend environment variables.
-
-Example:
-
-```env
-SMTP_HOST=mail.provider.com
-SMTP_PORT=465
-SMTP_USER=<account>
-SMTP_PASSWORD=<password>
-SMTP_FROM=no-reply@skoreflow-app.com
-```
-
-Credentials must never be stored in the source repository.
-
----
-
-# SMTP ports
-
-Two common SMTP submission modes exist.
-
-## Port 465 — Implicit TLS
-
-Connection starts directly with encryption.
-
-```text
-Client
-   |
-   | TLS handshake
-   |
-SMTP server
-```
-
-This is commonly used by hosted mail providers.
-
----
-
-## Port 587 — STARTTLS
-
-Connection starts unencrypted, then upgrades to TLS.
-
-```text
-Client
-   |
-   | SMTP connection
-   |
-   | STARTTLS command
-   |
-   | TLS encryption
-   |
-SMTP server
-```
-
-The correct mode depends on the SMTP provider.
-
----
-
-# Deployment checklist
-
-Before enabling email functionality:
-
-- [ ] MX record configured
-- [ ] SPF record configured
-- [ ] DKIM record configured
-- [ ] SMTP credentials created
-- [ ] Backend environment variables configured
-- [ ] Test email successfully delivered
-
----
-
-# Conclusion
-
-The production email architecture is now separated from the application hosting architecture.
-
-The VPS is responsible for:
-
-- web hosting;
-- API hosting;
-- application execution.
-
-The mail provider is responsible for:
-
-- mailbox hosting;
-- SMTP delivery;
-- email reputation management.
-
-The backend only acts as an SMTP client.
+It explains what to do if SPF or DKIM fails. To start with, we begin with simple monitoring (p=none) so as not to block your own emails if a setting is configured incorrectly.

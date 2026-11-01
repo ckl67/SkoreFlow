@@ -185,15 +185,15 @@ export default function AnnotationTools({ children }: Props) {
               onMouseDown={handleMouseDown}
             >
               <div className="flex items-center gap-1">
-                <span className="text-[10px]  text-gray-400">⠿</span>
-                <span className="text-xs font-medium text-gray-600">
+                <span className="text-sm  text-gray-400">⠿</span>
+                <span className="text-sm font-medium text-gray-600">
                   Annotation Tools
                 </span>
               </div>
 
               <button
                 type="button"
-                className="rounded px-1 text-xs font-bold text-gray-400 hover:text-gray-700"
+                className="rounded px-1 text-sm font-bold text-gray-400 hover:text-gray-700"
                 onMouseDown={(event) => event.stopPropagation()}
                 onClick={() => setToolbarOpen(false)}
                 title="Close"
@@ -213,7 +213,7 @@ export default function AnnotationTools({ children }: Props) {
                   onClick={() => setActiveTool('noTool')}
                   title="Move/Modify/Delete"
                 >
-                  <SquareDashedPlus className="w-4 h-4" />
+                  <SquareDashedPlus className="w-5 h-5" />
                 </button>
 
                 <button
@@ -222,7 +222,7 @@ export default function AnnotationTools({ children }: Props) {
                   onClick={() => setActiveTool('circle')}
                   title="Circle"
                 >
-                  <Circle className="w-4 h-4" />
+                  <Circle className=" w-5 h-5" />
                 </button>
 
                 <button
@@ -231,7 +231,7 @@ export default function AnnotationTools({ children }: Props) {
                   onClick={() => setActiveTool('arrow')}
                   title="Arrow"
                 >
-                  <MoveUpRight className="w-4 h-4" />
+                  <MoveUpRight className=" w-5 h-5" />
                 </button>
 
                 <button
@@ -240,7 +240,7 @@ export default function AnnotationTools({ children }: Props) {
                   onClick={() => setActiveTool('rectangle')}
                   title="Rectangle"
                 >
-                  <RectangleHorizontal className="w-4 h-4" />
+                  <RectangleHorizontal className=" w-5 h-5" />
                 </button>
 
                 <button
@@ -260,7 +260,7 @@ export default function AnnotationTools({ children }: Props) {
                   onClick={() => setActiveTool('undo')}
                   title="Undo"
                 >
-                  <Undo2 className="w-4 h-4" />
+                  <Undo2 className=" w-5 h-5" />
                 </button>
 
                 <button
@@ -269,12 +269,12 @@ export default function AnnotationTools({ children }: Props) {
                   onClick={() => setActiveTool('redo')}
                   title="Redo"
                 >
-                  <Redo2 className="w-4 h-4" />
+                  <Redo2 className=" w-5 h-5" />
                 </button>
               </div>
 
               {/* Line and text appearance. */}
-              <div className="flex items-center justify-between gap-2 pt-1.5 border-t border-gray-100 text-xs">
+              <div className="flex items-center justify-between gap-2 pt-1.5 border-t border-gray-100 text-sm">
                 {['circle', 'rectangle', 'arrow'].includes(activeTool) && (
                   <label className="flex items-center gap-1 text-gray-500">
                     <span>Line thickness </span>
@@ -286,7 +286,7 @@ export default function AnnotationTools({ children }: Props) {
                       onChange={(event) =>
                         setStrokeWidth(Math.max(1, Number(event.target.value)))
                       }
-                      className="w-12 rounded border border-gray-300 px-1 py-0.5 text-center text-xs"
+                      className="w-12 rounded border border-gray-300 px-1 py-0.5 text-center text-sm"
                     />
                     <span className="text-gray-500">px</span>
                   </label>
@@ -303,7 +303,7 @@ export default function AnnotationTools({ children }: Props) {
                       onChange={(event) =>
                         setFontSize(Math.max(6, Number(event.target.value)))
                       }
-                      className="w-12 rounded border border-gray-300 px-1 py-0.5 text-center text-xs"
+                      className="w-12 rounded border border-gray-300 px-1 py-0.5 text-center text-sm"
                     />
                     <span className="text-gray-500">px</span>
                   </label>

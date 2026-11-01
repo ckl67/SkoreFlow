@@ -4,16 +4,16 @@
 
 SkoreFlow is a frontend and backend application designed to manage, organize, annotate, and distribute musical scores through a clean, scalable, and layered architecture.
 
-The name SkoreFlow represents the natural lifecycle of a musical score:
-S — Score
+The name **SkoreFlow** represents the natural lifecycle of a musical score:
+**S** — Score
 The musical score is the central object of the application.
-K — Keep
+**K** — Keep
 Keep scores safely in a personal library, either locally or through the web.
-O — Organize
+**O** — Organize
 Organize scores by composer, title, category, tags, and other relevant information.
-R — Remark
+**R** — Remark
 Annotate scores with personal or shared remarks, instructions, highlights, and other visual annotations.
-E — Exchange
+**E** — Exchange
 Exchange and distribute scores between users, groups, and directors, with the ability to provide global or user-specific annotations.
 
 All of these actions follow a natural flow:
@@ -23,24 +23,13 @@ The goal of SkoreFlow is not to create or modify musical notation itself, but to
 
 The application is designed to support both individual musicians and collaborative musical groups, while keeping the architecture simple, modular, and maintainable.
 
-SkoreFlow is the result of several iterations on earlier experimental projects, redesigned with a focus on clean architecture, scalability, and maintainability.
+SkoreFlow is the result of several iterations on earlier experimental projects, redesigned with a focus on clean architecture, scalability, and maintainability. The project started in the early of 2025
 
 Welcome to SkoreFlow 🎉
 
----
-
-## 🚀 Overview
-
-SkoreFlow provides a structured pipeline to:
-
-- Upload and manage score music files
-- Organize scores, composers, and users
-- Process files (storage, thumbnails, normalization, score annotations)
-- Expose a robust REST API for frontend and integrations
-
 ## 🧪 Sandbox
 
-Skoreflow can currently be tested in a [Sandbox](https://skoreflow-app.com)
+Skoreflow can currently be tested in a [Sandbox](https://skoreflow.fr)
 which could become the final server to.
 
 ---

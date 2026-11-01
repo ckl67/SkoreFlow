@@ -26,7 +26,7 @@ However, the PDF itself was valid.
 The production endpoint was tested directly:
 
 ```bash
-curl -I https://skoreflow-app.com/api/v1/demo/scores/3/file
+curl -I https://skoreflow.fr/api/v1/demo/scores/3/file
 ```
 
 The response was:
@@ -40,7 +40,7 @@ Content-Length: 52676
 The first bytes of the response were also checked:
 
 ```bash
-curl -s https://skoreflow-app.com/api/v1/demo/scores/3/file \
+curl -s https://skoreflow.fr/api/v1/demo/scores/3/file \
   | head -c 20 | xxd
 ```
 
@@ -73,7 +73,7 @@ This confirmed that both the backend and Nginx were serving the correct PDF.
 The file was downloaded from the production endpoint:
 
 ```bash
-curl -sk https://skoreflow-app.com/api/v1/demo/scores/3/file \
+curl -sk https://skoreflow.fr/api/v1/demo/scores/3/file \
   -o /tmp/score3.pdf
 ```
 

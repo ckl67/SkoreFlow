@@ -9,7 +9,8 @@ import { ScorePublicResponse } from '../../../../../shared/types/score';
 
 // a single list containing all the annotations in the document, regardless of the page they appear on.
 import type { Annotation } from '../../../../../shared/types/score';
-import { UpdateScoreAnnotations } from '../../../services/scores/scoresService';
+
+import { useSaveAnnotations } from '../../../hooks/scores/annotations/useSaveAnnotations';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker;
 
@@ -31,6 +32,13 @@ export default function ScoreViewer({ score, fileURL }: Props) {
   // a single list containing all the annotations in the the PDF !
   const [allAnnotations, setAllAnnotations] = useState<Annotation[]>(
     score.annotations
+  );
+
+  const { saveAnnotations, isSaving, saveStatus, isDirty } = useSaveAnnotations(
+    {
+      scoreId: score.id,
+      annotations: allAnnotations,
+    }
   );
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -58,73 +66,63 @@ export default function ScoreViewer({ score, fileURL }: Props) {
   const resetZoom = () => setZoom(1);
 
   // SAVE
-  const [saveStatus, setSaveStatus] = useState<string | null>(null);
-  const [isSaving, setIsSaving] = useState(false);
-
-  const handleSaveAnnotations = async () => {
-    setIsSaving(true);
-    setSaveStatus(null);
-
-    try {
-      const response = await UpdateScoreAnnotations({
-        scoreId: score.id,
-        annotations: allAnnotations,
-      });
-
-      setSaveStatus(response.message ?? 'Annotations saved successfully.');
-    } catch (error) {
-      const message =
-        error instanceof Error ? error.message : 'Unable to save annotations.';
-
-      setSaveStatus(`Save failed: ${message}`);
-    } finally {
-      setIsSaving(false);
-    }
-  };
 
   return (
     <div className="flex h-full flex-col justify-between ">
       {/* ------------------------ */}
       {/* 1. TOP BAR: ZOOM (Fixed) */}
       {/* ------------------------ */}
-      <div className="flex shrink-0 items-center justify-center gap-3 border-b  border-gray-200 pb-2 ">
-        <button
-          type="button"
-          onClick={zoomOut}
-          className="rounded border px-3 py-1  hover:bg-gray-400 shadow-md transition  hover:shadow-xl"
-        >
-          −
-        </button>
-        <button
-          type="button"
-          onClick={resetZoom}
-          className="min-w-16 rounded border px-3 py-1 hover:bg-gray-400 shadow-md transition  hover:shadow-xl"
-        >
-          {Math.round(zoom * 100)} %
-        </button>{' '}
-        <button
-          type="button"
-          onClick={zoomIn}
-          className="rounded border px-3 py-1 hover:bg-gray-400 shadow-md transition  hover:shadow-xl"
-        >
-          +
-        </button>
-        <button
-          type="button"
-          onClick={handleSaveAnnotations}
-          disabled={isSaving}
-          className="rounded border px-3 py-1 shadow-md hover:bg-gray-400 disabled:opacity-50"
-        >
-          {isSaving ? 'Saving…' : 'Save annotations'}
-        </button>
-        {saveStatus && (
-          <p
-            role="status"
-            className="text-center text-sm"
+      <div className="grid grid-cols-3 items-center border-b border-gray-200 pb-2 shrink-0 px-4">
+        {/* 1. Left-hand column (empty to balance the grid) */}
+        <div></div>
+
+        {/* 2. Middle column: Zoom buttons */}
+        <div className="flex items-center justify-center gap-3">
+          <button
+            type="button"
+            onClick={zoomOut}
+            className="rounded border px-3 py-1 hover:bg-gray-400 shadow-md transition hover:shadow-xl"
           >
-            {saveStatus}
-          </p>
-        )}
+            −
+          </button>
+          <button
+            type="button"
+            onClick={resetZoom}
+            className="min-w-16 rounded border px-3 py-1 hover:bg-gray-400 shadow-md transition hover:shadow-xl"
+          >
+            {Math.round(zoom * 100)} %
+          </button>
+          <button
+            type="button"
+            onClick={zoomIn}
+            className="rounded border px-3 py-1 hover:bg-gray-400 shadow-md transition hover:shadow-xl"
+          >
+            +
+          </button>
+        </div>
+
+        {/* 3. Right-hand column: Status (smaller and right-aligned) */}
+        <div className="flex items-center justify-end">
+          {isDirty && !isSaving && (
+            <p
+              role="status"
+              className="text-xs text-gray-500"
+            >
+              (Unsaved changes)
+            </p>
+          )}
+          {/*
+          {saveStatus && (
+            <p
+              role="status"
+              className="text-xs text-gray-500"
+            >
+              {saveStatus}
+              (Saved)
+            </p>
+          )}
+          */}
+        </div>
       </div>
 
       {/* ----------------------------------------------------- */}
@@ -151,7 +149,7 @@ export default function ScoreViewer({ score, fileURL }: Props) {
       </div>
 
       {/* ----------------------------------------------------- */}
-      {/* 3. BARRE DU BAS : NAVIGATION (Fixe) */}
+      {/* 3. BOTTOM BAR: NAVIGATION (Fixed)                     */}
       {/* ----------------------------------------------------- */}
       <div className="mt-2 flex shrink-0 items-center justify-center gap-3 border-t border-gray-200 pt-3">
         <button

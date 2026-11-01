@@ -14,6 +14,12 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     port: 5173,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8080', // idem like nginx config.ts
+        changeOrigin: true,
+      },
+    },
     watch: {
       // Force Vite to check regularly whether files have changed
       // Essential for shared/network folders

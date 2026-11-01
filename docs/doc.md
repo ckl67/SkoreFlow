@@ -114,7 +114,7 @@ The document can be consulted
 
 ### Sandbox access
 
-- [sandbox](https://skoreflow-app.com/)
+- [sandbox](https://skoreflow.fr/)
 
 ### Sandbox deployment
 

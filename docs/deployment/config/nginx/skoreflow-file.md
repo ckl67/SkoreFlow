@@ -8,7 +8,7 @@ Insert the following configuration:
 server {
 
     listen 80;
-    server_name skoreflow-app.com;
+    server_name skoreflow.fr;
 
     root /opt/skoreflow/frontend/dist;
     index index.html;

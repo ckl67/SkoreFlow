@@ -5,7 +5,7 @@
 ## ovh server
 
 ```shell
-https://skoreflow-app.com/api/v1/health
+https://skoreflow.fr/api/v1/health
 
 ```
 
@@ -80,6 +80,6 @@ sudo su - skoreflow
   # Back to te old configuration
   VITE_API_URL=/api/v1
   FRONTEND_ORIGIN=http://137.74.168.176
-  CORS_ALLOWED_ORIGINS=https://skoreflow-app.com,http://137.74.168.176
+  CORS_ALLOWED_ORIGINS=https://skoreflow.fr,http://137.74.168.176
 
 ```

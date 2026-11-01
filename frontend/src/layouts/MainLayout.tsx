@@ -4,6 +4,19 @@ import { useState } from 'react';
 import TopNavbar from './TopNavbar';
 import SideNavbar from './SideNavbar';
 import DevPanel from '../dev/DevPanel';
+import {
+  Circle,
+  Undo2,
+  Redo2,
+  MoveUpRight,
+  RectangleHorizontal,
+  WholeWord,
+  SquareDashedPlus,
+  ListCheck,
+  SquareMenu,
+  ArrowLeft,
+  ArrowRight,
+} from 'lucide-react'; // For nicer icons https://lucide.dev/icons/
 
 // +----------------------+
 // | TopNavbar            |
@@ -41,8 +54,7 @@ export default function MainLayout() {
               className="flex items-center justify-center gap-2 rounded-lg border border-gray-200 py-2 text-xs font-medium text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900"
               title="Collapse the menu"
             >
-              <span>«</span>
-              <span>Collapse</span>
+              <ArrowLeft className=" w-5 h-5" />
             </button>
           </aside>
         )}
@@ -56,21 +68,6 @@ export default function MainLayout() {
       </div>
 
       {/* ------------------------------------------------------------- */}
-      {/*                          +++ FOOTER +++                       */}
-      {/* ------------------------------------------------------------- */}
-
-      <footer className="flex flex-row relative h-8 shrink-0 items-center justify-between border-t bg-gray-50 px-6 text-xs text-gray-500">
-        {/* Left-hand pane: Status or dynamic indicator */}
-        <div className="flex items-center gap-2">
-          <span className="h-2 w-2 rounded-full bg-emerald-500" />
-          <span>Ready</span>
-        </div>
-
-        {/* Right-hand section: Application version */}
-        <div className="font-mono text-gray-400">v1.0.0</div>
-      </footer>
-
-      {/* ------------------------------------------------------------- */}
       {/*                   +++ ACTION BUTTONS ++++                     */}
       {/* ------------------------------------------------------------- */}
 
@@ -81,10 +78,11 @@ export default function MainLayout() {
         <button
           type="button"
           onClick={() => setIsOpen(true)}
-          className="absolute bottom-10 left-3 z-10 flex h-12 w-12 items-center justify-center rounded-lg border bg-gray-300"
+
+          className="absolute bottom-10 left-3 z-10 flex h-12 w-12 items-center justify-center rounded-lg border border-gray-200 bg-gray-100"
           title="Open the sidebar"
         >
-          <span className="text-2xl">🎭</span>
+          <ArrowRight className=" w-5 h-5" />
         </button>
       )}
 
