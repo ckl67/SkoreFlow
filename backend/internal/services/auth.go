@@ -203,6 +203,7 @@ func (s *AuthService) SendRegistration(email string) (string, error) {
 	logger.Login.Debug("HtmlBody : %s", htmlBody)
 
 	if err := mail.SendHTMLMail(email, "Confirm Your SkoreFlow Registration", htmlBody); err != nil {
+		logger.Login.Error("Failed to send registration email to %s: %v", email, err)
 		return user.PasswordReset, apperrors.ErrSmtpFailed
 	}
 

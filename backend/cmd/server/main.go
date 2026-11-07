@@ -32,7 +32,7 @@ func main() {
 	logger.SetModuleLevel("main", "debug") // In debug, will also display the configuration used
 	logger.SetModuleLevel("server", "debug")
 	logger.SetModuleLevel("microservices", "info")
-	logger.SetModuleLevel("login", "info")
+	logger.SetModuleLevel("login", "debug")
 	logger.SetModuleLevel("user", "info")
 	logger.SetModuleLevel("score", "debug")
 	logger.SetModuleLevel("composer", "info")

@@ -55,6 +55,8 @@ func (ctrl *AuthController) Register(c *gin.Context) {
 		return
 	}
 
+	logger.Login.Info("Attempting to register user with login %s email: %s ", form.Username, form.Email)
+
 	user, err := ctrl.authService.Register(form)
 	if err != nil {
 		responses.FAIL(c, http.StatusBadRequest, err)

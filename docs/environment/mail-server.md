@@ -109,7 +109,7 @@ SMTP_HOST=localhost
 SMTP_PORT=1025
 SMTP_FROM=noreply@yourapp.local
 SMTP_USERNAME=
-SMTP_PASSWORD=
+SMTP_PASSWORD_BASE64 =
 ```
 
 ## Backend Test Mode

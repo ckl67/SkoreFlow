@@ -3,6 +3,7 @@
 # Ignore environment variables
 .env
 .env.ovh
+.env.dev.mailws
 
 # Ignore directory where scores/scores and database are stored
 # Note: A leading '/' targets the git root.

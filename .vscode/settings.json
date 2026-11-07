@@ -109,7 +109,12 @@
   // 🧹 ESLINT (ANALYSE ONLY)
   // =========================================================
   "eslint.useFlatConfig": true,
-  "eslint.validate": ["javascript", "typescript", "javascriptreact", "typescriptreact"],
+  "eslint.validate": [
+    "javascript",
+    "typescript",
+    "javascriptreact",
+    "typescriptreact"
+  ],
   "eslint.workingDirectories": [{ "mode": "auto" }],
   "eslint.format.enable": false,
 

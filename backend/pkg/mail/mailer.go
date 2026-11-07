@@ -1,3 +1,4 @@
+// cspell:ignore STARTTLS
 package mail
 
 // ======================================================================================
@@ -6,11 +7,10 @@ package mail
 // ======================================================================================
 
 import (
+	"crypto/tls"
 	"encoding/base64"
 	"fmt"
-	"net"
 	"net/smtp"
-	"strconv"
 	"strings"
 	"time"
 
@@ -18,56 +18,15 @@ import (
 	"backend/infrastructure/logger"
 )
 
-// SendTextMail sends a plain-text email to the specified recipient.
-func SendTextMail(to, subject, body string) error {
-	return sendMail(to, subject, body, "text/plain")
-}
-
-// SendHTMLMail sends an HTML email to the specified recipient.
-func SendHTMLMail(to, subject, body string) error {
-	return sendMail(to, subject, body, "text/html")
-}
-
-// sendMail sends an email via SMTP with the given content type.
-// Handles headers, message ID, authentication, and logging.
-func sendMail(to, subject, body, contentType string) error {
-	cfg := config.Config().Smtp
-
-	logger.Login.Debug("SMTP Config: Enabled=%v, Host=%s, Port=%d, From=%s", cfg.Enabled, cfg.HostServerAddr, cfg.HostServerPort, cfg.From)
-
-	// Skip sending if SMTP is disabled
-	if !cfg.Enabled {
-		logger.Login.Debug("SMTP disabled - email skipped")
-		return nil
-	}
-
-	addr := net.JoinHostPort(cfg.HostServerAddr, strconv.Itoa(cfg.HostServerPort))
-
-	// return : []byte{108, 122, 104, 116}
-	// string() --> transform to real string "abcd"
-	decodedPassword, err := base64.StdEncoding.DecodeString(cfg.PasswordBase64)
-	if err != nil {
-		logger.Login.Error("invalid SMTP password encoding")
-	}
-
-	var auth smtp.Auth = nil
-	// MailPit is note compatible with smtp.Auth
-	if cfg.Username != "" {
-		auth = smtp.PlainAuth(
-			"",
-			cfg.Username,
-			string(decodedPassword),
-			cfg.HostServerAddr,
-		)
-	}
-
+// Build email payload (RFC 822)
+func buildMailMessage(from, to, subject, body, contentType string) []byte {
 	// RFC-standard date header
 	date := time.Now().Format(time.RFC1123Z)
 
 	// Simple unique Message-ID
 	messageID := fmt.Sprintf("<%d.%s@skoreflow>",
 		time.Now().UnixNano(),
-		strings.ReplaceAll(cfg.HostServerAddr, "smtp.", ""),
+		strings.ReplaceAll(config.Config().Smtp.HostServerAddr, "smtp.", ""),
 	)
 
 	msg := []byte(fmt.Sprintf(
@@ -80,7 +39,7 @@ func sendMail(to, subject, body, contentType string) error {
 			"Content-Type: %s; charset=\"UTF-8\"\r\n"+
 			"\r\n"+
 			"%s\r\n",
-		cfg.From,
+		from,
 		to,
 		subject,
 		date,
@@ -89,19 +48,161 @@ func sendMail(to, subject, body, contentType string) error {
 		body,
 	))
 
-	logger.Login.Debug("Sending email via smtp.SendMail to %s", to)
+	return msg
+}
 
-	err = smtp.SendMail(
-		addr,
-		auth,
-		cfg.From,
-		[]string{to},
-		msg,
-	)
-	if err != nil {
-		return fmt.Errorf("smtp send error: %w", err)
+// SendTextMail sends a plain-text email to the specified recipient.
+func SendTextMail(to, subject, body string) error {
+	return sendMail(to, subject, body, "text/plain")
+}
+
+// SendHTMLMail sends an HTML email to the specified recipient.
+func SendHTMLMail(to, subject, body string) error {
+	return sendMail(to, subject, body, "text/html")
+}
+
+// sendMail routes email delivery based on the configured port (465 for TLS, 587/other for STARTTLS).
+func sendMail(to, subject, body, contentType string) error {
+	cfg := config.Config().Smtp
+
+	// Skip sending if SMTP is disabled
+	if !cfg.Enabled {
+		logger.Login.Debug("SMTP disabled - email skipped")
+		return nil
 	}
 
-	logger.Login.Debug("Email sent to %s (Message-ID: %s)", to, messageID)
+	// Decode Base64 password
+	decodedPassword, err := base64.StdEncoding.DecodeString(cfg.PasswordBase64)
+	if err != nil {
+		logger.Login.Error("invalid SMTP PasswordBase64 encoding: %v", err)
+		return fmt.Errorf("invalid smtp password encoding: %w", err)
+	}
+	password := string(decodedPassword)
+	//logger.Login.Info("password %s", password)
+
+	// Prepare payload message
+	msg := buildMailMessage(cfg.From, to, subject, body, contentType)
+
+	// Prepare AUTH
+	if cfg.Username == "" {
+		return fmt.Errorf("SMTP username is required")
+	}
+
+	if password == "" {
+		return fmt.Errorf("SMTP password is required")
+	}
+
+	var auth smtp.Auth
+	if cfg.Username != "" {
+		auth = smtp.PlainAuth("", cfg.Username, password, cfg.HostServerAddr)
+	}
+
+	targetAddr := fmt.Sprintf("%s:%d", cfg.HostServerAddr, cfg.HostServerPort)
+	recipients := []string{to}
+
+	logger.Login.Debug("SMTP Config: Enabled=true, Host=%s, Port=%d, From=%s", cfg.HostServerAddr, cfg.HostServerPort, cfg.From)
+
+	// Connect based on the configured port (465 vs 587)
+	if cfg.HostServerPort == 465 {
+		logger.Login.Debug("Connecting via Port 465 (Direct SSL)...")
+
+		tlsConfig := &tls.Config{
+			ServerName: cfg.HostServerAddr,
+			MinVersion: tls.VersionTLS12,
+		}
+
+		conn, dialErr := tls.Dial("tcp", targetAddr, tlsConfig)
+		if dialErr != nil {
+			return fmt.Errorf("TLS dial error: %w", dialErr)
+		}
+		defer conn.Close()
+
+		client, clientErr := smtp.NewClient(conn, cfg.HostServerAddr)
+		if clientErr != nil {
+			return fmt.Errorf("SMTP client creation error: %w", clientErr)
+		}
+		defer client.Quit()
+
+		if auth != nil {
+			if authErr := client.Auth(auth); authErr != nil {
+				return fmt.Errorf("authentication error: %w", authErr)
+			}
+		}
+
+		if mailErr := client.Mail(cfg.From); mailErr != nil {
+			return fmt.Errorf("MAIL FROM error: %w", mailErr)
+		}
+
+		for _, k := range recipients {
+			if rcptErr := client.Rcpt(k); rcptErr != nil {
+				return fmt.Errorf("RCPT TO error: %w", rcptErr)
+			}
+		}
+
+		w, dataErr := client.Data()
+		if dataErr != nil {
+			return fmt.Errorf("DATA command error: %w", dataErr)
+		}
+
+		if _, writeErr := w.Write(msg); writeErr != nil {
+			return fmt.Errorf("message write error: %w", writeErr)
+		}
+
+		// CORRECTION: w.Close() must be called to confirm sending
+		if closeErr := w.Close(); closeErr != nil {
+			return fmt.Errorf("message close error: %w", closeErr)
+		}
+
+		client.Quit()
+
+	} else {
+		logger.Login.Debug("Connecting via Port %d (STARTTLS/Plain)...", cfg.HostServerPort)
+
+		client, dialErr := smtp.Dial(targetAddr)
+		if dialErr != nil {
+			return fmt.Errorf("smtp dial error: %w", dialErr)
+		}
+		defer client.Close()
+
+		tlsConfig := &tls.Config{
+			ServerName: cfg.HostServerAddr,
+		}
+		if startTlsErr := client.StartTLS(tlsConfig); startTlsErr != nil {
+			return fmt.Errorf("smtp starttls error: %w", startTlsErr)
+		}
+
+		if auth != nil {
+			if authErr := client.Auth(auth); authErr != nil {
+				return fmt.Errorf("smtp auth error: %w", authErr)
+			}
+		}
+
+		if mailErr := client.Mail(cfg.From); mailErr != nil {
+			return fmt.Errorf("smtp mail error: %w", mailErr)
+		}
+
+		for _, r := range recipients {
+			if rcptErr := client.Rcpt(r); rcptErr != nil {
+				return fmt.Errorf("smtp rcpt error: %w", rcptErr)
+			}
+		}
+
+		w, dataErr := client.Data()
+		if dataErr != nil {
+			return fmt.Errorf("smtp data error: %w", dataErr)
+		}
+
+		if _, writeErr := w.Write(msg); writeErr != nil {
+			return fmt.Errorf("smtp write error: %w", writeErr)
+		}
+
+		if closeErr := w.Close(); closeErr != nil {
+			return fmt.Errorf("smtp close error: %w", closeErr)
+		}
+
+		client.Quit()
+	}
+
+	logger.Login.Debug("Email accepted by SMTP server for %s", to)
 	return nil
 }

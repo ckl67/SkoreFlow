@@ -1,3 +1,5 @@
+<!-- cspell:ignore  autotest -->
+
 # Test Resources
 
 ## Description
@@ -9,13 +11,14 @@ Test Mode automatically seeds the database of the backend with predefined data *
 To start the application in Test Mode, run:
 
 ```bash
-make run-test
+make run-autotest
 ```
 
 This command starts the backend with:
 
 ```text
-TEST_MODE=true
+SEED_DATA=true
+EXPOSE_REGISTRATION_TOKEN=true
 ```
 
 ## Directory Structure
@@ -31,4 +34,3 @@ TEST_MODE=true
 
 - These resources are intended **for development and automated testing only**.
 - They are **not** used in production.
-- The application expects this directory to be present when `TEST_MODE=true`.

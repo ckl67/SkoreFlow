@@ -1,9 +1,12 @@
+// cspell:ignore STARTTLS golobby stretchr
 package test_local
 
 import (
 	"crypto/tls"
+	"encoding/base64"
 	"fmt"
 	"net/smtp"
+	"strings"
 	"testing"
 
 	"github.com/golobby/config/v3"
@@ -14,11 +17,11 @@ import (
 
 // SMTPConfig maps environment variables from .env
 type SMTPConfig struct {
-	Host     string `env:"SMTP_HOST"`
-	Port     int    `env:"SMTP_PORT"`
-	From     string `env:"SMTP_FROM"`
-	Username string `env:"SMTP_USERNAME"`
-	Password string `env:"SMTP_PASSWORD"`
+	Host           string `env:"SMTP_HOST"`
+	Port           int    `env:"SMTP_PORT"`
+	From           string `env:"SMTP_FROM"`
+	Username       string `env:"SMTP_USERNAME"`
+	PasswordBase64 string `env:"SMTP_PASSWORD_BASE64"`
 }
 
 func TestSMTPServerLWS_GoLobby(t *testing.T) {
@@ -40,7 +43,7 @@ func TestSMTPServerLWS_GoLobby(t *testing.T) {
 
 	// 2. Validate essential fields loaded by GoLobby
 	require.NotEmpty(t, cfg.Host, "SMTP_HOST loaded by GoLobby must not be empty")
-	require.NotEmpty(t, cfg.Password, "SMTP_PASSWORD loaded by GoLobby must not be empty")
+	require.NotEmpty(t, cfg.PasswordBase64, "SMTP_PASSWORD_BASE64  loaded by GoLobby must not be empty")
 
 	recipientEmail := "christian.klugesherz@gmail.com"
 	t.Logf("Starting LWS SMTP test via GoLobby config on %s:%d...", cfg.Host, cfg.Port)
@@ -56,8 +59,16 @@ func TestSMTPServerLWS_GoLobby(t *testing.T) {
 			subject + mime + body + "\r\n",
 	)
 
+	// Decode Base 64
+	// Decode SMTP password from Base64.
+	decodedPassword, err := base64.StdEncoding.DecodeString(
+		strings.TrimSpace(cfg.PasswordBase64),
+	)
+	require.NoError(t, err, "Invalid SMTP password Base64 encoding")
+	password := string(decodedPassword)
+
 	// 4. Prepare PLAIN authentication using GoLobby values
-	auth := smtp.PlainAuth("", cfg.Username, cfg.Password, cfg.Host)
+	auth := smtp.PlainAuth("", cfg.Username, password, cfg.Host)
 
 	targetAddr := fmt.Sprintf("%s:%d", cfg.Host, cfg.Port)
 

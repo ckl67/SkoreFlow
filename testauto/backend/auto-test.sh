@@ -93,11 +93,10 @@ echo "DATA_ROOT=$DATA_ROOT"
 # later we can read them like : echo $APP_ENV
 
 export APP_ENV=development
-export SMTP_ENABLED=false    # Will deactivate SMTP server
-export PROTECTION_LEVEL=none # Will bypass for example : RateLimiter()
-export TEST_MODE=true        # Will automatically seed test users on server startup + authorize all requests without smtp authentication for easier testing of protected routes.
-# export PROJECT_ROOT=/home/christian/SkoreFlow_Project/SkoreFlow/backend
-# export DATA_ROOT=/home/christian/SkoreFlow_Project/SkoreFlow/backend/storage
+export SMTP_ENABLED=false        # Will deactivate SMTP server
+export PROTECTION_LEVEL=none     # Will bypass for example : RateLimiter()
+export SEED_DATA                 # Will automatically seed test users on server startup for testing purposes.
+export EXPOSE_REGISTRATION_TOKEN # Will authorize all requests without smtp authentication for easier testing of protected routes.
 
 echo "======================"
 echo "At the start"
@@ -105,7 +104,8 @@ echo "======================"
 echo "APP_ENV=$APP_ENV"
 echo "SMTP_ENABLED=$SMTP_ENABLED"
 echo "PROTECTION_LEVEL=$PROTECTION_LEVEL"
-echo "TEST_MODE=$TEST_MODE"
+echo "SEED_DATA=$SEED_DATA"
+echo "EXPOSE_REGISTRATION_TOKEN=$EXPOSE_REGISTRATION_TOKEN"
 echo "PROJECT_ROOT=$PROJECT_ROOT"
 echo "DATA_ROOT=$DATA_ROOT"
 echo "======================"
