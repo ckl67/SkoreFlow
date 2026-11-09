@@ -48,13 +48,37 @@ export default function Register() {
 
   // 4. RENDER
   return (
-    <div style={{ maxWidth: 400 }}>
-      <h1>Register</h1>
+    <div className="flex items-center justify-center h-screen bg-gray-50">
+      <div className="w-full max-w-md bg-white border rounded-xl shadow-sm p-6 space-y-6">
+        {/* HEADER */}
+        <div className="text-center space-y-1">
+          <h1 className="text-2xl font-semibold">Register</h1>
+          <p className="text-sm text-gray-500">Register a SkoreFlow account</p>
+        </div>
 
-      <FormInput label="Username" value={username} onChange={setUsername} placeholder="your name" />
-      <FormInput label="Email" value={email} onChange={setEmail} placeholder="you@example.com" />
-      <FormInput label="Password" type="password" value={password} onChange={setPassword} />
-      <SubmitButton label="Register" onClick={handleRegister} />
+        <FormInput
+          label="Username"
+          value={username}
+          onChange={setUsername}
+          placeholder="your name"
+        />
+        <FormInput
+          label="Email"
+          value={email}
+          onChange={setEmail}
+          placeholder="you@example.com"
+        />
+        <FormInput
+          label="Password"
+          type="password"
+          value={password}
+          onChange={setPassword}
+        />
+        <SubmitButton
+          label="Register"
+          onClick={handleRegister}
+        />
+      </div>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, Navigate } from 'react-router-dom';
 
 import MainLayout from '../layouts/MainLayout';
 
@@ -10,10 +10,11 @@ import RegisterPendingPage from '../pages/auth/RegisterPendingPage';
 import ProtectedRoute from '../components/protected/ProtectedRoute';
 import RegisterConfirmPage from '../pages/auth/RegisterConfirmPage';
 import MainPage from '../pages/main/MainPage';
-
+import PendingPage from '../pages/PendingPage';
 import ComposersPage from '../pages/composers/ComposersPage';
 import ScoresPage from '../pages/scores/ScoresPage';
 import ScoreSinglePage from '../pages/scores/ScoreSinglePage';
+import { config } from './../config/config';
 
 // Public routes
 // Accessible without authentication.
@@ -30,12 +31,47 @@ export const router = createBrowserRouter([
   {
     element: <MainLayout />,
     children: [
+      // Pending
+      { path: '/pending', element: <PendingPage /> },
+
       // Public routes
       { path: '/', element: <MainPage /> },
       { path: '/login', element: <LoginPage /> },
-      { path: '/register', element: <RegisterPage /> },
-      { path: 'register/confirm', element: <RegisterConfirmPage /> },
-      { path: '/register/pending', element: <RegisterPendingPage /> },
+
+      // Preferable to use <Navigate to="/login" replace /> to avoid a false url
+      {
+        path: '/register',
+        element: config.registerAllowed ? (
+          <RegisterPage />
+        ) : (
+          <Navigate
+            to="/login"
+            replace
+          />
+        ),
+      },
+      {
+        path: '/register/confirm',
+        element: config.registerAllowed ? (
+          <RegisterConfirmPage />
+        ) : (
+          <Navigate
+            to="/login"
+            replace
+          />
+        ),
+      },
+      {
+        path: '/register/pending',
+        element: config.registerAllowed ? (
+          <RegisterPendingPage />
+        ) : (
+          <Navigate
+            to="/login"
+            replace
+          />
+        ),
+      },
 
       // Controlled routes
       // Accessible with or without a token

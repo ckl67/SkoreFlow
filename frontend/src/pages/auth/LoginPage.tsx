@@ -1,3 +1,4 @@
+// cspell:ignore Changefct
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import FormInput from '../../components/forms/FormInput';
@@ -5,13 +6,14 @@ import SubmitButton from '../../components/forms/SubmitButton';
 import { useDevFillLogin } from '../../hooks/dev/useDevFillLogin';
 import type { LoginRequest } from '../../../../shared/types/auth';
 import { useLogin } from '../../hooks/auth/useLogin';
+import { config } from './../../config/config';
 
 export default function LoginPage() {
   // STATE
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  // FOR DEBUG
+  // FOR DEV Tool: Fill the login form with default values for testing
   useDevFillLogin(setEmail, setPassword);
 
   // SERVICES
@@ -50,9 +52,10 @@ export default function LoginPage() {
         {/* HEADER */}
         <div className="text-center space-y-1">
           <h1 className="text-2xl font-semibold">Login</h1>
-          <p className="text-sm text-gray-500">Sign in to your SkoreFlow account</p>
+          <p className="text-sm text-gray-500">
+            Sign in to your SkoreFlow account
+          </p>
         </div>
-
         {/* FORM */}
         <div className="space-y-4">
           <FormInput
@@ -70,17 +73,27 @@ export default function LoginPage() {
             placeholder="••••••••"
           />
         </div>
-
         {/* ACTION */}
-        <SubmitButton label="Login" onClick={handleLogin} />
-
+        <SubmitButton
+          label="Login"
+          onClick={handleLogin}
+        />
         {/* 2. Add the registration link here */}
-        <p className="text-sm text-center text-gray-600">
-          Don't have an account?{' '}
-          <Link to="/register" className="font-medium text-blue-600 hover:underline">
-            Sign up
-          </Link>
-        </p>
+        {config.registerAllowed ? (
+          <p className="text-sm text-center text-gray-600">
+            Don't have an account?
+            <Link
+              to="/register"
+              className="font-medium text-blue-600 hover:underline"
+            >
+              Sign up
+            </Link>
+          </p>
+        ) : (
+          <p className="text-sm text-center text-gray-600">
+            In this demo mode, Registration are not allowed !!
+          </p>
+        )}
       </div>
     </div>
   );

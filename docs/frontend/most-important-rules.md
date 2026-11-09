@@ -4,6 +4,11 @@
 
 ## Connection
 
+Two approach to connect a onClick
+
+- via arrow function
+- via function reference
+
 ### Inline Arrow Function
 
 An anonymous arrow function written directly inside the JSX prop.
@@ -55,7 +60,7 @@ const handleLayerClick = (event: MouseEvent<HTMLDivElement>) => {
 
 ## Coordinate
 
-### Rectangle
+### pdf
 
 ```typescript
     if (annotation.type === 'rectangle') {
@@ -70,6 +75,8 @@ const handleLayerClick = (event: MouseEvent<HTMLDivElement>) => {
 PDF coordinates (x1, y1, width, height):
 These are the units, relating to the native format of the PDF page.
 The stored variable - zoom-independent !
+
+### pixel
 
 ```typescript
 const [x2Screen, y2Screen] = viewport.convertToViewportPoint(x2, y2);

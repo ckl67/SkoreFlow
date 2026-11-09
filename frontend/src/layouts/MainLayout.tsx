@@ -4,19 +4,7 @@ import { useState } from 'react';
 import TopNavbar from './TopNavbar';
 import SideNavbar from './SideNavbar';
 import DevPanel from '../dev/DevPanel';
-import {
-  Circle,
-  Undo2,
-  Redo2,
-  MoveUpRight,
-  RectangleHorizontal,
-  WholeWord,
-  SquareDashedPlus,
-  ListCheck,
-  SquareMenu,
-  ArrowLeft,
-  ArrowRight,
-} from 'lucide-react'; // For nicer icons https://lucide.dev/icons/
+import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 
 // +----------------------+
 // | TopNavbar            |
@@ -35,7 +23,10 @@ export default function MainLayout() {
       {/*                     +++ TOP BAR HEADER +++                    */}
       {/* ------------------------------------------------------------- */}
       <header className="h-16 border-b shrink-0">
-        <TopNavbar />
+        <TopNavbar
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
+        />
       </header>
 
       {/* ------------------------------------------------------------- */}
@@ -46,15 +37,15 @@ export default function MainLayout() {
         {/*     --- SIDEBAR ---       */}
         {/* ------------------------- */}
         {isOpen && (
-          <aside className="flex w-32 shrink-0 p-2 border-r flex-col justify-between">
+          <aside className="flex w-32 shrink-0 p-2 border-r flex-col justify-between bg-white">
             <SideNavbar />
             <button
               type="button"
               onClick={() => setIsOpen(false)}
-              className="flex items-center justify-center gap-2 rounded-lg border border-gray-200 py-2 text-xs font-medium text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900"
-              title="Collapse the menu"
+              className="flex items-center justify-center gap-2 rounded-lg py-2 text-xs font-medium text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900"
+              title="Close Sidebar"
             >
-              <ArrowLeft className=" w-5 h-5" />
+              <PanelLeftClose className="w-5 h-5" />
             </button>
           </aside>
         )}
@@ -70,21 +61,6 @@ export default function MainLayout() {
       {/* ------------------------------------------------------------- */}
       {/*                   +++ ACTION BUTTONS ++++                     */}
       {/* ------------------------------------------------------------- */}
-
-      {/* ------------------------- */}
-      {/*  --- SIDEBAR BUTTON ---   */}
-      {/* ------------------------- */}
-      {!isOpen && (
-        <button
-          type="button"
-          onClick={() => setIsOpen(true)}
-
-          className="absolute bottom-10 left-3 z-10 flex h-12 w-12 items-center justify-center rounded-lg border border-gray-200 bg-gray-100"
-          title="Open the sidebar"
-        >
-          <ArrowRight className=" w-5 h-5" />
-        </button>
-      )}
 
       {/* ------------------------- */}
       {/*    --- DEV BUTTON  ---    */}

@@ -1,4 +1,4 @@
-<!-- cspell:ignore Flexbox -->
+<!-- cspell:ignore Flexbox  jamais écrasé   -->
 
 # Tailwind CSS
 
