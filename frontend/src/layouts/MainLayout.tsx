@@ -37,7 +37,7 @@ export default function MainLayout() {
         {/*     --- SIDEBAR ---       */}
         {/* ------------------------- */}
         {isOpen && (
-          <aside className="flex w-32 shrink-0 p-2 border-r flex-col justify-between bg-white">
+          <aside className="flex w-16 shrink-0 p-2 border-r flex-col justify-between bg-white">
             <SideNavbar />
             <button
               type="button"

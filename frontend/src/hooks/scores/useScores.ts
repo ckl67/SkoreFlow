@@ -4,25 +4,26 @@ import { getScoresPage } from '../../services/scores/scoresService';
 import { logger } from '../../../logger/logger';
 import { ScorePublicResponse } from '../../../../shared/types/score';
 
-/* ====================================
-Responsibilities are:
-- loading a page of scores,
-- managing pagination,
-- filters,
-- sorting,
-- refreshing,
-- loading,
-- and handling errors.
-=====================================*/
+// The hook return contract describes the state exposed to the component.
+// scores are initialized as an empty array.
+// isLoading and totalPages also have explicit initial values.
+type UseScoresReturn = {
+  scores: ScorePublicResponse[];
+  isLoading: boolean;
+  error: string | null;
+  totalPages: number;
+};
 
-// `await` cannot be used directly within a React component
-// A React component is not asynchronous --> We must use `useEffect()`.
-export function useScores(page: number = 1, composer?: string | null) {
-  // idem
-  //    const [scores, setScores] = useState([
-  //    { id: 1, name: 'Marche Turque',.. },
-  //    ...
-  //    ]);
+// `await` cannot be used directly within a React component, a React component is not asynchronous
+// --> We use `useEffect()`.
+//    const [scores, setScores] = useState([
+//    { id: 1, name: 'Marche Turque',.. },
+//    ...
+//    ]);
+export function useScores(
+  page: number = 1,
+  composer?: string | null
+): UseScoresReturn {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [totalPages, setTotalPages] = useState<number>(1);

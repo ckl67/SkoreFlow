@@ -2,6 +2,26 @@
 
 # React and Javascript most important rules
 
+## Internal browser
+
+1. Use the built-in "Simple Browser" command
+
+Instead of simply clicking (or Ctrl+clicking), you can use VS Code’s built-in command:
+
+Press Ctrl + Shift + P (or Cmd + Shift + P on a Mac) to open the command palette.
+
+Type and select: Simple Browser: Show (or Simple Browser: Open).
+
+Enter the local URL (e.g. `http://localhost:5173` or the path to your file).
+
+## Function
+
+To remember in JavaScript / TypeScript:
+
+- onEdit: a reference to the function.
+- onEdit(): execution of the function.
+-
+
 ## Connection
 
 Two approach to connect a onClick

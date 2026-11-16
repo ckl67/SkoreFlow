@@ -19,18 +19,16 @@ export function useComposersPicture(id: number) {
       try {
         //logger.debug('composer', 'Loading Picture for Composer', id);
 
-        logger.debug('composer', '(getComposerPicture) BEFORE request', id);
+        //logger.debug('composer', '(getComposerPicture) BEFORE request', id);
         const blob = await getComposerPicture(id);
-        logger.debug('composer', '(getComposerPicture) AFTER request', id);
-
+        // logger.debug('composer', '(getComposerPicture) AFTER request', id);
         objectURL = URL.createObjectURL(blob);
 
         // To avoid to create an ObjectURL that will never be revoked.
         if (cancelled) {
           return;
         }
-
-        logger.debug('composer', 'Created object URL', objectURL);
+        //logger.debug('composer', 'Created object URL', objectURL);
 
         setURL(objectURL);
       } catch (error) {

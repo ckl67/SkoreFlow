@@ -68,7 +68,7 @@ func Start(version string) {
 	// cspell:disable
 	demoComposers := []composers{
 		{"Wolfgang Amadeus Mozart Demo", "Classical period", "https://fr.wikipedia.org/wiki/Wolfgang_Amadeus_Mozart", "Mozart.png"},
-		{"Ludwig van Beethoven Demo", "Classical period", "https://fr.wikipedia.org/wiki/Ludwig_van_Beethoven", "Beethoven.png"},
+		{"Ludwig van Beethoven Demo", "Classical,Romantisme", "https://fr.wikipedia.org/wiki/Ludwig_van_Beethoven", "Beethoven.png"},
 	}
 	// cspell:enable
 	for _, c := range demoComposers {

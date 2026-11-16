@@ -30,6 +30,7 @@ export default function ComposersPage() {
             onSelect={() =>
               navigate(`/scores?composer=${encodeURIComponent(composer.name)}`)
             }
+            onEdit={() => navigate(`/composers/${composer.id}/edit`)}
           />
         ))}
       </ul>

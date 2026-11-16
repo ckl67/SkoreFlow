@@ -1,4 +1,7 @@
-import { GetComposersPageRequest, GetComposersPageResponse } from '../../../../shared/types/composer';
+import {
+  GetComposersPageRequest,
+  GetComposersPageResponse,
+} from '../../../../shared/types/composer';
 import { GetComposerResponse } from '../../../../shared/types/composer';
 import { apiRequest } from '../../api/client';
 import { Pagination } from '../../config/pagination';
@@ -38,14 +41,26 @@ export function getComposersPage({
   // If you need to read or manipulate the data immediately:
   //  `await` is essential to convert `Promise<T>` to `T`.
   if (token) {
-    return apiRequest<GetComposersPageResponse>('GET', `/composers?${params.toString()}`);
+    return apiRequest<GetComposersPageResponse>(
+      'GET',
+      `/composers?${params.toString()}`
+    );
   }
 
-  return apiRequest<GetComposersPageResponse>('GET', `/demo/composers?${params.toString()}`);
+  return apiRequest<GetComposersPageResponse>(
+    'GET',
+    `/demo/composers?${params.toString()}`
+  );
 }
 
 export function getComposer(id: number) {
-  return apiRequest<GetComposerResponse>('GET', `/composers/${id}`);
+  const token = localStorage.getItem('token');
+
+  if (token) {
+    return apiRequest<GetComposerResponse>('GET', `/composers/${id}`);
+  }
+
+  return apiRequest<GetComposerResponse>('GET', `/demo/composers/${id}`);
 }
 
 /**
