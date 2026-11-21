@@ -26,7 +26,6 @@ export default function TopNavbar({ isOpen, setIsOpen }: TopNavbarProps) {
             <PanelLeftOpen className="w-5 h-5" />
           </button>
         )}
-
         <Link to="/">
           <img
             src="/images/linear-300x64.png"
@@ -34,6 +33,7 @@ export default function TopNavbar({ isOpen, setIsOpen }: TopNavbarProps) {
             className="h-8 w-auto cursor-pointer"
           />
         </Link>
+        <i className="text-xs text-gray-400"> - Updated 21/11/2026</i>
       </div>
 
       {/* Right-hand group: Auth / Avatar */}

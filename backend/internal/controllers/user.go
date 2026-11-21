@@ -460,7 +460,6 @@ func (ctrl *UserController) GetAvatar(c *gin.Context) {
 	c.Header("Cache-Control", "private, no-store")
 	c.Header("Pragma", "no-cache")
 	c.Header("Expires", "0")
-	c.Header("Vary", "Authorization")
 
 	userID := c.GetUint32("user_id")
 
@@ -482,7 +481,6 @@ func (ctrl *UserController) AdminGetAvatar(c *gin.Context) {
 	c.Header("Cache-Control", "private, no-store")
 	c.Header("Pragma", "no-cache")
 	c.Header("Expires", "0")
-	c.Header("Vary", "Authorization")
 
 	uidString := c.Param("id")
 	uid, err := strconv.ParseUint(uidString, 10, 32)

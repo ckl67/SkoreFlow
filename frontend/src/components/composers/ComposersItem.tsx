@@ -1,26 +1,33 @@
 import { ComposerPublicResponse } from '../../../../shared/types/composer';
 import { useComposersPicture } from '../../hooks/composers/useComposersPicture';
-import { Pencil } from 'lucide-react';
+import { Check, Pencil, X } from 'lucide-react';
 
 type Props = {
   composer: ComposerPublicResponse;
   onSelect: () => void;
   onEdit: () => void;
+  userUsedComponent: boolean;
 };
 
-export default function ComposerItem({ composer, onSelect, onEdit }: Props) {
+export default function ComposerItem({
+  composer,
+  onSelect,
+  onEdit,
+  userUsedComponent,
+}: Props) {
   const pictureURL = useComposersPicture(composer.id);
 
   return (
     <li
-      onClick={onSelect}
       className="
-        flex items-start justify-between gap-4
-        p-4
         rounded-xl bg-gray-400 shadow-md
         transition duration-200 hover:shadow-xl
+        flex items-start justify-between
+        w-full
+        p-4
         cursor-pointer
       "
+      onClick={onSelect}
     >
       {/* 1. Left-hand block: Image/Avatar + Details (both using flex) */}
       <div className="flex items-start gap-4 flex-1">
@@ -28,7 +35,7 @@ export default function ComposerItem({ composer, onSelect, onEdit }: Props) {
           <img
             src={pictureURL}
             alt={composer.name}
-            className="h-40 w-40 rounded-lg object-cover shrink-0"
+            className="h-32 w-32 rounded-lg object-cover shrink-0"
           />
         ) : (
           <div className="flex h-20 w-20 items-center justify-center rounded-lg bg-gray-200 text-2xl font-bold shrink-0">
@@ -52,8 +59,16 @@ export default function ComposerItem({ composer, onSelect, onEdit }: Props) {
             </a>
           </p>
 
-          {composer.isVerified && (
-            <span className="text-xs text-gray-500">(Verified)</span>
+          {composer.isVerified ? (
+            <div className="pt-1">
+              <span className="inline-flex items-center gap-1 text-xs text-green-700">
+                <Check className="w-4 h-4" /> Verified
+              </span>
+            </div>
+          ) : (
+            <span className="inline-flex items-center gap-1 text-xs text-red-500 font-medium">
+              <X className="w-4 h-4" /> Not verified
+            </span>
           )}
         </div>
       </div>

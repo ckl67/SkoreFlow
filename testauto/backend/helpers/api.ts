@@ -111,7 +111,7 @@ type APIResponse<T = unknown> = {
 };
 
 // Return of function request
-type HttpResponse<T = unknown> = {
+export type HttpResponse<T = unknown> = {
   status: number;
   data: APIResponse<T>;
 };
@@ -133,7 +133,7 @@ type HttpResponse<T = unknown> = {
  */
 // Last and not the least, for test facilities, we have decided to return
 //  Promise<HttpResponse<T>> rather then  Promise<T>
-async function request<T = unknown>(
+export async function request<T = unknown>(
   method: Method,
   url: string,
   { token, data, headers }: RequestOptions = {}
@@ -173,9 +173,50 @@ async function request<T = unknown>(
   }
 }
 
-// --------------------------------------------------------------------------------
-// EXPORT (ESM)
-// --------------------------------------------------------------------------------
+// In JavaScript, a Blob (which stands for Binary Large Object) represents a block of raw, immutable data.
+// Setting `responseType: 'blob'` tells Axios not to attempt to parse the API response as text or JSON
+// (which it does by default), but to retrieve the data directly in its original binary form.
+// Not working in Nodes.js
+export async function apiBinaryRequestBlob(
+  method: Method,
+  url: string,
+  token?: string
+): Promise<Blob> {
+  const res = await axios({
+    method,
+    url,
+    responseType: 'blob',
+    headers: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
 
-export { request };
-export type { HttpResponse };
+  return res.data;
+}
+
+// In Node.js (Vitest), Axios uses the HTTP adapter rather than the browser's
+// XMLHttpRequest adapter. Unlike in the browser, responseType: 'blob' does not
+// reliably return a Blob in this environment.
+//
+// We therefore use responseType: 'arraybuffer', which returns binary data as a
+// Buffer in Node.js. Buffer is the native Node.js representation for handling
+// binary data and allows direct comparison of file contents.
+//
+// Note: The frontend uses responseType: 'blob', which is the appropriate
+// binary representation in the browser environment.
+export async function apiBinaryRequest(
+  method: Method,
+  url: string,
+  token?: string
+): Promise<Buffer> {
+  const res = await axios({
+    method,
+    url,
+    responseType: 'arraybuffer',
+    headers: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
+
+  return Buffer.from(res.data);
+}

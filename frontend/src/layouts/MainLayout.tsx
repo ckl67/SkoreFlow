@@ -18,7 +18,7 @@ export default function MainLayout() {
   const [isOpen, setIsOpen] = useState(true);
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-screen w-screen">
       {/* ------------------------------------------------------------- */}
       {/*                     +++ TOP BAR HEADER +++                    */}
       {/* ------------------------------------------------------------- */}
@@ -37,7 +37,17 @@ export default function MainLayout() {
         {/*     --- SIDEBAR ---       */}
         {/* ------------------------- */}
         {isOpen && (
-          <aside className="flex w-16 shrink-0 p-2 border-r flex-col justify-between bg-white">
+          <aside
+            className="
+          flex
+          flex-col
+          w-16
+          shrink-0
+          p-2
+          border-r
+          justify-between
+          bg-white"
+          >
             <SideNavbar />
             <button
               type="button"
@@ -53,7 +63,13 @@ export default function MainLayout() {
         {/*    --- MAIN LAYOUT ---    */}
         {/* ------------------------- */}
         {/* min-h-0 remove the minimum height imposed by the content otherwise scroll would not be possible */}
-        <main className="flex flex-1 flex-col min-h-0 overflow-auto p-2">
+        <main
+          className="
+        flex flex-col
+        h-full w-full
+        min-h-0 overflow-auto
+        p-2"
+        >
           <Outlet />
         </main>
       </div>

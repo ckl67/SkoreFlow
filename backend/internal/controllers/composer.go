@@ -339,6 +339,15 @@ func (ctrl *ComposerController) UpdateComposer(c *gin.Context) {
 
 	logger.Composer.Debug("(Controller UpdateComposer) : initiated by user %d - role %d for Composer ID %d", uid, userRole, cid)
 
+	// Inspect only filename, size, and the first few bytes if a file was uploaded
+	if form.File != nil {
+		logger.Composer.Debug(
+			"(Controller UpdateComposer) : uploaded file name=%q, size=%d bytes",
+			form.File.Filename,
+			form.File.Size,
+		)
+	}
+
 	// 3. Service execution
 	updatedComposer, err := ctrl.service.UpdateComposer(uid, userRole, uint(cid), form)
 	if err != nil {

@@ -20,51 +20,19 @@ Tailwind CSS works with an intuitive system of **utility classes**. This guide b
 
 ## Strategy
 
+Tailwind classes are modular: each family of utility classes acts independently on a specific CSS property:
+
+Sizes and widths (w-full, max-w-xl, h-64) deal solely with the element’s dimensions.
+
+Margins (mx-auto, mt-4, p-6) only affect spacing around or within the element.
+
+Positioning (flex, grid, relative) is only used when you need to align multiple elements with one another.
+
 flex (Flexbox) and grid (CSS Grid) are, first and foremost, native technologies of CSS (the standard web language).
-
-Tailwind simply gives them short, handy class names (such as flex, grid, grid-cols-4, etc.) so that you we don’t have to write raw CSS code.
-
-To put it simply:
 
 - Flexbox (flex) is the king of 1D (one dimension): perfect for aligning elements in rows (flex-row) or columns (flex-col).
 
 - CSS Grid (grid) is the king of 2D (two dimensions): perfect for organizing elements in columns and rows at the same time (such as a table or a grid of buttons).
-
-### Important default strategy
-
-By default, in HTML/CSS, if we don’t apply either `flex` or `grid` to a `div`, the elements naturally stack one below the other (like paragraphs of text). This is the normal flow.
-
-In this block:
-
-```TypeScript
-
-<div className="space-y-4 p-3 overflow-y-auto">
-  <section>...</section> {/* Block 1: Tools */}
-  <section>...</section> {/* Block 2: Styles */}
-</div>
-```
-
-- `space-y-4` simply says: “Take all my direct children (the <section> elements), stack them vertically, and put a uniform space (16px) between each block.”
-- `p-3` adds a global padding around all the content.
-- overflow-y-auto adds a vertical scrollbar if the content exceeds the height of the screen.
-
-We could make the code more consistent and readable?
-
-### Option 1: Explicitly assume column mode with flex
-
-Since your sections are stacking vertically, you could easily replace or supplement the code with `flex-col`:
-
-```TypeScript
-<div className="flex flex-col space-y-4 p-3 overflow-y-auto">
-```
-
-Here, the strategy becomes immediately clear: “This is a flexible column where the blocks are spaced 4 apart.”
-
-### Option 2
-
-Leave as it is (this is the Tailwind standard)
-
-In Tailwind, using `space-y-*` on a standard container in a normal flow to stack blocks (`<section>`, `<div>`) is extremely common and clean
 
 ## Box Model & Spacing
 
@@ -203,77 +171,3 @@ When combined with `items-center` on the parent, `mx-auto` forces automatic marg
 As soon as the width exceeds the edge of the window, the browser sets the left edge to `x=0` instead of pushing the content into the inaccessible negative area.
 
 The essential condition: For mx-auto to work, the element must have a defined width (which is the case here thanks to the dynamic style: width: viewport?.width).
-
----
-
----
-
-### Layout: Flexbox & Grid
-
-Essential tools for aligning elements and building page structures.
-
-- **Flexbox:**
-  - `flex` (enables flexbox context).
-  - `flex-col` (sets flex direction to column).
-  - `flex-1` (allows an item to grow and shrink to take up available space).
-  - `items-center` (aligns items vertically).
-  - `justify-center` / `justify-between` (aligns items horizontally).
-- **Gaps:** `gap-2` / `gap-4` (defines the space between child elements inside a flex or grid container).
-- **Grid:** `grid`, `grid-cols-3` (creates a 3-column grid).
-
----
-
-### Typography
-
-Used to style text elements, headings, and paragraphs.
-
-- **Size:** `text-xs`, `text-sm`, `text-base` (default), `text-lg`, `text-xl`, `text-2xl`, etc.
-- **Font Weight:** `font-normal`, `font-medium`, `font-semibold`, `font-bold`.
-- **Color & Alignment:** `text-gray-500`, `text-white`, `text-center`, `text-left`.
-
----
-
-### Visual Styles (Borders, Shadows, Colors)
-
-Classes to style your buttons, cards, and containers.
-
-- **Background:** `bg-white`, `bg-gray-100`, `bg-transparent`.
-- **Borders:** `border` (adds a 1px border), `border-b` (bottom only), `border-r` (right only), `border-gray-200`.
-- **Border Radius (Rounded corners):** `rounded` (small), `rounded-lg` (medium), `rounded-xl` (large), `rounded-full` (pill/circle).
-- **Box Shadows:** `shadow-sm`, `shadow-md`, `shadow-lg`.
-
----
-
-### Positioning & Visibility
-
-- **Position:** `fixed`, `absolute`, `relative`, `sticky`.
-- **Coordinates:** `top-0`, `bottom-4`, `right-4`, `left-1/2`.
-- **Overflow:** `overflow-auto` (adds scrollbars when needed), `overflow-hidden` (clips content that extends beyond the container).
-
----
-
-### States & Responsiveness
-
-Tailwind uses **modifiers** (prefixes) to handle user interactions and media queries.
-
-### Interaction States
-
-- **Hover (`hover:`):** `hover:bg-gray-100` (changes the background color on mouse hover).
-- **Focus (`focus:`):** `focus:ring-2` (adds a focus ring, crucial for accessibility on inputs and buttons).
-
-### Responsive Design (Mobile-First)
-
-By default, Tailwind classes apply to all screen sizes (starting from mobile). You add prefixes to apply styles on larger screens:
-
-- `md:` (tablets and up) $\rightarrow$ _Example:_ `w-full md:w-1/2`
-- `lg:` (laptops/desktops) $\rightarrow$ _Example:_ `flex-col lg:flex-row`
-
----
-
-## 💡 Pro-Tip: Arbitrary Values
-
-If you need a specific value that doesn't exist in Tailwind's default theme, you can use square brackets `[]`:
-
-- `w-[350px]` (exact width of 350px)
-- `bg-[#FF5733]` (custom hex color)
-- `top-[12%]` (exact percentage positioning)

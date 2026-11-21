@@ -36,7 +36,10 @@ export default function AvatarMenu() {
   }
 
   const avatarURL = useAvatar(user?.id);
-  console.log('AvatarMenu render avatarURL :  useAvatar(user?.id) =', avatarURL);
+  console.log(
+    'AvatarMenu render avatarURL :  useAvatar(user?.id) =',
+    avatarURL
+  );
 
   return (
     // 3. We attach the ref to the relative parent div
@@ -45,11 +48,21 @@ export default function AvatarMenu() {
     // Only : <img src={avatarURL}
 
     // Add z-index z-50 here to the parent container to force the entire block to the foreground
-    <div className="relative z-50" ref={menuRef}>
+    <div
+      className="relative z-50"
+      ref={menuRef}
+    >
       {/* Avatar button */}
-      <button onClick={() => setMenuOpen(!menuOpen)} className="flex items-center gap-2">
+      <button
+        onClick={() => setMenuOpen(!menuOpen)}
+        className="flex items-center gap-2"
+      >
         {avatarURL ? (
-          <img src={avatarURL} alt="Avatar" className="h-10 w-10 rounded-full object-cover" />
+          <img
+            src={avatarURL}
+            alt="Avatar"
+            className="h-10 w-10 rounded-full object-cover"
+          />
         ) : (
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200">
             {user.username.charAt(0).toUpperCase()}
@@ -66,11 +79,19 @@ export default function AvatarMenu() {
           </div>
 
           {/* Optional: The menu also closes when you click on a link */}
-          <Link to="/me" onClick={() => setMenuOpen(false)} className="block px-4 py-2 hover:bg-gray-100">
+          <Link
+            to="/me"
+            onClick={() => setMenuOpen(false)}
+            className="block px-4 py-2 hover:bg-gray-100"
+          >
             My Profile
           </Link>
 
-          <Link to="/settings" onClick={() => setMenuOpen(false)} className="block px-4 py-2 hover:bg-gray-100">
+          <Link
+            to="/pending"
+            onClick={() => setMenuOpen(false)}
+            className="block px-4 py-2 hover:bg-gray-100"
+          >
             Settings
           </Link>
 

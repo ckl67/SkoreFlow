@@ -1,10 +1,15 @@
 // cspell:ignore unverify
+import fs from 'node:fs/promises';
 import path from 'path';
 import { beforeAll, describe, expect, it } from 'vitest';
 
 import { login } from '../helpers/auth.js';
 import { createComposer } from '../helpers/composer';
-import { GetComposersPage, GetComposer } from '../helpers/composer';
+import {
+  GetComposersPage,
+  GetComposer,
+  getComposerPicture,
+} from '../helpers/composer';
 import { updateComposer } from '../helpers/composer';
 
 // ----------------------------------------------------------------------------
@@ -54,7 +59,10 @@ describe('🎼 Composer API - From the User Point of view', () => {
   // CREATE COMPOSER
   // ----------------------------------------------------------------------------
   it('should create a composer', async () => {
-    const filePath = path.resolve(__dirname, '../resources/composers/Frédéric Chopin.png');
+    const filePath = path.resolve(
+      __dirname,
+      '../resources/composers/Frédéric Chopin.png'
+    );
 
     const composer = makeComposer('Chopin');
 
@@ -68,7 +76,10 @@ describe('🎼 Composer API - From the User Point of view', () => {
   // SHOULD NOT CREATE COMPOSER BECAUSE ALREADY EXISTS
   // ----------------------------------------------------------------------------
   it('should not create a composer because already exists', async () => {
-    const filePath = path.resolve(__dirname, '../resources/composers/Mozart.png');
+    const filePath = path.resolve(
+      __dirname,
+      '../resources/composers/Mozart.png'
+    );
 
     const res = await createComposer(
       {
@@ -231,7 +242,9 @@ describe('🎼 Composer API - From the User Point of view', () => {
     expect(page1.status).toBe(200);
     expect(page2.status).toBe(200);
 
-    expect(page1.data.data!.composers[0].id).not.toBe(page2.data.data!.composers[0].id);
+    expect(page1.data.data!.composers[0].id).not.toBe(
+      page2.data.data!.composers[0].id
+    );
   });
 
   // ----------------------------------------------------------------------------
@@ -251,14 +264,22 @@ describe('🎼 Composer API - From the User Point of view', () => {
   });
 
   it('should no composer found with exact name', async () => {
-    const res = await GetComposersPage({ name: 'Beethoven', searchMode: 'exact' }, TOKEN_USER1);
+    const res = await GetComposersPage(
+      { name: 'Beethoven', searchMode: 'exact' },
+      TOKEN_USER1
+    );
 
     expect(res.status).toBe(200);
-    expect(res.data.data?.message).equal('no composer found with exact name: Beethoven');
+    expect(res.data.data?.message).equal(
+      'no composer found with exact name: Beethoven'
+    );
   });
 
   it('should get composers per name with Exact name', async () => {
-    const res = await GetComposersPage({ name: 'Ludwig van Beethoven', searchMode: 'exact' }, TOKEN_USER1);
+    const res = await GetComposersPage(
+      { name: 'Ludwig van Beethoven', searchMode: 'exact' },
+      TOKEN_USER1
+    );
 
     expect(res.status).toBe(200);
     expect(res.data.data?.message).equal('composers retrieved successfully');
@@ -293,12 +314,12 @@ describe('🎼 Composer API - From the User Point of view', () => {
   // Update of name is not authorized !!
   // ----------------------------------------------------------------------------
 
-  it('should update a composer as moderator', async () => {
+  it('should update a composer (Data) as moderator', async () => {
     const composer = makeComposer('Iron Maiden');
 
     const createRes = await createComposer(
       composer,
-      path.resolve(__dirname, '../resources/composers/Frédéric Chopin.png'),
+      path.resolve(__dirname, '../resources/composers/Iron Maiden.png'),
       TOKEN_USER1
     );
 
@@ -320,6 +341,65 @@ describe('🎼 Composer API - From the User Point of view', () => {
     expect(res.data.data!.composer.id).toBe(composerId);
     expect(res.data.data!.composer.external_url).toBe('https://updated.test');
     expect(res.data.data!.composer.epoch).toContain('Romantic');
+  });
+
+  // ----------------------------------------------------------------------------
+  // UPDATE COMPOSER + Picture
+  // ----------------------------------------------------------------------------
+
+  it('should update a composer (Data + Picture) as moderator', async () => {
+    const composer = makeComposer('Frédéric Chopin');
+
+    const createRes = await createComposer(
+      composer,
+      path.resolve(__dirname, '../resources/composers/Frédéric Chopin.png'),
+      TOKEN_USER1
+    );
+
+    // 1. Retrieve composer
+    const composerId = createRes.data.data!.id;
+
+    // 2. Read original picture
+    const pictureBefore = await getComposerPicture(
+      composerId,
+      TOKEN_MODERATOR1
+    );
+
+    console.log('Is Blob:', pictureBefore instanceof Blob);
+    console.log('Is Buffer:', Buffer.isBuffer(pictureBefore));
+    console.log('length:', pictureBefore?.length);
+    expect(pictureBefore.length).toBeGreaterThan(0);
+
+    // 3. Read new picture from disk
+    const picturePath = path.resolve(
+      __dirname,
+      '../resources/composers/Frédéric Chopin Paint.png'
+    );
+    console.log('picturePath : ', picturePath);
+
+    // 4. Update composer (data + picture)
+    const res = await updateComposer(
+      composerId,
+      {
+        externalURL: 'https://updated.test',
+        epoch: 'Romantic,Classic,Rock',
+        isVerified: true,
+      },
+      picturePath,
+      TOKEN_MODERATOR1
+    );
+
+    expect(res.status).toBe(200);
+    expect(res.data.data!.composer.id).toBe(composerId);
+    expect(res.data.data!.composer.external_url).toBe('https://updated.test');
+    expect(res.data.data!.composer.epoch).toContain('Romantic');
+
+    // 5. Retrieve updated picture
+    const pictureAfter = await getComposerPicture(composerId, TOKEN_MODERATOR1);
+    expect(pictureAfter.length).toBeGreaterThan(0);
+
+    // 6. Ensure the picture has actually changed
+    expect(pictureBefore.equals(pictureAfter)).toBe(false);
   });
 
   // ----------------------------------------------------------------------------

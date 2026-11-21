@@ -1,7 +1,7 @@
 import axios, { Method } from 'axios';
 import { config } from './../config/config';
-import { logger } from '../../logger/logger';
-
+// See file logger/config.ts to activate the logs
+import { logger } from '../../logger';
 // --------------------------------------------------------------------------------
 // Request options
 // --------------------------------------------------------------------------------
@@ -104,7 +104,9 @@ export async function apiRequest<TResponse = unknown, TRequest = unknown>(
       logger.debug('api', '(apiRequest) err =', err.message);
       const apiError = err.response?.data as APIResponse<unknown> | undefined;
 
-      throw new Error(apiError?.error?.message ?? err.message ?? 'Unknown network error');
+      throw new Error(
+        apiError?.error?.message ?? err.message ?? 'Unknown network error'
+      );
     }
 
     // If it is not an Axios error, but a standard JavaScript error (e.g. a TypeError, invalid syntax, or a manual `throw new Error(...)`
@@ -145,11 +147,14 @@ axios.interceptors.response.use(
 // In JavaScript, a Blob (which stands for Binary Large Object) represents a block of raw, immutable data.
 // Setting `responseType: 'blob'` tells Axios not to attempt to parse the API response as text or JSON
 // (which it does by default), but to retrieve the data directly in its original binary form.
-export async function apiBinaryRequest(method: Method, url: string): Promise<Blob> {
+export async function apiBinaryRequest(
+  method: Method,
+  url: string
+): Promise<Blob> {
   const token = localStorage.getItem('token');
 
   logger.debug('api', 'GET', url);
-  //logger.debug('api', '(apiBinaryRequest) method url =', config.apiUrl + url);
+  logger.debug('api', '(apiBinaryRequest) method url =', config.apiUrl + url);
   const res = await axios({
     method,
     url: config.apiUrl + url,

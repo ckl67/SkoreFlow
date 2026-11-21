@@ -21,7 +21,10 @@ type UseComposersReturn = {
 
 // `await` cannot be used directly within a React component
 // A React component is not asynchronous --> We must use `useEffect()`.
-export function useComposers(page: number = 1): UseComposersReturn {
+export function useComposers(
+  page: number = 1,
+  onlyMine: boolean = true
+): UseComposersReturn {
   // idem
   //    const [composers, setComposers] = useState([
   //    { id: 1, uname: 'Beethoven',.. },
@@ -35,7 +38,7 @@ export function useComposers(page: number = 1): UseComposersReturn {
     async function loadComposers() {
       try {
         logger.debug('composer', `Loading composers ${page}.`);
-        const res = await getComposersPage({ page });
+        const res = await getComposersPage({ page }, onlyMine);
 
         // If total_rows is 0, an empty slice is forced to prevent inconsistencies in the back end
         if (res.total_rows === 0) {

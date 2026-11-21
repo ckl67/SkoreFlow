@@ -8,28 +8,29 @@ import { getComposerPicture } from '../../services/composers/composersService';
 // with:
 // URL.revokeObjectURL(...)
 
-export function useComposersPicture(id: number) {
+export function useComposersPicture(id: number, refreshKey: number = 0) {
   const [url, setURL] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     let objectURL: string | null = null;
 
+    setURL(null);
     async function load() {
       try {
-        //logger.debug('composer', 'Loading Picture for Composer', id);
-
         //logger.debug('composer', '(getComposerPicture) BEFORE request', id);
-        const blob = await getComposerPicture(id);
-        // logger.debug('composer', '(getComposerPicture) AFTER request', id);
-        objectURL = URL.createObjectURL(blob);
+        const blob = await getComposerPicture(id, refreshKey);
 
         // To avoid to create an ObjectURL that will never be revoked.
+        // The effect may have been cleaned up while the request was pending.
         if (cancelled) {
           return;
         }
-        //logger.debug('composer', 'Created object URL', objectURL);
 
+        // logger.debug('composer', '(getComposerPicture) AFTER request', id);
+        objectURL = URL.createObjectURL(blob);
+
+        //logger.debug('composer', 'Created object URL', objectURL);
         setURL(objectURL);
       } catch (error) {
         logger.error('composer', 'Failed loading picture', error);
@@ -47,7 +48,7 @@ export function useComposersPicture(id: number) {
         URL.revokeObjectURL(objectURL);
       }
     };
-  }, [id]);
+  }, [id, refreshKey]);
 
   return url;
 }

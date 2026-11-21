@@ -1,10 +1,17 @@
+// If a module imports `logger` and uses it at top-level
+// (or initializes something) before `config.ts` has been evaluated,
+// `moduleLevels.get('api')` is still `undefined` at the time
+// of the call — which falls back to `defaultLevel` (`LogLevel.INFO`).
+// Make sure that `config.ts` is imported right at the top of
+// the entry point
+// See file logger/config.ts to activate the logs
+import '../logger/config';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { RouterProvider } from 'react-router-dom';
 import { router } from './router/router';
 import { AuthProvider } from './auth/AuthProvider';
 import { DevProvider } from './dev/DevProvider';
-import '../logger/config';
 
 // -------------------------------------------
 // REACT MECHANICS NOTE:

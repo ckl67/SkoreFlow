@@ -5,19 +5,33 @@ import FormData from 'form-data';
 import fs from 'fs';
 
 import { API_URL } from '../config.js';
-import { request } from './api.js';
+import { request, apiBinaryRequest } from './api.js';
 
-import { CreateComposerPayload, CreateComposerResponse } from '../../../shared/types/composer';
-import { GetComposersPageRequest, GetComposersPageResponse, GetComposerResponse } from '../../../shared/types/composer';
+import {
+  CreateComposerPayload,
+  CreateComposerResponse,
+} from '../../../shared/types/composer';
+import {
+  GetComposersPageRequest,
+  GetComposersPageResponse,
+  GetComposerResponse,
+} from '../../../shared/types/composer';
 
-import { UpdateComposerRequestPayload, UpdateComposerResponse } from '../../../shared/types/composer';
+import {
+  UpdateComposerRequestPayload,
+  UpdateComposerResponse,
+} from '../../../shared/types/composer';
 
 // --------------------------------------------------------------------------------
 // Create Composer
 // Usage in Vitest
 // const res = await CreateComposer(...)
 // --------------------------------------------------------------------------------
-async function createComposer({ name, externalURL, epoch }: CreateComposerPayload, filePath: string, token: string) {
+async function createComposer(
+  { name, externalURL, epoch }: CreateComposerPayload,
+  filePath: string,
+  token: string
+) {
   if (!name) {
     throw new Error('name is required');
   }
@@ -42,11 +56,15 @@ async function createComposer({ name, externalURL, epoch }: CreateComposerPayloa
   // We will construct
   //    Authorization: Bearer xxx
   //    Content-Type: multipart/form-data; boundary=
-  const res = await request<CreateComposerResponse>('POST', `${API_URL}/composers`, {
-    token,
-    data: form,
-    headers: form.getHeaders(),
-  });
+  const res = await request<CreateComposerResponse>(
+    'POST',
+    `${API_URL}/composers`,
+    {
+      token,
+      data: form,
+      headers: form.getHeaders(),
+    }
+  );
 
   console.log('\n Composer Creation response:', res.status, res.data);
 
@@ -61,7 +79,14 @@ async function createComposer({ name, externalURL, epoch }: CreateComposerPayloa
 //  Or {}, parameter optional --> first rang
 //
 async function GetComposersPage(
-  { page = 1, limit = 10, sort = 'id asc', searchMode = 'contains', name, isVerified }: GetComposersPageRequest = {},
+  {
+    page = 1,
+    limit = 10,
+    sort = 'id asc',
+    searchMode = 'contains',
+    name,
+    isVerified,
+  }: GetComposersPageRequest = {},
   token: string
 ) {
   const params = new URLSearchParams();
@@ -73,7 +98,10 @@ async function GetComposersPage(
   if (name) params.append('name', name);
   if (isVerified !== undefined) params.append('isVerified', String(isVerified));
 
-  const url = params.toString().length > 0 ? `${API_URL}/composers?${params.toString()}` : `${API_URL}/composers`;
+  const url =
+    params.toString().length > 0
+      ? `${API_URL}/composers?${params.toString()}`
+      : `${API_URL}/composers`;
 
   const res = await request<GetComposersPageResponse>('GET', url, {
     token,
@@ -89,9 +117,13 @@ async function GetComposersPage(
 
 // Unique response
 async function GetComposer(ComposerId: number, token: string) {
-  const res = await request<GetComposerResponse>('GET', `${API_URL}/composers/${ComposerId}`, {
-    token,
-  });
+  const res = await request<GetComposerResponse>(
+    'GET',
+    `${API_URL}/composers/${ComposerId}`,
+    {
+      token,
+    }
+  );
 
   console.log('\n composers User response:', res.status, res.data);
   return res;
@@ -100,13 +132,47 @@ async function GetComposer(ComposerId: number, token: string) {
 // search within a paginated list.
 // Could theoretically return several results
 async function getComposersByName(ComposerName: string, token: string) {
-  const res = await request<GetComposersPageResponse>('GET', `${API_URL}/composers?name=${ComposerName}`, {
-    token,
-  });
+  const res = await request<GetComposersPageResponse>(
+    'GET',
+    `${API_URL}/composers?name=${ComposerName}`,
+    {
+      token,
+    }
+  );
 
   console.log('\nComposers User response:', res.status);
   console.dir(res.data, { depth: null, colors: true });
   return res;
+}
+
+// --------------------------------------------------------------------------------
+// Pictures
+// --------------------------------------------------------------------------------
+
+export async function getComposerPicture(id: number, token: string) {
+  if (token) {
+    const blob = await apiBinaryRequest(
+      'GET',
+      `${API_URL}/composers/${id}/picture`,
+      token
+    );
+    return blob;
+  }
+  const blob = await apiBinaryRequest('GET', `/demo/composers/${id}/picture`);
+  return blob;
+}
+
+export async function getComposerThumbnail(id: number, token: string) {
+  if (token) {
+    const blob = await apiBinaryRequest(
+      'GET',
+      `${API_URL}/composers/${id}/thumbnail`,
+      token
+    );
+    return blob;
+  }
+  const blob = await apiBinaryRequest('GET', `/demo/composers/${id}/thumbnail`);
+  return blob;
 }
 
 // --------------------------------------------------------------------------------
@@ -155,11 +221,15 @@ async function updateComposer(
   // We will construct
   //    Authorization: Bearer xxx
   //    Content-Type: multipart/form-data; boundary=
-  const res = await request<UpdateComposerResponse>('PUT', `${API_URL}/composers/${ComposerId}`, {
-    token,
-    data: form,
-    headers: form.getHeaders(),
-  });
+  const res = await request<UpdateComposerResponse>(
+    'PUT',
+    `${API_URL}/composers/${ComposerId}`,
+    {
+      token,
+      data: form,
+      headers: form.getHeaders(),
+    }
+  );
 
   console.log('\n Composer Update response:', res.status, res.data);
 
@@ -170,4 +240,10 @@ async function updateComposer(
 // EXPORT (ESM)
 // --------------------------------------------------------------------------------
 
-export { createComposer, getComposersByName, GetComposersPage, GetComposer, updateComposer };
+export {
+  createComposer,
+  getComposersByName,
+  GetComposersPage,
+  GetComposer,
+  updateComposer,
+};

@@ -4,10 +4,17 @@ import { useNavigate } from 'react-router-dom';
 import { useComposers } from '../../hooks/composers/useComposers';
 import ComposerItem from '../../components/composers/ComposersItem';
 
+import { useAuth } from '../../hooks/auth/useAuth';
+import { UserRole } from '../../../../shared/frontend/enums/userRoles';
+
 export default function ComposersPage() {
+  const { user } = useAuth();
+
+  const onlyMine = user ? user.role !== UserRole.Moderator : false;
+
   const [page, setPage] = useState<number>(1);
   const navigate = useNavigate();
-  const { composers, totalPages } = useComposers(page);
+  const { composers, totalPages } = useComposers(page, onlyMine);
   const isLoading = false;
   const previousPage = () => {
     setPage((current) => Math.max(1, current - 1));
@@ -18,11 +25,29 @@ export default function ComposersPage() {
   };
 
   return (
-    <div className="mx-auto max-w-5xl p-6">
-      <h1 className="mb-8 text-center text-4xl font-bold">List of composers</h1>
+    // Size of items : max-w-7xl provides more space (around 1280px)
+    <div className="mx-auto max-w-7xl p-4">
+      <h1 className="mb-8 text-center text-4xl font-bold">
+        {!onlyMine
+          ? 'List of all composers'
+          : user?.username
+            ? `List of ${user.username}'s composers`
+            : 'List of my composers'}
+      </h1>
 
       {/* List of Composers */}
-      <ul className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      {/*
+        grid-cols-1: 1 column on mobile
+        md:grid-cols-2: 2 columns on tablet
+        xl:grid-cols-3: 3 columns on very large screens
+      */}
+      <ul
+        className="
+      grid
+      grid-cols-1 md:grid-cols-2 lg:grid-cols-3
+      gap-4
+      w-full"
+      >
         {composers.map((composer) => (
           <ComposerItem
             key={composer.id}
@@ -31,10 +56,10 @@ export default function ComposersPage() {
               navigate(`/scores?composer=${encodeURIComponent(composer.name)}`)
             }
             onEdit={() => navigate(`/composers/${composer.id}/edit`)}
+            userUsedComponent
           />
         ))}
       </ul>
-
       {/* Barre de pagination */}
       <div className="mt-8 flex items-center justify-center gap-4">
         <button

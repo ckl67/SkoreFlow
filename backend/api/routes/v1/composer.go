@@ -21,7 +21,6 @@ func RegisterComposerRoutes(rg *gin.RouterGroup, composerCtrl *controllers.Compo
 		composerGroup.GET("/composers", composerCtrl.GetComposersPage) // vitest
 		composerGroup.GET("/composers/:id", composerCtrl.GetComposer)  // vitest
 
-		// Other CRUD operations
 		composerGroup.PUT("/composers/:id", composerCtrl.UpdateComposer) // vitest
 
 		composerGroup.DELETE("/composers/:id", composerCtrl.DeleteComposer)
