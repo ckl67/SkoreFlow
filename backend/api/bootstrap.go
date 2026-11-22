@@ -156,8 +156,8 @@ func Start(version string) {
 
 	if config.Config().DevelopmentRuntime.SeedData {
 		// Users
-		appServer.seederService.User("user1", "user1@test.com", "password123", domain.RoleUser, "users/default.png")
-		appServer.seederService.User("user2", "user2@test.com", "password123", domain.RoleUser, "users/default.png")
+		appServer.seederService.User("user1", "user1@test.com", "password123", domain.RoleUser, "users/male.png")
+		appServer.seederService.User("user2", "user2@test.com", "password123", domain.RoleUser, "users/female.png")
 		appServer.seederService.User("user3", "user3@test.com", "password123", domain.RoleUser, "users/default.png")
 		appServer.seederService.User("user6", "user6@test.com", "password123", domain.RoleUser, "users/default.png")
 		appServer.seederService.User("moderator1", "moderator1@test.com", "password123", domain.RoleModerator, "users/moderator.png")

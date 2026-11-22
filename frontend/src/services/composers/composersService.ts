@@ -88,14 +88,11 @@ export function getComposer(id: number) {
  *    GET /api/v1/composers/9/picture?v=1
  *  Will call the same Backend route
  */
-export async function getComposerPicture(id: number, refreshKey: number = 0) {
+export async function getComposerPicture(id: number) {
   const token = localStorage.getItem('token');
 
   if (token) {
-    const blob = await apiBinaryRequest(
-      'GET',
-      `/composers/${id}/picture?v=${refreshKey}`
-    );
+    const blob = await apiBinaryRequest('GET', `/composers/${id}/picture`);
     return blob;
   }
   const blob = await apiBinaryRequest('GET', `/demo/composers/${id}/picture`);

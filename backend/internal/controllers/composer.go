@@ -414,12 +414,14 @@ func (ctrl *ComposerController) DeleteComposer(c *gin.Context) {
 }
 
 func (ctrl *ComposerController) GetComposerPicture(c *gin.Context) {
-	// We are Not in the same situation than for Avatar
-	// Because the same reference will always return the same picture
-	// So we can ask for a very long cover 24 x 3600 secondes = 86400
 	logger.Composer.Debug("(Ctrl-GetComposerPicture) We stay in ")
-
-	c.Header("Cache-Control", "private, max-age=86400")
+	// Vary: Authorization    Useful if the response actually depends on the authentication token.
+	// Pragma: no-cache    Compatibility with legacy HTTP/1.0 caches.
+	// Expires: 0    Compatibility with legacy caching mechanisms.
+	c.Header("Vary", "Authorization")
+	c.Header("Cache-Control", "private, no-store")
+	c.Header("Pragma", "no-cache")
+	c.Header("Expires", "0")
 
 	isDemo := false
 	cidString := c.Param("id")
@@ -446,12 +448,15 @@ func (ctrl *ComposerController) GetComposerPicture(c *gin.Context) {
 }
 
 func (ctrl *ComposerController) GetComposerThumbnail(c *gin.Context) {
-	// We are Not in the same situation than for Avatar
-	// Because the same reference will always return the same picture
-	// So we can ask for a very long cover 24 x 3600 secondes = 86400
-	logger.Composer.Debug("(Ctrl-GetComposerThumbnail) We stay in ")
+	// Vary: Authorization    Useful if the response actually depends on the authentication token.
+	// Pragma: no-cache    Compatibility with legacy HTTP/1.0 caches.
+	// Expires: 0    Compatibility with legacy caching mechanisms.
+	c.Header("Vary", "Authorization")
+	c.Header("Cache-Control", "private, no-store")
+	c.Header("Pragma", "no-cache")
+	c.Header("Expires", "0")
 
-	c.Header("Cache-Control", "private, max-age=86400")
+	logger.Composer.Debug("(Ctrl-GetComposerThumbnail) We stay in ")
 
 	isDemo := false
 	cidString := c.Param("id")
@@ -472,12 +477,13 @@ func (ctrl *ComposerController) GetComposerThumbnail(c *gin.Context) {
 }
 
 func (ctrl *ComposerController) GetDemoComposerPicture(c *gin.Context) {
-	// We are Not in the same situation than for Avatar
-	// Because the same reference will always return the same picture
-	// So we can ask for a very long cover 24 x 3600 secondes = 86400
-	logger.Composer.Debug("(Ctrl-GetDemoComposerPicture) We stay in ")
+	// Pragma: no-cache    Compatibility with legacy HTTP/1.0 caches.
+	// Expires: 0    Compatibility with legacy caching mechanisms.
+	c.Header("Cache-Control", "private, no-store")
+	c.Header("Pragma", "no-cache")
+	c.Header("Expires", "0")
 
-	c.Header("Cache-Control", "public, max-age=86400")
+	logger.Composer.Debug("(Ctrl-GetDemoComposerPicture) We stay in ")
 
 	isDemo := true
 	cidString := c.Param("id")
@@ -504,12 +510,13 @@ func (ctrl *ComposerController) GetDemoComposerPicture(c *gin.Context) {
 }
 
 func (ctrl *ComposerController) GetDemoComposerThumbnail(c *gin.Context) {
-	// We are Not in the same situation than for Avatar
-	// Because the same reference will always return the same picture
-	// So we can ask for a very long cover 24 x 3600 secondes = 86400
-	logger.Composer.Debug("(Ctrl-GetDemoComposerThumbnail) We stay in ")
+	// Pragma: no-cache    Compatibility with legacy HTTP/1.0 caches.
+	// Expires: 0    Compatibility with legacy caching mechanisms.
+	c.Header("Cache-Control", "private, no-store")
+	c.Header("Pragma", "no-cache")
+	c.Header("Expires", "0")
 
-	c.Header("Cache-Control", "public, max-age=86400")
+	logger.Composer.Debug("(Ctrl-GetDemoComposerThumbnail) We stay in ")
 
 	isDemo := true
 	cidString := c.Param("id")

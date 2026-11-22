@@ -6,6 +6,8 @@ var defaultAvatars = map[string]string{
 	//	Database 							Project Root
 	// 										backend/assets/users
 	"users/default.png":   "users/default.png",
+	"users/male.png":      "users/male.png",
+	"users/female.png":    "users/female.png",
 	"users/moderator.png": "users/moderator.png",
 	"users/admin.png":     "users/admin.png",
 }

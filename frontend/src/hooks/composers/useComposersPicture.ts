@@ -8,7 +8,7 @@ import { getComposerPicture } from '../../services/composers/composersService';
 // with:
 // URL.revokeObjectURL(...)
 
-export function useComposersPicture(id: number, refreshKey: number = 0) {
+export function useComposersPicture(id: number) {
   const [url, setURL] = useState<string | null>(null);
 
   useEffect(() => {
@@ -19,7 +19,7 @@ export function useComposersPicture(id: number, refreshKey: number = 0) {
     async function load() {
       try {
         //logger.debug('composer', '(getComposerPicture) BEFORE request', id);
-        const blob = await getComposerPicture(id, refreshKey);
+        const blob = await getComposerPicture(id);
 
         // To avoid to create an ObjectURL that will never be revoked.
         // The effect may have been cleaned up while the request was pending.
@@ -48,7 +48,7 @@ export function useComposersPicture(id: number, refreshKey: number = 0) {
         URL.revokeObjectURL(objectURL);
       }
     };
-  }, [id, refreshKey]);
+  }, [id]);
 
   return url;
 }

@@ -26,9 +26,8 @@ export default function ComposerEditPage() {
     user?.role === UserRole.Moderator || user?.role === UserRole.Admin;
 
   const canEdit =
-    user?.role === UserRole.User ||
-    user?.role === UserRole.Moderator ||
-    user?.role === UserRole.Admin;
+    //user?.role === UserRole.User ||
+    user?.role === UserRole.Moderator || user?.role === UserRole.Admin;
 
   const params = useParams<{ id: string }>();
   const id = params.id;
@@ -40,11 +39,7 @@ export default function ComposerEditPage() {
   // Fetch composer details and existing picture URL
   const { composer } = useGetComposer(isValidId ? pComposerId : 0);
 
-  const [pictureVersion, setPictureVersion] = useState(0);
-  const pictureURL = useComposersPicture(
-    isValidId ? pComposerId : 0,
-    pictureVersion
-  );
+  const pictureURL = useComposersPicture(isValidId ? pComposerId : 0);
 
   // Local form state
   const [cName, setCName] = useState('');
@@ -169,9 +164,8 @@ export default function ComposerEditPage() {
       }
 
       // Mandatory to remove the preview picture.
-      setSelectedPictureFile(null);
+      //setSelectedPictureFile(null);
 
-      setPictureVersion((version) => version + 1);
       setSaveSuccess(res.message || 'Composer updated successfully');
     } catch (err) {
       setSaveError(
@@ -232,10 +226,14 @@ export default function ComposerEditPage() {
             <span className="mb-1 inline-block rounded-full bg-indigo-50 px-2.5 py-0.5 text-xs font-semibold text-indigo-700">
               ID #{composer.id}
             </span>
-            <h1 className="text-xl font-bold text-gray-900">Edit Composer</h1>
-            <p className="truncate text-sm text-gray-500">
-              Update the details for {composer.name}
-            </p>
+            <h1 className="text-xl font-bold text-gray-900">
+              {canEdit ? 'Edit Composer' : 'View Composer'}
+            </h1>
+            {canEdit && (
+              <p className="truncate text-sm text-gray-500">
+                Update the details for {composer.name}
+              </p>
+            )}
           </div>
         </div>
 
@@ -247,15 +245,18 @@ export default function ComposerEditPage() {
               label="Name :"
               value={cName}
               onChange={setCName}
+              disabled={!canEdit}
             />
 
             {/* Composer Picture Upload */}
-            <FormInputFile
-              label="Picture :"
-              comment="(.jpg / .png)"
-              fileName={selectedPictureFile?.name || composer.picture}
-              onChange={setSelectedPictureFile}
-            />
+            {canEdit && (
+              <FormInputFile
+                label="Picture :"
+                comment="(.jpg / .png)"
+                fileName={selectedPictureFile?.name || composer.picture}
+                onChange={setSelectedPictureFile}
+              />
+            )}
 
             {/* Composer Epoch */}
             <FormInput
@@ -264,6 +265,7 @@ export default function ComposerEditPage() {
               onChange={setCEpoch}
               onBlur={handleEpochBlur}
               comment="(Each epoch must be separated with a comma)"
+              disabled={!canEdit}
             />
 
             {/* External Reference URL */}
@@ -271,6 +273,7 @@ export default function ComposerEditPage() {
               label="External URL link :"
               value={cExternalUrl}
               onChange={setCExternalUrl}
+              disabled={!canEdit}
             />
 
             {/* Verified Status (editable only by Moderators and Admins) */}
@@ -298,21 +301,23 @@ export default function ComposerEditPage() {
           )}
 
           {/* Form Footer / Submit Action */}
-          <div className="flex justify-end border-t border-gray-100 pt-4">
-            <div className="w-full sm:w-auto">
-              <SubmitButton
-                label={
-                  !canEdit
-                    ? 'Save Changes - Not Allowed'
-                    : isSaving
-                      ? 'Saving...'
-                      : 'Save Changes'
-                }
-                disabled={!canEdit || isSaving}
-                onClick={handleSubmit}
-              />
+          {canEdit && (
+            <div className="flex justify-end border-t border-gray-100 pt-4">
+              <div className="w-full sm:w-auto">
+                <SubmitButton
+                  label={
+                    !canEdit
+                      ? 'Save Not Allowed'
+                      : isSaving
+                        ? 'Saving...'
+                        : 'Save Changes'
+                  }
+                  disabled={!canEdit || isSaving}
+                  onClick={handleSubmit}
+                />
+              </div>
             </div>
-          </div>
+          )}
         </form>
       </div>
     </div>

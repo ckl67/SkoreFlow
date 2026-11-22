@@ -3,6 +3,7 @@ import { useAuth } from '../hooks/auth/useAuth';
 import AvatarMenu from './AvatarMenu';
 import { User } from 'lucide-react';
 import { PanelLeftOpen } from 'lucide-react';
+import { VERSION } from '../config/ui';
 
 type TopNavbarProps = {
   isOpen: boolean;
@@ -33,7 +34,7 @@ export default function TopNavbar({ isOpen, setIsOpen }: TopNavbarProps) {
             className="h-8 w-auto cursor-pointer"
           />
         </Link>
-        <i className="text-xs text-gray-400"> - Updated 21/11/2026</i>
+        <i className="text-xs text-gray-400"> - {VERSION} </i>
       </div>
 
       {/* Right-hand group: Auth / Avatar */}
