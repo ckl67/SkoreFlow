@@ -45,6 +45,13 @@ type APIResponse<T = unknown> = {
 //      We must use `useEffect()`.
 // --------------------------------------------------------------------------------
 
+/**
+ * apiRequest : Token is handled in the function, no need to pass it as parameter
+ * @param method
+ * @param url
+ * @param options
+ * @returns
+ */
 export async function apiRequest<TResponse = unknown, TRequest = unknown>(
   method: Method,
   url: string,

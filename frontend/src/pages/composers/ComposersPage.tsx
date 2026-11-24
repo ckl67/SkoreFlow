@@ -1,30 +1,60 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Music, ChevronLeft, ChevronRight, Library } from 'lucide-react';
 
 import { useComposers } from '../../hooks/composers/useComposers';
-import ComposerItem from '../../components/composers/ComposersItem';
-
 import { useAuth } from '../../hooks/auth/useAuth';
 import { UserRole } from '../../../../shared/frontend/enums/userRoles';
 
+import ComposerItem from '../../components/composers/ComposersItem';
+import FormInput from '../../components/forms/FormInput';
+import FormCheckbox from '../../components/forms/FormCheckbox';
+
+import { useDebouncedValue } from '../../tools/tools';
+
 export default function ComposersPage() {
   const { user } = useAuth();
+
+  // You type “B”, then “e”, then “e” at 80 ms intervals:
+  // with each keystroke, the return () => clearTimeout(timer)
+  // cancels the current timer and starts a new one for 300 ms.
+  // As soon as you pause for 300 ms, the timer runs out:
+  // `debouncedFilter` changes, the page resets to 1,
+  // and `useComposers` sends a single request
+  // with the expected value.
+  const [filter, setFilter] = useState('');
+  const debouncedFilter = useDebouncedValue(filter.trim(), 500);
+
   const navigate = useNavigate();
 
-  const onlyMine = user ? user.role !== UserRole.Moderator : false;
+  const [isVerified, setIsVerified] = useState(false);
+
+  //const onlyMine = user ? user.role !== UserRole.Moderator : false;
+  const [isMine, setIsMine] = useState(true);
+  const onlyMine = !user
+    ? false
+    : user.role === UserRole.Moderator
+      ? isMine
+      : true;
+
+  const [page, setPage] = useState<number>(1);
+
+  const { composers, totalPages } = useComposers(
+    page,
+    onlyMine,
+    !isVerified,
+    debouncedFilter
+  );
 
   const canCreateComposer =
     user?.role === UserRole.User ||
     user?.role === UserRole.Moderator ||
     user?.role === UserRole.Admin;
 
-  const [page, setPage] = useState<number>(1);
-  const { composers, totalPages } = useComposers(page, onlyMine);
   const isLoading = false;
 
   function handleCreateClick() {
-    navigate('/pending');
+    navigate('/composers/create');
   }
 
   const previousPage = () => {
@@ -40,6 +70,11 @@ export default function ComposersPage() {
     : user?.username
       ? `${user.username}'s composers`
       : 'My composers';
+
+  useEffect(() => {
+    setPage(1);
+    console.log(debouncedFilter);
+  }, [debouncedFilter]);
 
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-indigo-50/40">
@@ -67,7 +102,30 @@ export default function ComposersPage() {
                 </p>
               </div>
             </div>
+            <div>
+              <FormInput
+                label="Filter :"
+                value={filter}
+                //onChange={() => {}}
+                onChange={setFilter}
+                //disabled={!canEdit}
+              />
+            </div>
+            <div>
+              <FormCheckbox
+                label="Not Verified"
+                checked={isVerified}
+                onChange={setIsVerified}
+              />
 
+              {user?.role === UserRole.Moderator && (
+                <FormCheckbox
+                  label="Only Mine"
+                  checked={isMine}
+                  onChange={setIsMine}
+                />
+              )}
+            </div>
             {canCreateComposer && (
               <button
                 type="button"
@@ -79,8 +137,6 @@ export default function ComposersPage() {
               </button>
             )}
           </div>
-
-          <div className="mt-8 h-px bg-linear-to- from-indigo-200 via-slate-200 to-transparent" />
         </div>
 
         {/* Composers Grid */}
@@ -108,7 +164,7 @@ export default function ComposersPage() {
 
             <div className="relative">
               <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-indigo-50 text-indigo-600 shadow-inner">
-                <Music className="h-9 w-9" />
+                <Library className="h-9 w-9" />
               </div>
 
               <h2 className="text-xl font-bold text-slate-900">
@@ -117,7 +173,7 @@ export default function ComposersPage() {
 
               <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-slate-500">
                 No composers found yet. Start building your collection by adding
-                your first composer.
+                your composer.
               </p>
 
               {canCreateComposer && (
@@ -127,7 +183,7 @@ export default function ComposersPage() {
                   className="mt-7 inline-flex cursor-pointer items-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-md shadow-indigo-200 transition-all hover:-translate-y-0.5 hover:bg-indigo-700"
                 >
                   <Plus className="h-4 w-4" />
-                  Create your first composer
+                  Create your composer
                 </button>
               )}
             </div>

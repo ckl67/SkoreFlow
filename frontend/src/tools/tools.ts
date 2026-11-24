@@ -1,4 +1,5 @@
 //Standard import (uses crypto where available)
+import { useEffect, useState } from 'react';
 import { nanoid } from 'nanoid';
 
 // Unsafe import (ideal for HTTP / older browsers)
@@ -13,4 +14,23 @@ export function getRandomId() {
   } catch (e) {
     return nonSecureNanoid();
   }
+}
+
+// You type “B”, then “e”, then “e” at 80 ms intervals:
+// with each keystroke, the return () => clearTimeout(timer)
+// cancels the current timer and starts a new one for 300 ms.
+// As soon as you pause for 300 ms, the timer runs out:
+// `debouncedValue` will be send
+export function useDebouncedValue<T>(value: T, delay = 300): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => clearTimeout(timer);
+  }, [value, delay]);
+
+  return debouncedValue;
 }

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
-
+import { formatEpochs } from '../../utils/composers/formatters';
 import useGetComposer from '../../hooks/composers/useGetComposer';
 import { useComposersPicture } from '../../hooks/composers/useComposersPicture';
 import { useAuth } from '../../hooks/auth/useAuth';
@@ -12,6 +12,7 @@ import FormInputFile from '../../components/forms/FormInputFile';
 import FormCheckbox from '../../components/forms/FormCheckbox';
 import SubmitButton from '../../components/forms/SubmitButton';
 import { updateComposer } from '../../services/composers/composersService';
+import { logger } from '../../../logger';
 
 // --------------------------------------------------------
 // Routes →       Page       →      Hook      →   Service
@@ -21,12 +22,12 @@ export default function ComposerEditPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  // Permission checks based on the authenticated user's role
-  const canVerify =
-    user?.role === UserRole.Moderator || user?.role === UserRole.Admin;
+  const canEditBasic =
+    user?.role === UserRole.User ||
+    user?.role === UserRole.Moderator ||
+    user?.role === UserRole.Admin;
 
-  const canEdit =
-    //user?.role === UserRole.User ||
+  const canEditNameVerified =
     user?.role === UserRole.Moderator || user?.role === UserRole.Admin;
 
   const params = useParams<{ id: string }>();
@@ -59,7 +60,10 @@ export default function ComposerEditPage() {
   const [saveError, setSaveError] = useState<string | null>(null);
   const [saveSuccess, setSaveSuccess] = useState<string | null>(null);
 
-  // Create and clean up the object URL whenever selectedPictureFile changes
+  // --------------------------------------------------------
+  // Create and clean up the object URL whenever
+  // selectedPictureFile changes
+  // --------------------------------------------------------
   useEffect(() => {
     // If no file is selected, ensure no stale preview URL remains
     if (!selectedPictureFile) {
@@ -77,7 +81,9 @@ export default function ComposerEditPage() {
     };
   }, [selectedPictureFile]);
 
+  // --------------------------------------------------------
   // Populate local form state once the composer data is loaded
+  // --------------------------------------------------------
   useEffect(() => {
     if (composer) {
       setCName(composer.name);
@@ -87,7 +93,9 @@ export default function ComposerEditPage() {
     }
   }, [composer]);
 
+  // --------------------------------------------------------
   // Guard: Invalid route parameter
+  // --------------------------------------------------------
   if (!isValidId) {
     return (
       <div className="flex h-screen items-center justify-center font-medium text-red-600">
@@ -96,7 +104,9 @@ export default function ComposerEditPage() {
     );
   }
 
+  // --------------------------------------------------------
   // Guard: Loading state while fetching composer data
+  // --------------------------------------------------------
   if (!composer) {
     return (
       <div className="flex h-screen items-center justify-center font-medium text-gray-500">
@@ -105,42 +115,85 @@ export default function ComposerEditPage() {
     );
   }
 
-  // Format comma-separated epochs cleanly when the user leaves the input field
+  // --------------------------------------------------------
+  // Recompute `isVerified` based on whether the tracked fields
+  // match the original `composer` values
+  // --------------------------------------------------------
+  function syncIsVerified(nextState: {
+    epoch: string;
+    externalUrl: string;
+    pictureFile: File | null;
+  }) {
+    if (!composer) return;
+
+    const hasChanges =
+      nextState.pictureFile !== null ||
+      nextState.epoch !== composer.epoch ||
+      nextState.externalUrl !== composer.external_url;
+
+    // Restore original verification status when no tracked change remains
+    setCIsVerified(hasChanges ? false : composer.isVerified);
+  }
+  // --------------------------------------------------------
+  // Format comma-separated epochs cleanly when the user leaves
+  // the input field
+  // --------------------------------------------------------
   function handleEpochBlur() {
     if (!cEpoch) return;
-
-    const formatted = cEpoch
-      .split(',') // 1. Split ONLY by commas
-      .map((item) => item.trim()) // 2. Trim leading and trailing spaces for each entry
-      .filter((item) => item !== '') // 3. Remove empty entries (e.g., extra commas)
-      .map(
-        (item) =>
-          item
-            .split(/\s+/) // 4. Split each multi-word epoch by whitespace
-            .map((word) => word.charAt(0).toUpperCase() + word.slice(1)) // 5. Capitalize every word
-            .join(' ') // 6. Rejoin words with a single space
-      )
-      .join(', '); // 7. Rejoin epochs with ", "
-
+    const formatted = formatEpochs(cEpoch);
     setCEpoch(formatted);
+
+    syncIsVerified({
+      epoch: formatted,
+      externalUrl: cExternalUrl,
+      pictureFile: selectedPictureFile,
+    });
+  }
+  // --------------------------------------------------------
+  // Handlers to address the setting of isVerified
+  // --------------------------------------------------------
+  function handlePictureChange(file: File | null) {
+    setSelectedPictureFile(file);
+    syncIsVerified({
+      epoch: cEpoch,
+      externalUrl: cExternalUrl,
+      pictureFile: file,
+    });
   }
 
+  function handleExternalUrlChange(value: string) {
+    setCExternalUrl(value);
+    syncIsVerified({
+      epoch: cEpoch,
+      externalUrl: value,
+      pictureFile: selectedPictureFile,
+    });
+  }
+
+  // --------------------------------------------------------
   // Handle form submission
   // The `await` keyword pauses the execution of the function
   // whilst waiting for a Promise (updateComposer(...)) to resolve.
   // In JavaScript, `await` is only permitted within a function
   // declared as `async` (which itself implicitly returns a Promise).
+  // --------------------------------------------------------
   async function handleSubmit() {
-    // Log current form state values (not the setter functions)
-    console.log({
+    const formValues = {
       name: cName,
       epoch: cEpoch,
       external_url: cExternalUrl,
-      isVerified: cIsVerified,
-      selectedPictureFile,
-    });
+      selectedPictureFile: selectedPictureFile
+        ? {
+            name: selectedPictureFile.name,
+            size: selectedPictureFile.size,
+            type: selectedPictureFile.type,
+          }
+        : null,
+    };
 
-    if (!canEdit || isSaving) return;
+    logger.debug('composer', '(handleSubmit)', 'Form values:', formValues);
+
+    if (!canEditBasic || isSaving) return;
 
     setIsSaving(true);
     setSaveError(null);
@@ -227,9 +280,9 @@ export default function ComposerEditPage() {
               ID #{composer.id}
             </span>
             <h1 className="text-xl font-bold text-gray-900">
-              {canEdit ? 'Edit Composer' : 'View Composer'}
+              {canEditBasic ? 'Edit Composer' : 'View Composer'}
             </h1>
-            {canEdit && (
+            {canEditBasic && (
               <p className="truncate text-sm text-gray-500">
                 Update the details for {composer.name}
               </p>
@@ -245,16 +298,16 @@ export default function ComposerEditPage() {
               label="Name :"
               value={cName}
               onChange={setCName}
-              disabled={!canEdit}
+              disabled={!canEditNameVerified}
             />
 
             {/* Composer Picture Upload */}
-            {canEdit && (
+            {canEditBasic && (
               <FormInputFile
                 label="Picture :"
-                comment="(.jpg / .png)"
+                comment="(File .jpg / .png)"
                 fileName={selectedPictureFile?.name || composer.picture}
-                onChange={setSelectedPictureFile}
+                onChange={handlePictureChange}
               />
             )}
 
@@ -265,15 +318,15 @@ export default function ComposerEditPage() {
               onChange={setCEpoch}
               onBlur={handleEpochBlur}
               comment="(Each epoch must be separated with a comma)"
-              disabled={!canEdit}
+              disabled={!canEditBasic}
             />
 
             {/* External Reference URL */}
             <FormInput
               label="External URL link :"
               value={cExternalUrl}
-              onChange={setCExternalUrl}
-              disabled={!canEdit}
+              onChange={handleExternalUrlChange}
+              disabled={!canEditBasic}
             />
 
             {/* Verified Status (editable only by Moderators and Admins) */}
@@ -282,7 +335,7 @@ export default function ComposerEditPage() {
                 label="Is Verified"
                 checked={cIsVerified}
                 onChange={setCIsVerified}
-                disabled={!canVerify}
+                disabled={!canEditNameVerified}
               />
             </div>
           </div>
@@ -301,18 +354,18 @@ export default function ComposerEditPage() {
           )}
 
           {/* Form Footer / Submit Action */}
-          {canEdit && (
+          {canEditBasic && (
             <div className="flex justify-end border-t border-gray-100 pt-4">
               <div className="w-full sm:w-auto">
                 <SubmitButton
                   label={
-                    !canEdit
+                    !canEditBasic
                       ? 'Save Not Allowed'
                       : isSaving
                         ? 'Saving...'
                         : 'Save Changes'
                   }
-                  disabled={!canEdit || isSaving}
+                  disabled={!canEditBasic || isSaving}
                   onClick={handleSubmit}
                 />
               </div>

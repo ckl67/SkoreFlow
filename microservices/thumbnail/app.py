@@ -173,7 +173,7 @@ def create_thumbnail():
     logger.debug("[%s] input=%s", request_id, input_path)
     logger.debug("[%s] output=%s", request_id, output_path)
 
-    logger.info(
+    logger.debug(
         "[%s] Thumbnail %s -> %s (%d)",
         request_id,
         os.path.basename(input_path),
@@ -222,7 +222,7 @@ def create_thumbnail():
 
         elapsed = (time.perf_counter() - start) * 1000
 
-        logger.info(
+        logger.debug(
             "[%s] Thumbnail generated in %.1f ms",
             request_id,
             elapsed,

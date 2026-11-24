@@ -23,7 +23,9 @@ type UseComposersReturn = {
 // A React component is not asynchronous --> We must use `useEffect()`.
 export function useComposers(
   page: number = 1,
-  onlyMine: boolean = true
+  onlyMine: boolean = true,
+  isVerified: boolean = true,
+  filter: string = ''
 ): UseComposersReturn {
   // idem
   //    const [composers, setComposers] = useState([
@@ -37,8 +39,14 @@ export function useComposers(
   useEffect(() => {
     async function loadComposers() {
       try {
-        logger.debug('composer', `Loading composers ${page}.`);
-        const res = await getComposersPage({ page }, onlyMine);
+        logger.debug(
+          'composer',
+          `Loading composers ${page} with filter ${filter} `
+        );
+        const res = await getComposersPage(
+          { page, name: filter, isVerified },
+          onlyMine
+        );
 
         // If total_rows is 0, an empty slice is forced to prevent inconsistencies in the back end
         if (res.total_rows === 0) {
@@ -61,7 +69,7 @@ export function useComposers(
     }
 
     loadComposers();
-  }, [page]);
+  }, [page, onlyMine, isVerified, filter]);
   // The [] symbol means ‘once only during the mounting'.
   return {
     composers,

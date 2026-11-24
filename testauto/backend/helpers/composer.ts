@@ -36,17 +36,17 @@ async function createComposer(
     throw new Error('name is required');
   }
 
-  const form = new FormData();
+  const formData = new FormData();
 
-  form.append('name', name);
-  form.append('uploadFile', fs.createReadStream(filePath));
+  formData.append('name', name);
+  formData.append('uploadFile', fs.createReadStream(filePath));
 
   if (externalURL) {
-    form.append('externalURL', externalURL);
+    formData.append('externalURL', externalURL);
   }
 
   if (epoch) {
-    form.append('epoch', epoch);
+    formData.append('epoch', epoch);
   }
 
   // In function request :
@@ -61,8 +61,8 @@ async function createComposer(
     `${API_URL}/composers`,
     {
       token,
-      data: form,
-      headers: form.getHeaders(),
+      data: formData,
+      headers: formData.getHeaders(),
     }
   );
 
@@ -184,22 +184,22 @@ async function updateComposer(
   filePath: string | undefined,
   token: string
 ) {
-  const form = new FormData();
+  const formData = new FormData();
 
   if (filePath) {
-    form.append('uploadFile', fs.createReadStream(filePath));
+    formData.append('uploadFile', fs.createReadStream(filePath));
   }
 
   if (isVerified !== undefined) {
-    form.append('isVerified', String(isVerified));
+    formData.append('isVerified', String(isVerified));
   }
 
   if (externalURL) {
-    form.append('externalURL', externalURL);
+    formData.append('externalURL', externalURL);
   }
 
   if (epoch) {
-    form.append('epoch', epoch);
+    formData.append('epoch', epoch);
   }
 
   console.log(
@@ -226,8 +226,8 @@ async function updateComposer(
     `${API_URL}/composers/${ComposerId}`,
     {
       token,
-      data: form,
-      headers: form.getHeaders(),
+      data: formData,
+      headers: formData.getHeaders(),
     }
   );
 

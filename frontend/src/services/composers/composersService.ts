@@ -4,6 +4,8 @@ import {
 } from '../../../../shared/types/composer';
 
 import {
+  CreateComposerPayload,
+  CreateComposerResponse,
   UpdateComposerRequestPayload,
   UpdateComposerResponse,
 } from '../../../../shared/types/composer';
@@ -14,6 +16,56 @@ import { Pagination } from '../../config/pagination';
 import { apiBinaryRequest } from '../../api/client';
 
 import { logger } from '../../../logger/logger';
+
+// --------------------------------------------------------------------------------
+// Create Composer
+// --------------------------------------------------------------------------------
+/**
+ * createComposer : Creates a new composer with following rules
+ *  React form        : validation
+ *  Front-end service : Data transmission and HTTP management
+ *  Back-end          : Final validation and business rules
+ * @param param0
+ * @param file
+ * @returns
+ */
+export async function createComposer(
+  { name, externalURL, epoch }: CreateComposerPayload,
+  file: File | null
+): Promise<CreateComposerResponse> {
+  const formData = new FormData();
+
+  logger.debug('composer', '(CreateComposer)', 'form data:', {
+    name,
+    externalURL,
+    epoch,
+    fileName: file?.name ?? null,
+  });
+
+  // React uploaded new file =
+  // `File` object (`selectedPictureFile: File | null`)
+  if (file) {
+    formData.append('uploadFile', file);
+  }
+
+  // Name is mandatory, and handled by backend
+  formData.append('name', name);
+
+  // Attach optional metadata fields
+  if (externalURL !== undefined) {
+    formData.append('externalURL', externalURL);
+  }
+
+  if (epoch !== undefined) {
+    formData.append('epoch', epoch);
+  }
+
+  const res = await apiRequest<CreateComposerResponse>('POST', `/composers`, {
+    data: formData,
+  });
+
+  return res;
+}
 
 export function getComposersPage(
   {

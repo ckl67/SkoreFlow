@@ -96,6 +96,7 @@ curl -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/${API_VER
 ### Get Picture
 
 ```shell
+curl -I -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/${API_VERSION}/composers/1/picture
 
 # Header in VM environnement
 curl -I -H "Authorization: Bearer $TOKEN_USER2" http://192.168.1.138:8080/api/${API_VERSION}/composers/1/picture
@@ -112,4 +113,9 @@ file avatar.png
 curl -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/${API_VERSION}/composers?name=Beethoven | jq
 
 curl -H "Authorization: Bearer $TOKEN_USER2" "http://localhost:8080/api/${API_VERSION}/composers?name=Beethoven&searchMode=exact" | jq
+
+# Starting with a letter
+curl -H "Authorization: Bearer $TOKEN_USER2" "http://localhost:8080/api/${API_VERSION}/composers?name=b" | jq
+
+
 ```

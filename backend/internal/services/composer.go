@@ -65,10 +65,11 @@ func (s *ComposerService) CreateComposer(uid uint32, userRole int, req forms.Cre
 	safeName := format.SanitizeName(req.Name)
 
 	// 3. Build model with default values
+	//Picture:     "composers/default.png",
 	composer := models.Composer{
 		Name:        req.Name,
 		SafeName:    safeName,
-		Picture:     "composers/default.png",
+		Picture:     "",
 		ExternalURL: req.ExternalURL,
 		Epoch:       req.Epoch,
 		IsVerified:  false,
@@ -178,13 +179,13 @@ func (s *ComposerService) UpdateComposer(uid uint32, userRole int, ComposerID ui
 		return nil, err
 	}
 
-	isAdmin := userRole == domain.RoleAdmin
-	isModerator := userRole == domain.RoleModerator
+	//isAdmin := userRole == domain.RoleAdmin
+	//isModerator := userRole == domain.RoleModerator
 
-	if !isAdmin && !isModerator {
-		logger.Composer.Warn("Unauthorized update attempt: user=%d role=%d", uid, userRole)
-		return nil, apperrors.ErrAccessForbidden
-	}
+	//if !isAdmin && !isModerator {
+	//	logger.Composer.Warn("Unauthorized update attempt: user=%d role=%d", uid, userRole)
+	//	return nil, apperrors.ErrAccessForbidden
+	//}
 
 	// Name cannot be changed because this would say
 	// * delete old picture file

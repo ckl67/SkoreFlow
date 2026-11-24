@@ -2,10 +2,9 @@
 
 ## Link
 
-The files
+The file
 
 - user-avatar.go and
-- composer-picture.go
 
 create the link between the data model and the physical path
 

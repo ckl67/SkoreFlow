@@ -13,7 +13,7 @@ import MainPage from '../pages/main/MainPage';
 import PendingPage from '../pages/PendingPage';
 import ComposersPage from '../pages/composers/ComposersPage';
 import ComposerEditPage from '../pages/composers/ComposerEditPage';
-
+import ComposerCreatePage from '../pages/composers/ComposerCreatePage';
 import ScoresPage from '../pages/scores/ScoresPage';
 import ScoreSinglePage from '../pages/scores/ScoreSinglePage';
 import { config } from './../config/config';
@@ -77,6 +77,7 @@ export const router = createBrowserRouter([
 
       // Controlled routes
       // Accessible with or without a token
+      { path: '/composers/create', element: <ComposerCreatePage /> },
       { path: '/composers', element: <ComposersPage /> },
       { path: '/composers/:id/edit', element: <ComposerEditPage /> },
       { path: '/scores', element: <ScoresPage /> },
