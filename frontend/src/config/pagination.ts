@@ -1,6 +1,6 @@
 export const Pagination = {
   composers: {
-    defaultLimit: 4,
+    defaultLimit: 6,
   },
 
   scores: {

@@ -2,6 +2,23 @@
 
 # React and Javascript most important rules
 
+## React Hook rule
+
+React has one fundamental rule: **hooks must always be called in the same order every time the component is rendered.**
+Example in file : `ComposersItem.tsx`
+
+The line below is not authorized !
+
+```tsx
+const pictureURL = composer.picture ? useComposersPicture(composer.id) : '';
+```
+
+We will include the logic in the hook
+
+```tsx
+const pictureURL = useComposersPicture(composer.id, Boolean(composer.picture));
+```
+
 ## Internal browser
 
 1. Use the built-in "Simple Browser" command
@@ -438,8 +455,7 @@ const renderItem = (score) => (
 ```
 
 - renderItem is an Arrow function assigned to a constant
-  or more generally
-- **renderItem is a function expression.**
+  or more generally **renderItem is a function expression.**
 
 ## JavaScript Closures & Returning Object Methods
 

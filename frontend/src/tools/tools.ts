@@ -16,19 +16,27 @@ export function getRandomId() {
   }
 }
 
-// You type “B”, then “e”, then “e” at 80 ms intervals:
-// with each keystroke, the return () => clearTimeout(timer)
-// cancels the current timer and starts a new one for 300 ms.
-// As soon as you pause for 300 ms, the timer runs out:
-// `debouncedValue` will be send
+/***********************************************************
+ * Returns the value only after the delay
+ * @param value
+ * @param delay (300ms)
+ * @returns delayed value
+ *
+ *   - user type “B”, then “e”, then “e” at 80 ms intervals:
+ *   - each keystroke cancels the current timer and starts a new one for 300 ms.
+ *   - As soon as you pause for 300 ms, the timer runs out:
+ *   - Then `debouncedValue` will be send -> here `Bee`
+ *************************************************************/
 export function useDebouncedValue<T>(value: T, delay = 300): T {
   const [debouncedValue, setDebouncedValue] = useState<T>(value);
 
   useEffect(() => {
+    // set debouncedValue after delay
     const timer = setTimeout(() => {
       setDebouncedValue(value);
     }, delay);
 
+    //with each keystroke:the return () => clearTimeout(timer)
     return () => clearTimeout(timer);
   }, [value, delay]);
 

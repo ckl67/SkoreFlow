@@ -1,6 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Music, ChevronLeft, ChevronRight, Library } from 'lucide-react';
+import {
+  Plus,
+  Music,
+  ChevronLeft,
+  ChevronRight,
+  Library,
+  Filter,
+} from 'lucide-react';
 
 import { useComposers } from '../../hooks/composers/useComposers';
 import { useAuth } from '../../hooks/auth/useAuth';
@@ -12,37 +20,128 @@ import FormCheckbox from '../../components/forms/FormCheckbox';
 
 import { useDebouncedValue } from '../../tools/tools';
 
+// =====================================================================================
+// Specifications
+// useSearchParams
+//  hook designed to manipulate the search parameters in the URL (the part after ‘?’).
+//  const [searchParams, setSearchParams] = useSearchParams();
+//  It returns an array containing two elements:
+//    - searchParams: a URLSearchParams object used to read the parameters.
+//    - setSearchParams: function to modify searchParams and update the URL.
+//    For example, with:/composers?page=2&filter=Mozart
+//      console.log(searchParams.get('page'));   // "2"
+//      console.log(searchParams.get('filter')); // "Mozart"
+//      console.log(searchParams.has('page'));   // true
+//  setSearchParams
+//    setSearchParams({ page: '5' });
+//      React Router update the URL : /composers?page=5
+// =====================================================================================
+
 export default function ComposersPage() {
   const { user } = useAuth();
-
-  // You type “B”, then “e”, then “e” at 80 ms intervals:
-  // with each keystroke, the return () => clearTimeout(timer)
-  // cancels the current timer and starts a new one for 300 ms.
-  // As soon as you pause for 300 ms, the timer runs out:
-  // `debouncedFilter` changes, the page resets to 1,
-  // and `useComposers` sends a single request
-  // with the expected value.
-  const [filter, setFilter] = useState('');
-  const debouncedFilter = useDebouncedValue(filter.trim(), 500);
-
   const navigate = useNavigate();
 
-  const [isVerified, setIsVerified] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  //const onlyMine = user ? user.role !== UserRole.Moderator : false;
-  const [isMine, setIsMine] = useState(true);
+  const page = Math.max(1, Number(searchParams.get('page')) || 1);
+  const filter = String(searchParams.get('filter') ?? ''); // ?? = nullish coalescing operator
+  const debouncedFilter = useDebouncedValue(filter.trim(), 500);
+
+  const isVerifiedParam = searchParams.get('verified');
+  const isVerified = isVerifiedParam === null ? true : isVerifiedParam === '1';
+
+  const mineParam = searchParams.get('mine');
+  const isMine = mineParam === null ? true : mineParam === '1';
+
   const onlyMine = !user
     ? false
     : user.role === UserRole.Moderator
       ? isMine
       : true;
 
-  const [page, setPage] = useState<number>(1);
+  /*************************************************
+   * Complete the URL with `page` information
+   * @param nextPage
+   *  * number, or
+   *  * function that calculates the new number from the old one
+   *************************************************/
+  function setPage(nextPage: number | ((current: number) => number)) {
+    //  typeof allows us to determine number or function .
+    const resolvedPage =
+      typeof nextPage === 'function' ? nextPage(page) : nextPage;
+
+    setSearchParams(
+      (current) => {
+        const params = new URLSearchParams(current);
+
+        if (resolvedPage <= 1) {
+          // On page 1 delete the page to keep only : /composers
+          params.delete('page');
+        } else {
+          params.set('page', String(resolvedPage));
+        }
+
+        return params;
+      },
+      // to avoid navigation history !
+      { replace: true }
+    );
+  }
+
+  /**************************************************
+   * Complete the URL with `filter` information
+   * @param newFilter
+   *  * String
+   *************************************************/
+  function setFilter(newFilter: string) {
+    setSearchParams((prev) => {
+      const params = new URLSearchParams(prev);
+
+      if (newFilter) {
+        params.set('filter', newFilter);
+      } else {
+        params.delete('filter');
+      }
+
+      params.delete('page');
+      return params;
+    });
+  }
+
+  function setIsVerified(checked: boolean) {
+    setSearchParams((prev) => {
+      const params = new URLSearchParams(prev);
+
+      if (checked) {
+        params.delete('verified');
+      } else {
+        params.set('verified', '0');
+      }
+
+      params.delete('page');
+      return params;
+    });
+  }
+
+  function setIsMine(checked: boolean) {
+    setSearchParams((prev) => {
+      const params = new URLSearchParams(prev);
+
+      if (checked) {
+        params.delete('mine');
+      } else {
+        params.set('mine', '0');
+      }
+
+      params.delete('page');
+      return params;
+    });
+  }
 
   const { composers, totalPages } = useComposers(
     page,
     onlyMine,
-    !isVerified,
+    isVerified,
     debouncedFilter
   );
 
@@ -70,11 +169,6 @@ export default function ComposersPage() {
     : user?.username
       ? `${user.username}'s composers`
       : 'My composers';
-
-  useEffect(() => {
-    setPage(1);
-    console.log(debouncedFilter);
-  }, [debouncedFilter]);
 
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-indigo-50/40">
@@ -113,7 +207,7 @@ export default function ComposersPage() {
             </div>
             <div>
               <FormCheckbox
-                label="Not Verified"
+                label="Verified"
                 checked={isVerified}
                 onChange={setIsVerified}
               />
@@ -151,7 +245,16 @@ export default function ComposersPage() {
                     `/scores?composer=${encodeURIComponent(composer.name)}`
                   )
                 }
-                onEdit={() => navigate(`/composers/${composer.id}/edit`)}
+                //onEdit={() => navigate(`/composers/${composer.id}/edit`)}
+                // /composers/123/edit?page=5
+                onEdit={() => {
+                  const query = searchParams.toString();
+                  navigate(
+                    query
+                      ? `/composers/${composer.id}/edit?${query}`
+                      : `/composers/${composer.id}/edit`
+                  );
+                }}
                 userUsedComponent
               />
             ))}

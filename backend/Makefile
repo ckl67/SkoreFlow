@@ -21,7 +21,7 @@ BUILD_DATE=$(shell date -u +%Y-%m-%dT%H:%M:%SZ)
 LDFLAGS=-ldflags="-X main.Version=$(VERSION) -X main.Commit=$(COMMIT) -X main.BuildDate=$(BUILD_DATE)"
 
 # Makefile Rules
-.PHONY: all version debug air run run-autotest build cleandb-storage tidy clean-build reset debug-test debug-dev doc help
+.PHONY: all version debug air run run-autotest build cleandb-storage tidy clean-build reset debug-test debug-dev doc seed-1000-composers help
 
 ## all: Clean, organize modules, and compile
 all: tidy build
@@ -78,6 +78,10 @@ reset:
 	$(GO) clean -cache -modcache -testcache
 	$(GO) mod tidy
 
+seed-1000-composers:
+	@test -f storage/database.db || (echo "database.db not found" && exit 1)
+	sqlite3 storage/database.db < ../testauto/backend/resources/dev/composers_1000.sql
+
 doc:
 	@echo "Génération de la documentation des services Go..."
 	gomarkdoc ./internal/domain/... ./internal/services/... > ../docs/backend/backend-services.md
@@ -85,16 +89,17 @@ doc:
 ## help: Show available commands
 help:
 	@echo "Available commands:"
-	@echo "  make build       				: Compile the project with version injection"
-	@echo "  make run         				: Run (Prod) with version injection"
-	@echo "  make air         				: Run (Prod) with air allowing hot reload"
-	@echo "  make debugv     		  : Debug (Dev) with version injection"
-	@echo "  make run-test    				: Run (Test) with version injection"
-	@echo "  make cleandb-storage    	: Clean Database and Storage files"
-	@echo "  make air-dev     				: Run (Dev) with air in test mode"
-	@echo "  make air-test    				: Run (Test) with air in test mode"
-	@echo "  make version     				: Show the version to be injected"
-	@echo "  make tidy        				: Clean up dependencies"
-	@echo "  make reset       				: Clear cache and reinstall everything"
-	@echo "  make clean       				: Remove the binary"
-	@echo "  make help        				: Show this help message"
+	@echo "  make build       						: Compile the project with version injection"
+	@echo "  make run         						: Run (Prod) with version injection"
+	@echo "  make air         						: Run (Prod) with air allowing hot reload"
+	@echo "  make debugv     		  				: Debug (Dev) with version injection"
+	@echo "  make run-test    						: Run (Test) with version injection"
+	@echo "  make cleandb-storage    			: Clean Database and Storage files"
+	@echo "  make air-dev     						: Run (Dev) with air in test mode"
+	@echo "  make air-test    						: Run (Test) with air in test mode"
+	@echo "  make version     						: Show the version to be injected"
+	@echo "  make tidy        						: Clean up dependencies"
+	@echo "  make reset       						: Clear cache and reinstall everything"
+	@echo "  make clean       						: Remove the binary"
+	@echo "  make seeds-1000-Somposers    : Seeds 1000 Composers in the database"
+	@echo "  make help        						: Show this help message"

@@ -1,3 +1,4 @@
+// cspell:ignore storagepath
 package storagepath
 
 import (

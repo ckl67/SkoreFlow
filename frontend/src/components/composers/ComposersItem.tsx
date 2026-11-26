@@ -11,7 +11,15 @@ type Props = {
 };
 
 export default function ComposerItem({ composer, onSelect, onEdit }: Props) {
-  const pictureURL = useComposersPicture(composer.id);
+  // composer.picture:
+  // the image specified by the backend as being associated with the composer.
+  // pictureURL:
+  // what the frontend actually managed to retrieve.
+  console.log('ComposerItem STOP', composer.picture);
+  const pictureURL = useComposersPicture(
+    composer.id,
+    Boolean(composer.picture)
+  );
 
   return (
     <li

@@ -17,9 +17,9 @@ func GetDefaultComposerPicture(composerKey string) (string, bool) {
 	return asset, ok
 }
 
-// GetDefaultComposerPicture provides a secure way to read data
+// GetDefaultComposerThumbnail provides a secure way to read data
 func GetDefaultComposerThumbnail(composerKey string) (string, bool) {
 	asset, ok := defaultComposerThumbnail[composerKey]
-	//logger.Composer.Debug("(GetDefaultComposerPicture) composerKey=%s asset=%s", composerKey, asset)
+	//logger.Composer.Debug("(GetDefaultComposerThumbnail) composerKey=%s asset=%s", composerKey, asset)
 	return asset, ok
 }

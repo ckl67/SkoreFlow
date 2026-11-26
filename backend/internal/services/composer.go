@@ -1,4 +1,4 @@
-// cspell:ignore gorm	storagepath
+// cspell:ignore gorm	storagepath supertramp
 package services
 
 // APPLICATION ARCHITECTURE
@@ -507,14 +507,34 @@ func (s *ComposerService) ComposerPictureData(composerID uint32, isDemo bool) (s
 		return "", err
 	}
 
-	if asset, ok := assets.GetDefaultComposerPicture(composer.Picture); ok {
-		logger.Composer.Debug("(ComposerPictureData) composer.ComposerPicture %s  asset=%s", composer.Picture, asset)
-		return s.paths.ResolveAssetRoot(asset), nil
+	// No picture associated with this composer.
+	if composer.Picture == "" {
+		return "", apperrors.ErrComposerPictureNotFound
 	}
 
-	logger.Composer.Debug("(ComposerPictureData) Composer.Picture=%s", composer.Picture)
-	return s.paths.ResolveDataRoot(composer.Picture), nil
+	file := ""
+	if asset, ok := assets.GetDefaultComposerPicture(composer.Picture); ok {
+		// Default asset
+		//logger.Composer.Debug("(ComposerPictureData) composer.Picture=%s  asset=%s", composer.Picture, asset)
+		file = s.paths.ResolveAssetRoot(asset)
+		logger.Composer.Debug("(ComposerPictureData) Asset file =%s", file)
+	} else {
+		// No default asset: use the composer's own picture.
+		//logger.Composer.Debug("(ComposerPictureData) Composer.Picture=%s", composer.Picture)
+		file = s.paths.ResolveDataRoot(composer.Picture)
+		logger.Composer.Debug("(ComposerPictureData) own picture file =%s", file)
+	}
 
+	//check whether the file exists
+	if _, err := os.Stat(file); err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return "", apperrors.ErrComposerPictureNotFound
+		}
+
+		return "", err
+	}
+
+	return file, nil
 }
 
 // =====================================
@@ -533,13 +553,38 @@ func (s *ComposerService) ComposerThumbnailData(composerID uint32, isDemo bool) 
 		return "", err
 	}
 
-	if asset, ok := assets.GetDefaultComposerThumbnail(composer.Picture); ok {
-		logger.Composer.Debug("(ComposerThumbnailData) composer.ComposerThumbnail %s  asset=%s", composer.Picture, asset)
-		return s.paths.ResolveAssetRoot(asset), nil
+	// No picture associated with this composer.
+	if composer.Picture == "" {
+		return "", apperrors.ErrComposerPictureNotFound
 	}
 
-	logger.Composer.Debug("(ComposerThumbnailData) ComposerPicture=%s", composer.Picture)
-	return s.paths.ResolveDataRoot(composer.Picture), nil
+	// composer.Picture = composers/supertramp/picture.png
+	// to transform by : composers/supertramp/thumbnail.pn
+	thumbnail := strings.ReplaceAll(composer.Picture, "/picture.png", "/thumbnail.png")
+
+	file := ""
+	if asset, ok := assets.GetDefaultComposerThumbnail(thumbnail); ok {
+		// Default asset
+		// logger.Composer.Debug("(ComposerThumbnailData) composer.ComposerThumbnail %s  asset=%s", composer.Picture, asset)
+		file = s.paths.ResolveAssetRoot(asset)
+		logger.Composer.Debug("(ComposerThumbnailData) Asset file =%s", file)
+	} else {
+		// No default asset: use the composer's own picture.
+		// logger.Composer.Debug("(ComposerThumbnailData) ComposerPicture=%s", composer.Picture)
+		file = s.paths.ResolveDataRoot(thumbnail)
+		logger.Composer.Debug("(ComposerThumbnailData) own picture file =%s", file)
+	}
+
+	//check whether the file exists
+	if _, err := os.Stat(file); err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return "", apperrors.ErrComposerPictureNotFound
+		}
+
+		return "", err
+	}
+
+	return file, nil
 
 }
 

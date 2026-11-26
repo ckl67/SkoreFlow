@@ -1,3 +1,5 @@
+<<!--cspell:ignore supertramp >>
+
 # Setup Manual composer tests
 
 [← back](./../../doc.md)
@@ -38,6 +40,12 @@ TOKEN_USER2=$(curl -X POST http://localhost:8080/api/${API_VERSION}/login \
 echo "JWT Token: $TOKEN_USER2"
 
 curl -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/${API_VERSION}/me | jq
+
+
+TOKEN_MODERATOR=$(curl -X POST http://localhost:8080/api/${API_VERSION}/login \
+ -H "Content-Type: application/json" \
+ -d '{"email":"moderator1@test.com","password":"password123"}' | jq -r '.data.token')
+
 
 ```
 
@@ -105,6 +113,61 @@ curl -H "Authorization: Bearer $TOKEN_USER2" -o avatar.png http://localhost:8080
 file avatar.png
 ```
 
+### Case 1
+
+We suppose that the image is not present !
+
+```shell
+    {
+        "id": 6,
+        "name": "Supertramp",
+        "picture": "composers/supertramp/picture.png",
+        "external_url": "https://fr.wikipedia.org/wiki/Supertramp",
+        "epoch": "Rock gradual, Pop, Art Rock, Blues-rock",
+        "isVerified": true,
+        "isDemo": false
+      },
+```
+
+Modification of storage file :
+storage/composers/supertramp/picture.png
+to
+storage/composers/supertramp/picture-modification.png
+
+### Case 2
+
+We remove the picture file in the data base
+
+```shell
+{
+"id": 6,
+"name": "Supertramp",
+"picture": "",
+"external_url": "https://fr.wikipedia.org/wiki/Supertramp",
+"epoch": "Rock gradual, Pop, Art Rock, Blues-rock",
+"isVerified": true,
+"isDemo": false
+},
+```
+
+### Result of case 1 and 2
+
+````shell
+
+curl -i -H "Authorization: Bearer $TOKEN_USER2" http://localhost:8080/api/${API_VERSION}/composers/6/picture
+
+HTTP/1.1 404 Not Found
+Cache-Control: private, no-store
+Content-Type: application/json; charset=utf-8
+Expires: 0
+Pragma: no-cache
+Vary: Authorization
+Date: Wed, 25 Nov 2026 10:53:14 GMT
+Content-Length: 66
+
+{"success":false,"error":{"message":"composer picture not found"}}
+```shell
+
 ## Extra
 
 ### With Search form
@@ -117,5 +180,23 @@ curl -H "Authorization: Bearer $TOKEN_USER2" "http://localhost:8080/api/${API_VE
 # Starting with a letter
 curl -H "Authorization: Bearer $TOKEN_USER2" "http://localhost:8080/api/${API_VERSION}/composers?name=b" | jq
 
+
+````
+
+### Get Picture Clarifications
+
+```shell
+
+curl -H "Authorization: Bearer $TOKEN_MODERATOR" http://localhost:8080/api/${API_VERSION}/composers/17 | jq
+
+
+curl -i -H "Authorization: Bearer $TOKEN_MODERATOR" http://localhost:8080/api/${API_VERSION}/composers/17/picture
+
+# ----------
+
+curl -H "Authorization: Bearer $TOKEN_MODERATOR" http://localhost:8080/api/${API_VERSION}/composers/999 | jq
+
+
+curl -i -H "Authorization: Bearer $TOKEN_MODERATOR" http://localhost:8080/api/${API_VERSION}/composers/999/picture
 
 ```

@@ -30,6 +30,7 @@
     "mailpit": "docker start mailpit",
     "-- 🧹 UTILITIES --": "",
     "clean-backend": "cd backend && make cleandb-storage",
+    "seed-1000-composers": "cd backend && make seed-1000-composers",
     "cb": "npm run clean-backend",
     "kill-services": "sudo fuser -k 8080/tcp || true && sudo fuser -k 5001/tcp || true && sudo fuser -k 5173/tcp || true",
     "ks": "npm run kill-services",

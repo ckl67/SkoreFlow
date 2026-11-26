@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { formatEpochs } from '../../utils/composers/formatters';
 import useGetComposer from '../../hooks/composers/useGetComposer';
@@ -40,7 +40,7 @@ export default function ComposerEditPage() {
   // Fetch composer details and existing picture URL
   const { composer } = useGetComposer(isValidId ? pComposerId : 0);
 
-  const pictureURL = useComposersPicture(isValidId ? pComposerId : 0);
+  const pictureURL = useComposersPicture(isValidId ? pComposerId : 0, true);
 
   // Local form state
   const [cName, setCName] = useState('');
@@ -59,6 +59,11 @@ export default function ComposerEditPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [saveSuccess, setSaveSuccess] = useState<string | null>(null);
+
+  // Navigation
+  const location = useLocation();
+  //console.log('Edit location:', location);
+  //console.log('Edit search:', location.search);
 
   // --------------------------------------------------------
   // Create and clean up the object URL whenever
@@ -232,17 +237,11 @@ export default function ComposerEditPage() {
   // Prioritize the newly selected picture preview over the existing backend picture
   const displayedPicture = previewPictureURL || pictureURL;
 
-  // React Router stores a numerical index (idx) in `window.history.state`: 0
-  // means that the current page is the first entry in the tab’s browsing history.
-  // Navigate back if internal history exists, otherwise fallback to the root route
+  // Back to the correct page
   function handleBackClick() {
-    const historyIndex = window.history.state?.idx;
-
-    if (typeof historyIndex === 'number' && historyIndex > 0) {
-      navigate(-1);
-    } else {
-      navigate('/');
-    }
+    const target = `/composers${location.search}`;
+    //console.log('Navigation target:', target);
+    navigate(target);
   }
 
   return (

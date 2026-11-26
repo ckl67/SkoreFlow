@@ -413,8 +413,18 @@ func (ctrl *ComposerController) DeleteComposer(c *gin.Context) {
 	responses.SUCCESS(c, http.StatusOK, gin.H{"message": "Composer deleted successfully"})
 }
 
+/*
+We should not force the endpoint to return a JSON response.
+When the file exists:
+- HTTP 200 OK;
+- the binary content of the image is sent;
+- the browser receives the image data.
+When the file no longer exists:
+- HTTP 404 Not Found;
+- Go returns a standard HTTP response;
+- the content is not a JSON response.
+*/
 func (ctrl *ComposerController) GetComposerPicture(c *gin.Context) {
-	logger.Composer.Debug("(Ctrl-GetComposerPicture) We stay in ")
 	// Vary: Authorization    Useful if the response actually depends on the authentication token.
 	// Pragma: no-cache    Compatibility with legacy HTTP/1.0 caches.
 	// Expires: 0    Compatibility with legacy caching mechanisms.
@@ -440,7 +450,16 @@ func (ctrl *ComposerController) GetComposerPicture(c *gin.Context) {
 	file, err := ctrl.service.ComposerPictureData(uint32(cid), isDemo)
 	logger.Composer.Debug("(Ctrl-GetComposerPicture) ComposerPictureData : %s", file)
 	if err != nil {
-		responses.FAIL(c, http.StatusNotFound, err)
+		switch {
+		case errors.Is(err, apperrors.ErrComposerNotFound):
+			responses.FAIL(c, http.StatusNotFound, err)
+
+		case errors.Is(err, apperrors.ErrComposerPictureNotFound):
+			responses.FAIL(c, http.StatusNotFound, err)
+
+		default:
+			responses.FAIL(c, http.StatusInternalServerError, err)
+		}
 		return
 	}
 
@@ -469,7 +488,16 @@ func (ctrl *ComposerController) GetComposerThumbnail(c *gin.Context) {
 	file, err := ctrl.service.ComposerThumbnailData(uint32(cid), isDemo)
 	logger.Composer.Debug("(Ctrl-GetComposerThumbnail) ComposerThumbnailData : %s", file)
 	if err != nil {
-		responses.FAIL(c, http.StatusNotFound, err)
+		switch {
+		case errors.Is(err, apperrors.ErrComposerNotFound):
+			responses.FAIL(c, http.StatusNotFound, err)
+
+		case errors.Is(err, apperrors.ErrComposerPictureNotFound):
+			responses.FAIL(c, http.StatusNotFound, err)
+
+		default:
+			responses.FAIL(c, http.StatusInternalServerError, err)
+		}
 		return
 	}
 
@@ -502,7 +530,16 @@ func (ctrl *ComposerController) GetDemoComposerPicture(c *gin.Context) {
 	file, err := ctrl.service.ComposerPictureData(uint32(cid), isDemo)
 	logger.Composer.Debug("(Ctrl-GetDemoComposerPicture) ComposerPictureData : %s", file)
 	if err != nil {
-		responses.FAIL(c, http.StatusNotFound, err)
+		switch {
+		case errors.Is(err, apperrors.ErrComposerNotFound):
+			responses.FAIL(c, http.StatusNotFound, err)
+
+		case errors.Is(err, apperrors.ErrComposerPictureNotFound):
+			responses.FAIL(c, http.StatusNotFound, err)
+
+		default:
+			responses.FAIL(c, http.StatusInternalServerError, err)
+		}
 		return
 	}
 
@@ -529,7 +566,16 @@ func (ctrl *ComposerController) GetDemoComposerThumbnail(c *gin.Context) {
 	file, err := ctrl.service.ComposerThumbnailData(uint32(cid), isDemo)
 	logger.Composer.Debug("(Ctrl-GetDemoComposerThumbnail) ComposerThumbnailData : %s", file)
 	if err != nil {
-		responses.FAIL(c, http.StatusNotFound, err)
+		switch {
+		case errors.Is(err, apperrors.ErrComposerNotFound):
+			responses.FAIL(c, http.StatusNotFound, err)
+
+		case errors.Is(err, apperrors.ErrComposerPictureNotFound):
+			responses.FAIL(c, http.StatusNotFound, err)
+
+		default:
+			responses.FAIL(c, http.StatusInternalServerError, err)
+		}
 		return
 	}
 

@@ -67,14 +67,15 @@ var (
 	ErrInvalidDate = errors.New("invalid date format")
 
 	// Composer
-	ErrComposerMandatory     = errors.New("composer is mandatory !")
-	ErrComposerInvalidID     = errors.New("invalid composer ID")
-	ErrComposerDeletion      = errors.New("composer deletion issue")
-	ErrComposerNotFound      = errors.New("composer not found")
-	ErrComposerAlreadyExists = errors.New("Composer already exists")
-	ErrComposerCreation      = errors.New("Composer Error in Creation Process")
-	ErrComposerMerging       = errors.New("Composer merging issue")
-	ErrComposerThumbnail     = errors.New("Composer Thumbnail or Picture creation issue")
+	ErrComposerMandatory       = errors.New("composer is mandatory !")
+	ErrComposerInvalidID       = errors.New("invalid composer ID")
+	ErrComposerDeletion        = errors.New("composer deletion issue")
+	ErrComposerNotFound        = errors.New("composer not found")
+	ErrComposerAlreadyExists   = errors.New("Composer already exists")
+	ErrComposerCreation        = errors.New("Composer Error in Creation Process")
+	ErrComposerMerging         = errors.New("Composer merging issue")
+	ErrComposerThumbnail       = errors.New("Composer Thumbnail or Picture creation issue")
+	ErrComposerPictureNotFound = errors.New("composer picture not found")
 
 	// Image
 	ErrImageFormatInvalid = errors.New("Image Format not allowed !")
