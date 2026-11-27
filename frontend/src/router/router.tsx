@@ -17,6 +17,7 @@ import ComposerCreatePage from '../pages/composers/ComposerCreatePage';
 import ScoresPage from '../pages/scores/ScoresPage';
 import ScoreSinglePage from '../pages/scores/ScoreSinglePage';
 import { config } from './../config/config';
+import ScoreCreatePage from '../pages/scores/ScoreCreatePage';
 
 // Public routes
 // Accessible without authentication.
@@ -77,16 +78,21 @@ export const router = createBrowserRouter([
 
       // Controlled routes
       // Accessible with or without a token
-      { path: '/composers/create', element: <ComposerCreatePage /> },
       { path: '/composers', element: <ComposersPage /> },
-      { path: '/composers/:id/edit', element: <ComposerEditPage /> },
       { path: '/scores', element: <ScoresPage /> },
       { path: '/scores/:id', element: <ScoreSinglePage /> },
       {
         // Protected routes
         // Token mandatory
         element: <ProtectedRoute />,
-        children: [{ path: '/me', element: <MePage /> }],
+        children: [
+          { path: '/me', element: <MePage /> },
+
+          { path: '/composers/create', element: <ComposerCreatePage /> },
+          { path: '/composers/:id/edit', element: <ComposerEditPage /> },
+
+          { path: '/scores/create/:cid', element: <ScoreCreatePage /> },
+        ],
       },
     ],
   },

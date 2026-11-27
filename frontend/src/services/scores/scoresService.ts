@@ -1,4 +1,6 @@
 import {
+  CreateScorePayload,
+  CreateScoreResponse,
   GetScoresPageRequest,
   GetScoresPageResponse,
   UpdateScoreAnnotationRequest,
@@ -11,6 +13,77 @@ import { apiBinaryRequest } from '../../api/client';
 import { logger } from '../../../logger/logger';
 
 /**
+ * Create a new file
+ * Particularity is that the frontend (React) will directly provide a `file` via FormInputFile
+ *  const file = e.target.files?.[0] || null;
+ * @param param0
+ * @param file
+ * @returns
+ */
+export async function createScore(
+  {
+    composerId,
+    scoreName,
+    releaseDate,
+    categories,
+    tags,
+    informationText,
+    annotations,
+  }: CreateScorePayload,
+  file: File | null
+): Promise<CreateScoreResponse> {
+  if (!composerId) {
+    throw new Error('composerId is required');
+  }
+  if (!Number.isInteger(composerId) || composerId <= 0) {
+    throw new Error('composerId must be a positive integer');
+  }
+
+  if (!scoreName) {
+    throw new Error('scoreName is required');
+  }
+
+  const form = new FormData();
+
+  form.append('composerId', String(composerId));
+  form.append('scoreName', scoreName);
+
+  if (releaseDate !== undefined) {
+    form.append('releaseDate', releaseDate);
+  }
+
+  if (categories !== undefined) {
+    form.append('categories', categories);
+  }
+
+  if (tags !== undefined) {
+    form.append('tags', tags);
+  }
+
+  if (informationText !== undefined) {
+    form.append('informationText', informationText);
+  }
+
+  if (annotations !== undefined) {
+    form.append('annotations', annotations);
+  }
+
+  if (file) {
+    form.append('uploadFile', file);
+  }
+
+  const token = localStorage.getItem('token');
+
+  const res = await apiRequest<CreateScoreResponse>('POST', `/scores`, {
+    data: form,
+  });
+
+  console.log('\nScore Creation response:', res.id, res.message);
+
+  return res;
+}
+
+/**
  * getScoresPage
  * @param ..
  * @returns <GetScoresPageResponse>
@@ -18,7 +91,7 @@ import { logger } from '../../../logger/logger';
 export async function getScoresPage({
   page = 1,
   limit = Pagination.scores.defaultLimit,
-  sort = 'asc',
+  sort = 'id asc',
   searchMode,
   name,
   composer,

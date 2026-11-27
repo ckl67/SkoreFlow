@@ -13,7 +13,7 @@ type Props = {
 export default function FormInputFile({
   label,
   comment,
-  buttonLabel = 'Choose a Picture',
+  buttonLabel = 'Choose file',
   fileName,
   accept = 'image/png,image/jpeg',
   onChange,

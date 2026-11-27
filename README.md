@@ -129,9 +129,17 @@ Open visual code, and open file `.code-workspace`
 
 ## 📖 Documentation
 
-- The [Detailed Documentation](https://ckl67.github.io/SkoreFlow/) will cover architecture, API, and development guidelines.
-- The document can also be consulted locally in 'visual studio code' via the integrated browser[SkoreFlow document](http://127.0.0.1:3000/docs/index.html#/)
-- **_It is essential that the "Live Server" has been started before manually ! `ctrl Shift p` --> `Live Premier Start Server`_**
+The document can be consulted in different ways :
+
+- locally in VSC (Markdown) via the integrated VSC viewer `Open as preview`
+  - [SkoreFlow documentation](./docs/doc.md)
+- locally in VSC or your browser via the integrated browser `Docsify`, which turns the Markdown files into a documentation website instantly.
+  - In VSC :
+    - It is essential that the "Live Server" has been started.
+    - Manually : `ctrl Shift p` --> `Live Premier Start Server`
+    - [SkoreFlow documentation](http://127.0.0.1:3000/docs/index.html#/)
+  - Via github :
+    - [SkoreFlow documentation](https://ckl67.github.io/SkoreFlow/)
 
 ## 🔮Future Improvements or Bug detection
 

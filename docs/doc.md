@@ -12,13 +12,6 @@ It will also address the development environment, to cover the necessary tools, 
 
 Whether you're new to SkoreFlow or an experienced developer, this documentation will help you get started and contribute effectively to the project.
 
-The document can be consulted
-
-- locally in 'visual studio code' via preview
-- locally in 'visual studio code' or your browser via the integrated browser [SkoreFlow document](http://127.0.0.1:3000/docs/index.html#/)
-  - For that, it is essential that the "Live Server" has been started before manually : `ctrl Shift p` --> `Live Premier Start Server`
-- externally via github [SkoreFlow documentation](https://ckl67.github.io/SkoreFlow/)
-
 ## Table of Contents
 
 ### Foreword

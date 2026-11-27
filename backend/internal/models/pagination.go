@@ -63,35 +63,31 @@ func (p *Pagination) GetPage() int {
 // Default:
 // - Falls back to "updated_at desc" if invalid.
 func (p *Pagination) GetSort() string {
-	allowed := map[string]bool{
+	columns := map[string]string{
 		// Identifiers
-		"id asc":  true,
-		"id desc": true,
+		"id": "id",
 
 		// Names
-		"score_name asc":  true,
-		"score_name desc": true,
-		"composer asc":    true,
-		"composer desc":   true,
+		"score_name": "name",
+		"composer":   "name", // or "safe_name" if you’d prefer to sort by safe_name
 
 		// Business dates
-		"release_date asc":  true,
-		"release_date desc": true,
+		"release_date": "release_date",
 
 		// Technical timestamps
-		"created_at asc":  true,
-		"created_at desc": true,
-		"updated_at asc":  true,
-		"updated_at desc": true,
+		"created_at": "created_at",
+		"updated_at": "updated_at",
 	}
 
-	// Normalize input (trim + lowercase)
-	sort := strings.ToLower(strings.TrimSpace(p.Sort))
-
-	if allowed[sort] {
-		return sort
+	parts := strings.Fields(strings.ToLower(strings.TrimSpace(p.Sort)))
+	if len(parts) == 2 {
+		col, okCol := columns[parts[0]]
+		if okCol && (parts[1] == "asc" || parts[1] == "desc") {
+			return col + " " + strings.ToUpper(parts[1])
+		}
 	}
-	return "updated_at desc"
+
+	return "updated_at DESC"
 }
 
 // GetSearchMode validates and returns a safe SQL request.

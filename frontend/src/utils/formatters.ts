@@ -1,5 +1,5 @@
-// Format a comma-separated list of epochs into clean, capitalized entries
-export function formatEpochs(rawEpochs: string): string {
+// Format a comma-separated list into clean, capitalized entries
+export function formatCommaSeparate(rawEpochs: string): string {
   if (!rawEpochs) return '';
 
   return rawEpochs

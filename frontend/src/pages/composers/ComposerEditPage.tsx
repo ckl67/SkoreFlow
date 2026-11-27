@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
-import { formatEpochs } from '../../utils/composers/formatters';
+import { formatCommaSeparate } from '../../utils/formatters';
 import useGetComposer from '../../hooks/composers/useGetComposer';
 import { useComposersPicture } from '../../hooks/composers/useComposersPicture';
 import { useAuth } from '../../hooks/auth/useAuth';
@@ -145,7 +145,7 @@ export default function ComposerEditPage() {
   // --------------------------------------------------------
   function handleEpochBlur() {
     if (!cEpoch) return;
-    const formatted = formatEpochs(cEpoch);
+    const formatted = formatCommaSeparate(cEpoch);
     setCEpoch(formatted);
 
     syncIsVerified({

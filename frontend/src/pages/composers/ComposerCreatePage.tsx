@@ -1,80 +1,74 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import FormInput from '../../components/forms/FormInput';
 import FormInputFile from '../../components/forms/FormInputFile';
-import { formatEpochs } from '../../utils/composers/formatters';
-
 import SubmitButton from '../../components/forms/SubmitButton';
-
+import { formatCommaSeparate } from '../../utils/formatters';
 import { useAuth } from '../../hooks/auth/useAuth';
 import { UserRole } from '../../../../shared/frontend/enums/userRoles';
-import { logger } from '../../../logger';
 import { createComposer } from '../../services/composers/composersService';
+import { logger } from '../../../logger';
+import { ArrowLeft } from 'lucide-react';
 
 // --------------------------------------------------------
-// Routes →       Page         →      Hook      →   Service
-// Routes → ComposerCreatePage →                → createComposer → apiRequest → Backend
+// Routes →         Page         →   Hook   →    Service
+// Routes → ComposerCreatePage →          → createComposer → apiRequest → Backend
 // --------------------------------------------------------
 
 export default function ComposerCreatePage() {
-  const [cName, setCName] = useState('');
-  const [cEpoch, setCEpoch] = useState('');
-  const [cExternalUrl, setCExternalUrl] = useState('');
+  const navigate = useNavigate();
+
+  const { user } = useAuth();
+  const canCreate =
+    user?.role === UserRole.User ||
+    user?.role === UserRole.Admin ||
+    user?.role === UserRole.Moderator;
+
+  // Form state
+  const [name, setName] = useState('');
+  const [epoch, setEpoch] = useState('');
+  const [externalUrl, setExternalUrl] = useState('');
   const [selectedPictureFile, setSelectedPictureFile] = useState<File | null>(
     null
   );
-
-  const { user } = useAuth();
-
-  const canCreate =
-    user?.role === UserRole.User ||
-    user?.role === UserRole.Moderator ||
-    user?.role === UserRole.Admin;
-
-  // Store the temporary preview URL for the newly selected local file
   const [previewPictureURL, setPreviewPictureURL] = useState<string | null>(
     null
   );
 
-  // Submit
+  // Submission state
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [saveSuccess, setSaveSuccess] = useState<string | null>(null);
 
-  // Format comma-separated epochs cleanly when the user leaves the input field
-  function handleEpochBlur() {
-    if (!cEpoch) return;
-    setCEpoch(formatEpochs(cEpoch));
-  }
-
-  // Create and clean up the object URL whenever selectedPictureFile changes
+  // Manage temporary object URL for local image preview
   useEffect(() => {
-    // If no file is selected, ensure no stale preview URL remains
     if (!selectedPictureFile) {
       setPreviewPictureURL(null);
       return;
     }
 
-    // Generate a temporary browser URL for the selected file
     const objectUrl = URL.createObjectURL(selectedPictureFile);
     logger.debug('composer', 'objectUrl from', objectUrl);
     setPreviewPictureURL(objectUrl);
 
-    // Clean up the object URL when the file changes or the component unmounts
     return () => {
       URL.revokeObjectURL(objectUrl);
     };
   }, [selectedPictureFile]);
 
-  // Handle form submission
-  // The `await` keyword pauses the execution of the function
-  // whilst waiting for a Promise (createComposer(...)) to resolve.
-  // In JavaScript, `await` is only permitted within a function
-  // declared as `async` (which itself implicitly returns a Promise).
+  function handleEpochBlur() {
+    if (!epoch) return;
+    setEpoch(formatCommaSeparate(epoch));
+  }
+
   async function handleSubmit() {
-    const formValues = {
-      name: cName,
-      epoch: cEpoch,
-      external_url: cExternalUrl,
+    if (!canCreate || isSaving) return;
+
+    logger.debug('composer', '(handleSubmit)', 'Form values:', {
+      name,
+      epoch,
+      external_url: externalUrl,
       selectedPictureFile: selectedPictureFile
         ? {
             name: selectedPictureFile.name,
@@ -82,123 +76,141 @@ export default function ComposerCreatePage() {
             type: selectedPictureFile.type,
           }
         : null,
-    };
-
-    logger.debug('composer', '(handleSubmit)', 'Form values:', formValues);
-
-    // In case in process
-    if (!canCreate || isSaving) return;
+    });
 
     setIsSaving(true);
     setSaveError(null);
     setSaveSuccess(null);
 
-    // As soon as an exception is thrown or a Promise is rejected
-    // (e.g. network error, server returning a 400/500 error in `createComposer`),
-    // JavaScript immediately terminates the `try` block and jumps straight to the
-    // `catch` block.
-    // catch (err) { ... }: catches the error thrown in the try block
     try {
       logger.debug('composer', 'New composer will save');
       const res = await createComposer(
         {
-          name: cName,
-          externalURL: cExternalUrl,
-          epoch: cEpoch,
+          name,
+          externalURL: externalUrl,
+          epoch,
         },
         selectedPictureFile
       );
       setSaveSuccess(res.message);
     } catch (err) {
       setSaveError(
-        err instanceof Error ? err.message : 'Failed to update composer'
+        err instanceof Error ? err.message : 'Failed to create composer'
       );
     } finally {
       setIsSaving(false);
     }
   }
 
+  const avatarInitial = name.trim().charAt(0).toUpperCase() || '?';
+
+  // Back to the correct page
+  function handleBackClick() {
+    const target = `/composers`;
+    //console.log('Navigation target:', target);
+    navigate(target);
+  }
+
   return (
-    <div>
-      {previewPictureURL ? (
-        <img
-          src={previewPictureURL}
-          alt={cName}
-          className="h-16 w-16 shrink-0 rounded-xl border border-gray-200 object-cover shadow-sm"
-        />
-      ) : (
-        <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-2xl font-bold text-indigo-700 shadow-sm">
-          {cName.charAt(0).toUpperCase()}
+    <div className="min-h-screen bg-gray-50/60 px-4 py-8">
+      <div className="mx-auto w-full max-w-xl rounded-2xl border border-gray-200 bg-white p-6 shadow-xl sm:p-8">
+        {/* Top navigation aligned with the form card */}
+        <div className="mx-auto mb-4 w-full max-w-xl">
+          <button
+            type="button"
+            onClick={handleBackClick}
+            className="inline-flex cursor-pointer items-center gap-2 text-sm font-medium text-gray-600 transition-colors hover:text-indigo-700"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to list
+          </button>
         </div>
-      )}
 
-      {/* Form */}
-      <form className="mt-6 space-y-6">
-        {/* Composer Name */}
-        <FormInput
-          label="Name :"
-          value={cName}
-          onChange={setCName}
-          disabled={!canCreate}
-        />
+        {/* Main card */}
 
-        <FormInputFile
-          label="Picture :"
-          comment="(File : .jpg / .png)"
-          fileName={selectedPictureFile?.name}
-          onChange={setSelectedPictureFile}
-        />
-
-        {/* Composer Epoch */}
-        <FormInput
-          label="Epoch :"
-          value={cEpoch}
-          onChange={setCEpoch}
-          onBlur={handleEpochBlur}
-          comment="(Each epoch must be separated with a comma)"
-          disabled={!canCreate}
-        />
-
-        {/* External Reference URL */}
-        <FormInput
-          label="External URL link :"
-          value={cExternalUrl}
-          onChange={setCExternalUrl}
-          disabled={!canCreate}
-        />
-
-        {/* Feedback messages */}
-        {saveError && (
-          <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-2.5 text-sm text-red-700">
-            {saveError}
-          </div>
-        )}
-
-        {saveSuccess && (
-          <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-sm text-emerald-700">
-            {saveSuccess}
-          </div>
-        )}
-
-        {/* Form Footer / Submit Action */}
-        {canCreate && (
-          <div className="flex justify-end border-t border-gray-100 pt-4">
-            <div className="w-full sm:w-auto">
-              <SubmitButton
-                label={
-                  !canCreate
-                    ? 'Save Not Allowed'
-                    : isSaving
-                      ? 'Saving...'
-                      : 'Save Changes'
-                }
-                disabled={!canCreate || isSaving}
-                onClick={handleSubmit}
-              />
+        {/* Header */}
+        <div className="flex w-full items-center gap-4 border-b border-gray-100 pb-6">
+          {previewPictureURL ? (
+            <img
+              src={previewPictureURL}
+              alt={name || 'Composer preview'}
+              className="h-16 w-16 shrink-0 rounded-xl border border-gray-200 object-cover shadow-sm"
+            />
+          ) : (
+            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-2xl font-bold text-indigo-700 shadow-sm">
+              {avatarInitial}
             </div>
+          )}
+
+          <div className="min-w-0">
+            <h1 className="text-xl font-bold text-gray-900">Create Composer</h1>
+            <p className="truncate text-sm text-gray-500">
+              {name.trim()
+                ? `Add ${name.trim()} to the catalog`
+                : 'Add a new composer to the catalog'}
+            </p>
           </div>
-        )}
-      </form>
+        </div>
+
+        {/* Form */}
+        <form className="mt-6 space-y-6">
+          <div className="space-y-4 rounded-xl border border-indigo-100 bg-indigo-50/40 p-5">
+            <FormInput
+              label="Name :"
+              value={name}
+              onChange={setName}
+              disabled={!canCreate}
+            />
+
+            <FormInputFile
+              label="Picture :"
+              comment="(File : .jpg / .png)"
+              fileName={selectedPictureFile?.name}
+              onChange={setSelectedPictureFile}
+            />
+
+            <FormInput
+              label="Epoch :"
+              value={epoch}
+              onChange={setEpoch}
+              onBlur={handleEpochBlur}
+              comment="(Each epoch must be separated with a comma)"
+              disabled={!canCreate}
+            />
+
+            <FormInput
+              label="External URL link :"
+              value={externalUrl}
+              onChange={setExternalUrl}
+              disabled={!canCreate}
+            />
+          </div>
+
+          {saveError && (
+            <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-2.5 text-sm text-red-700">
+              {saveError}
+            </div>
+          )}
+
+          {saveSuccess && (
+            <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-sm text-emerald-700">
+              {saveSuccess}
+            </div>
+          )}
+
+          {canCreate && (
+            <div className="flex justify-end border-t border-gray-100 pt-4">
+              <div className="w-full sm:w-auto">
+                <SubmitButton
+                  label={isSaving ? 'Saving...' : 'Create Composer'}
+                  disabled={isSaving}
+                  onClick={handleSubmit}
+                />
+              </div>
+            </div>
+          )}
+        </form>
+      </div>
     </div>
   );
 }

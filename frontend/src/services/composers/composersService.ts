@@ -71,7 +71,7 @@ export function getComposersPage(
   {
     page = 1,
     limit = Pagination.composers.defaultLimit,
-    sort = 'asc',
+    sort = 'id asc',
     name,
     isVerified,
   }: GetComposersPageRequest = {},

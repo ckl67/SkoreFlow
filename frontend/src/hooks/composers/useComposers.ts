@@ -3,26 +3,35 @@ import { getComposersPage } from '../../services/composers/composersService';
 import { logger } from '../../../logger/logger';
 import { ComposerPublicResponse } from '../../../../shared/types/composer';
 
-/* ====================================
-Responsibilities are:
-- loading a page of composers,
-- managing pagination,
-- filters,
-- sorting,
-- refreshing,
-- loading,
-- and handling errors.
-=====================================*/
+// The business type (ComposerPublicResponse) describes a valid composer
+// and does not depend on React's lifecycle.
+//
+// The hook return contract reflects the asynchronous state of the data:
+// `undefined` means the composer has not been loaded yet.
+// This is a React state concern, not a business model requirement.
+// In fact on the first render, we haven’t yet received the backend composer.
+// Your return type must therefore account for this possibility:
+//
+// `await` cannot be used directly within a React component
+// A React component is not asynchronous --> We must use `useEffect()`.
 
 type UseComposersReturn = {
-  composers: ComposerPublicResponse[];
+  composers: ComposerPublicResponse[] | undefined;
   totalPages: number;
 };
 
-// `await` cannot be used directly within a React component
-// A React component is not asynchronous --> We must use `useEffect()`.
+/**
+ * Will recover a list of composers depending on some filter
+ * @param page : The composers located at 'page'
+ * @param sort : "composer asc", "composer desc",..
+ * @param onlyMine : The composers (for the logged user) who have a music sheet
+ * @param isVerified : The composers who have been validated (verified)
+ * @param filter : Some other filters like : Beethoven&searchMode=exact
+ * @returns : UseComposersReturn
+ */
 export function useComposers(
   page: number = 1,
+  sort: string,
   onlyMine: boolean = true,
   isVerified: boolean = true,
   filter: string = ''
@@ -44,7 +53,7 @@ export function useComposers(
           `Loading composers ${page} with filter ${filter} `
         );
         const res = await getComposersPage(
-          { page, name: filter, isVerified },
+          { page, name: filter, isVerified, sort },
           onlyMine
         );
 

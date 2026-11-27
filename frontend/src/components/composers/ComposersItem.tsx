@@ -1,16 +1,31 @@
 import type { ComposerPublicResponse } from '../../../../shared/types/composer';
 import { useComposersPicture } from '../../hooks/composers/useComposersPicture';
 
-import { Check, Pencil, ExternalLink } from 'lucide-react';
+import {
+  Check,
+  Pencil,
+  FileMusic,
+  ClefTreble,
+  ExternalLink,
+} from 'lucide-react';
 
 type Props = {
   composer: ComposerPublicResponse;
+  isVerified: boolean;
   onSelect: () => void;
   onEdit: () => void;
-  userUsedComponent: boolean;
+  onAddScore: () => void;
+  isManageable?: boolean;
 };
 
-export default function ComposerItem({ composer, onSelect, onEdit }: Props) {
+export default function ComposerItem({
+  composer,
+  isVerified,
+  onSelect,
+  onEdit,
+  onAddScore,
+  isManageable = false,
+}: Props) {
   // composer.picture:
   // the image specified by the backend as being associated with the composer.
   // pictureURL:
@@ -52,7 +67,6 @@ export default function ComposerItem({ composer, onSelect, onEdit }: Props) {
           </div>
         )}
       </div>
-
       {/* Composer information */}
       <div className="min-w-0 flex-1 pt-1">
         <h2
@@ -122,17 +136,17 @@ export default function ComposerItem({ composer, onSelect, onEdit }: Props) {
           )}
         </div>
       </div>
-
       {/* Edit action */}
-      <button
-        type="button"
-        onClick={(e) => {
-          e.stopPropagation();
-          onEdit();
-        }}
-        title="Edit this composer"
-        aria-label={`Edit ${composer.name}`}
-        className="
+      {isManageable && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onEdit();
+          }}
+          title="Edit this composer"
+          aria-label={`Edit ${composer.name}`}
+          className="
           absolute right-3 top-3
           flex h-8 w-8 items-center justify-center
           rounded-lg text-slate-400
@@ -141,9 +155,33 @@ export default function ComposerItem({ composer, onSelect, onEdit }: Props) {
           focus-visible:outline-none
           focus-visible:ring-2 focus-visible:ring-indigo-400
         "
-      >
-        <Pencil className="h-4 w-4" />
-      </button>
+        >
+          <Pencil className="h-4 w-4" />
+        </button>
+      )}
+
+      {isManageable && isVerified && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onAddScore();
+          }}
+          title="Add Score for this composer"
+          aria-label={`Add Score${composer.name}`}
+          className="
+          absolute right-3 top-15
+          flex h-8 w-8 items-center justify-center
+          rounded-lg text-slate-400
+          transition-colors
+          hover:bg-indigo-50 hover:text-indigo-600
+          focus-visible:outline-none
+          focus-visible:ring-2 focus-visible:ring-indigo-400
+        "
+        >
+          <ClefTreble className="h-8 w-8" />
+        </button>
+      )}
     </li>
   );
 }

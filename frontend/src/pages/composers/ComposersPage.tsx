@@ -41,6 +41,11 @@ export default function ComposersPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
+  const isManageable =
+    user?.role == UserRole.Admin ||
+    user?.role == UserRole.Moderator ||
+    user?.role == UserRole.User;
+
   const [searchParams, setSearchParams] = useSearchParams();
 
   const page = Math.max(1, Number(searchParams.get('page')) || 1);
@@ -52,12 +57,6 @@ export default function ComposersPage() {
 
   const mineParam = searchParams.get('mine');
   const isMine = mineParam === null ? true : mineParam === '1';
-
-  const onlyMine = !user
-    ? false
-    : user.role === UserRole.Moderator
-      ? isMine
-      : true;
 
   /*************************************************
    * Complete the URL with `page` information
@@ -107,22 +106,28 @@ export default function ComposersPage() {
       return params;
     });
   }
-
   function setIsVerified(checked: boolean) {
+    const isStandardUser = user?.role === UserRole.User;
+
     setSearchParams((prev) => {
       const params = new URLSearchParams(prev);
 
       if (checked) {
         params.delete('verified');
+        //if (isStandardUser) {
+        //  params.delete('mine'); // Default value is true when 'mine' is missing
+        //}
       } else {
         params.set('verified', '0');
+        //if (isStandardUser) {
+        //  params.set('mine', '0'); // false
+        //}
       }
 
       params.delete('page');
       return params;
     });
   }
-
   function setIsMine(checked: boolean) {
     setSearchParams((prev) => {
       const params = new URLSearchParams(prev);
@@ -140,7 +145,8 @@ export default function ComposersPage() {
 
   const { composers, totalPages } = useComposers(
     page,
-    onlyMine,
+    'composer asc',
+    isMine,
     isVerified,
     debouncedFilter
   );
@@ -156,6 +162,10 @@ export default function ComposersPage() {
     navigate('/composers/create');
   }
 
+  function handleCreateScoreClick() {
+    navigate('/composers/create');
+  }
+
   const previousPage = () => {
     setPage((current) => Math.max(1, current - 1));
   };
@@ -164,11 +174,24 @@ export default function ComposersPage() {
     setPage((current) => Math.min(Math.max(1, totalPages), current + 1));
   };
 
-  const pageTitle = !onlyMine
-    ? 'Explore composers'
-    : user?.username
-      ? `${user.username}'s composers`
-      : 'My composers';
+  if (!composers) {
+    return <div>Loading composers...</div>;
+  }
+
+  let pageTitle = '';
+  switch (user?.role) {
+    case UserRole.Moderator:
+      pageTitle = 'My Composers';
+
+      break;
+
+    case UserRole.User:
+      pageTitle = 'My Composers with Partition';
+      break;
+
+    default:
+      break;
+  }
 
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-indigo-50/40">
@@ -202,24 +225,26 @@ export default function ComposersPage() {
                 value={filter}
                 //onChange={() => {}}
                 onChange={setFilter}
-                //disabled={!canEdit}
+                disabled={false}
               />
             </div>
-            <div>
-              <FormCheckbox
-                label="Verified"
-                checked={isVerified}
-                onChange={setIsVerified}
-              />
+            {isManageable && (
+              <div>
+                <FormCheckbox
+                  label="Verified"
+                  checked={isVerified}
+                  onChange={setIsVerified}
+                  disabled={false}
+                />
 
-              {user?.role === UserRole.Moderator && (
                 <FormCheckbox
                   label="Only Mine"
                   checked={isMine}
                   onChange={setIsMine}
+                  disabled={false}
                 />
-              )}
-            </div>
+              </div>
+            )}
             {canCreateComposer && (
               <button
                 type="button"
@@ -240,13 +265,14 @@ export default function ComposersPage() {
               <ComposerItem
                 key={composer.id}
                 composer={composer}
+                isVerified={isVerified}
+                // Score
                 onSelect={() =>
                   navigate(
                     `/scores?composer=${encodeURIComponent(composer.name)}`
                   )
                 }
-                //onEdit={() => navigate(`/composers/${composer.id}/edit`)}
-                // /composers/123/edit?page=5
+                // Composer Edit
                 onEdit={() => {
                   const query = searchParams.toString();
                   navigate(
@@ -255,7 +281,17 @@ export default function ComposersPage() {
                       : `/composers/${composer.id}/edit`
                   );
                 }}
-                userUsedComponent
+                // Create a Score
+                onAddScore={() => {
+                  const query = searchParams.toString();
+                  navigate(
+                    query
+                      ? `/scores/create/${composer.id}?${query}`
+                      : `/scores/create/${composer.id}`
+                  );
+                }}
+                //
+                isManageable={isManageable}
               />
             ))}
           </ul>

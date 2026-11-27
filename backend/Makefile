@@ -101,5 +101,5 @@ help:
 	@echo "  make tidy        						: Clean up dependencies"
 	@echo "  make reset       						: Clear cache and reinstall everything"
 	@echo "  make clean       						: Remove the binary"
-	@echo "  make seeds-1000-Somposers    : Seeds 1000 Composers in the database"
+	@echo "  make seeds-1000-Composers    : Seeds 1000 Composers in the database"
 	@echo "  make help        						: Show this help message"

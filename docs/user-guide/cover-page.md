@@ -1,10 +1,4 @@
 <!-- cspell:ignore emark rganize xchange  -->
-<style>
-  body {
-    background-color: #ffffff !important;
-    color: #000000 !important;
-  }
-</style>
 
 <div align="center">
   <p style="bold; font-size: 60px;">SkoreFlow</p>
